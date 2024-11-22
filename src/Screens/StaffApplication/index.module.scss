@@ -724,6 +724,10 @@ body::-webkit-scrollbar {
   justify-content: space-between;
 }
 
+.spaceBetweenOnly{
+  justify-content: space-between;
+}
+
 .spaceEvenly {
   display: flex;
   justify-content: space-evenly;
@@ -1752,7 +1756,7 @@ select {
 }
 
 .bigButtonStyle {
-  height: 50px;
+  height: 70px;
   /* UI Properties */
   background: $primarycolor
 

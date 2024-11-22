@@ -57,8 +57,8 @@ const ActiveStaffList = ({
   const [sortField, setSortField] = useState("DEFAULT");
   const [sortValue, setSortValue] = useState("ASCENDING");
 
-  const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "CRs", "Notes", "Last Updated", "Action"];
-  const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
+  const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
+  const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type","CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Staff Name", "Type", "Notes", "Last Updated On", ""];
 
@@ -102,7 +102,7 @@ const ActiveStaffList = ({
     setReFetchMetaData(value);
   };
 
-  const reappointmentApplication = async (id) => {
+  const reappointmentApplication = async (id) => {  
     await POST(`application-management-service/staff/${id}/reappoint`)
       .then((response) => {
         SuccessToaster("Reappoint Application Send as Email Successfully");
@@ -469,9 +469,8 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
       applicantType.push("Doctor");
@@ -519,7 +518,7 @@ const ActiveStaffList = ({
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
       //   )
       // } else { ccdate.push("-") }
-      ccdate.push("-");
+      ccdate.push("-")
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -556,6 +555,7 @@ const ActiveStaffList = ({
       { type: "action", value: action },
     ];
   };
+
 
   const getTemporaryStaffValues = () => {
     applicantName = [];

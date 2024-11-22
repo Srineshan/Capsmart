@@ -51,9 +51,10 @@ const NewActiveApplication = ({
   selectedTab,
   getActiveApplicationView,
   getApprovalNotesCommentBox,
+  getApprovalNotesCommentBoxDept,
   getActiveApplicationTask,
   getEmailDialogBox,
-  index
+
 
 }) => {
   console.log("contract Type", contractType);
@@ -102,7 +103,7 @@ const NewActiveApplication = ({
   const [showPrevContractDataAlert, setShowPrevContractDataAlert] =
     useState(false);
   const [isTabsValid, setIsTabsValid] = useState([]);
-  const [expand, setExpand] = useState({ status: false, index: 0 });
+  const [expand, setExpand] = useState({ status: true, index: 0 });
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
@@ -158,6 +159,9 @@ const NewActiveApplication = ({
     ).toString()
   );
   const [currentDate, setCurrentDate] = useState();
+  const [applicationType, setApplicationType] = useState(() => 
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
 
   const dropzoneStyle = {
     width: "100%",
@@ -246,6 +250,8 @@ const NewActiveApplication = ({
       );
       
       setIsApproved(areAllFormsApproved);
+
+      console.log("areAllFormsApproved" + areAllFormsApproved)
       
       // Debug logging
       relevantSchemas.forEach((_, index) => {
@@ -722,6 +728,9 @@ const NewActiveApplication = ({
     getApprovalNotesCommentBox(true);
   };
 
+  const onClickApprovalDeptFunction = () => {
+    getApprovalNotesCommentBoxDept(true);
+  };
   const onClickCheckListFunction = () => {
     getActiveApplicationTask(true);
   };
@@ -914,7 +923,7 @@ const relevantForm = form?.forms?.filter(schema => schema?.schemaCategory !== "U
 
 console.log("relevantForm" +JSON.stringify(relevantForm))
 
-// // Check if logDetails.logs is an array before calling forEach
+// Check if logDetails.logs is an array before calling forEach
 // if (logDetails?.logs && Array.isArray(logDetails?.logs)) {
 //   logDetails.logs.forEach(log => {
 //     if (log.form && log.form.id) {
@@ -955,6 +964,66 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
 // logDetails?.logs?.forEach((log, index) => {
 //   console.log(`Role at index ${index}: ${log?.role}`);
 // });
+
+const checkApprovalAndLogMatch = (data, index) => {
+  // Check if the expand status and index match
+  if (!(expand?.status && expand?.index === index + 1)) {
+    console.log("expand" + expand?.status)
+    return false;
+    
+  }
+
+  // Check if any newData requires approval
+  const approvalRequired = credApproval?.some((newData) => {
+    console.log("newData.approvalRequired:", newData?.approvalRequired);
+    return newData.schemaId === data?.id && newData?.approvalRequired;
+  });
+
+  if (!approvalRequired) return false;
+
+  // Check if logDetails.logs is an array and has elements
+  if (logDetails?.logs && Array.isArray(logDetails.logs)) {
+    return logDetails.logs.some((log) => {
+      if (log?.form?.id === form?.forms[index]?.id) {
+        console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id);
+
+        // Check if userRole includes log.role
+        const roleMatch = userRole?.includes(log?.role);
+        if (roleMatch) {
+          console.log("Role matches user role: " + log?.role);
+        }
+
+        // Determine selectedTabRole based on selectedTab
+        const selectedTabRole = getSelectedTabRole(selectedTab);
+
+        // Check if selectedTabRole matches log.role
+        if (selectedTabRole === log.role) {
+          console.log("Selected tab role matches log role: " + log?.role);
+          return true;
+        }
+      }
+      return false;
+    });
+  }
+
+  return false;
+};
+
+// Helper function to get the selectedTab role
+const getSelectedTabRole = (selectedTab) => {
+  switch (selectedTab) {
+    case 'level-2': return "Department Head";
+    case 'level-3': return "Chief Of Staff";
+    case 'level-4': return "Advisory Committee";
+    case 'level-5': return "Board";
+    case 'level-1': return "Staff Manager";
+    default: return "";
+  }
+};
+
+const showDot = checkApprovalAndLogMatch();
+
+console.log("showDot" + checkApprovalAndLogMatch())
 
   const renderFieldsBasedOnStep = (data) => {
     switch (data?.schemaCategory) {
@@ -2096,22 +2165,159 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                         <div 
                           className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                         >
-                          <div
+                          <>
+                          
+                          {/* <div
+  className={`${style.marginLeft10} ${style.justifySpaceAround} ${showDot ? (form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle) : style.greenDotStyle }`}
+>
+</div> */} 
+<div
+  className={`${style.marginLeft10} ${style.justifySpaceAround} 
+    ${showDot ? style.greenDotStyle : (form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle)}`}
+>
+  {showDot ? <span className={style.greenDotStyle}></span> : <span className={style.greyDotStyle}></span>}
+</div>
+                            {/* <div
                             className={`${style.marginLeft10} ${style.justifySpaceAround
-                              } ${form?.forms[index]?.status !== "APPROVED"
-                                ? style.greyDotStyle
-                                : style.greenDotStyle
-                              }`}
-                          ></div>
+                            } ${form?.forms[index]?.status !== "APPROVED"
+                              ? style.greyDotStyle
+                              : style.greenDotStyle
+                            }`}
+                            ></div> */}
+                          </>
                         </div>
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                            {data?.title}
                           </div>
                         </div>
                         {expand?.status && expand?.index === index + 1 ? (
+                       <>
+                      {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Verified
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Verify
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Verified
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </>
+                        )}
+                     </>
+                        ) 
+                        : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )}
+                         {/* {expand?.status && expand?.index === index + 1 ? (
                        <>
                           {credApproval?.filter((newData) => {
                               console.log("newData.schema:", newData.schemaId);
@@ -2121,7 +2327,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                           <>
                           {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
                             (() => {
-                              let isMatch = false;
+                              let Match = false;
 
                               logDetails.logs.forEach((log) => {
                                 if (log.form && log.form.id) {
@@ -2129,16 +2335,13 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                   
                                   if (form?.forms?.some(f => f.id === log.form.id)) {
                                     console.log("form match found, setting isMatch to true");
-                                    isMatch = true;
+                                    Match = true;
                               
                                     // Check if userRole includes log.role
                                     if (userRole?.includes(log?.role)) {
                                       console.log("Role matches user role: " + log.role);
-                                      isMatch = true;
-                                    } else {
-                                      console.log("Role does NOT match user role: " + log.role);
-                                      isMatch = false;
-                                    }
+                                      Match = true;
+                                    } 
                               
                                     // Determine selectedTabRole
                                     let selectedTabRole;
@@ -2157,19 +2360,15 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                     // Check if selectedTabRole matches log.role
                                     if (selectedTabRole === log.role) {
                                       console.log("Selected tab role matches log role: " + log.role);
-                                      isMatch = true;
-                                    } else {
-                                      console.log("Selected tab role does NOT match log role: " + log.role);
-                                      isMatch = false;
+                                      Match = true;
                                     }
                                   } else {
-                                    console.log("form match NOT found, setting isMatch to false");
-                                    isMatch = false;
+                                    Match = false;
                                   }
                                 }
                               });
 
-                              return isMatch && (
+                              return Match && (
                                 <div>
                                   {form?.forms[index]?.status !== "APPROVED" ? (
                                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
@@ -2235,7 +2434,104 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                               </div>
                             </div>
                           </>
-                        )}
+                        )} */}
+                        
+                        {/* {expand?.status && expand?.index === index + 1 ? (
+                                <>
+                                  {credApproval?.filter((newData) => {
+                                    console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                    return newData.schemaId === data.id;
+                                  })[0]?.approvalRequired === true && (
+                                    <>
+                                      {logDetails?.logs && Array.isArray(logDetails?.logs) ? (
+                                        (() => {
+                                          let isMatch = false;
+                                          let selectedTabRole;
+
+                                          logDetails.logs.forEach((log) => {
+                                            if (log.form && log.form.id) {
+                                              console.log("form id: " + log.form.id);
+
+                                              if (form?.forms?.some(f => f.id === log.form.id)) {
+                                                console.log("form match found, setting isMatch to true");
+                                                isMatch = true;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(!log?.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  isMatch = false;
+                                                } else if (selectedTabRole === log.role) {
+                                                  
+                                                  if (selectedTab === 'level-2') {
+                                                    selectedTabRole = "Department Head";
+                                                  } else if (selectedTab === 'level-3') {
+                                                    selectedTabRole = "Chief Of Staff";
+                                                  } else if (selectedTab === 'level-4') {
+                                                    selectedTabRole = "Advisory Committee";
+                                                  } else if (selectedTab === 'level-5') {
+                                                    selectedTabRole = "Board";
+                                                  } else if (selectedTab === 'level-1') {
+                                                    selectedTabRole = "Staff Manager";
+                                                  }
+                                                  isMatch = true;
+                                                }
+                                              }
+                                            }
+                                          });
+
+                                          return isMatch && (
+                                            <div>
+                                              {form?.forms[index]?.status !== "APPROVED" ? (
+                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                  <div
+                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                  >
+                                                    Verify
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Verified
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        })()
+                                      ) : null}
+                                    </>
+                                  )}
+                                </>
+                              ) : (
+                                <>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                    <div
+                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
+                                    ></div>
+                                  </div>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                    <div
+                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
+                                    ></div>
+                                  </div>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                      {form?.forms
+                                        ?.filter(
+                                          (formData, formIndex) => formIndex === index
+                                        )
+                                        ?.map(
+                                          (data) => data?.uploadedFiles?.length || 0
+                                        )}
+                                    </div>
+                                  </div>
+                                </>
+                              )} */}
+
+
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
@@ -2338,7 +2634,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             {data?.description}
                           </div>
                         </div>
-                        {expandAcknowledgement?.status &&
+                        {/* {expandAcknowledgement?.status &&
                           expandAcknowledgement?.index === index && (
                             <>
                               {form?.forms?.filter(
@@ -2375,7 +2671,97 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                 </div>
                               )}
                             </>
-                          )}
+                          )} */}
+                          {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                        {isMatch ? (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Verified
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                form?.forms[index]?.status !== "APPROVED" ? (
+                                                  <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                    <div
+                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                    >
+                                                      Verify
+                                                    </div>
+                                                  </div>
+                                                ) : (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Verified
+                                                    </div>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
@@ -2633,14 +3019,63 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                         )}
                         {expand?.status && expand?.index === index + 1 && (
                             <>
-                                {credApproval?.filter(
-                                (newData) =>{console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                   return newData.schemaId === data.id
-                                }
-                                )[0]?.approvalRequired === true ? (
-                                <>
-                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    form?.forms[index]?.status !== "APPROVED" ? (
                                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                         <div
                                         className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
@@ -2655,12 +3090,108 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                         Approved
                                         </div>
                                     </div>
+                                    )
                                     )}
-                                </>
-                                ) : (""
-                                )}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </>
+                        )}
                             </>
                             )}
+                           {/* {expand?.status && expand?.index === index + 1 && (
+                              <>
+                                {credApproval?.filter(
+                                  (newData) => {
+                                    console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                    return newData.schemaId === data.id;
+                                  }
+                                )[0]?.approvalRequired === true && (
+                                  <>
+                                    {logDetails?.logs && Array.isArray(logDetails?.logs) && (() => {
+                                      let isMatch = false;
+
+                                      logDetails.logs.forEach((log) => {
+                                        if (log.form && log.form.id) {
+                                          console.log("form id: " + log.form.id);
+
+                                          if (form?.forms?.some(f => f.id === log.form.id)) {
+                                            console.log("form match found, setting isMatch to true");
+                                            isMatch = true;
+
+                                            // Check if userRole includes log.role
+                                            if (userRole?.includes(log?.role)) {
+                                              console.log("Role matches user role: " + log.role);
+                                              isMatch = true;
+                                            } else {
+                                              console.log("Role does NOT match user role: " + log.role);
+                                              isMatch = false;
+                                            }
+
+                                            // Determine selectedTabRole
+                                            let selectedTabRole;
+                                            switch (selectedTab) {
+                                              case 'level-2':
+                                                selectedTabRole = "Department Head";
+                                                break;
+                                              case 'level-3':
+                                                selectedTabRole = "Chief Of Staff";
+                                                break;
+                                              case 'level-4':
+                                                selectedTabRole = "Advisory Committee";
+                                                break;
+                                              case 'level-5':
+                                                selectedTabRole = "Board";
+                                                break;
+                                              case 'level-1':
+                                                selectedTabRole = "Staff Manager";
+                                                break;
+                                              default:
+                                                selectedTabRole = "";
+                                            }
+
+                                            // Check if selectedTabRole matches log.role
+                                            if (selectedTabRole === log.role) {
+                                              console.log("Selected tab role matches log role: " + log.role);
+                                              isMatch = true;
+                                            } else {
+                                              console.log("Selected tab role does NOT match log role: " + log.role);
+                                              isMatch = false;
+                                            }
+                                          } else {
+                                            console.log("form match NOT found, setting isMatch to false");
+                                            isMatch = false;
+                                          }
+                                        }
+                                      });
+
+                                      return isMatch && (
+                                        <div>
+                                          {form?.forms[index]?.status !== "APPROVED" ? (
+                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                              <div
+                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                              >
+                                                Approve
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                Approved
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </>
+                                )}
+                              </>
+                            )} */}
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                             {
@@ -2696,7 +3227,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                       </div>
-                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
                           {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
                             <div className={`${style.purpleButton} ${style.cursorPointer} `}>
@@ -2708,7 +3239,97 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             </div>
                           )}
                         </>
-                      )}
+                      )} */}
+                        {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                               {isMatch ? (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Approved
+                                                    </div>
+                                                  </div>
+                                                ) : (
+                                                  form?.forms[index]?.status !== "APPROVED" ? (
+                                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                      <div
+                                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                      >
+                                                        Approve
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                        Approved
+                                                      </div>
+                                                    </div>
+                                                  )
+                                                )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                           {
@@ -3187,7 +3808,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             {data?.description}
                           </div>
                         </div>
-                        {expand?.status && expand?.index === index + 1 ? (
+                        {/* {expand?.status && expand?.index === index + 1 ? ( 
                           <>
                             {form?.forms[index]?.status !== "APPROVED" ? (
                               <div
@@ -3214,6 +3835,129 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                               </div>
                             )}
                           </>
+                        ) : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )} */}
+                          {expand?.status && expand?.index === index + 1 ? (
+                       <>
+                      {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Verified
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Verify
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Verified
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </>
+                        )}
+                     </>
                         ) : (
                           <>
                             <div
@@ -3357,7 +4101,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             {data?.description}
                           </div>
                         </div>
-                        {expandAcknowledgement?.status &&
+                        {/* {expandAcknowledgement?.status &&
                           expandAcknowledgement?.index === index && (
                             <>
                               {form?.forms?.filter(
@@ -3394,7 +4138,97 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                 </div>
                               )}
                             </>
-                          )}
+                          )} */}
+                          {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                                                                             {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Approved
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Approve
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Approved
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
@@ -3650,7 +4484,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             )}
                           </>
                         )}
-                        {expand?.status && expand?.index === index + 1 && (
+                        {/* {expand?.status && expand?.index === index + 1 && (
                             <>
                                 {credApproval?.filter(
                                 (newData) =>{console.log("newData.schema:", newData.schemaId);
@@ -3679,7 +4513,91 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                 ) : (""
                                 )}
                             </>
+                            )} */}
+                              {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )
+                                    )}
+                                  </div>
+                                );
+                              })()
                             )}
+                          </>
+                        )}
+                            </>
+                            )}
+                            
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                             {
@@ -3715,7 +4633,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                       </div>
-                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
                           {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
                             <div className={`${style.purpleButton} ${style.cursorPointer} `}>
@@ -3727,7 +4645,97 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             </div>
                           )}
                         </>
-                      )}
+                      )} */}
+                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                                                                            {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Approved
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Approve
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Approved
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                         <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                           {
@@ -4159,7 +5167,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             {data?.description}
                           </div>
                         </div>
-                        {expand?.status && expand?.index === index + 1 ? (
+                        {/* {expand?.status && expand?.index === index + 1 ? (
                           <>
                             {form?.forms[index]?.status !== "APPROVED" &&
                              form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
@@ -4208,6 +5216,129 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                 className={`${style.marginLeft10}${style.justifySpaceAround
                                   } ${form?.forms[index]?.status !== "APPROVED" &&
                                       form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )} */}
+                           {expand?.status && expand?.index === index + 1 ? (
+                       <>
+                      {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Verified
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Verify
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Verified
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </>
+                        )}
+                     </>
+                        ) : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -4332,7 +5463,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                             {data?.description}
                           </div>
                         </div>
-                        {expandAcknowledgement?.status &&
+                        {/* {expandAcknowledgement?.status &&
                           expandAcknowledgement?.index === index && (
                             <>
                               {form?.forms?.filter(
@@ -4369,7 +5500,97 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                                 </div>
                               )}
                             </>
-                          )}
+                          )} */}
+                          {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement") && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                               {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Approved
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Approve
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Approved
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )}
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
@@ -4564,7 +5785,7 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                     setShowApplicationDeclineDialog(true);
                   }}
                 >
-                  REJECT
+                  NOT RECOMMENDED
                 </div>
               </div>
             </div>
@@ -4572,27 +5793,52 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
             <div className={`${style.marginTop20} ${style.marginBottom20}`}>
 
                 {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (
+                  <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                      <div 
                      className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                     style={{ opacity: isApproved ? 1 : 0.5 }}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
                    >
                       <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={isApproved ? onClickApproveFunction : undefined}
+                        // onClick={isApproved ? onClickApproveFunction : undefined}
                       >
-                         {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " }
+                         {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
+                         NOT RECOMMENDED WITH NOTES
                       </div>
+                    </div>
+                    <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        // onClick={isApproved ? onClickApproveFunction : undefined}
+                      >
+                         {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
+                         RECOMMENDED
+                      </div>
+                    </div>
                     </div>
                   )}
 
                   {userRole?.includes('Department Head') && selectedTab === 'level-2' &&  (
+                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                     <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
                       <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         onClick={onClickApproveFunction}
                       >
-                        ACCEPT FOR CRED. COMM. REVIEW
+                        NOT RECOMMENDED WITH NOTES
                       </div>
+                    </div>
+                    <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={onClickApproveFunction}
+                      >
+                        RECOMMENDED
+                      </div>
+                    </div>
                     </div>
                   )}
 
@@ -4600,18 +5846,28 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                     <>
                       {selectedTab === "level-3" && (
                         <>
+                         <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                           <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
                             <div 
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                               onClick={onClickApprovalFunction}
                             >
-                              APPROVE APPLICANT
+                              NOT RECOMMENDED WITH NOTES
                             </div>
+                          </div>
+                          <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                            <div 
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              onClick={onClickApprovalFunction}
+                            >
+                              RECOMMENDED
+                            </div>
+                          </div>
                           </div>
                           <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                             <div 
                               className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickApprovalFunction}
+                              onClick={onClickApprovalDeptFunction}
                             >
                               OVERRIDE FOR TEMPORARY PRIVILEGES
                             </div>
@@ -4620,21 +5876,34 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                       )}
                       {(selectedTab === "level-1") && (
                         <>
+                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                          <div 
+                            className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                          >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={isApproved ? onClickApproveFunction : undefined}
+                      >
+                        NOT RECOMMENDED WITH NOTES
+                      </div>
+                    </div>
+                    <div 
                      className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                     style={{ opacity: isApproved ? 1 : 0.5 }}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
                    >
                       <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         onClick={isApproved ? onClickApproveFunction : undefined}
                       >
-                         VERIFY FOR DEPT. HEAD
+                         RECOMMENDED
                       </div>
+                    </div>
                     </div>
                         <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                           <div 
                             className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalFunction}
+                            onClick={onClickApprovalDeptFunction}
                           >
                             OVERRIDE FOR TEMPORARY PRIVILEGES
                           </div>
@@ -4643,14 +5912,30 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                       )}
                        {(selectedTab === "level-2") && (
                         <>
-                        <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                          <div 
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            onClick={onClickApproveFunction}
+                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                         <div 
+                            className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
                           >
-                            ACCEPT FOR CRED. COMM. REVIEW
-                          </div>
-                        </div>
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={isApproved ? onClickApproveFunction : undefined}
+                      >
+                        NOT RECOMMENDED WITH NOTES
+                      </div>
+                    </div>
+                    <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={isApproved ? onClickApproveFunction : undefined}
+                      >
+                         RECOMMENDED
+                      </div>
+                    </div>
+                    </div>
                         <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                           <div 
                             className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
@@ -4665,14 +5950,30 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                   )}
 
                   {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
-                    <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApprovalFunction}
-                      >
-                        NOT READY FOR MAC
-                      </div>
-                    </div>
+                   <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                   <div 
+                      className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                    >
+                <div 
+                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={isApproved ? onClickApproveFunction : undefined}
+                >
+                  NOT RECOMMENDED WITH NOTES
+                </div>
+              </div>
+              <div 
+               className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+              //  style={{ opacity: isApproved ? 1 : 0.5 }}
+             >
+                <div 
+                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={isApproved ? onClickApproveFunction : undefined}
+                >
+                   RECOMMENDED
+                </div>
+              </div>
+              </div>
                   )}
 
                   {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
@@ -4805,6 +6106,8 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
            
               <div className={style.marginBottom20}></div>
             </div>
+            {applicationType === "NEW"  && (
+            <>
             <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
@@ -4839,32 +6142,55 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
                     </div>
                   </div>
                 </div>
-                {expandStates.section2  && (
+                {expandStates.section2 && (
                   <>
-                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                
-                    <div className={`${style.gridGap}`}>
-                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                       <div>
-                        <div className={style.displayInRow}>
+                    {form?.references?.privilegeReference?.map((reference, index) => (
+                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                        <div className={`${style.gridGap}`}>
+                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
                           <div>
-                          <div className={`${style.sideHeadingFontStyle}`}>Professional Reference Name For Special Priv.</div>
-                          <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                              <div>
+                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName} - Special Privilege`}</div>
+                                <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                              </div>
+                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                            </div>
+                            <CommonDivider />
                           </div>
-                         <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
-                         {/* <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`}>Send</div> */}
-                         </div>   
-                         <CommonDivider />
-                       </div>
-                    </div>
-                    <div className={`${style.gridGap1}`}>
-                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                      <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
-                      <div className={`${style.viewTextStyle} ${style.viewButton} `}>Review</div>   
-                    </div>
-                  </div>
+                        </div>
+                        <div className={`${style.gridGap1}`}>
+                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                          <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                          <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {form?.references?.reference?.map((reference, index) => (
+                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                        <div className={`${style.gridGap}`}>
+                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                          <div>
+                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                              <div>
+                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                              </div>
+                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                            </div>
+                            <CommonDivider />
+                          </div>
+                        </div>
+                        <div className={`${style.gridGap1}`}>
+                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                          <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                          <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
+                        </div>
+                      </div>
+                    ))}
                   </>
-                  )}
+                )}
               </div>
               <div className={style.marginBottom20}></div>
             </div>
@@ -4919,6 +6245,8 @@ console.log("relevantForm" +JSON.stringify(relevantForm))
               </div>
               <div className={style.marginBottom20}></div>
             </div>
+            </>
+            )}
             </>
             )}
            </>
