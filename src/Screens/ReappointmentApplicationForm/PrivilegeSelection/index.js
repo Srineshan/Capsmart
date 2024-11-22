@@ -1099,7 +1099,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                                 className={style.leftAlign}
                                                                 value={doYouHavePrivilegeAtAnyOtherHospital}
                                                                 onChange={(e) => setDoYouHavePrivilegeAtAnyOtherHospital(e.target.value)}
-                                                                sx={{ color: "#52575D" }}
+                                                                sx={{ color: "#2C2C2C" }}
                                                             >
                                                                 <FormControlLabel
                                                                     value={'No'}

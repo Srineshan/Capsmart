@@ -758,7 +758,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
-      //     style={{ fontSize: 20, color: `#52575D` }}
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
       //   />
       // );
 
@@ -780,7 +780,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
       const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
@@ -920,7 +920,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
-          style={{ fontSize: 20, color: `#52575D` }}
+          style={{ fontSize: 20, color: `#2C2C2C` }}
         />
       );
       // dataStatus.push(data?.dataStatus || "green");
@@ -934,7 +934,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
       const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
@@ -1339,7 +1339,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       notesHoverText.push([
         "June 13 00:00, Nina Grealy",
@@ -1782,7 +1782,7 @@ const StaffApplicationList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
@@ -1796,7 +1796,7 @@ const StaffApplicationList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
@@ -1810,7 +1810,7 @@ const StaffApplicationList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{

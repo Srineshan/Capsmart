@@ -8,10 +8,10 @@ const chartData = {
                 enabled: true
             }
         },
-        colors: ['#B3B8BD', '#8A8C8D', '#707070', '#52575D'],
+        colors: ['#B3B8BD', '#8A8C8D', '#707070', '#2C2C2C'],
         fill: {
             type: "solid",
-          },
+        },
         dataLabels: {
             enabled: false,
         },
@@ -42,19 +42,19 @@ const chartData = {
     series: [
         {
             name: "Laptops",
-            data: [30, 60, 30, 70, 20 ]
+            data: [30, 60, 30, 70, 20]
         },
         {
             name: "Headsets",
-            data: [25, 50, 27, 60, 20 ]
+            data: [25, 50, 27, 60, 20]
         },
         {
             name: "Monitors",
-            data: [20, 25, 23, 25, 20 ]
+            data: [20, 25, 23, 25, 20]
         },
         {
             name: "Phones",
-            data: [10, 15, 20, 15, 10 ]
+            data: [10, 15, 20, 15, 10]
         },
     ]
 };

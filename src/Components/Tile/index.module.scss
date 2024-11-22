@@ -32,7 +32,7 @@
     font: normal normal bolder 15px/20px proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
 
@@ -108,13 +108,13 @@
 .bottomTextStyle {
     text-align: left;
     font: normal normal normal 10px/18px Roboto;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     margin-top: -5px;
 }
 
 .headingCountForContracts {
-    color: #52575D;
+    color: #2C2C2C;
     font-size: 30px;
     font-weight: bold;
     text-align: left;
@@ -138,8 +138,7 @@
 }
 
 .purple {
-    color: $primarycolor
- !important;
+    color: $primarycolor !important;
 }
 
 .optionsStyle {
@@ -147,7 +146,7 @@
     text-align: left;
     float: right !important;
     font: normal normal bold 12px/12px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
@@ -157,15 +156,14 @@
 }
 
 .smallTextSelected {
-    color: $primarycolor
-;
+    color: $primarycolor;
 }
 
 .descriptionText {
     text-align: left;
     float: right !important;
     font: normal normal bold 10px/12px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
 
     span {
         @include breakpoint(md) {
@@ -225,7 +223,7 @@
 }
 
 .clickableText {
-    color:$primarycolor;
+    color: $primarycolor;
     text-decoration: underline;
     cursor: pointer;
 }

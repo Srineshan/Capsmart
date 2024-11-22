@@ -33,7 +33,7 @@ const ApplicationReferenceDocuments = () => {
                     <div className={style.fullWidth}>
                         <div className={style.spaceBetween}>
                             <div className={style.displayInRow}>
-                                <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#52575D' }} onClick={() => window.open(data?.fileURL, '_blank')} />
+                                <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#2C2C2C' }} onClick={() => window.open(data?.fileURL, '_blank')} />
                                 <div className={style.documentNameStyle}>{data?.documentType}</div>
                             </div>
                             <div className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -47,7 +47,7 @@ const ApplicationReferenceDocuments = () => {
                 <div className={style.fullWidth}>
                     <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
-                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#52575D' }} />
+                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#2C2C2C' }} />
                             <div className={style.documentNameStyle}>Document Name</div>
                         </div>
                         <div className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -60,7 +60,7 @@ const ApplicationReferenceDocuments = () => {
                 <div className={style.fullWidth}>
                     <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
-                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#52575D' }} />
+                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#2C2C2C' }} />
                             <div className={style.documentNameStyle}>Document Name</div>
                         </div>
                         <div className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -73,7 +73,7 @@ const ApplicationReferenceDocuments = () => {
                 <div className={style.fullWidth}>
                     <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
-                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#52575D' }} />
+                            <FilePresentRoundedIcon sx={{ fontSize: 16, color: '#2C2C2C' }} />
                             <div className={style.documentNameStyle}>Document Name</div>
                         </div>
                         <div className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}>

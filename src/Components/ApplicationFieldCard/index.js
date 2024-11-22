@@ -960,7 +960,12 @@ const ApplicationFieldCard = ({
                                                             ? e.target.value
                                                             : fieldData.maximum
                                                     )
-                                                    : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) : e.target.value,
+                                                    : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) :
+                                                        (fieldData.type === "string" && fieldData.maxLength !== 0)
+                                                            ? e.target.value.length <= fieldData.maxLength
+                                                                ? e.target.value
+                                                                : e.target.value.slice(0, fieldData.maxLength)
+                                                            : e.target.value,
                                                 baseKey
                                             )
                                         }
@@ -2233,7 +2238,7 @@ const ApplicationFieldCard = ({
                                                 Yes
                                             </div>
                                             <div
-                                                className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                                className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                                 onClick={() => setIsChanged(false)}
                                             >
                                                 NO

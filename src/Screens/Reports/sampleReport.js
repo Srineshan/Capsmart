@@ -11,13 +11,13 @@ const SampleReport = () => {
     const donutChart = {
         series: [4, 6, 10],
         chartOptions: {
-        labels: ["Electronics", "Furniture", "Toys"],
+            labels: ["Electronics", "Furniture", "Toys"],
         },
         options: {
             chart: {
                 type: 'donut',
             },
-            colors: ['#8A8C8D', '#707070', '#52575D'],
+            colors: ['#8A8C8D', '#707070', '#2C2C2C'],
             legend: {
                 show: true,
                 position: 'top'
@@ -29,21 +29,21 @@ const SampleReport = () => {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                  return val
+                    return val
                 },
             },
             plotOptions: {
                 pie: {
-                  size: 20
+                    size: 20
                 }
             },
             responsive: [{
                 breakpoint: 480,
                 options: {
-                chart: {
-                    width: 300,
-                    height: 300
-                },
+                    chart: {
+                        width: 300,
+                        height: 300
+                    },
                 }
             }]
         }
@@ -52,10 +52,10 @@ const SampleReport = () => {
     const getDataToUseInReport = (value) => {
     }
 
-    return(
+    return (
         <div className={style.margin20}>
             <div className={style.bigCardGrid}>
-                <SampleReportLeftCard  getDataToUseInReport={getDataToUseInReport} />
+                <SampleReportLeftCard getDataToUseInReport={getDataToUseInReport} />
                 <div className={style.bigCardStyle}>
                     <ReportPerformanceAndOptions />
                     <div className={style.graphBox}>
@@ -64,7 +64,7 @@ const SampleReport = () => {
                                 <div className={style.spaceBetween}>
                                     <div className={`${style.performanceTextStyle} ${style.alignCenter}`}>SALES PERFORMANCE</div>
                                     <div className={`${style.settingBackground} ${style.alignCenter} ${style.justifyCenter}`}>
-                                        <SettingsIcon style={{color:"#707070"}} />
+                                        <SettingsIcon style={{ color: "#707070" }} />
                                     </div>
                                 </div>
                                 <div className={style.performanceBorder}></div>
@@ -78,7 +78,7 @@ const SampleReport = () => {
                                 </div>
                                 <div className={`${style.performanceBorder} ${style.marginTop20}`}></div>
                                 <div className={`${style.chartMargin}`}>
-                                    <Chart {...donutChart}  type="donut" height={270} className={style.marginTop20} />
+                                    <Chart {...donutChart} type="donut" height={270} className={style.marginTop20} />
                                 </div>
                             </div>
                         </div>
@@ -86,7 +86,7 @@ const SampleReport = () => {
                             <div className={style.spaceBetween}>
                                 <div className={`${style.performanceTextStyle} ${style.alignCenter}`}>RECENT CUSTOMERS</div>
                                 <div className={`${style.settingBackground} ${style.alignCenter} ${style.justifyCenter}`}>
-                                    <SettingsIcon style={{color:"#707070"}} />
+                                    <SettingsIcon style={{ color: "#707070" }} />
                                 </div>
                             </div>
                             <div className={`${style.individualBox} ${style.marginTop10}`}>

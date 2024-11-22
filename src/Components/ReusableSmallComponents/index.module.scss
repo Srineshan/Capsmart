@@ -1,4 +1,5 @@
 @import "../../index.scss";
+
 .siteDeptFieldCard {
     background: #DBD8FA 0% 0% no-repeat padding-box;
     border: 1px solid #E9E9F0;
@@ -53,7 +54,7 @@
     text-align: left;
     font: normal normal medium 15px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .alignCenter {
@@ -102,8 +103,7 @@
 }
 
 .addStyle {
-    background: $primarycolor
- 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 6px #00000029;
     border-radius: 8px;
 }
@@ -119,14 +119,13 @@
 }
 
 .selectedDay {
-    background: $primarycolor
- 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     color: white;
 }
 
 .greenBase {
     background-color: #75f0ac;
-    color: #52575D;
+    color: #2C2C2C;
     font: normal normal medium 20px/27px proxima-nova;
     height: 35px;
     font-size: 12px;
@@ -137,8 +136,7 @@
 .totalTextStyle {
     font: normal normal medium 14px/15px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-;
+    color: $primarycolor;
     text-align: center;
 }
 
@@ -162,8 +160,7 @@
 }
 
 .noReportsBox {
-    border: 4px solid $primarycolor
-;
+    border: 4px solid $primarycolor;
     padding: 60px;
     margin: 50px 20px;
 }
@@ -178,7 +175,7 @@
 .noContractsSmallFontStyle {
     font: normal normal normal 20px/25px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-align: center;
 }
 

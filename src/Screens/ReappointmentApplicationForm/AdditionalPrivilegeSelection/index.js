@@ -751,7 +751,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
             </div>
             <div className={`${style.cardTitle} ${style.marginTop}`}>
-                Do you want to update your additional privilege change request?
+                Do you want to update / change / request your additional privileges?
             </div>
             {!isPrivilegeCategoryChanging && (
                 <>
