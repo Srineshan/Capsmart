@@ -182,6 +182,12 @@
     gap: 10px;
 }
 
+.threeColForButton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
 .setupCompleteGrid {
     display: grid;
     grid-template-columns: 0.5fr 1fr 0.5fr;

@@ -101,7 +101,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (whoCovers === '') {
             missingKeys.push({ label: 'Who covers your hospital patients when you are not available?' })
         }
-        if (whoCoversObstetrics === '') {
+        if (whoCoversObstetrics === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology')) {
             missingKeys.push({ label: 'If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?' })
         }
         if (missingKeys?.length !== 0) {
@@ -184,18 +184,25 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     ?.includes(`Who covers your hospital patients when you are not available?`)}
                             />
                         </div>
-                        <div className={style.marginTop}>
-                            <div className={`${style.lableStyle}`}>
-                                {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
+                        {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
+                            <div className={style.marginTop}>
+                                <div className={`${style.lableStyle}`}>
+                                    {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
+                                </div>
+                                <TextArea
+                                    value={whoCoversObstetrics}
+                                    className={`${style.fullWidth} ${style.marginTop10}`}
+                                    onChange={(e) => setWhoCoversObstetrics(e.target.value)}
+                                    placeholder={'Enter Here'}
+                                    rows={4}
+                                />
                             </div>
-                            <TextArea
-                                value={whoCoversObstetrics}
-                                className={`${style.fullWidth} ${style.marginTop10}`}
-                                onChange={(e) => setWhoCoversObstetrics(e.target.value)}
-                                placeholder={'Enter Here'}
-                                rows={4}
-                            />
-                        </div>
+                        )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>

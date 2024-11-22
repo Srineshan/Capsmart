@@ -338,6 +338,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     // const getIsEdited = (value) => {
     //     setIsEdited(value)
     // }
+    console.log(medicalDirectives?.length === allMedicalDirectives?.completed?.length, medicalDirectives?.length, allMedicalDirectives?.completed)
 
     return (
         <div>
@@ -374,14 +375,16 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <div className={style.marginLeft}>{allMedicalDirectives?.pastDue?.length} Past Due</div>
                                     </div>
                                 )}
-                                {medicalDirectives?.length === 0 && (
+                                {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
                                     <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
                                 )}
                             </>
                         ) : (
                             <>
                                 <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
-                                <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${medicalDirectives?.length !== 0 ? '' : style.disabledButton}`} onClick={medicalDirectives?.length !== 0 ? () => { handleSubmitAttestBulk() } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && (
+                                    <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${medicalDirectives?.length !== 0 ? '' : style.disabledButton}`} onClick={medicalDirectives?.length !== 0 ? () => { handleSubmitAttestBulk() } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                )}
                                 <div className={style.marginTop}>
                                     <TableTwo
                                         tableHeaderValues={[
@@ -406,7 +409,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <div>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
-                                                <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
+                                                <CommonCheckBox checked={isChecked} onChange={medicalDirectives?.length !== allMedicalDirectives?.completed?.length ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
                                             )}
                                             <div
                                                 className={`${style.leftAlign} ${style.marginTop}`}
@@ -436,6 +439,11 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 </div>
                             </>
                         )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>

@@ -84,6 +84,12 @@
     gap: 10px;
 }
 
+.threeColForButton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
 .displayInRow {
     display: flex;
     flex-direction: row;

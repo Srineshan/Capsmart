@@ -292,6 +292,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             </>
                         )}
                     </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop} ${(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                    </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -299,7 +304,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                        <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? () => getMissingFields() : () => { }}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
