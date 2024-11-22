@@ -1507,7 +1507,7 @@ const ApplicationFieldCard = ({
                                     <div className={style.uploadGrid}>
                                         {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== null && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
                                             <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`}
-                                            //  onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
+                                                onClick={() => window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
                                             />
                                         ) : (
                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
@@ -2107,29 +2107,27 @@ const ApplicationFieldCard = ({
                                 )}
                             </div>
                         )}
-                        {object?.tableHeaders !== null &&
-                            basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !==
-                            null && (
-                                <TableTwo
-                                    tableHeaderValues={Object.values(object?.tableHeaders)}
-                                    tableDataValues={getApplicantValues(
-                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                            ?.data[baseKey]
-                                    )}
-                                    tableData={
-                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                            ?.data[baseKey]
-                                    }
-                                    gridStyle={tableGrid}
-                                    // actions={!isPOD ? actions : []}
-                                    scrollStyle={style.contractScrollStyle}
-                                    tableSortValues={[]}
-                                    heading={heading}
-                                    subHeading={subHeading}
-                                    subHeading2={subHeading2}
-                                    onClickFunction={() => { }}
-                                />
-                            )}
+                        {object?.tableHeaders !== null && (
+                            <TableTwo
+                                tableHeaderValues={Object.values(object?.tableHeaders)}
+                                tableDataValues={basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !== null ?
+                                    getApplicantValues(basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data[baseKey]) :
+                                    []
+                                }
+                                tableData={basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !== null ?
+                                    basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data[baseKey] :
+                                    []
+                                }
+                                gridStyle={tableGrid}
+                                // actions={!isPOD ? actions : []}
+                                scrollStyle={style.contractScrollStyle}
+                                tableSortValues={[]}
+                                heading={heading}
+                                subHeading={subHeading}
+                                subHeading2={subHeading2}
+                                onClickFunction={() => { }}
+                            />
+                        )}
                     </div>
                 ) : !addMoreType && collapsableQuestionCard ? (
                     <div className={`${style.addMoreBorder} ${style.marginTop}`}>

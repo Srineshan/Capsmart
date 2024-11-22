@@ -75,7 +75,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
         'Applicant Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
-        'Applicant ID' : 'APPLICANT_ID'
+        'Applicant ID': 'APPLICANT_ID'
     }
 
     const handleClick = (event) => {
@@ -152,14 +152,14 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
 
     useEffect(() => {
         setUserDetails();
-      }, [users?.id])
-    
-      const setUserDetails = async () => {
+    }, [users?.id])
+
+    const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
         console.log("userdataaaa" + JSON.stringify(userData))
         sessionStorage.setItem('user', JSON.stringify(userData))
         setUserRole(userData?.roles?.map((data) => data?.roleName));
-      }
+    }
 
     function useOptionsHide(ref) {
         useEffect(() => {
@@ -205,7 +205,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                     ))}
                 </div>
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
-                    {tableData?.length !== 0 ? tableData?.map((data, index) => (
+                    {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
                             <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
@@ -536,7 +536,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                     </div> */}
                                                     <div className={style.actionsCard} ref={menuRef}>
                                                         {actions?.map((actionsData, actionsIndex) => {
-                                                           
+
                                                             // if ((actionsData.hideForRoles?.includes("Staff Manager")) || actionsData.hideForRoles?.includes("Department Head")) {
                                                             // return null;
                                                             // }
@@ -545,83 +545,81 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, tableData, hidePaginatio
                                                             console.log("hideForRoles" + actionsData.hideForRoles);
 
                                                             const checkRoleVisibility = (actionsData, userRole) => {
-                                                                
-                                                                if (!actionsData.hideForRoles && 
-                                                                    !actionsData.hideForRoles2 && 
-                                                                    !actionsData.showForRoles && 
+
+                                                                if (!actionsData.hideForRoles &&
+                                                                    !actionsData.hideForRoles2 &&
+                                                                    !actionsData.showForRoles &&
                                                                     !actionsData.showForRoles2) {
-                                                                  return true;
+                                                                    return true;
                                                                 }
-                                                              
-                                                                
+
+
                                                                 if (actionsData.hideForRoles?.includes(userRole)) {
-                                                                  return false;
+                                                                    return false;
                                                                 }
-                                                              
+
                                                                 if (actionsData.hideForRoles2?.includes(userRole)) {
-                                                                  return false;
+                                                                    return false;
                                                                 }
-                                                              
-                                                            
+
+
                                                                 if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
-                                                                  return true;
+                                                                    return true;
                                                                 }
-                                                              
+
                                                                 if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
-                                                                  return true;
+                                                                    return true;
                                                                 }
 
                                                                 if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
-                                                                  return false;
+                                                                    return false;
                                                                 }
-                                                              
+
                                                                 return true;
-                                                              };
-                                                              
-                                                              // Usage
-                                                              if (!checkRoleVisibility(actionsData, userRole)) {
+                                                            };
+
+                                                            // Usage
+                                                            if (!checkRoleVisibility(actionsData, userRole)) {
                                                                 return null;
-                                                              }
-                                                            
+                                                            }
+
 
                                                             return actionsData?.isParagraph ? (
-                                                            <>
-                                                                <div className={`${style.divider}`}></div>
-                                                                <div className={`${style.isParagraph}`} key={actionsIndex}>
-                                                                {actionsData.data}
-                                                                </div>
-                                                            </>
+                                                                <>
+                                                                    <div className={`${style.divider}`}></div>
+                                                                    <div className={`${style.isParagraph}`} key={actionsIndex}>
+                                                                        {actionsData.data}
+                                                                    </div>
+                                                                </>
                                                             ) : actionsData?.conditionToShow !== undefined ? (
-                                                            eval(actionsData?.conditionToShow) && (
-                                                                <div
-                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${
-                                                                    actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                }`}
-                                                                onClick={() => {
-                                                                    actionsData?.onClick(data);
-                                                                    handleClose();
-                                                                }}
-                                                                key={actionsIndex}
-                                                                >
-                                                                {actionsData.data}
-                                                                </div>
-                                                            )
+                                                                eval(actionsData?.conditionToShow) && (
+                                                                    <div
+                                                                        className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
+                                                                            }`}
+                                                                        onClick={() => {
+                                                                            actionsData?.onClick(data);
+                                                                            handleClose();
+                                                                        }}
+                                                                        key={actionsIndex}
+                                                                    >
+                                                                        {actionsData.data}
+                                                                    </div>
+                                                                )
                                                             ) : (
-                                                            <div
-                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${
-                                                                actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                }`}
-                                                                onClick={() => {
-                                                                actionsData?.onClick(data);
-                                                                handleClose();
-                                                                }}
-                                                                key={actionsIndex}
-                                                            >
-                                                                {actionsData.data}
-                                                            </div>
+                                                                <div
+                                                                    className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
+                                                                        }`}
+                                                                    onClick={() => {
+                                                                        actionsData?.onClick(data);
+                                                                        handleClose();
+                                                                    }}
+                                                                    key={actionsIndex}
+                                                                >
+                                                                    {actionsData.data}
+                                                                </div>
                                                             );
                                                         })}
-                                                        </div>
+                                                    </div>
 
                                                 </Popover>
                                             )}
