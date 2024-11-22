@@ -185,7 +185,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues,handleCheckboxClick, tabl
     useEffect(() => {
         // Fetch checked IDs from session storage on component mount
         setCheckedIds(getCheckedIdsFromSession());
-    }, [getCheckedIdsFromSession]);
+    }, [checkedIds]);
 
     // useEffect(() => {
     //     // Retrieve the string from session storage

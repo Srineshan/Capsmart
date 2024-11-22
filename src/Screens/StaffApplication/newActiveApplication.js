@@ -103,7 +103,7 @@ const NewActiveApplication = ({
   const [showPrevContractDataAlert, setShowPrevContractDataAlert] =
     useState(false);
   const [isTabsValid, setIsTabsValid] = useState([]);
-  const [expand, setExpand] = useState({ status: true, index: 0 });
+  const [expand, setExpand] = useState({ status: false, index: 0 });
   const [expandStates, setExpandStates] = useState({
     section1: false,
     section2: false,
@@ -739,8 +739,13 @@ const NewActiveApplication = ({
     getEmailDialogBox(true);
   };
 
-  const onClickApproveFunction = () => {
+  const onClickApproveMoveFunction = () => {
     handleApplicationAccept(true);
+    getApplicationMoveToNext(true)
+  };
+
+  const onClickRejectFunction = () => {
+    handleApplicationReject(true);
   };
 
   const handleApplicationAccept = async () => {
@@ -749,16 +754,16 @@ const NewActiveApplication = ({
 
     if (selectedTab === 'level-2') {
       role = "Department Head";
-      notes = "Send"
+      notes = ""
     } else if (selectedTab === 'level-3') {
       role = "Credentialing Committee";
-      notes = "Send"
+      notes = ""
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-      notes = "Send"
+      notes = ""
     } else if (selectedTab === 'level-5') {
       role = "Board";
-      notes = "Send"
+      notes = ""
     } 
 
     let temp = {
@@ -778,6 +783,84 @@ const NewActiveApplication = ({
       });
     getPreApplication();
   };
+
+  const handleApplicationReject = async () => {
+    let role;
+    let notes;
+
+    if (selectedTab === 'level-2') {
+      role = "Department Head";
+      notes = ""
+    } else if (selectedTab === 'level-3') {
+      role = "Chief Of Staff";
+      notes = ""
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      notes = ""
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      notes = ""
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      notes = ""
+    }
+
+    let temp = {
+      role: role,
+      notes: notes
+    };
+
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
+    const requestData = isDelegate === true ? temp : {};
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/REJECTED?isDelegate=${isDelegate}`, requestData)
+      .then(response => {
+        console.log('success')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    getPreApplication();
+  };
+
+  const getApplicationMoveToNext = async () => {
+    let role;
+    let notes;
+
+    if (selectedTab === 'level-2') {
+      role = "Department Head";
+      notes = ""
+    } else if (selectedTab === 'level-3') {
+      role = "Chief Of Staff";
+      notes = ""
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      notes = ""
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      notes = ""
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      notes = ""
+    }
+
+    let temp = {
+      role: role,
+      notes: notes
+    };
+
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
+    const requestData = isDelegate === true ? temp : {};
+    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, requestData)
+      .then(response => {
+        console.log('successfull')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    // getPreApplication();
+  }
 
   const getContractId = (value) => {
     setContractId(value);
@@ -2166,24 +2249,13 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                         >
                           <>
-                          
-                          {/* <div
-  className={`${style.marginLeft10} ${style.justifySpaceAround} ${showDot ? (form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle) : style.greenDotStyle }`}
->
-</div> */} 
-<div
-  className={`${style.marginLeft10} ${style.justifySpaceAround} 
-    ${showDot ? style.greenDotStyle : (form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle)}`}
->
-  {showDot ? <span className={style.greenDotStyle}></span> : <span className={style.greyDotStyle}></span>}
-</div>
-                            {/* <div
+                            <div
                             className={`${style.marginLeft10} ${style.justifySpaceAround
                             } ${form?.forms[index]?.status !== "APPROVED"
                               ? style.greyDotStyle
                               : style.greenDotStyle
                             }`}
-                            ></div> */}
+                            ></div>
                           </>
                         </div>
                         <div
@@ -2631,7 +2703,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                            {data?.title}
                           </div>
                         </div>
                         {/* {expandAcknowledgement?.status &&
@@ -3006,9 +3078,9 @@ console.log("showDot" + checkApprovalAndLogMatch())
                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
                       
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                          <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                          <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                         </div>
-                        {!(expand?.status && expand?.index === index + 1) && (
+                        {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
                             {form?.forms[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
@@ -3016,7 +3088,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                               <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
                             )}
                           </>
-                        )}
+                        )} */}
                         {expand?.status && expand?.index === index + 1 && (
                             <>
                                 {credApproval?.some((newData) => {
@@ -3225,7 +3297,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
                      
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                        <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                       </div>
                       {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
@@ -3805,7 +3877,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                          {data?.title}
                           </div>
                         </div>
                         {/* {expand?.status && expand?.index === index + 1 ? ( 
@@ -4098,7 +4170,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                            {data?.title}
                           </div>
                         </div>
                         {/* {expandAcknowledgement?.status &&
@@ -4473,9 +4545,9 @@ console.log("showDot" + checkApprovalAndLogMatch())
                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
                       
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                          <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                          <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                         </div>
-                        {!(expand?.status && expand?.index === index + 1) && (
+                        {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
                             {form?.forms[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
@@ -4483,7 +4555,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                               <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
                             )}
                           </>
-                        )}
+                        )} */}
                         {/* {expand?.status && expand?.index === index + 1 && (
                             <>
                                 {credApproval?.filter(
@@ -4631,7 +4703,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
                      
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                        <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
+                        <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
                       </div>
                       {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
@@ -5164,7 +5236,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                          {data?.title}
                           </div>
                         </div>
                         {/* {expand?.status && expand?.index === index + 1 ? (
@@ -5460,7 +5532,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                           className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                         >
                           <div className={`${style.tableDataFontStyle1}`}>
-                            {data?.description}
+                            {data?.title}
                           </div>
                         </div>
                         {/* {expandAcknowledgement?.status &&
@@ -5768,10 +5840,13 @@ console.log("showDot" + checkApprovalAndLogMatch())
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
               <>
               {selectedTab !== "level-4" && selectedTab !== "level-5" && (
-              <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-              <div className={`${style.buttonCardStyle} `}>
+              <div className={`${style.twoColumnGrid}`}>
+              <div className={`${style.buttonCardStyle} ${style.cursorPointer} `}>
                 <div
                   className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                  onClick={() => {
+                    onClose();
+                  }} 
                 >
                   SAVE IN PROGRESS
                 </div>
@@ -5781,9 +5856,12 @@ console.log("showDot" + checkApprovalAndLogMatch())
               >
                 <div
                   className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                  onClick={() => {
-                    setShowApplicationDeclineDialog(true);
-                  }}
+                  // onClick={() => {
+                  //   setShowApplicationDeclineDialog(true);
+                  // }}
+                   onClick={() => {
+                    onClickRejectFunction();
+                  }}   
                 >
                   NOT RECOMMENDED
                 </div>
@@ -5795,38 +5873,44 @@ console.log("showDot" + checkApprovalAndLogMatch())
                 {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (
                   <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                      <div 
-                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                     className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                     //  style={{ opacity: isApproved ? 1 : 0.5 }}
                    >
                       <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                         // onClick={isApproved ? onClickApproveFunction : undefined}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
                       >
                          {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
                          NOT RECOMMENDED WITH NOTES
                       </div>
                     </div>
-                    <div 
-                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                   >
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        // onClick={isApproved ? onClickApproveFunction : undefined}
+                    <div
+                        className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
+                        style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
                       >
-                         {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
-                         RECOMMENDED
-                      </div>
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          // onClick={selectedTab === 'level-1' && isApproved ? onClickApproveMoveFunction : undefined}
+                          onClick={onClickApproveMoveFunction}
+                        >
+                          RECOMMENDED
+                        </div>
                     </div>
                     </div>
                   )}
 
                   {userRole?.includes('Department Head') && selectedTab === 'level-2' &&  (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                    <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApproveFunction}
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                        // onClick={onClickApproveFunction}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
                       >
                         NOT RECOMMENDED WITH NOTES
                       </div>
@@ -5834,7 +5918,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
                       <div 
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApproveFunction}
+                        onClick={onClickApproveMoveFunction}
                       >
                         RECOMMENDED
                       </div>
@@ -5847,10 +5931,13 @@ console.log("showDot" + checkApprovalAndLogMatch())
                       {selectedTab === "level-3" && (
                         <>
                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                          <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                          <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                             <div 
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickApprovalFunction}
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                              // onClick={onClickApprovalFunction}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}
                             >
                               NOT RECOMMENDED WITH NOTES
                             </div>
@@ -5864,78 +5951,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                             </div>
                           </div>
                           </div>
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div 
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickApprovalDeptFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
-                          </div>
-                        </>
-                      )}
-                      {(selectedTab === "level-1") && (
-                        <>
-                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                         <div 
-                            className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                          >
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={isApproved ? onClickApproveFunction : undefined}
-                      >
-                        NOT RECOMMENDED WITH NOTES
-                      </div>
-                    </div>
-                    <div 
-                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                   >
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={isApproved ? onClickApproveFunction : undefined}
-                      >
-                         RECOMMENDED
-                      </div>
-                    </div>
-                    </div>
-                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                          <div 
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            onClick={onClickApprovalDeptFunction}
-                          >
-                            OVERRIDE FOR TEMPORARY PRIVILEGES
-                          </div>
-                        </div>
-                        </>
-                      )}
-                       {(selectedTab === "level-2") && (
-                        <>
-                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                         <div 
-                            className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                          >
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={isApproved ? onClickApproveFunction : undefined}
-                      >
-                        NOT RECOMMENDED WITH NOTES
-                      </div>
-                    </div>
-                    <div 
-                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                   >
-                      <div 
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={isApproved ? onClickApproveFunction : undefined}
-                      >
-                         RECOMMENDED
-                      </div>
-                    </div>
-                    </div>
+                          {applicationType === "NEW"  && (
                         <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                           <div 
                             className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
@@ -5944,6 +5960,90 @@ console.log("showDot" + checkApprovalAndLogMatch())
                             OVERRIDE FOR TEMPORARY PRIVILEGES
                           </div>
                         </div>
+                    )}
+                        </>
+                      )}
+                      {(selectedTab === "level-1") && (
+                        <>
+                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                         <div 
+                            className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                          >
+                      <div 
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                        // onClick={isApproved ? onClickApproveFunction : undefined}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED WITH NOTES
+                      </div>
+                    </div>
+                    <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        // onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                        onClick={ onClickApproveMoveFunction }
+                      >
+                         RECOMMENDED
+                      </div>
+                    </div>
+                    </div>
+                    {applicationType === "NEW"  && (
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                          <div 
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalFunction}
+                          >
+                            OVERRIDE FOR TEMPORARY PRIVILEGES
+                          </div>
+                        </div>
+                    )}
+                        </>
+                      )}
+                       {(selectedTab === "level-2") && (
+                        <>
+                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                         <div 
+                            className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                          >
+                      <div 
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                        // onClick={isApproved ? onClickApproveFunction : undefined}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED WITH NOTES
+                      </div>
+                    </div>
+                    <div 
+                     className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                    //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                   >
+                      <div 
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={ onClickApproveMoveFunction }
+                      >
+                         RECOMMENDED
+                      </div>
+                    </div>
+                    </div>
+                    {applicationType === "NEW"  && (
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                          <div 
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalFunction}
+                          >
+                            OVERRIDE FOR TEMPORARY PRIVILEGES
+                          </div>
+                        </div>
+                    )}
                         </>
                       )}
                     </>
@@ -5952,12 +6052,15 @@ console.log("showDot" + checkApprovalAndLogMatch())
                   {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                    <div 
-                      className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                     >
                 <div 
-                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                  onClick={isApproved ? onClickApproveFunction : undefined}
+                  className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                  // onClick={isApproved ? onClickApproveFunction : undefined}
+                  onClick={() => {
+                    setShowApplicationDeclineDialog(true);
+                  }}
                 >
                   NOT RECOMMENDED WITH NOTES
                 </div>
@@ -5968,7 +6071,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
              >
                 <div 
                   className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                  onClick={isApproved ? onClickApproveFunction : undefined}
+                  onClick={onClickApproveMoveFunction}
                 >
                    RECOMMENDED
                 </div>
@@ -6002,7 +6105,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
             <>
             {selectedTab !== "level-4" && selectedTab !== "level-5" && (
             <>
-            <div className={style.cardLeftStyle}>
+            {/* <div className={style.cardLeftStyle}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -6040,8 +6143,8 @@ console.log("showDot" + checkApprovalAndLogMatch())
                   </div>
                 </div>
               </div>
-            </div>
-            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+            </div> */}
+            {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -6105,7 +6208,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
               </div>
            
               <div className={style.marginBottom20}></div>
-            </div>
+            </div> */}
             {applicationType === "NEW"  && (
             <>
             <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
@@ -6291,7 +6394,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApproveFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                                 MAC APPROVED
@@ -6299,11 +6402,18 @@ console.log("showDot" + checkApprovalAndLogMatch())
                             </div>
                           </>
                           {userRole?.includes('Chief Of Staff') && (
-                            <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
-                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                               OVERRIDE FOR TEMPORARY PRIVILEGES
+                            <>
+                            {applicationType === "NEW"  && (
+                              <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                <div 
+                                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                  // onClick={onClickApprovalFunction}
+                                >
+                                  OVERRIDE FOR TEMPORARY PRIVILEGES
+                                </div>
                               </div>
-                            </div>
+                          )}
+                          </>
                           )}
                         </div>
                       </>
@@ -6497,7 +6607,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                                         <div
                                           className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
                                           //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                                          onClick={onClickApproveFunction}
+                                          onClick={onClickApproveMoveFunction}
                                         >
                                           BOD APPROVED
                                         </div>
@@ -6506,11 +6616,18 @@ console.log("showDot" + checkApprovalAndLogMatch())
                                         </div>
                                         </> 
                                         {userRole?.includes('Chief Of Staff') && (
-                                          <div className={`${style.bigButtonStyle2} ${style.cursorPointer}`}>
-                                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                                            OVERRIDE FOR TEMPORARY PRIVILEGES
+                                          <>
+                                          {applicationType === "NEW"  && (
+                                            <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                              <div 
+                                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                                // onClick={onClickApprovalFunction}
+                                              >
+                                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                                              </div>
                                             </div>
-                                          </div>
+                                        )}
+                                        </>
                                         )}
                                     </div>
                                     </>
@@ -6521,6 +6638,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
         {showApplicationDeclineDialog && (
           <ApplicationDecline
             getApplicationDeclineDialog={getApplicationDeclineDialog}
+            getActiveApplicationView = {getActiveApplicationView}
           />
         )}
         {showDocVerifyDialog && (

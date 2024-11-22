@@ -1754,7 +1754,7 @@ const StaffApplicationList = ({
                   applicationType === "NEW"
                     ? navigate("/createStaffMemberApplication")
                     // : navigate("/createStaffReapplication")
-                    : navigate("/createStaffMemberApplication")
+                    : navigate("/createStaffReapplication")
                 }
               >
                 {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
