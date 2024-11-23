@@ -50,6 +50,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        sessionStorage.setItem('fromSummary', false);
+    }, [])
+
+    useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 

@@ -273,7 +273,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
+                        navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
                     }
                     else {
                         navigate(navigateURL)
@@ -287,7 +287,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
         else {
             if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
+                navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
             }
             else {
                 navigate(navigateURL)
@@ -328,8 +328,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
         temp.push({
             "type": "icon", "icon": medicalDirectives?.map(innerData =>
-                <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
-            ), 'isShowHoverText': false
+                <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => handleEdit(innerData)} />
+            ), 'isShowHoverText': true, 'hoverText': medicalDirectives?.map(innerData => 'Click to attest')
         });
         console.log(temp, medicalDirectives)
         return temp;
@@ -376,7 +376,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     </div>
                                 )}
                                 {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
-                                    <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
+                                    <div className={`${style.description} ${style.marginTop}`}>You have attested to all of the Medical Directives.</div>
                                 )}
                             </>
                         ) : (
@@ -409,7 +409,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <div>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
-                                                <CommonCheckBox checked={isChecked} onChange={medicalDirectives?.length !== allMedicalDirectives?.completed?.length ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
+                                                <CommonCheckBox checked={isChecked} onChange={medicalDirectives?.length === allMedicalDirectives?.completed?.length ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
                                             )}
                                             <div
                                                 className={`${style.leftAlign} ${style.marginTop}`}

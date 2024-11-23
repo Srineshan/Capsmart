@@ -43,6 +43,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [updateFrom, setUpdateFrom] = useState('');
+    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('');
+    const [yesOrNoAddress, setYesOrNoAddress] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -580,13 +582,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 >
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => setShowContactInfo(true)}
+                                        onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
                                         Yes
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                        onClick={() => setShowContactInfo(false)}
+                                        onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
                                         NO
                                     </div>

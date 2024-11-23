@@ -255,47 +255,49 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             </>
                         )}
                     </div>
-                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        <div className={style.cardTitle}>
-                            {formSchema?.properties?.wishToBeMRP?.label}
-                        </div>
-                        {yesOrNoMRP === '' ? (
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                                <div
-                                    className={`${style.reappointmentButtonOutlined}`}
-                                    onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
-                                >
-                                    Yes
-                                </div>
-                                <div
-                                    className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                    onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
-                                >
-                                    NO
-                                </div>
+                    {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
+                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                            <div className={style.cardTitle}>
+                                {formSchema?.properties?.wishToBeMRP?.label}
                             </div>
-                        ) : (
-                            <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
+                            {yesOrNoMRP === '' ? (
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
                                     <div
-                                        className={`${style.reappointmentButtonEdit}`}
-                                        onClick={() => setYesOrNoMRP('')}
+                                        className={`${style.reappointmentButtonOutlined}`}
+                                        onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
                                     >
-                                        Edit
+                                        Yes
+                                    </div>
+                                    <div
+                                        className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                        onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
+                                    >
+                                        NO
                                     </div>
                                 </div>
-                            </>
-                        )}
-                    </div>
+                            ) : (
+                                <>
+                                    <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonEdit}`}
+                                            onClick={() => setYesOrNoMRP('')}
+                                        >
+                                            Edit
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    )}
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop} ${(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
@@ -304,7 +306,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                        <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? '' : style.disabledButton}`} onClick={(yesOrNoLMS === 'Yes' && yesOrNoSuboxone === 'No' && yesOrNoMRP === 'Yes') ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

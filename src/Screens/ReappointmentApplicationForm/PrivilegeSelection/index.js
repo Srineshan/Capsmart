@@ -843,18 +843,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                         {!isPrivilegeCategoryChanging && (
                             <>
-                                {!isEdit ? (
+                                {isEdit ? (
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                     >
                                         <div
                                             className={`${style.reappointmentButtonOutlined}`}
-                                            onClick={() => setIsEdit(true)}
+                                            onClick={() => setIsEdit(false)}
                                         >
                                             Yes
                                         </div>
                                         <div
-                                            className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                            className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                             onClick={() => setIsPrivilegeCategoryChanging(true)}
                                         >
                                             NO
@@ -868,7 +868,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         >
                                             <div
                                                 className={`${style.reappointmentButtonEdit}`}
-                                                onClick={() => setIsEdit(false)}
+                                                onClick={() => setIsEdit(true)}
                                             >
                                                 Edit
                                             </div>
@@ -877,7 +877,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 )}
                             </>
                         )}
-                        {isEdit && (
+                        {!isEdit && (
                             <>
 
                                 {!isPrivilegeSetChanging && (
@@ -885,18 +885,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         <div className={`${style.cardTitle} ${style.marginTop}`}>
                                             Would you like to keep the privilege set you have?
                                         </div>
-                                        {!isEditPrivilege ? (
+                                        {isEditPrivilege ? (
                                             <div
                                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                             >
                                                 <div
                                                     className={`${style.reappointmentButtonOutlined}`}
-                                                    onClick={() => setIsEditPrivilege(true)}
+                                                    onClick={() => setIsEditPrivilege(false)}
                                                 >
                                                     Yes
                                                 </div>
                                                 <div
-                                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                                    className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                                     onClick={() => setIsPrivilegeSetChanging(true)}
                                                 >
                                                     NO
@@ -910,7 +910,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 >
                                                     <div
                                                         className={`${style.reappointmentButtonEdit}`}
-                                                        onClick={() => setIsEditPrivilege(false)}
+                                                        onClick={() => setIsEditPrivilege(true)}
                                                     >
                                                         Edit
                                                     </div>
