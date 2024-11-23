@@ -58,7 +58,7 @@ const ActiveStaffList = ({
   const [sortValue, setSortValue] = useState("ASCENDING");
 
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
-  const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type","CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
+  const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
   const temporaryStaffHeaderValues = ["Staff Name", "Staff ID", "Staff Type", "CC Approval", "COS Approval", "Last Updated"];
   const approvedHeaderValues = ["", "Staff Name", "Type", "Notes", "Last Updated On", ""];
 
@@ -102,10 +102,10 @@ const ActiveStaffList = ({
     setReFetchMetaData(value);
   };
 
-  const reappointmentApplication = async (id) => {  
+  const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
       .then((response) => {
-        SuccessToaster("Reappoint Application Send as Email Successfully");
+        SuccessToaster("Reappointment Application Sent Successfully");
         console.log(response?.data);
         getActiveUserData();
         setReFetchMetaData(true);

@@ -12,7 +12,7 @@ const ApplicationHeader = ({ title, close, closeClick }) => {
     // }
     return (
         <div className={`${style.headerCard}`}>
-            <div className={`${style.headerGrid}`}>
+            <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
                 <div></div>

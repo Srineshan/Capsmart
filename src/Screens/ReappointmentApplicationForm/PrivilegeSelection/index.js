@@ -364,7 +364,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const handleChange = (privilegeId) => {
         setSelectedPrivilege(privilegeId);
+        // let temp = staffPrivilege?.filter(data => data?.id === privilegeId);
+        // if (temp?.length !== 0 && temp?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0) {
+        //     temp[0].privilegeDetails.restrictedPrivileges.privilegesByCategories[0].privileges =
+        //         staffPrivilege
+        //             ?.filter(data => data?.id === privilegeId)?.[0]?.
+        //             privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+        //             ?.map(privilege => ({
+        //                 ...privilege,
+        //                 response: "NO"
+        //             }));
+        //     setSelectedPrivilegeForDisplay(temp)
+        // } else {
         setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
+        // }
+        // console.log(staffPrivilege?.filter(data => data?.id === privilegeId), 'privilegeId', temp)
     }
 
     const handleRestrictedFileSelection = async (index, categoriesIndex, privilegesIndex, value) => {
@@ -1232,9 +1246,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                     </div>
-                    <div className={style.marginTop}>
+                    {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <Dialog isOpen={showPrivileges} onClose={() => setShowPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
