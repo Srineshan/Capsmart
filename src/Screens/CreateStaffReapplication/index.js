@@ -135,6 +135,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
     "Staff ID", 
     "Staff Type", 
     "Department", 
+    "Status",
     "Reappointment"
   ];
     const colSortValues = [false, true, false, false, false, false, false];
@@ -192,16 +193,25 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
             queryParams.append('applicantTypeId', selectedApplicantType);
         }
 
+        // Add 'type' parameters for both PERMANENT and LOCUM
+        // queryParams.append('type', 'PERMANENT');
+        // queryParams.append('type', 'LOCUM');
+
         const response = await GET(
             `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}`
         );
-        setTableData(response?.data);
-        return response?.data || [];
+
+        // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+        const filteredData = response?.data?.filter(item => item.type !== 'PROVISIONAL') || [];
+        
+        setTableData(filteredData);
+        return filteredData;
     } catch (error) {
         console.error("Error fetching applications:", error);
         return [];
     }
 };
+
 
   const getDepartmentList = async () => {
     const { data: department } = await GET(
@@ -263,6 +273,7 @@ const getApplicantType = async () => {
     const applicantId = [];
     const applicantType = [];
     const department = [];
+    const status = [];
     const reappointment = [];
 
     tableData?.forEach((data) => {
@@ -288,16 +299,22 @@ const getApplicantType = async () => {
       applicantId.push("123");
       applicantType.push("Doctor");
       department.push("Anesthesia");
-      reappointment.push(<>
-       {data?.reAppointmentInitiated !== undefined && (
-            <CheckCircleIcon 
-              style={{ 
-                opacity: data?.reAppointmentInitiated ? 0.5 : 1,
-                marginRight: '5px' 
-              }} 
-            />
+      status.push("verified");
+      reappointment.push(
+        <>
+          {data?.reAppointmentInitiated !== undefined && (
+            data.reAppointmentInitiated ? (
+              <span>Sent</span>
+            ) : (
+              <CheckCircleIcon 
+                style={{ 
+                  opacity: 1,
+                  marginRight: '5px' 
+                }} 
+              />
+            )
           )}
-      </>
+        </>
       );
     });
 
@@ -307,6 +324,7 @@ const getApplicantType = async () => {
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department},
+      { type: "text", value: status},
       { type: "text", value: reappointment},
     ];
   };
@@ -318,7 +336,7 @@ const getApplicantType = async () => {
         <div>
            <ApplicationHeader
           title={
-            "Create A Reappointment Staff Member Credentialing And Privileging Application"
+            "Staff Member Reappointment Credentialing and Privileging Status Tracker"
           }
           close={true}
           closeClick={handleCloseClick}
@@ -330,7 +348,7 @@ const getApplicantType = async () => {
               <div>
         <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
             <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
-            Department / Division or Specialty
+            Department
             </div>
         </div>
         <div className={style.marginTop10}>
@@ -340,8 +358,8 @@ const getApplicantType = async () => {
                                 value={selectedDepartment}
                                 onChange={(e) => setSelectedDepartment(e.target.value)}
                                 className={style.fullWidth}
-                                // firstOptionLabel={''}
-                                // firstOptionValue={''}
+                                firstOptionLabel={'All'}
+                                firstOptionValue={''}
                                 valueList={departmentList?.map(data => data?.id)}
                                 labelList={departmentList?.map(data => data?.departmentName?.name)}
                                 disabledList={departmentList?.map(data => false)}
@@ -365,7 +383,8 @@ const getApplicantType = async () => {
                 value={selectedPrivilegeCategory}
                 onChange={(e) => setSelectedPrivilegeCategory(e.target.value)}
                 className={style.fullWidth}
-            
+                firstOptionLabel={'All'}
+                firstOptionValue={''}
                 valueList={privilegeCategories?.map(data => data?.id)}
                 labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
                 disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
@@ -377,7 +396,7 @@ const getApplicantType = async () => {
     <div>
         <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
             <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
-            Applicant Type
+            Staff Type
             </div>
                   </div>
         <div className={style.marginTop10}>
@@ -387,7 +406,31 @@ const getApplicantType = async () => {
                 value={selectedApplicantType}
                 onChange={(e) => setSelectedApplicantType(e.target.value)}
                 className={style.fullWidth}
-         
+                firstOptionLabel={'All'}
+                firstOptionValue={''}
+                valueList={applicantType?.map(data => data?.id)}
+                labelList={applicantType?.map(data => data?.applicantType)}
+                disabledList={applicantType?.map(data => false)}
+                required={false}
+            />
+  
+        </div>
+    </div>
+    <div>
+        <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+            <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
+            reappointment status
+            </div>
+                  </div>
+        <div className={style.marginTop10}>
+
+               
+                <CommonSelectField
+                value={selectedApplicantType}
+                onChange={(e) => setSelectedApplicantType(e.target.value)}
+                className={style.fullWidth}
+                firstOptionLabel={'All'}
+                firstOptionValue={''}
                 valueList={applicantType?.map(data => data?.id)}
                 labelList={applicantType?.map(data => data?.applicantType)}
                 disabledList={applicantType?.map(data => false)}
@@ -431,7 +474,7 @@ const getApplicantType = async () => {
                       className={`${style.saveInProgress} ${style.marginTop} ${style.marginLeft}`}
                       onClick={() => window.location.reload()}
                     >
-                      DISCARD
+                      CANCEL
                     </div>
                     <div
                       className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
@@ -444,7 +487,7 @@ const getApplicantType = async () => {
                       disabled={!isDataAvailable}
                       style={{ opacity: isDataAvailable ? 1 : 0.5 }}
                     >
-                      CONTINUE
+                      SENT REAPPOINTMENT APPLICATION
                     </div>
                   </div>
                 </div>

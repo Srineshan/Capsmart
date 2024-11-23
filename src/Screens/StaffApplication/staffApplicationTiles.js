@@ -69,7 +69,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const getUserRoleType = async () => {
     try {
       const response = await GET(
-        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}`
+        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationType}`
       );
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {
@@ -81,7 +81,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   useEffect(() => {
     setUserDetails();
     getUserRoleType();
-  }, []);
+  }, [applicationType]);
 
   // Handle refetch metadata changes
   useEffect(() => {
