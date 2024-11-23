@@ -99,7 +99,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
-    getApplication();
+    // getApplication();
   }, []);
 
   const onClose = () => {
@@ -165,8 +165,8 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
                     <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Staff Manager:</span>
-                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.createdBy?.name?.firstName}{""}{formDetails?.createdBy?.name?.lastName}</span>
+                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}</span>
                   </div>
                 </div>
               </div>
@@ -176,10 +176,10 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
                     <span className={`${style.rejectionTextStyle}`}>Speciality:</span>
                     <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty}</span>
                   </div>
-                  <div className={`${style.twoColumnGridInner}`}>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
                     <span className={`${style.rejectionTextStyle}`}>Only If Multisite</span>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

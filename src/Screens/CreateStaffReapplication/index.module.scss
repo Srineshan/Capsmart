@@ -1,6 +1,6 @@
 @import "../../index.scss";
 .bigCardStyle {
-    height: 300px;
+    height: 250px;
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -152,7 +152,7 @@
 
 .numberOfContractorsGrid {
     display: grid;
-    grid-template-columns: 29% 29% 29%;
+    grid-template-columns: 21% 21% 21% 21%;
     grid-gap: 5%;
 }
 
@@ -198,7 +198,7 @@
 
   .permanentStaffGrid {
     display: grid;
-    grid-template-columns: 5% 25% 15% 15% 20% 20%;
+    grid-template-columns: 5% 25% 10% 15% 15% 10% 15%;
     grid-gap: 10px;
   }
 

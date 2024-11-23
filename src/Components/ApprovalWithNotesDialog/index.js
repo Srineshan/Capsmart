@@ -11,7 +11,7 @@ import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
+const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationView}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -116,11 +116,19 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
       setIsApproveEnabled(isChecked.isChecked2 && isChecked.isChecked3 && hasValidComments && hasValidSignature);
     }
   };
+  const onClose = () => {
+    getActiveApplicationView(false);
+  };
+
+  const onClickApproveMoveFunction = () => {
+    handleApplicationApprove(true);
+    getApplicationMoveToNext(true);
+  }
 
   const handleApplicationApprove = async () => {
     try {
       const payload = {
-        role: Array.isArray(userRole) ? userRole[0] : userRole,
+        role: "Chief Of Staff",
         notes: userRoleComments,
       };
 
@@ -135,6 +143,24 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
       console.error('Error approving application:', error);
     }
   };
+
+  const getApplicationMoveToNext = async () => {
+  
+    let temp = {
+      role: "Chief Of Staff",
+      notes: ""
+    };
+
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=true`, temp)
+      .then(response => {
+        console.log('successfull')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    // getPreApplication();
+  }
 
 const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {
@@ -286,7 +312,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               </div> */}
                <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
-                onClick={handleApplicationApprove}
+                onClick={onClickApproveMoveFunction}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
                 <div className={style.reviewButton}>APPROVE</div>
