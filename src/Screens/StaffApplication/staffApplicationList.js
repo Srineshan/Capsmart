@@ -1700,6 +1700,9 @@ const StaffApplicationList = ({
       data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
       requiredValue: "boolean",
       onClick: onClickProcessingTaskFunction,
+      hideForRoles: "Staff Manager",
+      showForRoles: "Chief Of Staff",
+      showForRoles2: "Department Head",
     },
     // {
     //   data: "Send for Cred Comm Review",

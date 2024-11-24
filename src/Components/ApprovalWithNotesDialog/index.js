@@ -152,7 +152,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const getApplicationMoveToNext = async () => {
   
     let temp = {
-      role: "Chief Of Staff",
+      role: "Credentialing Committee",
       notes: ""
     };
 
