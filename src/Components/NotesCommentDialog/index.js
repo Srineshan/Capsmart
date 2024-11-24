@@ -16,12 +16,16 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
   const [logDetails, setLogDetails] = useState([]);
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
+  const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+  const [applicationType, setApplicationType] = useState(() => 
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
     getLog();;
-  }, []);
+  }, [applicationType]);
 
   const getApplication = async () => {
     const { data: basicForm } = await GET(`application-management-service/application/${id}`);
@@ -43,9 +47,13 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
     setUserRole(userData?.roles?.map((data) => data?.roleName));
   };
 
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
-    return null;
+  const getApplicationCreationType = (value) => {
+    setApplicationCreationType(value);
   }
+
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
+  //   return null;
+  // }
 
   return (
   
@@ -56,6 +64,7 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
+      getApplicationCreationType={getApplicationCreationType}
     >
       <div>
         <div className={Classes.DIALOG_BODY}>
@@ -77,10 +86,11 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
           <div ref={componentRef} className={`${style.pagebreak}`}>
             <div className={`${style.spaceBetween}`}>
               <div className={`${style.fontstyle} ${style.marginTop10}`}>
-                <span className={`${style.fontstyleassociate}`}>
-                  Review Staff for Appointment as {" "}
-                  {formDetails?.providerType?.serviceProviderType}
-                </span>
+              <span className={`${style.fontstyleassociate}`}>
+                {applicationType === "NEW" 
+                  ? `Review Staff for Appointment as ${formDetails?.providerType?.serviceProviderType}` 
+                  : `Review Staff for ReAppointment as ${formDetails?.providerType?.serviceProviderType}`}
+              </span>
               </div>
             </div>
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>

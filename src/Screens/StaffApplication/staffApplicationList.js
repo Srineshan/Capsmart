@@ -79,7 +79,7 @@ const StaffApplicationList = ({
   const applicantHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "DOCs",
@@ -104,7 +104,7 @@ const StaffApplicationList = ({
   ] : [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
     // "Commitee",
@@ -119,7 +119,7 @@ const StaffApplicationList = ({
   const applicationHeaderValues = applicationType === "NEW" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
     // "Commitee",
@@ -133,7 +133,7 @@ const StaffApplicationList = ({
     "Action",
   ] : [
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
     "Tasklist Status",
@@ -142,7 +142,7 @@ const StaffApplicationList = ({
   ];
   const macHeaderValues = applicationType === "NEW" ? [
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
     "COS Approval",
@@ -151,7 +151,7 @@ const StaffApplicationList = ({
     "Action",
   ] : [
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
     "MAC Approval",
@@ -161,7 +161,7 @@ const StaffApplicationList = ({
   ];
   const bodHeaderValues = [
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
     "MAC Approval",
@@ -183,7 +183,7 @@ const StaffApplicationList = ({
   const rejectedHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff Name",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "Docs",
@@ -800,7 +800,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -813,13 +813,14 @@ const StaffApplicationList = ({
       //   />
       // );
 
-      if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
+      if (data?.documents?.uploadedCount === data?.documents?.uploadedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
-      } else if (data?.documents?.verifiedCount === 0) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
-      } else {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       }
+      // else if (data?.documents?.verifiedCount === 0) {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
+      // } else {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      // }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -962,7 +963,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -971,7 +972,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
-          style={{ fontSize: 20, color: `#2C2C2C` }}
+          style={{ fontSize: 20, color: `#00C07F` }}
         />
       );
       // dataStatus.push(data?.dataStatus || "green");
@@ -1999,267 +2000,181 @@ const StaffApplicationList = ({
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div
-              className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
-            >
-              <div
-                className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                // onClick={() => navigate("/createStaffMemberApplication) }
-                onClick={() =>
-                  applicationType === "NEW"
-                    ? navigate("/createStaffMemberApplication")
-                    // : navigate("/createStaffReapplication")
-                    : navigate("/createStaffReapplication")
-                }
-              >
-                {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
-              </div>
-              <div className={`${style.displayInRow} ${style.marginLeft20} `}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => applicationType === "NEW" ? navigate("/createStaffMemberApplication") : navigate("/createStaffReapplication")} />
-              </div>
-            </div>
-
-            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Requests For Appointment ({requestAppointment})
-                </div>
-                <div className={`${style.marginLeft10} `} >
-                  {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  )}
-                </div>
-              </div>
-              {showCardAppointment && (<>
-                <div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #14B15A",
-                          color: "#14B15A"
-                        }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #FEC106",
-                          color: "#FEC106"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
-                        color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #F94848",
-                          color: "#F94848"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>)}
-            </div> */}
-
-            <div
-              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-            >
-              <div
-                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
-              >
+            <>
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
-                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                  className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
-                  Sent for Completion{" "}
-                  <span
-                    className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                  <div
+                    className={`${style.displayInRow} ${style.marginLeftRight10} `}
+                    onClick={() =>
+                      applicationType === "NEW"
+                        ? navigate("/createStaffMemberApplication")
+                        : navigate("/createStaffReapplication")
+                    }
                   >
-                    {sentCompletion?.totalApplicationsSent || 0}
-                  </span>
-                </div>
-                <div className={`${style.marginLeft10} `}>
-                  {!showCardCompletion ? (
-                    <AddIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardCompletion(!showCardCompletion)}
+                    {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
+                  </div>
+                  <div className={`${style.displayInRow} ${style.marginLeft20} `}>
+                    <AddCircleOutlineIcon
+                      sx={{ fontSize: 20, color: "white" }}
+                      onClick={() =>
+                        applicationType === "NEW"
+                          ? navigate("/createStaffMemberApplication")
+                          : navigate("/createStaffReapplication")
+                      }
                     />
-                  ) : (
-                    <RemoveIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardCompletion(!showCardCompletion)}
-                    />
-                  )}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
-              {showCardCompletion && (
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
-                  style={{
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "gray transparent",
-                  }}
+                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >
-                  {sentCompletion?.applicationsStatus?.map((status, index) => (
+                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                     <div
-                      key={index}
-                      className={`${style.displayInCol} ${style.marginTop}`}
+                      className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      <div
-                        className={`${style.warningTextAlign} ${style.staffTextStyle}`}
+                      Sent for Completion{" "}
+                      <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
-                        <div className={style.progressbarStyle}>
-                          <div className={style.spaceBetween}>
-                            <div className={style.statisticsProgress}>
-                              {/* <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : status?.dueStatus === "PastDue" ? style.redDotStyle : style.yellowDotStyle}></div> */}
-                              <div className={
-                                status?.dueStatus === "PastDue" ? style.redDotStyle :
-                                  status?.remainingCompletionPercentage === 0 ? style.greenDotStyle :
-                                    status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
-                                      style.yellowDotStyle
-                              }></div>
-                              <div className={style.marginLeft10}>
-                                {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
-                                {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
-                              </div>
-
-                              {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
-
-                            </div>
-                            <div
-                              className={`${style.smallTextStyle} ${style.justifyCenter}`}
-                            >
-
-                              {/* {`${status.basicDetail.applicant.startDate}`} */}
-                              {status?.createdDate
-                                ? format(
-                                  new Date(
-                                    status?.createdDate
-                                  ),
-                                  "MMM dd, yyyy"
-                                )
-                                : "N/A"}
-
-                            </div>
-                            {/* <p className={style.progressTopText}>
-                              {" "}
-                              Due in {status.dueDays} Days{" "}
-                            </p> */}
-                          </div>
-                          <ProgressBar
-                            completed={
-                              100 - status.remainingCompletionPercentage
-                            }
-                            isLabelVisible={false}
-                            height="5px"
-                            bgColor="#0e5197"
-                            baseBgColor="#E9E9F0"
-                            className={style.marginLeft20}
-                          />
-                          <div className={style.spaceBetween}>
-                            <span className={style.textStyleProgress}>
-                              {/* <span className={style.textalign}> */}{" "}
-                              {status?.providerType?.serviceProviderType}{" "}
-                            </span>
-                            {/* <div className={style.progressBottomText}>
-                              {status.remainingCompletionPercentage}% remaining
-                            </div> */}
-                            {/* <p className={style.progressTopText}>
-                              {" "}
-                              Due in {status.dueDays} Days{" "}
-                            </p> */}
-                            <p className={style.progressTopText}>
-                              {status?.dueStatus === "Due"
-                                ? `Due in ${status.dueDays} Days`
-                                : `${status.dueDays} days past due`}
-                            </p>
-                          </div>
-                          {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
-                        </div>
-                      </div>
+                        {sentCompletion?.totalApplicationsSent || 0}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <div className={`${style.marginLeft10} `}>
+                      {!showCardCompletion ? (
+                        <AddIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardCompletion(!showCardCompletion)}
+                        />
+                      ) : (
+                        <RemoveIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardCompletion(!showCardCompletion)}
+                        />
+                      )}
+                    </div>
+                  </div>
 
-            <div
-              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-            >
-              <div
-                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
-              >
-                <div
-                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
-                >
-                  Rejected / Declined{" "}
-                  <span
-                    className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
-                  >
-                    {applicationRejected?.totalRejections + applicationRejected?.appointmentRequestsDenied}
-                  </span>
-                </div>
-                <div className={`${style.marginLeft10} `}>
-                  {!showCardDetails ? (
-                    <AddIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardDetails(!showCardDetails)}
-                    />
-                  ) : (
-                    <RemoveIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardDetails(!showCardDetails)}
-                    />
+                  {showCardCompletion && (
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      {sentCompletion?.applicationsStatus?.map((status, index) => (
+                        <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.statisticsProgress}>
+                                  <div
+                                    className={
+                                      status?.dueStatus === "PastDue"
+                                        ? style.redDotStyle
+                                        : status?.remainingCompletionPercentage === 0
+                                          ? style.greenDotStyle
+                                          : status?.remainingCompletionPercentage === 100
+                                            ? style.greyDotStyle
+                                            : style.yellowDotStyle
+                                    }
+                                  ></div>
+                                  <div className={style.marginLeft10}>
+                                    {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                      status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}
+                                    , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
+                                  </div>
+                                </div>
+                                <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
+                                  {status?.createdDate
+                                    ? format(new Date(status?.createdDate), "MMM dd, yyyy")
+                                    : "N/A"}
+                                </div>
+                              </div>
+                              <ProgressBar
+                                completed={100 - status?.remainingCompletionPercentage}
+                                isLabelVisible={false}
+                                height="5px"
+                                bgColor="#0e5197"
+                                baseBgColor="#E9E9F0"
+                                className={style.marginLeft20}
+                              />
+                              <div className={style.spaceBetween}>
+                                <span className={style.textStyleProgress}>
+                                  {status?.providerType?.serviceProviderType}{" "}
+                                </span>
+                                <p className={style.progressTopText}>
+                                  {status?.dueStatus === "Due"
+                                    ? `Due in ${status.dueDays} Days`
+                                    : `${status?.dueDays} days past due`}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </div>
-              {showCardDetails && (
-                <>
-                  {/* <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
-                  </div> */}
-                  <div
-                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                    onClick={() => {
-                      handleClick();
-                    }}
-                  >
-                    Applicants Rejected (
-                    {applicationRejected?.appointmentRequestsDenied})
+              ) : null}
+
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+                <div
+                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                >
+                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
+                    <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                      Rejected / Declined{" "}
+                      <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
+                      >
+                        {applicationRejected?.totalRejections + applicationRejected?.appointmentRequestsDenied}
+                      </span>
+                    </div>
+                    <div className={`${style.marginLeft10} `}>
+                      {!showCardDetails ? (
+                        <AddIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardDetails(!showCardDetails)}
+                        />
+                      ) : (
+                        <RemoveIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardDetails(!showCardDetails)}
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                    onClick={() => {
-                      setShowApplicationRejectionDialog(true);
-                    }}
-                  >
-                    Approved But Declined (
-                    {applicationRejected?.totalRejections})
-                  </div>
-                </>
-              )}
-            </div>
+                  {showCardDetails && (
+                    <>
+                      <div
+                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                        onClick={() => {
+                          handleClick();
+                        }}
+                      >
+                        Applicants Rejected ({applicationRejected?.appointmentRequestsDenied})
+                      </div>
+                      <div
+                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                        onClick={() => {
+                          setShowApplicationRejectionDialog(true);
+                        }}
+                      >
+                        Approved But Declined ({applicationRejected?.totalRejections})
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : null}
+            </>
           </SideBar>
+
         </div>
         <div>
           <div
@@ -2365,7 +2280,7 @@ const StaffApplicationList = ({
         <ApplicationRejection
           getApplicationRejectionDialog={getApplicationRejectionDialog}
           rejectionListData={rejectionListData}
-          rejectedCount={applicationRejected.appointmentRequestsDenied}
+          rejectedCount={applicationRejected?.appointmentRequestsDenied}
         />
       )}
       {showCheckListDialog && (

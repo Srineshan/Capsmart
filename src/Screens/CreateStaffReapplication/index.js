@@ -55,6 +55,8 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
     const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState('');
     const [applicantType, setApplicantType] = useState([]);
     const [selectedApplicantType, setSelectedApplicantType] = useState('');
+    // const [reappointmentStatus, setReappointmentStatus] = useState([]);
+    const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
     const [checkedIds, setCheckedIds] = useState(() => {
       const storedCheckedIds = sessionStorage.getItem('checkedIds');
       return storedCheckedIds ? JSON.parse(storedCheckedIds) : [];
@@ -92,24 +94,28 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
       }
     };
 
-   const handleCheckboxClick = (id) => {
-    setChecked(prev => {
-      const newChecked = {
-        ...prev,
-        [id]: !prev[id]
-      };
-
-      // Update checkedIds
-      const newCheckedIds = newChecked[id]
-        ? [...new Set([...checkedIds, id])]  // Add if checked
-        : checkedIds.filter(checkedId => checkedId !== id);  // Remove if unchecked
-
-      setCheckedIds(newCheckedIds);
-      sessionStorage.setItem('checkedIds', JSON.stringify(newCheckedIds));
-
-      return newChecked;
-    });
-  };
+    const handleCheckboxClick = (id) => {
+      setChecked(prev => {
+        const newChecked = {
+          ...prev,
+          [id]: !prev[id]
+        };
+    
+        // Update checkedIds
+        const newCheckedIds = newChecked[id]
+          ? [...new Set([...checkedIds, id])]  // Add if checked
+          : checkedIds.filter(checkedId => checkedId !== id);  // Remove if unchecked
+    
+        // Filter out null or undefined values before storing
+        const filteredCheckedIds = newCheckedIds.filter(checkedId => checkedId !== null && checkedId !== undefined);
+    
+        setCheckedIds(filteredCheckedIds);
+        sessionStorage.setItem('checkedIds', JSON.stringify(filteredCheckedIds));
+    
+        return newChecked;
+      });
+    };
+    
 
   // const handleCheckboxClick = useCallback((id) => {
   //   setCheckedIds(prevCheckedIds => {
@@ -135,7 +141,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
     "Staff ID", 
     "Staff Type", 
     "Department", 
-    "Status",
+    // "Status",
     "Reappointment"
   ];
     const colSortValues = [false, true, false, false, false, false, false];
@@ -143,7 +149,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
    
     useEffect(() => {
       getActiveUserData();
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType,sortField, sortValue]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType,selectedReappointmentStatus,sortField, sortValue]);
 
   useEffect(() => {
     sessionStorage.setItem('checkedIds', JSON.stringify(checkedIds));
@@ -192,6 +198,10 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
         if (selectedApplicantType) {
             queryParams.append('applicantTypeId', selectedApplicantType);
         }
+
+        if (selectedReappointmentStatus) {
+          queryParams.append('reappointmentStatus', selectedReappointmentStatus);
+      }
 
         // Add 'type' parameters for both PERMANENT and LOCUM
         // queryParams.append('type', 'PERMANENT');
@@ -273,7 +283,7 @@ const getApplicantType = async () => {
     const applicantId = [];
     const applicantType = [];
     const department = [];
-    const status = [];
+    // const status = [];
     const reappointment = [];
 
     tableData?.forEach((data) => {
@@ -296,10 +306,10 @@ const getApplicantType = async () => {
         </>
       );
 
-      applicantId.push("123");
-      applicantType.push("Doctor");
-      department.push("Anesthesia");
-      status.push("verified");
+      applicantId.push(`${data?.staffId}` || "123");
+      applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
+      // status.push("verified");
       reappointment.push(
         <>
           {data?.reAppointmentInitiated !== undefined && (
@@ -319,7 +329,7 @@ const getApplicantType = async () => {
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department},
-      { type: "text", value: status},
+      // { type: "text", value: status},
       { type: "text", value: reappointment},
     ];
   };
@@ -420,17 +430,17 @@ const getApplicantType = async () => {
         <div className={style.marginTop10}>
 
                
-                <CommonSelectField
-                value={selectedApplicantType}
-                onChange={(e) => setSelectedApplicantType(e.target.value)}
-                className={style.fullWidth}
-                firstOptionLabel={'All'}
-                firstOptionValue={''}
-                valueList={applicantType?.map(data => data?.id)}
-                labelList={applicantType?.map(data => data?.applicantType)}
-                disabledList={applicantType?.map(data => false)}
-                required={false}
-            />
+        <CommonSelectField
+            value={selectedReappointmentStatus}
+            onChange={(e) => setSelectedReappointmentStatus(e.target.value)}
+            className={style.fullWidth}
+            firstOptionLabel={'All'}
+            firstOptionValue={''}
+            valueList={["SENT", "NOT_SENT"]}
+            labelList={['Sent', 'Not Sent']}
+            disabledList={false}
+            required={false}
+        />
   
         </div>
     </div>

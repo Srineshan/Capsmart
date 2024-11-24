@@ -119,11 +119,24 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   const UserFlowType = userFlow?.workflow || [];
 
+  // const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
+  //   label: currentRoleIndex === index ? "Applicants to Verify" : value.tabDisplayName,
+  //   count: counts[`level-${key}`],
+  //   level: `level-${key}`,
+  // }));
+
   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
-    label: currentRoleIndex === index ? "Applicants to Verify" : value.tabDisplayName,
+    label: currentRoleIndex === index 
+      ? (applicationType === "NEW" 
+        ? "Applicants to Verify" 
+        : (applicationType === "REAPPOINTMENT" 
+          ? "Staff to Verify" 
+          : value.tabDisplayName))
+      : value.tabDisplayName,
     count: counts[`level-${key}`],
     level: `level-${key}`,
   }));
+
 
   const handleTabClick = (tab) => {
     getSelectedTab(tab);
