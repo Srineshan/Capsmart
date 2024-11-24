@@ -1108,8 +1108,7 @@ const NewActiveApplication = ({
 
   console.log("showDot" + checkApprovalAndLogMatch())
 
-  const renderFieldsBasedOnStep = (data, formSchemaIdFromData) => {
-    getFormSchema(formSchemaIdFromData);
+  const renderFieldsBasedOnStep = (data) => {
     switch (data?.schemaCategory) {
       case "ContactAddress":
         return (
@@ -2648,13 +2647,13 @@ const NewActiveApplication = ({
                                       </div>
                                     </div>
                                   </div>
-                                  {/* {expand?.status && expand?.index === index + 1 && ( */}
-                                  <div
-                                    className={`${style.marginTop} ${style.screenPadding}`}
-                                  >
-                                    {renderFieldsBasedOnStep(data, data?.id)}
-                                  </div>
-                                  {/* )} */}
+                                  {expand?.status && expand?.index === index + 1 && (
+                                    <div
+                                      className={`${style.marginTop} ${style.screenPadding}`}
+                                    >
+                                      {renderFieldsBasedOnStep(data)}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                           </div>
