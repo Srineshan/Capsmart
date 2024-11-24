@@ -10,6 +10,8 @@ import CommonCheckBox from "../CommonFields/CommonCheckBox";
 import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationView}) => {
   let cookie = new Cookie();
@@ -30,6 +32,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const [encryptedText, setEncryptedText] = useState('');
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [name, setName] = useState('')
+  const [applicationType, setApplicationType] = useState(() => 
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
   
   // useEffect(() => {
   //   if (dateFormat) {
@@ -52,7 +57,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
-  }, []);
+  }, [applicationType]);
 
   useEffect(() => {
     setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
@@ -217,24 +222,23 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                   : ""}{", "}
                 {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
-                <span className={`${style.displayIdFontStyle}`}>{formDetails?.displayId}</span>
+                <span className={`${style.displayIdFontStyle}`}>{`${formDetails?.displayId}` || "-"}</span>
               </div>
               <div className={`${style.applicantTypeFontStyle}`}>
                 {formDetails?.providerType?.category}
               </div>
               <div className={`${style.grid}`}>
                 <div>
-                  <div>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department}</span></div>
-                  <div>Speciality:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty}</span></div>
+                  <div>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span></div>
+                  <div>Speciality:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span></div>
                 </div>
                 <div>
-                  <div>Staff Manager:<span className={`${style.rightSideFontStyle}`}>{formDetails?.createdBy?.name?.firstName}{""}{formDetails?.createdBy?.name?.lastName}</span></div>
-                  <div>Site Name:<span className={`${style.rightSideFontStyle}`}>Only If Multisite</span></div>
+                  <div>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
                 </div>
               </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Notes From {userRole} for Consideration
+              Recommended With Notes From {userRole} for Consideration
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
@@ -242,12 +246,28 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               </div>
             </div> */}
               {/* <div className={`${style.notesBorderStyle}`}> */}
-              <CommonTextField
-                className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
-                value={userRoleComments}
-                onChange={(e) => setUserRoleComments(e.target.value)}
-                placeholder="Enter comments and notes here"
-              />
+              <div className={`${style.marginTop}`}>
+              <CKEditor
+                  editor={ClassicEditor}
+                  data={userRoleComments}
+                  onChange={(event, editor) => {
+                    const data = editor.getData();
+                    setUserRoleComments(data);
+                  }}
+                  config={{
+                    placeholder: "Enter comments and notes here",
+                  }}
+                  onReady={(editor) => {
+                    editor.editing.view.change((writer) => {
+                        writer.setStyle(
+                            "height",
+                            "150px",
+                            editor.editing.view.document.getRoot()
+                        );
+                    });
+                }}
+                />
+                </div>
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
                 <CommonCheckBox
@@ -265,7 +285,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 checked={isChecked.isChecked2}
                 onChange={handleCheckboxChange('isChecked2')}
                 />
-                <div className={`${style.marginTop10} ${style.disclaimer}`}>Committee Disclaimer for Staff Appointments</div>
+                <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div>
                 <CommonCheckBox
                 className={`${style.marginTop10}`}
                 label="The medical staff committee and the institution do not assume liability for the individual actions or clinical decisions made by the approved appointed staff member. The staff member will retain full responsibility for their professional conduct and patient care activities."

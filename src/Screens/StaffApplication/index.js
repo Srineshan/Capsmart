@@ -81,9 +81,9 @@ const StaffApplication = () => {
            {activeApplicationTask && (
                 <TaskStatusDialog getIsOpen={getActiveApplicationTask}/>
             )}
-              {notesCommentsBox && (
+              {/* {notesCommentsBox && (
                 <NotesCommentDialog getIsOpen={getNotesCommentBox}/>
-            )}
+            )} */}
               {approvalnotesCommentsBox && (
                 <ApprovalWithNotesDialog getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView}/>
             )}
