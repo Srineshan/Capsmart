@@ -289,14 +289,14 @@ const App = ({ props }) => {
   const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
   const loggedInUser = currentUser();
-
+     
   // const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
-  //     getEntityId();
-  //   }
-  // }, [])
+  useEffect(() => {
+    if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
+      getEntityId();
+    }
+  }, [])
 
   // useEffect(() => {
   //   if(!cookie.get("user")){

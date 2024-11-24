@@ -111,7 +111,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         if (yesOrNoSuboxone === '') {
             missingKeys.push({ label: 'Do you prescribe Suboxone?' })
         }
-        if (yesOrNoMRP === '') {
+        if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
             missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
         }
         if (missingKeys?.length !== 0) {
