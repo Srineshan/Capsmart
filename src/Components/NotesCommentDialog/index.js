@@ -78,31 +78,45 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
             <div className={`${style.spaceBetween}`}>
               <div className={`${style.fontstyle} ${style.marginTop10}`}>
                 <span className={`${style.fontstyleassociate}`}>
-                  Review Applicant for Appointment as {" "}
+                  Review Staff for Appointment as {" "}
                   {formDetails?.providerType?.serviceProviderType}
                 </span>
               </div>
             </div>
-            <div className={`${style.cardStyle}`}>
-              <div className={`${style.namefontstyle} ${style.marginTop10}`}>
-                {formDetails?.basicDetails?.applicant?.name?.firstName
+            <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
+              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
+                <div className={style.displayInRow}>
+                  <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                   : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
-                <span className={`${style.displayIdFontStyle}`}>{formDetails?.displayId}</span>
-              </div>
-              <div className={`${style.applicantTypeFontStyle}`}>
-                {formDetails?.providerType?.category}
-              </div>
-              <div className={`${style.grid}`}>
-                <div>
-                  <div>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department}</span></div>
-                  <div>Speciality:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty}</span></div>
+                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}</span>
+                  <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
                 </div>
-                <div>
-                  <div>Staff Manager:<span className={`${style.rightSideFontStyle}`}>{formDetails?.createdBy?.name?.firstName}{""}{formDetails?.createdBy?.name?.lastName}</span></div>
-                  <div>Site Name:<span className={`${style.rightSideFontStyle}`}>Only If Multisite</span></div>
+              </div>
+              <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div>
+              <div className={style.marginTop10}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                  </div>
+                </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Speciality:</span>
+                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                  </div>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                    <span className={`${style.rejectionTextStyle}`}>Only If Multisite</span>
+                  </div> */}
                 </div>
               </div>
             </div>
@@ -134,11 +148,11 @@ const NotesCommentsDialog = ({ getIsOpen }) => {
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
               </div>
             </div> */}
-            <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+            {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
-            </div>
+            </div> */}
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-              <div className={style.reviewButton}>REVIEW & APPROVE</div>
+              <div className={style.reviewButton}>CONTINUE</div>
             </div>
           </div>
         </div>

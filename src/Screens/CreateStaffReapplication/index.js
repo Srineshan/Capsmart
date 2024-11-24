@@ -306,12 +306,7 @@ const getApplicantType = async () => {
             data.reAppointmentInitiated ? (
               <span>Sent</span>
             ) : (
-              <CheckCircleIcon 
-                style={{ 
-                  opacity: 1,
-                  marginRight: '5px' 
-                }} 
-              />
+              <span>Not Sent</span>
             )
           )}
         </>
@@ -474,7 +469,7 @@ const getApplicantType = async () => {
                       className={`${style.saveInProgress} ${style.marginTop} ${style.marginLeft}`}
                       onClick={() => window.location.reload()}
                     >
-                      CANCEL
+                      CLEAR
                     </div>
                     <div
                       className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}

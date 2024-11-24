@@ -99,7 +99,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
-    // getApplication();
+    getApplication();
   }, []);
 
   const onClose = () => {
@@ -149,7 +149,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={style.displayInRow}>
-                  <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
+                <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                   : ""}{", "}

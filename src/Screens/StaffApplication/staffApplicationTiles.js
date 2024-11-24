@@ -115,7 +115,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
     
     setCurrentRoleIndex(newCurrentRoleIndex);
-  }, [userFlow, userRole, getSelectedTab, initialTabSet]);
+  }, [userFlow, userRole, getSelectedTab, initialTabSet,applicationType]);
 
   const UserFlowType = userFlow?.workflow || [];
 
