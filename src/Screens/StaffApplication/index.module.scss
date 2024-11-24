@@ -875,9 +875,20 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.applicationStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 2% 20% 15% 20% 6% 5% 15% 11%;
+  grid-gap: 1%;
+}
 .macStaffGrid {
   display: grid;
   grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
+  grid-gap: 1%;
+}
+
+.macStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 14% 12% 15% 15% 15% 15% 13%;
   grid-gap: 1%;
 }
 

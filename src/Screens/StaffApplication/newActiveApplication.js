@@ -2236,8 +2236,8 @@ console.log("showDot" + checkApprovalAndLogMatch())
                       } else {
                         // Default filter when form?.creationType is not "NEW"
                         return (
-                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") &&
-                          data?.schemaCategory !== "UploadYourDoc"
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") 
+                          // data?.schemaCategory !== "UploadYourDoc"
                         );
                       }
                     })
@@ -2657,7 +2657,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
-
+{applicationType === "NEW" ? (
               <div>
                 <div
                   className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -3007,6 +3007,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
+ ) : ( " " )}
               <div className={style.marginBottom20}></div>
             </div>
           </div>
@@ -3082,7 +3083,21 @@ console.log("showDot" + checkApprovalAndLogMatch())
                 </div>
 
                 {
-                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
+                  form?.formSchemas?.filter(
+                    (data) => {
+                      if (form?.creationType === "NEW") {
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                          data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      } else {
+                        // Default filter when form?.creationType is not "NEW"
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") 
+                          // data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      }
+                    })?.map((data, index) => (
 
                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
@@ -3299,7 +3314,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>))}
 
               </div>
-
+              {applicationType === "NEW" ? (
               <div>
                 <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -3470,6 +3485,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     }
                   </div>))}
               </div>
+              ) : (" ")}
               <div className={style.marginBottom20}></div>
             </div>
           </div>
@@ -3874,11 +3890,20 @@ console.log("showDot" + checkApprovalAndLogMatch())
 
                 {form?.formSchemas
                   ?.filter(
-                    (data) =>
-                      (data?.formCategory === "Form" ||
-                        data?.formCategory === "Disclosure") &&
-                      data?.schemaCategory !== "UploadYourDoc"
-                  )
+                    (data) => {
+                      if (form?.creationType === "NEW") {
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                          data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      } else {
+                        // Default filter when form?.creationType is not "NEW"
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") 
+                          // data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      }
+                    })
                   ?.map((data, index) => (
                     <div
                       className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
@@ -4145,7 +4170,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
-
+              {applicationType === "NEW" ? (
               <div>
                 <div
                   className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -4494,6 +4519,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
+              ) : ( " ")}
               <div className={style.marginBottom20}></div>
             </div>
           </div>
@@ -4569,7 +4595,21 @@ console.log("showDot" + checkApprovalAndLogMatch())
                 </div>
 
                 {
-                  form?.formSchemas?.filter(data => (data?.formCategory === 'Form' || data?.formCategory === 'Disclosure') && data?.schemaCategory !== "UploadYourDoc")?.map((data, index) => (
+                  form?.formSchemas?.filter(
+                    (data) => {
+                      if (form?.creationType === "NEW") {
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                          data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      } else {
+                        // Default filter when form?.creationType is not "NEW"
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") 
+                          // data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      }
+                    })?.map((data, index) => (
 
                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
                       <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
@@ -4810,7 +4850,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>))}
 
               </div>
-
+              {applicationType === "NEW" ? (
               <div>
                 <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
@@ -5071,6 +5111,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     }
                   </div>))}
               </div>
+              ) : (" ")}
               <div className={style.marginBottom20}></div>
             </div>
           </div>
@@ -5427,11 +5468,20 @@ console.log("showDot" + checkApprovalAndLogMatch())
 
                 {form?.formSchemas
                   ?.filter(
-                    (data) =>
-                      (data?.formCategory === "Form" ||
-                        data?.formCategory === "Disclosure") &&
-                      data?.schemaCategory !== "UploadYourDoc"
-                  )
+                    (data) => {
+                      if (form?.creationType === "NEW") {
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                          data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      } else {
+                        // Default filter when form?.creationType is not "NEW"
+                        return (
+                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement") 
+                          // data?.schemaCategory !== "UploadYourDoc"
+                        );
+                      }
+                    })
                   ?.map((data, index) => (
                     <div
                       className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
@@ -5702,7 +5752,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
-
+              {applicationType === "NEW" ? (
               <div>
                 <div
                   className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
@@ -6158,6 +6208,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                     </div>
                   ))}
               </div>
+              ) : ( " " )}
               <div className={style.marginBottom20}></div>
             </div>
           </div>
@@ -6410,8 +6461,38 @@ console.log("showDot" + checkApprovalAndLogMatch())
               </div>
               </div>
                   )}
+                {applicationType === "NEW" ? (
+                  ((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') ||
+                  (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") ||
+                  (userRole?.includes('Staff Manager') && selectedTab === "level-3") ||
+                  (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
+                    <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
+                      <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>
+                        Review and Approval Status
+                      </div>
+                      <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
+                        <div className={style.displayInCol}>
+                          <div className={style.statusStartTextStyle}>
+                            Not Started Yet
+                          </div>
+                          <div className={style.statusRoleTextStyle}>
+                            CHIEF OF STAFF / DEPUTY
+                          </div>
+                        </div>
+                        <div className={style.displayInCol}>
+                          <div className={style.statusStartTextStyle}>
+                            Not Started Yet
+                          </div>
+                          <div className={style.statusRoleTextStyle}>
+                            CREDENTIALING COMMITTEE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null
+                ) : null}
 
-                  {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
+                  {/* {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
                       <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
                       <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>Review and Approval Status</div>
                       <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
@@ -6425,7 +6506,7 @@ console.log("showDot" + checkApprovalAndLogMatch())
                       </div>
                       </div>
                     </div>
-                    ) : null }
+                    ) : null } */}
                 {/* <div
                   className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                   onClick={handleApplicationAccept}
