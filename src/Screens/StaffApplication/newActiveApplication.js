@@ -786,22 +786,22 @@ const NewActiveApplication = ({
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
       notes = ""
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Credentialing Committee";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
       role = "Chief Of Staff";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Board";
       notes = ""
-    } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
       role = "Board";
       notes = ""
     }
@@ -831,22 +831,22 @@ const NewActiveApplication = ({
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
       notes = ""
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Credentialing Committee";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
       role = "Chief Of Staff";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Board";
       notes = ""
-    } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
       role = "Board";
       notes = ""
     }
@@ -876,22 +876,22 @@ const NewActiveApplication = ({
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
       notes = ""
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Credentialing Committee";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
       role = "Chief Of Staff";
       notes = ""
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
       role = "Advisory Committee";
       notes = ""
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Board";
       notes = ""
-    } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
+    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
       role = "Board";
       notes = ""
     }
@@ -6732,7 +6732,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )}
-                  {(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                {(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -6764,7 +6764,7 @@ const NewActiveApplication = ({
                 )}
                 <div className={`${style.marginTop20} ${style.marginBottom20}`}>
 
-                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" &&(!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
+                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -6778,7 +6778,7 @@ const NewActiveApplication = ({
                           }}
                         >
                           {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
-                           RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH NOTES
                         </div>
                       </div>
                       <div
@@ -6830,7 +6830,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                           RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH NOTES
                         </div>
                       </div>
                       <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
