@@ -85,7 +85,7 @@ const StaffApplication = () => {
                 <NotesCommentDialog getIsOpen={getNotesCommentBox}/>
             )} */}
               {approvalnotesCommentsBox && (
-                <ApprovalWithNotesDialog getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView}/>
+                <ApprovalWithNotesDialog getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab}/>
             )}
              {approvalnotesCommentsBoxDept && (
                 <ApprovalWithNotesDeptDialog getIsOpen={getApprovalNotesCommentBoxDept} getActiveApplicationView={getActiveApplicationView}/>
