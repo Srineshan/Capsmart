@@ -212,7 +212,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
         );
 
         // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
-        const filteredData = response?.data?.filter(item => item.type !== 'PROVISIONAL') || [];
+        const filteredData = response?.data?.filter(item => item?.type !== 'PROVISIONAL' && item?.reappointed !== true) || [];
         
         setTableData(filteredData);
         return filteredData;

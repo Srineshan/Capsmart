@@ -183,7 +183,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
                 </div>
               </div>
             </div>
-            <div className={`${style.marginTop20} ${style.rejectionTextStyle}`}>Reasons For Not Recommending Staff*
+            <div className={`${style.marginTop20} ${style.rejectionTextStyle}`}>Not Recommended With Notes*
               <div className={`${style.rejectionBorderStyle} ${style.marginTop10}`}>
                 <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                   <textarea

@@ -7181,11 +7181,13 @@ const NewActiveApplication = ({
                   {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
-                        className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                        // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                          // className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // onClick={isApproved ? onClickApproveFunction : undefined}
                           onClick={() => {
                             onClickApprovalFunction();
@@ -7196,8 +7198,9 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                        className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
-                        style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
+                       className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                        // className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
+                        // style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
                       >
                         <div
                           className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
@@ -7306,7 +7309,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && (
+                  {(selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")  && (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7414,7 +7417,8 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                              className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                              // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
@@ -7456,7 +7460,8 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                              className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                              // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
@@ -7499,7 +7504,8 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                        className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                       className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                        // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
