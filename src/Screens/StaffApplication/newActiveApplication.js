@@ -4113,7 +4113,7 @@ const NewActiveApplication = ({
                                             ) : (
                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
+                                                  Verified
                                                 </div>
                                               </div>
                                             )}
@@ -4241,7 +4241,7 @@ const NewActiveApplication = ({
                                         </>
                                       )}
                                     </div>))}
-                              {applicationType === "REAPPOINTMENT" ? (
+                              {(userRole?.includes("Staff Manager") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4270,7 +4270,7 @@ const NewActiveApplication = ({
                                       </div>
                                     </div>
                                     {/* </div> */}
-                                    {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}> */}
+                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -4293,9 +4293,16 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               ) : (" ")}
+                              {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                                    <div className={${style.margin20}}>
+                                      <div className={${style.textCardStyle} ${style.buttonTextStyle} ${style.alignCenter}}>
+                                      Pending Cred. Comm. Verification
+                                      </div>
+                                    </div>
+                                  </>)} */}
                             </>
 
-                          </div>
+                          </div >
                           {applicationType === "NEW" ? (
                             <div>
                               <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
@@ -4469,11 +4476,11 @@ const NewActiveApplication = ({
                             </div>
                           ) : (" ")}
                           <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
+                        </div >
+                      </div >
                     )}
                   </>
-                </div>
+                </div >
               </>
             ) : (
               <>
@@ -7204,7 +7211,7 @@ const NewActiveApplication = ({
           <div>
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
               <>
-                {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-3") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7263,7 +7270,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )}
-                <div className={`${style.marginTop20} ${style.marginBottom20}`}>
+                <div className={`${style.marginBottom20}`}>
 
                   {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
@@ -7348,7 +7355,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
+                  {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -7370,9 +7377,17 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && (
+                  {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending Cred. Comm. Verification
+                      </div>
+                    </div>
+                  </>)}
+
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -7396,7 +7411,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {(selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7448,6 +7463,22 @@ const NewActiveApplication = ({
                       </div>
                     </>
                   )}
+
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending MAC Verification
+                      </div>
+                    </div>
+                  </>)}
+
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending BOD Verification
+                      </div>
+                    </div>
+                  </>)}
 
                   {userRole?.includes('Chief Of Staff') && (
                     <>
@@ -7574,7 +7605,7 @@ const NewActiveApplication = ({
                     </>
                   )}
 
-                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
+                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW") || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -8191,93 +8222,99 @@ const NewActiveApplication = ({
               ""
             }
           </div>
-        </div>
+        </div >
         <div className={style.marginTop50}></div>
-        {showApplicationDeclineDialog && (
-          <ApplicationDecline
-            getApplicationDeclineDialog={getApplicationDeclineDialog}
-            getActiveApplicationView={getActiveApplicationView}
-          />
-        )}
-        {showDocVerifyDialog && (
-          <Dialog
-            isOpen={showDocVerifyDialog}
-            onClose={() => setShowDocVerifyDialog(false)}
-            className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-            canOutsideClickClose={false}
-            canEscapeKeyClose={false}
-          >
-            <div>
-              <div className={Classes.DIALOG_BODY}>
-                <div className={style.spaceBetween}>
+        {
+          showApplicationDeclineDialog && (
+            <ApplicationDecline
+              getApplicationDeclineDialog={getApplicationDeclineDialog}
+              getActiveApplicationView={getActiveApplicationView}
+            />
+          )
+        }
+        {
+          showDocVerifyDialog && (
+            <Dialog
+              isOpen={showDocVerifyDialog}
+              onClose={() => setShowDocVerifyDialog(false)}
+              className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+              canOutsideClickClose={false}
+              canEscapeKeyClose={false}
+            >
+              <div>
+                <div className={Classes.DIALOG_BODY}>
+                  <div className={style.spaceBetween}>
+                    <div
+                      className={style.heading}
+                    >{`${form?.basicDetails?.applicant?.name?.firstName} ${form?.basicDetails?.applicant?.name?.lastName} ${file?.fileName} Preview`}</div>
+                    <div className={style.displayInRow}>
+                      {file?.isVerified !== undefined && file?.isVerified ? (
+                        <div
+                          className={`${style.greenButton} ${style.cursorPointer} `}
+                        >
+                          <div
+                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                          >
+                            Verified
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className={`${style.purpleButton} ${style.cursorPointer}`}
+                        >
+                          <div
+                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            onClick={() => {
+                              handleDocVerify(selectedRow?.rowId);
+                              setShowDocVerifyDialog(false);
+                            }}
+                          >
+                            Verify
+                          </div>
+                        </div>
+                      )}
+                      <img
+                        src={CrossPink}
+                        alt="cross"
+                        className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+                        onClick={() => {
+                          setShowDocVerifyDialog(false);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className={style.marginTop20}>
+                    <iframe
+                      src={file?.fileURL}
+                      width="100%"
+                      height="600px"
+                    ></iframe>
+                  </div>
                   <div
-                    className={style.heading}
-                  >{`${form?.basicDetails?.applicant?.name?.firstName} ${form?.basicDetails?.applicant?.name?.lastName} ${file?.fileName} Preview`}</div>
-                  <div className={style.displayInRow}>
-                    {file?.isVerified !== undefined && file?.isVerified ? (
-                      <div
-                        className={`${style.greenButton} ${style.cursorPointer} `}
-                      >
-                        <div
-                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                        >
-                          Verified
-                        </div>
-                      </div>
-                    ) : (
-                      <div
-                        className={`${style.purpleButton} ${style.cursorPointer}`}
-                      >
-                        <div
-                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                          onClick={() => {
-                            handleDocVerify(selectedRow?.rowId);
-                            setShowDocVerifyDialog(false);
-                          }}
-                        >
-                          Verify
-                        </div>
-                      </div>
-                    )}
-                    <img
-                      src={CrossPink}
-                      alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+                    className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
+                  >
+                    <div
+                      className={`${style.continue} ${style.marginLeft}`}
                       onClick={() => {
                         setShowDocVerifyDialog(false);
                       }}
-                    />
-                  </div>
-                </div>
-                <div className={style.marginTop20}>
-                  <iframe
-                    src={file?.fileURL}
-                    width="100%"
-                    height="600px"
-                  ></iframe>
-                </div>
-                <div
-                  className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
-                >
-                  <div
-                    className={`${style.continue} ${style.marginLeft}`}
-                    onClick={() => {
-                      setShowDocVerifyDialog(false);
-                    }}
-                  >
-                    CLOSE
+                    >
+                      CLOSE
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Dialog>
-        )}
-        {showFileDisplayDialog && (
-          <FileDisplayDialog
-            getIsOpen={getIsShowFileDialog}
-            file={selectedFile}
-          />
-        )}
+            </Dialog>
+          )
+        }
+        {
+          showFileDisplayDialog && (
+            <FileDisplayDialog
+              getIsOpen={getIsShowFileDialog}
+              file={selectedFile}
+            />
+          )
+        }
         <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>
@@ -8296,7 +8333,7 @@ const NewActiveApplication = ({
             </div>
           </div>
         </Dialog>
-      </div>
+      </div >
     </>
   );
 };
