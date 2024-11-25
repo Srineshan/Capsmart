@@ -130,7 +130,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       ? (applicationType === "NEW" 
         ? "Applicants to Verify" 
         : (applicationType === "REAPPOINTMENT" 
-          ? "Staff to Verify" 
+          ? "Reappointment to Process" 
           : value.tabDisplayName))
       : value.tabDisplayName,
     count: counts[`level-${key}`],

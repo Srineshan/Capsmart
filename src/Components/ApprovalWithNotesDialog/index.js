@@ -133,45 +133,48 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
 
   const handleApplicationApprove = async () => {
     let role;
-    let notes;
+    let notes = { userRoleComments }
     let isDelegate = true; // Default value for isDelegate
+    // notes = { userRoleComments }
   
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Credentialing Committee";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-3' && applicationType === "NEW") {
       role = "Credentialing Committee";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-4' && applicationType === "NEW") {
       role = "Advisory Committee";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Board";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     } else if (selectedTab === 'level-5' && applicationType === "NEW") {
       role = "Board";
-      notes = { userRoleComments };
+      // notes = { userRoleComments };
     }
   
     if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
       isDelegate = false;
     }
-    if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+     else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
       isDelegate = false;
     }
-    if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
       isDelegate = false;
+    } else{
+      notes = { userRoleComments: '' }
     }
   
     let temp = {
-      role:isDelegate ? role : " ",
-      notes: isDelegate ? notes : ""
+      role:isDelegate ? role : "",
+      notes: notes,
     };
   
     await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
@@ -187,7 +190,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
 const getApplicationMoveToNext = async () => {
   
   let role;
-  let notes = "";
+  let notes;
   let isDelegate = true; // Default value for isDelegate
 
   // Determine role based on selectedTab and applicationType
@@ -227,7 +230,7 @@ const getApplicationMoveToNext = async () => {
 
   let temp = {
     role:isDelegate ? role : " ",
-    notes: isDelegate ? notes : ""
+    notes: notes ,
   };
 
   await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)

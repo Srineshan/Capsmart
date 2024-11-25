@@ -24,6 +24,7 @@ import style from "./index.module.scss";
 import SideBar from "../../Components/Sidebar";
 import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from "./applicationRejectionDialog";
+import ApplicationApprovedDeclined from "./applicationApprovedDecline";
 import { useNavigate } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
@@ -63,6 +64,7 @@ const StaffApplicationList = ({
   });
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
+  const [declineListData, setDeclineListData] = useState([]);
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
   const [page, setPage] = useState(1);
@@ -78,7 +80,7 @@ const StaffApplicationList = ({
 
   const applicantHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
@@ -103,7 +105,7 @@ const StaffApplicationList = ({
     "Action"
   ] : [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
@@ -118,7 +120,7 @@ const StaffApplicationList = ({
 
   const applicationHeaderValues = applicationType === "NEW" ? [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
@@ -132,7 +134,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
@@ -141,7 +143,7 @@ const StaffApplicationList = ({
     "Action",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
@@ -150,7 +152,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
@@ -160,7 +162,7 @@ const StaffApplicationList = ({
     "Action",
   ];
   const bodHeaderValues = [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
@@ -171,7 +173,7 @@ const StaffApplicationList = ({
   ];
   const clarificationHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Clarification Title",
     "Raised By",
@@ -182,7 +184,7 @@ const StaffApplicationList = ({
 
   const rejectedHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
@@ -196,7 +198,7 @@ const StaffApplicationList = ({
   ];
   const approvedHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Notes",
     "Last Updated On",
@@ -204,7 +206,7 @@ const StaffApplicationList = ({
   ];
   const reappointmentValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Department",
     "Docs",
@@ -341,6 +343,8 @@ const StaffApplicationList = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
+    const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
+    useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
   // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
@@ -408,6 +412,11 @@ const StaffApplicationList = ({
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
     setRejectionTab("rejected");
+  };
+
+  const getApplicationApprovedDeclineDialog = (value) => {
+    setShowApplicationApprovedDeclineDialog(value);
+    // setRejectionTab("rejected");
   };
 
   const getCheckListDialog = (value) => {
@@ -560,7 +569,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getDeclineData();
-  }, [showApplicationRejectionDialog]);
+  }, [showApplicationApprovedDeclineDialog]);
 
 
   const handleIconClick = () => {
@@ -620,7 +629,7 @@ const StaffApplicationList = ({
         // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
       console.log("Rejection data", response?.data?.applications);
-      setRejectionListData(response?.data?.applications);
+      setDeclineListData(response?.data?.applications);
       return response?.data.applications || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -629,15 +638,15 @@ const StaffApplicationList = ({
   };
 
   const handleClick = async () => {
-    await getDeclineData();
+    // await getDeclineData();
     setShowApplicationRejectionDialog(true);
   };
 
-  useEffect(() => {
-    if (showApplicationRejectionDialog) {
-      getDeclineData();
-    }
-  }, [showApplicationRejectionDialog]);
+  // useEffect(() => {
+  //   if (showApplicationRejectionDialog) {
+  //     getDeclineData();
+  //   }
+  // }, [showApplicationRejectionDialog]);
 
   const getSentConfirmationCount = async () => {
     await GET(
@@ -2136,7 +2145,7 @@ const StaffApplicationList = ({
                       <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
                       >
-                        {applicationRejected?.totalRejections + applicationRejected?.appointmentRequestsDenied}
+                        {applicationRejected?.totalRejections}
                       </span>
                     </div>
                     <div className={`${style.marginLeft10} `}>
@@ -2161,15 +2170,17 @@ const StaffApplicationList = ({
                           handleClick();
                         }}
                       >
-                        Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                        {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                        Approved But Declined ({applicationRejected?.applicationsRejected})
                       </div>
                       <div
                         className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
                         onClick={() => {
-                          setShowApplicationRejectionDialog(true);
+                          setShowApplicationApprovedDeclineDialog(true);
                         }}
                       >
-                        Approved But Declined ({applicationRejected?.totalRejections})
+                        Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                        {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                       </div>
                     </>
                   )}
@@ -2183,7 +2194,7 @@ const StaffApplicationList = ({
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`STAFF MANAGER > STAFF APPLICATIONS`}
+            {`${userRole} > STAFF APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles
@@ -2283,6 +2294,15 @@ const StaffApplicationList = ({
         <ApplicationRejection
           getApplicationRejectionDialog={getApplicationRejectionDialog}
           rejectionListData={rejectionListData}
+          // rejectedCount={applicationRejected?.appointmentRequestsDenied}
+          declineCount={applicationRejected?.applicationsRejected}
+        />
+      )}
+      {showApplicationApprovedDeclineDialog && (
+        <ApplicationApprovedDeclined
+          getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
+          declineListData={declineListData}
+          // declineCount={applicationRejected?.applicationsRejected}
           rejectedCount={applicationRejected?.appointmentRequestsDenied}
         />
       )}
