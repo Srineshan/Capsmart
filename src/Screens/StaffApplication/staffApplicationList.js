@@ -80,7 +80,7 @@ const StaffApplicationList = ({
 
   const applicantHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
@@ -105,7 +105,7 @@ const StaffApplicationList = ({
     "Action"
   ] : [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
@@ -120,7 +120,7 @@ const StaffApplicationList = ({
 
   const applicationHeaderValues = applicationType === "NEW" ? [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
@@ -134,7 +134,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
@@ -143,7 +143,7 @@ const StaffApplicationList = ({
     "Action",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
@@ -152,7 +152,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
@@ -162,7 +162,7 @@ const StaffApplicationList = ({
     "Action",
   ];
   const bodHeaderValues = [
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
@@ -173,7 +173,7 @@ const StaffApplicationList = ({
   ];
   const clarificationHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Clarification Title",
     "Raised By",
@@ -184,7 +184,7 @@ const StaffApplicationList = ({
 
   const rejectedHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
@@ -198,7 +198,7 @@ const StaffApplicationList = ({
   ];
   const approvedHeaderValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Notes",
     "Last Updated On",
@@ -206,7 +206,7 @@ const StaffApplicationList = ({
   ];
   const reappointmentValues = [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Department",
     "Docs",
