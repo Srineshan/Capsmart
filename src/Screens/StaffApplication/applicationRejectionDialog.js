@@ -393,7 +393,7 @@ import Popover from '@mui/material/Popover';
 import style from './index.module.scss';
 import TaskStatusDialog from "../../Components/TaskStatusDialog";
 
-const ApplicationRejection = ({ getApplicationRejectionDialog, rejectionListData, rejectedCount }) => {
+const ApplicationRejection = ({ getApplicationRejectionDialog, rejectionListData, rejectedCount,declineCount }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [showDeclineTaskDialog, setShowDeclineTaskDialog] = useState(false);
   const [popoverOpenId, setPopoverOpenId] = useState(null);
@@ -422,7 +422,8 @@ const ApplicationRejection = ({ getApplicationRejectionDialog, rejectionListData
       <Dialog isOpen={getApplicationRejectionDialog} onClose={() => getApplicationRejectionDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
         <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
           <div className={style.spaceBetween}>
-            <p className={style.extensionStyle1}>Applications Rejected ({rejectedCount})</p>
+            {/* <p className={style.extensionStyle1}>Applications Rejected ({rejectedCount})</p> */}
+            <p className={style.extensionStyle1}>Applications Approved & Declined ({declineCount})</p>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getApplicationRejectionDialog(false)} />
           </div>
 
