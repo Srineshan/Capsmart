@@ -3444,6 +3444,38 @@ const NewActiveApplication = ({
                                   )}
                                 </div>
                               ))}
+                              { applicationType === "REAPPOINTMENT" ? (
+                              <div className={`${style.margin20}`}>
+                              <div className={`${style.twoColumnGrid}`}>
+                              <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                <div
+                                  className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                  onClick={() => {
+                                    onClose();
+                                  }}
+                                >
+                                  SAVE IN PROGRESS
+                                </div>
+                              </div>
+                                  <div
+                                    className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                                  >
+                                    <div
+                                      className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                      // onClick={() => {
+                                      //   setShowApplicationDeclineDialog(true);
+                                      // }}
+                                      onClick={() => {
+                                        // onClickRejectFunction();
+                                        onClickApproveMoveFunction();
+                                      }}
+                                    >
+                                      VERIFIED AND SENT TO CC
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                    ): ("")}
                           </div>
                           {applicationType === "NEW" ? (
                             <div>
@@ -3873,6 +3905,7 @@ const NewActiveApplication = ({
                                 </div>
                               )}
                             </>
+                            <>
                             {
                               form?.formSchemas?.filter(
                                 (data) => {
@@ -4204,9 +4237,63 @@ const NewActiveApplication = ({
                                         <div className={`${style.marginTop} ${style.screenPadding}`}>
                                           {renderFieldsBasedOnStepReappointment(data, index)}
                                         </div>
+                                  
                                       </>
                                     )}
                                   </div>))}
+                                  { applicationType === "REAPPOINTMENT" ?(
+                                  <div className={`${style.margin20}`}>
+                                    <div className={`${style.fourColumnGrid}`}>
+                                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                        <div
+                                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                          onClick={() => {
+                                            onClose();
+                                          }}
+                                        >
+                                          SAVE IN PROGRESS
+                                        </div>
+                                      </div>
+                                      <div
+                                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                      >
+                                        <div
+                                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                          // onClick={() => {
+                                          //   setShowApplicationDeclineDialog(true);
+                                          // }}
+                                          onClick={() => {
+                                            setShowApplicationDeclineDialog(true);
+                                          }}
+                                        >
+                                          NOT RECOMMENDED
+                                        </div>
+                                      </div>
+                                    {/* </div> */}
+                                    {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}> */}
+                                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                        <div
+                                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                          // onClick={onClickApproveFunction}
+                                          onClick={() => {
+                                            onClickApprovalFunction();
+                                          }}
+                                        >
+                                          RECOMMENDED WITH NOTES
+                                        </div>
+                                      </div>
+                                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                                        <div
+                                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                          onClick={onClickApproveMoveFunction}
+                                        >
+                                          RECOMMENDED
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                 ) : (" ")}
+                                  </>
 
                           </div>
                           {applicationType === "NEW" ? (
@@ -7171,7 +7258,7 @@ const NewActiveApplication = ({
                           onClickApproveMoveFunction();
                         }}
                       >
-                        VERIFIED AND APPROVED
+                        VERIFIED AND SENT TO CC
                       </div>
                     </div>
                   </div>
@@ -7186,7 +7273,7 @@ const NewActiveApplication = ({
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
-                          className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // onClick={isApproved ? onClickApproveFunction : undefined}
                           onClick={() => {
@@ -7886,7 +7973,7 @@ const NewActiveApplication = ({
                   )}
                 </div>
               </>
-            ) : selectedTab === 'level-5' ? (
+            ) : (selectedTab === 'level-5' &&  applicationType === "NEW" ) ? (
               <>
                 <div className={`${style.cardLeftStyle2}`}>
                   <div className={`${style.displayInCol}`}>
@@ -8100,7 +8187,9 @@ const NewActiveApplication = ({
                   )}
                 </div>
               </>
-            ) : " "}
+            ) : 
+            ""     
+            }
           </div>
         </div>
         <div className={style.marginTop50}></div>
