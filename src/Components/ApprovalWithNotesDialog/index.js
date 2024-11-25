@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationView}) => {
+const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationView,selectedTab}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -131,41 +131,102 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   }
 
   const handleApplicationApprove = async () => {
-    try {
-      const payload = {
-        role: "Chief Of Staff",
-        notes: userRoleComments,
-      };
+    let role;
+  let notes = "";
+  let isDelegate = true; // Default value for isDelegate
 
-      await PUT(
-        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=true`,
-        payload
-      );
-      
-      await getApplication();
-      getIsOpen(false);
-    } catch (error) {
-      console.error('Error approving application:', error);
+    if (selectedTab === 'level-2' && applicationType === "NEW") {
+        role = "Department Head";
+        notes = "";
+    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+        role = "Credentialing Committee";
+        notes = "";
+    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+        role = "Chief Of Staff";
+        notes = "";
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+        role = "Advisory Committee";
+        notes = "";
+    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+        role = "Advisory Committee";
+        notes = "";
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+        role = "Board";
+        notes = "";
+    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+        role = "Board";
+        notes = "";
     }
+
+    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+      isDelegate = false;
+  }
+  if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+      isDelegate = false;
+  }
+
+  let temp = {
+    role: role,
+    notes: isDelegate ? notes : ""
   };
 
-  const getApplicationMoveToNext = async () => {
-  
-    let temp = {
-      role: "Credentialing Committee",
-      notes: ""
-    };
+    // const requestData = isDelegate ? temp : {};
 
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=true`, temp)
-      .then(response => {
-        console.log('successfull')
-        onClose()
-      })
-      .catch((error) => {
-        console.log(error)
-      });
-    // getPreApplication();
+    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
+        .then(response => {
+            console.log('success');
+            onClose();
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+};
+
+const getApplicationMoveToNext = async () => {
+  
+  let role;
+  let notes = "";
+  let isDelegate = true; // Default value for isDelegate
+
+  // Determine role based on selectedTab and applicationType
+  if (selectedTab === 'level-2' && applicationType === "NEW") {
+    role = "Department Head";
+  } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
+    role = "Credentialing Committee";
+  } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
+    role = "Chief Of Staff";
+  } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
+    role = "Advisory Committee";
+  } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
+    role = "Advisory Committee";
+  } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
+    role = "Board";
+  } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
+    role = "Board";
   }
+
+  // Override isDelegate logic for specific conditions
+  if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+      isDelegate = false;
+  }
+  if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+      isDelegate = false;
+  }
+
+  let temp = {
+    role: role,
+    notes: isDelegate ? notes : ""
+  };
+
+  await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
+    .then(response => {
+      console.log('successfull');
+      onClose();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {

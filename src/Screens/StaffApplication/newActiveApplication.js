@@ -187,7 +187,7 @@ const NewActiveApplication = ({
   };
   useEffect(() => {
     getPreApplication();
-    getPreApplicationTask();
+    // getPreApplicationTask();
   }, []);
 
   useEffect(() => {
@@ -303,11 +303,11 @@ const NewActiveApplication = ({
   // console.log('Filtered Schemas:', filteredSchemas);
 
 
-  const getPreApplicationTask = async () => {
-    const { data: tasks } = await GET(`application-management-service/application/${applicationId}/tasks`);
-    const pendingTasks = tasks.filter(task => task.taskStatus !== 'COMPLETED');
-    setTaskCount(pendingTasks.length);
-  };
+  // const getPreApplicationTask = async () => {
+  //   const { data: tasks } = await GET(`application-management-service/application/${applicationId}/tasks`);
+  //   const pendingTasks = tasks.filter(task => task.taskStatus !== 'COMPLETED');
+  //   setTaskCount(pendingTasks.length);
+  // };
 
   const allTasksCompleted = taskCount !== 0;
 
@@ -768,38 +768,31 @@ const NewActiveApplication = ({
 
   const handleApplicationAccept = async () => {
     let role;
-    let notes;
-
+    let notes = "";
+  
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
-      notes = ""
     } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
       role = "Credentialing Committee";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
       role = "Chief Of Staff";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
       role = "Board";
-      notes = ""
     } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
       role = "Board";
-      notes = ""
     }
-
+  
     let temp = {
       role: role,
       notes: notes
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
-    const requestData = isDelegate === true ? temp : {};
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    const requestData = { ...temp, notes: "" };
     await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, requestData)
       .then(response => {
         console.log('success')
@@ -813,38 +806,31 @@ const NewActiveApplication = ({
 
   const handleApplicationReject = async () => {
     let role;
-    let notes;
-
+    let notes = "";
+  
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
-      notes = ""
     } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
       role = "Credentialing Committee";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
       role = "Chief Of Staff";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
       role = "Board";
-      notes = ""
     } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
       role = "Board";
-      notes = ""
     }
-
+  
     let temp = {
       role: role,
       notes: notes
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
-    const requestData = isDelegate === true ? temp : {};
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    const requestData = { ...temp, notes: "" };
     await PUT(`application-management-service/application/${applicationId}/workflow/complete/REJECTED?isDelegate=${isDelegate}`, requestData)
       .then(response => {
         console.log('success')
@@ -858,38 +844,31 @@ const NewActiveApplication = ({
 
   const getApplicationMoveToNext = async () => {
     let role;
-    let notes;
-
+    let notes = "";
+  
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
-      notes = ""
     } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
       role = "Credentialing Committee";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
       role = "Chief Of Staff";
-      notes = ""
     } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
       role = "Advisory Committee";
-      notes = ""
     } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
       role = "Board";
-      notes = ""
     } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
       role = "Board";
-      notes = ""
     }
-
+  
     let temp = {
       role: role,
       notes: notes
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
-    const requestData = isDelegate === true ? temp : {};
+    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    const requestData = { ...temp, notes: "" };
     await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, requestData)
       .then(response => {
         console.log('successfull')
@@ -6692,6 +6671,83 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
+                  {userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && (
+                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                          // onClick={onClickApproveFunction}
+                          onClick={() => {
+                            onClickApprovalFunction();
+                          }}
+                        >
+                          RECOMMENDED WITH NOTES
+                        </div>
+                      </div>
+                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          onClick={onClickApproveMoveFunction}
+                        >
+                          RECOMMENDED
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && (
+                    <>
+                    <div className={`${style.twoColumnGrid}`}>
+                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        onClick={() => {
+                          onClose();
+                        }}
+                      >
+                        SAVE IN PROGRESS
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                    >
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        // onClick={() => {
+                        //   setShowApplicationDeclineDialog(true);
+                        // }}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED
+                      </div>
+                    </div>
+                  </div>
+                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                          // onClick={onClickApproveFunction}
+                          onClick={() => {
+                            onClickApprovalFunction();
+                          }}
+                        >
+                          RECOMMENDED WITH NOTES
+                        </div>
+                      </div>
+                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          onClick={onClickApproveMoveFunction}
+                        >
+                          RECOMMENDED
+                        </div>
+                      </div>
+                    </div>
+                    </>
+                  )}
+
                   {userRole?.includes('Chief Of Staff') && (
                     <>
                       {selectedTab === "level-3" && (
@@ -7152,7 +7208,7 @@ const NewActiveApplication = ({
               </>
             ) : null
             }
-            {selectedTab === 'level-4' ? (
+            {selectedTab === 'level-4' && applicationType === "NEW" ? (
               <>
                 <div className={`${style.cardLeftStyle2}`}>
                   <div className={`${style.displayInRow}${style.marginTop20}`}>
