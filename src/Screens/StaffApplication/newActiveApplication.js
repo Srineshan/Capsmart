@@ -2232,7 +2232,7 @@ const NewActiveApplication = ({
                 </div>
               ))}
               {form?.privileges?.additionalPrivileges?.length !== 0 && (
-                <div className={style.cardTextBoldStyle}>Selected Additional Previleges</div>
+                <div className={`${style.cardTextBoldStyle} ${style.marginTop20}`}>Selected Additional Privileges</div>
               )}
               {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div
@@ -2537,7 +2537,7 @@ const NewActiveApplication = ({
                 </div>
               ))}
               {form?.privileges?.additionalPrivileges?.length !== 0 && (
-                <div className={style.cardTextBoldStyle}>Selected Additional Previleges</div>
+                <div className={`${style.cardTextBoldStyle} ${style.marginTop20}`}>Selected Additional Privileges</div>
               )}
               {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div
