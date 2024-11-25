@@ -1051,7 +1051,7 @@ const NewActiveApplication = ({
     temp.push({
       "type": "icon", "icon": medicalDirectives?.map(innerData =>
         <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
-            ${style.verticalAlignCenter} ${style.justifyCenter}`}>
+            ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}>
           {innerData?.status === 'COMPLETED' ? (
             <CheckCircleOutlineIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
           ) : (
@@ -2222,7 +2222,7 @@ const NewActiveApplication = ({
         return (
           <>
             <div className={style.padding}>
-              <div className={style.cardTextBoldStyle}>Selected Previleges</div>
+              <div className={style.cardTextBoldStyle}>Selected Privileges</div>
               {form?.privileges?.obligatedPrivileges?.map((data, index) => (
                 <div
                   className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
@@ -2527,7 +2527,7 @@ const NewActiveApplication = ({
         return (
           <>
             <div className={style.padding}>
-              <div className={style.cardTextBoldStyle}>Selected Previleges</div>
+              <div className={style.cardTextBoldStyle}>Selected Privileges</div>
               {form?.privileges?.obligatedPrivileges?.map((data, index) => (
                 <div
                   className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
@@ -3807,7 +3807,7 @@ const NewActiveApplication = ({
                           <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
+                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Data & POD Verification </div>
                             </div>
 
                           </div>
@@ -5426,7 +5426,7 @@ const NewActiveApplication = ({
                           <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> POD Verification Check </div>
+                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Data & POD Verification </div>
                             </div>
 
                           </div>
@@ -7182,11 +7182,11 @@ const NewActiveApplication = ({
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                        // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
-                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                          className={`${style.bigButtonStyle} ${style.cursorPointer}`}
                           // className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // onClick={isApproved ? onClickApproveFunction : undefined}
                           onClick={() => {
@@ -7198,9 +7198,9 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                       className={`${style.bigButtonStyle} ${style.cursorPointer}`}
-                        // className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
-                        // style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
+                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                      // className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
+                      // style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
                       >
                         <div
                           className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
@@ -7309,7 +7309,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {(selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")  && (
+                  {(selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7417,8 +7417,8 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                            className={`${style.bigButtonStyle} ${style.cursorPointer}`}
-                              // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                              className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                            // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
@@ -7460,8 +7460,8 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                            className={`${style.bigButtonStyle} ${style.cursorPointer}`}
-                              // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                              className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                            // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
@@ -7504,8 +7504,8 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                       className={`${style.bigButtonStyle} ${style.cursorPointer}`}
-                        // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                      // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div

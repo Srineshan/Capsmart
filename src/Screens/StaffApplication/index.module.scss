@@ -195,7 +195,7 @@ body::-webkit-scrollbar {
 
 .buttonTextStyle {
   text-align: center;
-  font: normal normal bold 17px/25px proxima-nova;
+  font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   text-transform: uppercase;
@@ -1365,6 +1365,11 @@ body::-webkit-scrollbar {
   margin-left: 10px;
 }
 
+.justifyCenterReappointment {
+  display: flex;
+  justify-content: center;
+}
+
 .floatLeft {
   float: left !important;
 }
@@ -1679,7 +1684,7 @@ select {
 
 .bigButtonTextStyle {
   text-align: center;
-  font: normal normal bold 17px/25px proxima-nova;
+  font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -2321,7 +2326,7 @@ select {
 
 .grid2to1 {
   display: grid;
-  grid-template-columns: 69% 30%;
+  grid-template-columns: 74% 25%;
   grid-gap: 1%;
 }
 
@@ -4527,7 +4532,7 @@ input[type="number"] {
 
 .medicalDirectivesGridStyle {
   display: grid;
-  grid-template-columns: 3% 53% 10% 10% 15% 3%;
+  grid-template-columns: 5% 51% 10% 10% 15% 3%;
   gap: 1%;
 }
 
