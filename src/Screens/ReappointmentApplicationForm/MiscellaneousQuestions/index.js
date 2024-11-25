@@ -295,8 +295,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                         </div>
                     )}
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
                     </div>
                 </div>

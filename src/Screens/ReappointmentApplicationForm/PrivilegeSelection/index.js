@@ -142,6 +142,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 
+    useEffect(() => {
+        sessionStorage.removeItem('hasReloaded');
+    }, []);
+
     const getSelectedPrivilegeList = (value) => {
         let temp = selectedAdditionalPrivilegeForDisplay;
         if (selectedAdditionalPrivilegeForEdit?.id !== undefined) {
@@ -1233,8 +1237,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                     )}
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
                     </div>
                 </div>

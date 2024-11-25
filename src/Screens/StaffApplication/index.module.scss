@@ -4120,9 +4120,29 @@ input[type="number"] {
   text-align: left;
 }
 
+.tableDataFontStyleCredReappointment {
+  font: normal normal bold 16px/20px proxima-nova;
+  margin-left: 20px;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-align: left;
+}
+
 .tableHeaderGridStyleFormCred {
   display: grid;
   grid-template-columns: 70% 21% 9%;
+  grid-gap: 1%;
+}
+
+.tableHeaderGridStyleFormReappointmentForStaff {
+  display: grid;
+  grid-template-columns: 5% 78% 14%;
+  grid-gap: 1%;
+}
+
+.tableHeaderGridStyleFormReappointment {
+  display: grid;
+  grid-template-columns: 85% 14%;
   grid-gap: 1%;
 }
 
@@ -4566,7 +4586,7 @@ input[type="number"] {
 
 .lableReadOnlyStyleInPOD {
   text-align: left;
-  font: normal normal normal 14px/20px proxima-nova;
+  font: normal normal normal 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
