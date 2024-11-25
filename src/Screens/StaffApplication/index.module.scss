@@ -195,7 +195,7 @@ body::-webkit-scrollbar {
 
 .buttonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 17px/25px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   text-transform: uppercase;
@@ -1679,7 +1679,7 @@ select {
 
 .bigButtonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 17px/25px proxima-nova;
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -2321,8 +2321,8 @@ select {
 
 .grid2to1 {
   display: grid;
-  grid-template-columns: 63% 35%;
-  grid-gap: 20px;
+  grid-template-columns: 69% 30%;
+  grid-gap: 1%;
 }
 
 .grid5and1 {
@@ -3995,7 +3995,7 @@ input[type="number"] {
 
 .eSignDialog {
   height: 75%;
-  width: 60% !important;
+  width: 70% !important;
 }
 
 .eSignDialogBackground {
@@ -4580,4 +4580,70 @@ input[type="number"] {
   font: normal normal medium 20px/28px proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.itemLeft {
+  padding: 10px;
+  /* Inner padding for each line */
+  text-align: left;
+}
+
+.privilegeCodeGrid {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 10px;
+}
+
+.cardDescription {
+  text-align: left;
+  font: normal normal normal 18px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+}
+
+.restrictedPrivilegeGrid {
+  display: grid;
+  grid-template-columns: 5% 78% 15%;
+  gap: 1%;
+}
+
+.restrictedPrivilegeGrid> :nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(5) {
+  grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(6) {
+  grid-column: 1 / -1;
+}
+
+.fileDisplay {
+  padding: 0 10px;
+  background-color: $secondarycolor;
+}
+
+.fileDisplayText {
+  font: normal normal normal 15px/20px proxima-nova;
+  color: #2C2C2C;
+}
+
+.padding {
+  padding: 20px;
+}
+
+.privilegeTitleStyle {
+  text-align: left;
+  text-decoration: underline;
+  font: normal normal bold 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
 }

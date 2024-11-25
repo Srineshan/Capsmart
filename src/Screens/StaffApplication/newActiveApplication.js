@@ -24,6 +24,8 @@ import DocumentIcon from "../../images/document.png";
 import EditBlue from "../../images/editBlue.png";
 import CryptoJS from "crypto-js";
 import OutGoing from "../../images/Outgoing.png";
+import VerifiedImage from "./../../images/verifiedImage.png";
+import ToBeVerifiedImage from "./../../images/toBeVerifiedImage.png";
 import Popover from "@mui/material/Popover";
 import style from "./index.module.scss";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
@@ -49,6 +51,9 @@ import Dropzone from "react-dropzone";
 import TableTwo from "../../Components/TableDesignTwo";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import CommonRadio from "../../Components/CommonFields/CommonRadio";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -146,6 +151,10 @@ const NewActiveApplication = ({
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const [isButtonDisabled1, setIsButtonDisabled1] = useState(true);
   const [files, setFiles] = useState([]);
+  const [selectedPrivilege, setSelectedPrivilege] = useState('');
+  const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] = useState([]);
+  const [showCurrentPrivileges, setShowCurrentPrivileges] = useState(false);
+  const [staffPrivilege, setStaffPrivilege] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
@@ -356,6 +365,10 @@ const NewActiveApplication = ({
   useEffect(() => {
     helpText();
   }, [currentPage]);
+
+  useEffect(() => {
+    getStaffPrivilege();
+  }, [form]);
 
   useEffect(() => {
     getFileData();
@@ -1181,6 +1194,166 @@ const NewActiveApplication = ({
 
     return false;
   };
+
+  const getStaffPrivilege = async () => {
+    if (form) {
+      const { data: privilege } = await GET(
+        `entity-service/staffPrivilege?department=${form?.basicDetailReferences?.department?.id}`
+      );
+      setStaffPrivilege(privilege);
+    }
+  }
+
+  const handleChange = (privilegeId) => {
+    setSelectedPrivilege(privilegeId);
+    setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
+  }
+
+  const getFields = () => {
+    if (selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) {
+      return (
+        <>
+          <div className={style.padding}>
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
+
+            {
+              selectedPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
+                <div>
+                  <div className={style.categoryGrid}>
+                    <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                  </div>
+                  <>{
+                    categories?.privileges?.map(privileges => (
+                      <div className={style.privilegeCodeGrid}>
+                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                      </div>
+
+                    ))
+                  }
+                  </>
+                </div>
+              )
+
+              )
+
+              )
+            }
+
+          </div>
+          {selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== 0 && selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined && (
+            <div className={style.padding}>
+              <div className={style.cardDescription}>{'The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below.'}</div>
+
+              {
+                selectedPrivilegeForDisplay?.map((data, index) => data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories, categoriesIndex) => (
+                  <div key={`${index}${categoriesIndex}`}>
+                    <>
+                      {
+                        categories?.privileges?.map((privileges, privilegesIndex) => (
+                          <div className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ''}`} key={`${index}${privilegesIndex}`}>
+                            <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                            <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                            <div className={style.floatRight}>
+                              <CommonRadio
+                                value={privileges?.response || ''}
+                                onChange={(e) => { }}
+                                radioValue={['NO', 'YES']}
+                                label={['No', 'Yes']}
+                              />
+                            </div>
+                            {privileges?.response === 'YES' && (privileges?.isevidenceRequired || privileges?.isevidenceRequired === undefined) && (
+                              <>
+                                <div className={style.marginTop20}>
+                                  <CKEditor
+                                    editor={ClassicEditor}
+                                    data={privileges?.notes?.notes || ''}
+                                    onChange={(event, editor) => {
+                                    }}
+                                    onReady={(editor) => {
+                                      editor.editing.view.change((writer) => {
+                                        writer.setStyle(
+                                          "height",
+                                          "150px",
+                                          editor.editing.view.document.getRoot()
+                                        );
+                                      });
+                                    }}
+                                    config={{
+                                      placeholder: 'Insert any privilege competency and qualification information...',
+                                    }}
+                                  />
+                                </div>
+                                {/* <div className={style.marginTop10}>
+                                                                <div className={`${style.uploadButton}`}>
+                                                                    <div className={style.uploadGrid}>
+                                                                        <label for={`file-upload-dynamic-basic${privilegesIndex}`} className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}>
+                                                                            Upload any supporting documents for evidence of qualification and competence
+                                                                        </label>
+                                                                        <DescriptionOutlinedIcon sx={{ color: '#787f87' }} />
+
+                                                                    </div>
+                                                                </div>
+                                                                <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                                                    onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }}
+                                                                />
+                                                            </div> */}
+                                {/* <div className={style.marginTop10}>
+                                  <div className={`${style.uploadButton}`}>
+                                    <div className={style.uploadGrid}>
+                                      {(privileges?.file !== undefined && privileges?.file !== null) ? (
+                                        <img src={VerifiedImage} alt="" className={`${style.imgIcon} `} />
+                                      ) : (
+                                        <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
+                                      )}
+                                      <div className={`${style.uploadText} ${style.verticalAlignCenter}`}>
+                                        Upload any supporting documents for evidence of qualification and competence
+                                      </div>
+                                      <div>
+                                        <label for={`file-upload-dynamic-basic${privilegesIndex}`} className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}>Click to upload</label>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <input id={`file-upload-dynamic-basic${privilegesIndex}`} type="file" accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx" onChange={(e) => { handleRestrictedFileSelection(index, categoriesIndex, privilegesIndex, e.target.files[0], 'file') }} />
+                                </div> */}
+                                {privileges?.file !== null && privileges?.file?.fileName !== undefined && (
+                                  <div className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                                    <div className={style.displayInRow}>
+                                      <div onClick={() => { window.open(privileges?.file?.fileURL, '_blank'); }}>
+                                        {privileges?.file?.fileType === 'application/pdf' ?
+                                          <img src={PdfDoc} alt="" className={style.docTypeImgStyle} />
+                                          : privileges?.file?.fileType?.startsWith("image/") ?
+                                            <img src={ImgDoc} alt="" className={style.docTypeImgStyle} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} />}
+                                      </div>
+                                      <div className={style.marginLeft}>{privileges?.file?.fileName}</div>
+                                    </div>
+                                    {/* <div>
+                                      <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleRestrictedSelection(index, categoriesIndex, privilegesIndex, null, 'removeFile') }} />
+                                    </div> */}
+                                  </div>
+                                )}
+                                <br />
+                              </>
+                            )}
+                          </div>
+
+                        ))
+                      }
+                    </>
+                  </div>
+                )
+
+                )
+
+                )
+              }
+
+            </div>
+          )}
+        </>
+      )
+    }
+  }
 
   // Helper function to get the selectedTab role
   const getSelectedTabRole = (selectedTab) => {
@@ -2036,22 +2209,25 @@ const NewActiveApplication = ({
       case "PrivilegeSelection":
         return (
           <>
-            <div className={style.marginLeft50}>
+            <div className={style.padding}>
               <div className={style.cardTextBoldStyle}>Selected Previleges</div>
               {form?.privileges?.obligatedPrivileges?.map((data, index) => (
                 <div
                   className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
                   key={index}
                 >
-                  {data?.privilegeSetTitle}
+                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
                 </div>
               ))}
+              {form?.privileges?.additionalPrivileges?.length !== 0 && (
+                <div className={style.cardTextBoldStyle}>Selected Additional Previleges</div>
+              )}
               {form?.privileges?.additionalPrivileges?.map((data, index) => (
                 <div
                   className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
                   key={index}
                 >
-                  {data?.privilegeSetTitle}
+                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
                 </div>
               ))}
             </div>
@@ -6535,7 +6711,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )}
-                  {(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                {(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -6567,7 +6743,7 @@ const NewActiveApplication = ({
                 )}
                 <div className={`${style.marginTop20} ${style.marginBottom20}`}>
 
-                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" &&(!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
+                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -6581,7 +6757,7 @@ const NewActiveApplication = ({
                           }}
                         >
                           {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
-                           RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH NOTES
                         </div>
                       </div>
                       <div
@@ -6633,7 +6809,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                           RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH NOTES
                         </div>
                       </div>
                       <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
@@ -7572,6 +7748,24 @@ const NewActiveApplication = ({
             file={selectedFile}
           />
         )}
+        <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={style.heading}>Selected Privilege Set</div>
+                <div className={style.displayInRow}>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                    onClick={() => { setShowCurrentPrivileges(false) }}
+                  />
+                </div>
+              </div>
+              <div>{getFields()}</div>
+            </div>
+          </div>
+        </Dialog>
       </div>
     </>
   );
