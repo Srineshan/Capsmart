@@ -327,9 +327,9 @@ const ActiveStaffList = ({
         },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
       // applicantId.push(data?.displayId || "123");
-      applicantId.push("123");
+      applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
-      applicantType.push("Doctor");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -473,9 +473,9 @@ const ActiveStaffList = ({
         " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
-      applicantType.push("Doctor");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       // applicantId.push(data?.displayId);
-      applicantId.push("345");
+      applicantId.push(data?.staffId || "123");
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -573,8 +573,8 @@ const ActiveStaffList = ({
         data?.applicant?.name?.firstName.slice(1).toLowerCase()
         },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
-      applicantId.push(data?.displayId || "123");
-      applicantType.push(data?.providerType?.serviceProviderType || "Dentist");
+      applicantId.push(data?.staffId || "123");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")

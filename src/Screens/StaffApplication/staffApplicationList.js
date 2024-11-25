@@ -2161,7 +2161,7 @@ const StaffApplicationList = ({
                           handleClick();
                         }}
                       >
-                        Applicants Rejected ({applicationRejected?.appointmentRequestsDenied})
+                        Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
                       </div>
                       <div
                         className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}

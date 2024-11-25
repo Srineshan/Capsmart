@@ -123,6 +123,9 @@ const StaffApplicationTopTiles = () => {
       setApplicationCreationType(storedApplicationType);
       setSelectedTab(storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments');
     }
+    else {
+      sessionStorage.setItem('applicationCreationType', 'NEW');
+    }
   }, []);
 
   // Fetch counts on mount and when application type changes

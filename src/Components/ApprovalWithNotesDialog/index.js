@@ -20,7 +20,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userRoleComments, setUserRoleComments] = useState('');
-  const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false, isChecked3: false });
+  const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false});
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
@@ -101,7 +101,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const checkRequirements = () => {
     return userRole.includes('Chief Of Staff')
       ? isChecked.isChecked1
-      : (isChecked.isChecked2 && isChecked.isChecked3);
+      : (isChecked.isChecked2 );
   };
 
   const handleSignatureClick = () => {
@@ -118,11 +118,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
     if (userRole.includes('Chief Of Staff')) {
       setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && hasValidSignature);
     } else if (userRole.includes('Credentialing Committee')) {
-      setIsApproveEnabled(isChecked.isChecked2 && isChecked.isChecked3 && hasValidComments && hasValidSignature);
+      setIsApproveEnabled(isChecked.isChecked2 && hasValidComments && hasValidSignature);
     }
   };
   const onClose = () => {
     getActiveApplicationView(false);
+    getIsOpen(false);
   };
 
   const onClickApproveMoveFunction = () => {
@@ -132,56 +133,57 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
 
   const handleApplicationApprove = async () => {
     let role;
-  let notes = "";
-  let isDelegate = true; // Default value for isDelegate
-
+    let notes;
+    let isDelegate = true; // Default value for isDelegate
+  
     if (selectedTab === 'level-2' && applicationType === "NEW") {
-        role = "Department Head";
-        notes = "";
+      role = "Department Head";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-        role = "Credentialing Committee";
-        notes = "";
+      role = "Credentialing Committee";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-        role = "Chief Of Staff";
-        notes = "";
+      role = "Credentialing Committee";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
-        role = "Advisory Committee";
-        notes = "";
+      role = "Advisory Committee";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-        role = "Advisory Committee";
-        notes = "";
+      role = "Advisory Committee";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
-        role = "Board";
-        notes = "";
+      role = "Board";
+      notes = { userRoleComments };
     } else if (selectedTab === 'level-5' && applicationType === "NEW") {
-        role = "Board";
-        notes = "";
+      role = "Board";
+      notes = { userRoleComments };
     }
-
+  
     if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
       isDelegate = false;
-  }
-  if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    }
+    if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
       isDelegate = false;
-  }
-
-  let temp = {
-    role: role,
-    notes: isDelegate ? notes : ""
-  };
-
-    // const requestData = isDelegate ? temp : {};
-
+    }
+    if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+      isDelegate = false;
+    }
+  
+    let temp = {
+      role:isDelegate ? role : " ",
+      notes: isDelegate ? notes : ""
+    };
+  
     await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
-        .then(response => {
-            console.log('success');
-            onClose();
-        })
-        .catch((error) => {
-            console.log(error);
-        });
-};
-
+      .then(response => {
+        console.log('success');
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  
 const getApplicationMoveToNext = async () => {
   
   let role;
@@ -191,18 +193,25 @@ const getApplicationMoveToNext = async () => {
   // Determine role based on selectedTab and applicationType
   if (selectedTab === 'level-2' && applicationType === "NEW") {
     role = "Department Head";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
     role = "Credentialing Committee";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
-    role = "Chief Of Staff";
+    role = "Credentialing Committee";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
     role = "Advisory Committee";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
     role = "Advisory Committee";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
     role = "Board";
+    // notes = {userRoleComments};
   } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
     role = "Board";
+    // notes = {userRoleComments};
   }
 
   // Override isDelegate logic for specific conditions
@@ -212,9 +221,12 @@ const getApplicationMoveToNext = async () => {
   if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
       isDelegate = false;
   }
+  if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    isDelegate = false;
+  }
 
   let temp = {
-    role: role,
+    role:isDelegate ? role : " ",
     notes: isDelegate ? notes : ""
   };
 
@@ -299,7 +311,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Recommended With Notes From {userRole} for Consideration
+              Recommended With Notes 
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
@@ -346,13 +358,13 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 checked={isChecked.isChecked2}
                 onChange={handleCheckboxChange('isChecked2')}
                 />
-                <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div>
-                <CommonCheckBox
+                {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
+                {/* <CommonCheckBox
                 className={`${style.marginTop10}`}
                 label="The medical staff committee and the institution do not assume liability for the individual actions or clinical decisions made by the approved appointed staff member. The staff member will retain full responsibility for their professional conduct and patient care activities."
                 checked={isChecked.isChecked3}
                 onChange={handleCheckboxChange('isChecked3')}
-                />
+                /> */}
                 </>
             )} 
              {/* <ESignature/> */}
@@ -396,7 +408,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 onClick={onClickApproveMoveFunction}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
-                <div className={style.reviewButton}>APPROVE</div>
+                <div className={style.reviewButton}>RECOMMENDED</div>
               </div>
             </div>
           </div>
