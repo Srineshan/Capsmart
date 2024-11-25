@@ -4113,7 +4113,7 @@ const NewActiveApplication = ({
                                           ) : (
                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
+                                                Verified
                                               </div>
                                             </div>
                                           )}
@@ -4241,7 +4241,7 @@ const NewActiveApplication = ({
                                       </>
                                     )}
                                   </div>))}
-                                  { applicationType === "REAPPOINTMENT" ?(
+                                  { (userRole?.includes("Staff Manager") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ?(
                                   <div className={`${style.margin20}`}>
                                     <div className={`${style.fourColumnGrid}`}>
                                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4293,6 +4293,13 @@ const NewActiveApplication = ({
                                     </div>
                                   </div>
                                  ) : (" ")}
+                                    {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                                    <div className={`${style.margin20}`}>
+                                      <div className={`${style.textCardStyle} ${style.buttonTextStyle} ${style.alignCenter}`}>
+                                      Pending Cred. Comm. Verification
+                                      </div>
+                                    </div>
+                                  </>)} */}
                                   </>
 
                           </div>
@@ -7204,7 +7211,7 @@ const NewActiveApplication = ({
           <div>
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
               <>
-                {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-3") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7263,7 +7270,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )}
-                <div className={`${style.marginTop20} ${style.marginBottom20}`}>
+                <div className={`${style.marginBottom20}`}>
 
                   {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
@@ -7348,7 +7355,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
+                  {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -7370,9 +7377,17 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && (
+                    {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                      <div>
+                        <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending Cred. Comm. Verification
+                        </div>
+                      </div>
+                    </>)}
+
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -7396,7 +7411,7 @@ const NewActiveApplication = ({
                     </div>
                   )}
 
-                  {(selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7448,6 +7463,22 @@ const NewActiveApplication = ({
                       </div>
                     </>
                   )}
+
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (<>
+                      <div>
+                        <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending MAC Verification
+                        </div>
+                      </div>
+                    </>)}
+
+                    {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (<>
+                      <div>
+                        <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending BOD Verification
+                        </div>
+                      </div>
+                    </>)}
 
                   {userRole?.includes('Chief Of Staff') && (
                     <>
@@ -7574,7 +7605,7 @@ const NewActiveApplication = ({
                     </>
                   )}
 
-                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
+                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW") || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
