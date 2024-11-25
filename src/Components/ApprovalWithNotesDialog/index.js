@@ -13,14 +13,14 @@ import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationView,selectedTab}) => {
+const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userRoleComments, setUserRoleComments] = useState('');
-  const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false});
+  const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false });
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
@@ -32,10 +32,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const [encryptedText, setEncryptedText] = useState('');
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [name, setName] = useState('')
-  const [applicationType, setApplicationType] = useState(() => 
+  const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
-  
+
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
@@ -46,7 +46,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
     setTodayDate();
     handleSignatureClick();
   };
-  
+
 
   const setTodayDate = () => {
     const today = new Date();
@@ -62,7 +62,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   useEffect(() => {
     setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
     setIsSigned(
-      formDetails?.forms?.[19]?.esign?.esign !== undefined && 
+      formDetails?.forms?.[19]?.esign?.esign !== undefined &&
       formDetails?.forms?.[19]?.acknowledged
     );
   }, [formDetails]);
@@ -77,7 +77,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
     checkApproveEnabled();
   }, [isChecked, userRoleComments, isSigned]);
 
-    useEffect(() => {
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
@@ -101,11 +101,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
   const checkRequirements = () => {
     return userRole.includes('Chief Of Staff')
       ? isChecked.isChecked1
-      : (isChecked.isChecked2 );
+      : (isChecked.isChecked2);
   };
 
   const handleSignatureClick = () => {
-     {
+    {
       setIsSigned(!isSigned);
       setIsEdited(true);
     }
@@ -136,7 +136,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
     let notes = { userRoleComments }
     let isDelegate = true; // Default value for isDelegate
     // notes = { userRoleComments }
-  
+
     if (selectedTab === 'level-2' && applicationType === "NEW") {
       role = "Department Head";
       // notes = { userRoleComments };
@@ -159,24 +159,24 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
       role = "Board";
       // notes = { userRoleComments };
     }
-  
+
     if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
       isDelegate = false;
     }
-     else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
       isDelegate = false;
     }
     else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
       isDelegate = false;
-    } else{
+    } else {
       notes = { userRoleComments: '' }
     }
-  
+
     let temp = {
-      role:isDelegate ? role : "",
+      role: isDelegate ? role : "",
       notes: notes,
     };
-  
+
     await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('success');
@@ -186,64 +186,64 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat , getActiveApplicationV
         console.log(error);
       });
   };
-  
-const getApplicationMoveToNext = async () => {
-  
-  let role;
-  let notes;
-  let isDelegate = true; // Default value for isDelegate
 
-  // Determine role based on selectedTab and applicationType
-  if (selectedTab === 'level-2' && applicationType === "NEW") {
-    role = "Department Head";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" ) {
-    role = "Credentialing Committee";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-3' && applicationType === "NEW" ) {
-    role = "Credentialing Committee";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" ) {
-    role = "Advisory Committee";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-4' && applicationType === "NEW" ) {
-    role = "Advisory Committee";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" ) {
-    role = "Board";
-    // notes = {userRoleComments};
-  } else if (selectedTab === 'level-5' && applicationType === "NEW" ) {
-    role = "Board";
-    // notes = {userRoleComments};
-  }
+  const getApplicationMoveToNext = async () => {
 
-  // Override isDelegate logic for specific conditions
-  if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+    let role;
+    let notes;
+    let isDelegate = true; // Default value for isDelegate
+
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2' && applicationType === "NEW") {
+      role = "Department Head";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+      role = "Credentialing Committee";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+      role = "Credentialing Committee";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+      role = "Advisory Committee";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+      role = "Advisory Committee";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+      role = "Board";
+      // notes = {userRoleComments};
+    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+      role = "Board";
+      // notes = {userRoleComments};
+    }
+
+    // Override isDelegate logic for specific conditions
+    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
       isDelegate = false;
-  }
-  if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    }
+    if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
       isDelegate = false;
-  }
-  if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
-    isDelegate = false;
-  }
+    }
+    if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+      isDelegate = false;
+    }
 
-  let temp = {
-    role:isDelegate ? role : " ",
-    notes: notes ,
+    let temp = {
+      role: isDelegate ? role : " ",
+      notes: notes,
+    };
+
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
+      .then(response => {
+        console.log('successfull');
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
-  await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
-    .then(response => {
-      console.log('successfull');
-      onClose();
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-const handleCheckboxChange = (checkboxName) => (event) => {
+  const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {
       ...isChecked,
       [checkboxName]: event.target.checked,
@@ -264,8 +264,8 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   }
 
   return (
-  
-    
+
+
     <Dialog
       isOpen={getIsOpen}
       onClose={() => getIsOpen(false)}
@@ -292,21 +292,23 @@ const handleCheckboxChange = (checkboxName) => (event) => {
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
             <div className={`${style.cardStyle} ${style.marginTop10}`}>
-              <div className={`${style.namefontstyle} ${style.marginTop10}`}>
-                {formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+              <div className={style.spaceBetween}>
+                <div className={`${style.namefontstyle} ${style.marginTop10}`}>
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
-                <span className={`${style.displayIdFontStyle}`}>{`${formDetails?.displayId}` || "-"}</span>
-              </div>
-              <div className={`${style.applicantTypeFontStyle}`}>
-                {formDetails?.providerType?.category}
+                    : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  <span className={`${style.applicantTypeFontStyle}`}>
+                    {formDetails?.providerType?.category}
+                  </span>
+                </div>
+                <div className={`${style.displayIdFontStyle} ${style.marginTop} ${style.marginRight}`}>{`${formDetails?.displayId}` || "-"}</div>
               </div>
               <div className={`${style.grid}`}>
                 <div>
                   <div>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span></div>
-                  <div>Speciality:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span></div>
+                  <div>Division Or Specialty:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span></div>
                 </div>
                 <div>
                   <div>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
@@ -314,52 +316,52 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Recommended With Notes 
+              Notes
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
               </div>
             </div> */}
-              {/* <div className={`${style.notesBorderStyle}`}> */}
-              <div className={`${style.marginTop}`}>
+            {/* <div className={`${style.notesBorderStyle}`}> */}
+            <div className={`${style.marginTop10}`}>
               <CKEditor
-                  editor={ClassicEditor}
-                  data={userRoleComments}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    setUserRoleComments(data);
-                  }}
-                  config={{
-                    placeholder: "Enter comments and notes here",
-                  }}
-                  onReady={(editor) => {
-                    editor.editing.view.change((writer) => {
-                        writer.setStyle(
-                            "height",
-                            "150px",
-                            editor.editing.view.document.getRoot()
-                        );
-                    });
+                editor={ClassicEditor}
+                data={userRoleComments}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setUserRoleComments(data);
                 }}
-                />
-                </div>
+                config={{
+                  placeholder: "Enter comments and notes here",
+                }}
+                onReady={(editor) => {
+                  editor.editing.view.change((writer) => {
+                    writer.setStyle(
+                      "height",
+                      "150px",
+                      editor.editing.view.document.getRoot()
+                    );
+                  });
+                }}
+              />
+            </div>
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
-                <CommonCheckBox
-              className={`${style.marginTop}`}
-              label={formatLabel("I as the chief of staff approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.",dynamicValues)}
-              checked={isChecked.isChecked1}
-              onChange={handleCheckboxChange('isChecked1')}
-            />
+              <CommonCheckBox
+                className={`${style.marginTop}`}
+                label={formatLabel("I as the chief of staff approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
+                checked={isChecked.isChecked1}
+                onChange={handleCheckboxChange('isChecked1')}
+              />
             )}
             {userRole.includes('Credentialing Committee') && (
-                <>
+              <>
                 <CommonCheckBox
-                className={`${style.marginTop}`}
-                label={formatLabel("The undersigned medical staff committee hereby approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.",dynamicValues)}
-                checked={isChecked.isChecked2}
-                onChange={handleCheckboxChange('isChecked2')}
+                  className={`${style.marginTop}`}
+                  label={formatLabel("The undersigned medical staff committee hereby approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
+                  checked={isChecked.isChecked2}
+                  onChange={handleCheckboxChange('isChecked2')}
                 />
                 {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
                 {/* <CommonCheckBox
@@ -368,57 +370,57 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 checked={isChecked.isChecked3}
                 onChange={handleCheckboxChange('isChecked3')}
                 /> */}
-                </>
-            )} 
-             {/* <ESignature/> */}
-             {/* {formDetails?.esignatureRequired && ( */}
-                    <div className={style.twoCol}>
-                    <div 
-                        onClick={onClicksignFunction}
-                        className={!checkRequirements() ? style.disabled : style.signatureContainer}
-                    >
-                        <ESignature
-                        userName={isSigned ? name : ""}
-                        encData={isSigned ? encryptedText : ''}
-                        showData={isSigned}
-                        showDatais={true}
-                        />
-                    </div>
-                    <div className={style.verticalAlignCenter}>
-                        <div className={style.displayInRow} onClick= {setTodayDate}>
-                        <div className={style.dateTitle}>Date: </div>
-                        <div className={`${style.date} ${style.marginLeft}`}>
-                        {isSigned
-                          ?  currentDate
-                          : ""}
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                 {/* )}  */}
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`}>
-            <div  onClick={() => getIsOpen(false)}>
-              <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
+              </>
+            )}
+            {/* <ESignature/> */}
+            {/* {formDetails?.esignatureRequired && ( */}
+            <div className={style.twoCol}>
+              <div
+                onClick={!checkRequirements() ? () => { } : onClicksignFunction}
+                className={!checkRequirements() ? style.disabled : style.signatureContainer}
+              >
+                <ESignature
+                  userName={isSigned ? name : ""}
+                  encData={isSigned ? encryptedText : ''}
+                  showData={isSigned}
+                  showDatais={true}
+                />
+              </div>
+              <div className={style.verticalAlignCenter}>
+                <div className={style.displayInRow} onClick={setTodayDate}>
+                  <div className={style.dateTitle}>Date: </div>
+                  <div className={`${style.date} ${style.marginLeft}`}>
+                    {isSigned
+                      ? currentDate
+                      : ""}
+                  </div>
+                </div>
+              </div>
             </div>
-            {/* <div 
+            {/* )}  */}
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`}>
+              <div onClick={() => getIsOpen(false)}>
+                <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
+              </div>
+              {/* <div 
                 className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`} 
                 onClick= {handleApplicationApprove}
               >
                 <div className={style.reviewButton}>APPROVE</div>
               </div> */}
-               <div
+              <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
-                onClick={onClickApproveMoveFunction}
+                onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
-                <div className={style.reviewButton}>RECOMMENDED</div>
+                <div className={style.reviewButton}>SUBMIT</div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </Dialog>
-    
+
   );
 };
 

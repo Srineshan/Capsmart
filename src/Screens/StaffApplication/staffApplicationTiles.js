@@ -22,7 +22,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   });
   const [userFlow, setUserFlow] = useState('');
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
-  const [applicationType, setApplicationType] = useState(() => 
+  const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const applicationId = "66dc44ec788741fedc982b01";
@@ -93,17 +93,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   // Handle user flow and role updates
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
-    
+
     const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
-    
+
     const newCurrentRoleIndex = isManagerOrChief
-      ? 0 
+      ? 0
       : Object.entries(UserFlowType).findIndex(([key, value]) => {
-          const details = value?.flowDetails;
-          return (
-            details &&
-            details.some((detail) => detail?.role && userRole?.includes(detail?.role?.roleName))
-          );
+        const details = value?.flowDetails;
+        return (
+          details &&
+          details.some((detail) => detail?.role && userRole?.includes(detail?.role?.roleName))
+        );
       });
 
     if (userRole.length > 0 && !initialTabSet) {
@@ -113,9 +113,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       getSelectedTab(initialTab);
       setInitialTabSet(true);
     }
-    
+
     setCurrentRoleIndex(newCurrentRoleIndex);
-  }, [userFlow, userRole, getSelectedTab, initialTabSet,applicationType]);
+  }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType]);
 
   const UserFlowType = userFlow?.workflow || [];
 
@@ -126,11 +126,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   // }));
 
   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
-    label: currentRoleIndex === index 
-      ? (applicationType === "NEW" 
-        ? "Applicants to Verify" 
-        : (applicationType === "REAPPOINTMENT" 
-          ? "Reappointment to Process" 
+    label: currentRoleIndex === index
+      ? (applicationType === "NEW"
+        ? "Applicants to Verify"
+        : (applicationType === "REAPPOINTMENT"
+          ? "Reappointments to Process"
           : value.tabDisplayName))
       : value.tabDisplayName,
     count: counts[`level-${key}`],

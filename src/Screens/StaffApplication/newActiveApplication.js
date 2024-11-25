@@ -3444,24 +3444,24 @@ const NewActiveApplication = ({
                                   )}
                                 </div>
                               ))}
-                              { applicationType === "REAPPOINTMENT" ? (
+                            {applicationType === "REAPPOINTMENT" ? (
                               <div className={`${style.margin20}`}>
-                              <div className={`${style.twoColumnGrid}`}>
-                              <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                <div
-                                  className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                  onClick={() => {
-                                    onClose();
-                                  }}
-                                >
-                                  SAVE IN PROGRESS
-                                </div>
-                              </div>
+                                <div className={`${style.twoColumnGrid}`}>
+                                  <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                    <div
+                                      className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                      onClick={() => {
+                                        onClose();
+                                      }}
+                                    >
+                                      SAVE IN PROGRESS
+                                    </div>
+                                  </div>
                                   <div
-                                    className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                                    className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                                   >
                                     <div
-                                      className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                      className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                       // onClick={() => {
                                       //   setShowApplicationDeclineDialog(true);
                                       // }}
@@ -3470,12 +3470,12 @@ const NewActiveApplication = ({
                                         onClickApproveMoveFunction();
                                       }}
                                     >
-                                      VERIFIED AND SENT TO CC
+                                      Verified, Send to Cred. Comm.
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                    ): ("")}
+                            ) : ("")}
                           </div>
                           {applicationType === "NEW" ? (
                             <div>
@@ -3906,30 +3906,30 @@ const NewActiveApplication = ({
                               )}
                             </>
                             <>
-                            {
-                              form?.formSchemas?.filter(
-                                (data) => {
-                                  if (form?.creationType === "NEW") {
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                      data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  } else {
-                                    // Default filter when form?.creationType is not "NEW"
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                      // data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  }
-                                })?.map((data, index) => (
+                              {
+                                form?.formSchemas?.filter(
+                                  (data) => {
+                                    if (form?.creationType === "NEW") {
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                                        data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    } else {
+                                      // Default filter when form?.creationType is not "NEW"
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
+                                        // data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    }
+                                  })?.map((data, index) => (
 
-                                  <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                    <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+                                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                      <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
 
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                      </div>
-                                      {/* {!(expand?.status && expand?.index === index + 1) && (
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                        </div>
+                                        {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
                             {form?.forms[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
@@ -3938,189 +3938,189 @@ const NewActiveApplication = ({
                             )}
                           </>
                         )} */}
-                                      {applicationType === "NEW" ? (
-                                        <>
-                                          {expand?.status && expand?.index === index + 1 && (
-                                            <>
-                                              {credApproval?.some((newData) => {
-                                                console.log("newData.approvalRequired:", newData.approvalRequired);
-                                                return newData.schemaId === data.id && newData.approvalRequired;
-                                              }) ? (
-                                                <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                    (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                        {applicationType === "NEW" ? (
+                                          <>
+                                            {expand?.status && expand?.index === index + 1 && (
+                                              <>
+                                                {credApproval?.some((newData) => {
+                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
+                                                  return newData.schemaId === data.id && newData.approvalRequired;
+                                                }) ? (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                      (() => {
+                                                        const isMatch = logDetails.logs.some((log) => {
+                                                          if (log.form && log.form.id) {
+                                                            const match = log.form.id === form?.forms[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                                            if (match) {
+                                                              let Match = false;
 
-                                                            // Check if userRole includes log.role
-                                                            if (userRole?.includes(log.role)) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
+                                                              // Check if userRole includes log.role
+                                                              if (userRole?.includes(log.role)) {
+                                                                console.log("Role matches user role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              // Determine selectedTabRole based on selectedTab
+                                                              let selectedTabRole;
+                                                              if (selectedTab === 'level-2') {
+                                                                selectedTabRole = "Department Head";
+                                                              } else if (selectedTab === 'level-3') {
+                                                                selectedTabRole = "Chief Of Staff";
+                                                              } else if (selectedTab === 'level-4') {
+                                                                selectedTabRole = "Advisory Committee";
+                                                              } else if (selectedTab === 'level-5') {
+                                                                selectedTabRole = "Board";
+                                                              } else if (selectedTab === 'level-1') {
+                                                                selectedTabRole = "Staff Manager";
+                                                              }
+
+                                                              // Check if selectedTabRole matches log.role
+                                                              if (selectedTabRole === log.role) {
+                                                                console.log("Selected tab role matches log role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              return Match;
                                                             }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            if (selectedTab === 'level-2') {
-                                                              selectedTabRole = "Department Head";
-                                                            } else if (selectedTab === 'level-3') {
-                                                              selectedTabRole = "Chief Of Staff";
-                                                            } else if (selectedTab === 'level-4') {
-                                                              selectedTabRole = "Advisory Committee";
-                                                            } else if (selectedTab === 'level-5') {
-                                                              selectedTabRole = "Board";
-                                                            } else if (selectedTab === 'level-1') {
-                                                              selectedTabRole = "Staff Manager";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
+                                                          return false;
+                                                        });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
-                                                              </div>
-                                                            ) : (
+                                                        return (
+                                                          <div>
+                                                            {isMatch ? (
                                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                   Approved
                                                                 </div>
                                                               </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()
-                                                  )}
-                                                </>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Approved
+                                                            ) : (
+                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
+                                                                </div>
+                                                              ) : (
+                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                    Approved
+                                                                  </div>
+                                                                </div>
+                                                              )
+                                                            )}
+                                                          </div>
+                                                        );
+                                                      })()
+                                                    )}
+                                                  </>
+                                                ) : (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Approved
+                                                    </div>
                                                   </div>
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-                                        </>
-                                      ) : (
-                                        <>
-                                          {credApproval?.some((newData) => {
-                                            console.log("newData.approvalRequired:", newData.approvalRequired);
-                                            return newData.schemaId === data.id && newData.approvalRequired;
-                                          }) ? (
-                                            <>
-                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                (() => {
-                                                  const isMatch = logDetails.logs.some((log) => {
-                                                    if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                )}
+                                              </>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              console.log("newData.approvalRequired:", newData.approvalRequired);
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                            }) ? (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                      if (match) {
-                                                        let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                        // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
-                                                          console.log("Role matches user role: " + log.role);
-                                                          Match = true;
+                                                          // Check if userRole includes log.role
+                                                          if (userRole?.includes(log.role)) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          // Determine selectedTabRole based on selectedTab
+                                                          let selectedTabRole;
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
+                                                          }
+
+                                                          // Check if selectedTabRole matches log.role
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
                                                         }
-
-                                                        // Determine selectedTabRole based on selectedTab
-                                                        let selectedTabRole;
-                                                        if (selectedTab === 'level-2') {
-                                                          selectedTabRole = "Department Head";
-                                                        } else if (selectedTab === 'level-3') {
-                                                          selectedTabRole = "Chief Of Staff";
-                                                        } else if (selectedTab === 'level-4') {
-                                                          selectedTabRole = "Advisory Committee";
-                                                        } else if (selectedTab === 'level-5') {
-                                                          selectedTabRole = "Board";
-                                                        } else if (selectedTab === 'level-1') {
-                                                          selectedTabRole = "Staff Manager";
-                                                        }
-
-                                                        // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
-                                                          console.log("Selected tab role matches log role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        return Match;
                                                       }
-                                                    }
-                                                    return false;
-                                                  });
+                                                      return false;
+                                                    });
 
-                                                  return (
-                                                    <div>
-                                                      {isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Approved
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                            >
-                                                              Approve
-                                                            </div>
-                                                          </div>
-                                                        ) : (
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                               Approved
                                                             </div>
                                                           </div>
-                                                        )
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })()
-                                              )}
-                                            </>
-                                          ) : (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
+                                                        ) : (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              >
+                                                                Approve
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()
+                                                )}
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Approved
+                                                </div>
                                               </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
+                                            )}
+                                          </>
+                                        )}
 
-                                      {/* {expand?.status && expand?.index === index + 1 && (
+                                        {/* {expand?.status && expand?.index === index + 1 && (
                               <>
                                 {credApproval?.filter(
                                   (newData) => {
@@ -4212,88 +4212,88 @@ const NewActiveApplication = ({
                                 )}
                               </>
                             )} */}
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        {applicationType === "NEW" ? (
-                                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                            {
-                                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                            }
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          {applicationType === "NEW" ? (
+                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                              {
+                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                                              }
 
+                                            </div>
+                                          ) : ''}
+                                        </div>
+                                      </div>
+                                      {applicationType === "NEW" ? (
+                                        <>
+                                          {expand?.status && expand?.index === index + 1 &&
+                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                              {renderFieldsBasedOnStep(data)}
+                                            </div>
+                                          }
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                            {renderFieldsBasedOnStepReappointment(data, index)}
                                           </div>
-                                        ) : ''}
+
+                                        </>
+                                      )}
+                                    </div>))}
+                              {applicationType === "REAPPOINTMENT" ? (
+                                <div className={`${style.margin20}`}>
+                                  <div className={`${style.fourColumnGrid}`}>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={() => {
+                                          onClose();
+                                        }}
+                                      >
+                                        SAVE IN PROGRESS
                                       </div>
                                     </div>
-                                    {applicationType === "NEW" ? (
-                                      <>
-                                        {expand?.status && expand?.index === index + 1 &&
-                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                            {renderFieldsBasedOnStep(data)}
-                                          </div>
-                                        }
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                          {renderFieldsBasedOnStepReappointment(data, index)}
-                                        </div>
-                                  
-                                      </>
-                                    )}
-                                  </div>))}
-                                  { applicationType === "REAPPOINTMENT" ?(
-                                  <div className={`${style.margin20}`}>
-                                    <div className={`${style.fourColumnGrid}`}>
-                                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                        <div
-                                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                          onClick={() => {
-                                            onClose();
-                                          }}
-                                        >
-                                          SAVE IN PROGRESS
-                                        </div>
-                                      </div>
+                                    <div
+                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                    >
                                       <div
-                                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        // onClick={() => {
+                                        //   setShowApplicationDeclineDialog(true);
+                                        // }}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
                                       >
-                                        <div
-                                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                          // onClick={() => {
-                                          //   setShowApplicationDeclineDialog(true);
-                                          // }}
-                                          onClick={() => {
-                                            setShowApplicationDeclineDialog(true);
-                                          }}
-                                        >
-                                          NOT RECOMMENDED
-                                        </div>
+                                        NOT RECOMMENDED
                                       </div>
+                                    </div>
                                     {/* </div> */}
                                     {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}> */}
-                                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                        <div
-                                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                          // onClick={onClickApproveFunction}
-                                          onClick={() => {
-                                            onClickApprovalFunction();
-                                          }}
-                                        >
-                                          RECOMMENDED WITH NOTES
-                                        </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        // onClick={onClickApproveFunction}
+                                        onClick={() => {
+                                          onClickApprovalFunction();
+                                        }}
+                                      >
+                                        RECOMMENDED WITH NOTES
                                       </div>
-                                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
-                                        <div
-                                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                                          onClick={onClickApproveMoveFunction}
-                                        >
-                                          RECOMMENDED
-                                        </div>
+                                    </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={onClickApproveMoveFunction}
+                                      >
+                                        RECOMMENDED
                                       </div>
                                     </div>
                                   </div>
-                                 ) : (" ")}
-                                  </>
+                                </div>
+                              ) : (" ")}
+                            </>
 
                           </div>
                           {applicationType === "NEW" ? (
@@ -7246,10 +7246,10 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                     <div
-                      className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                     >
                       <div
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
                         // onClick={() => {
                         //   setShowApplicationDeclineDialog(true);
                         // }}
@@ -7258,7 +7258,7 @@ const NewActiveApplication = ({
                           onClickApproveMoveFunction();
                         }}
                       >
-                        VERIFIED AND SENT TO CC
+                        Verified, Send to Cred. Comm.
                       </div>
                     </div>
                   </div>
@@ -7273,7 +7273,7 @@ const NewActiveApplication = ({
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
                           // onClick={isApproved ? onClickApproveFunction : undefined}
                           onClick={() => {
@@ -7285,12 +7285,12 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                       // className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
                       // style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
                       >
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           // onClick={selectedTab === 'level-1' && isApproved ? onClickApproveMoveFunction : undefined}
                           onClick={onClickApprovalFunction}
                         >
@@ -7313,9 +7313,9 @@ const NewActiveApplication = ({
                           RECOMMENDED WITH NOTES
                         </div>
                       </div>
-                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApprovalFunction}
                         >
                           RECOMMENDED
@@ -7337,9 +7337,9 @@ const NewActiveApplication = ({
                           RECOMMENDED WITH NOTES
                         </div>
                       </div>
-                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApprovalFunction}
                         >
                           RECOMMENDED
@@ -7361,9 +7361,9 @@ const NewActiveApplication = ({
                           RECOMMENDED WITH NOTES
                         </div>
                       </div>
-                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApprovalFunction}
                         >
                           RECOMMENDED
@@ -7385,9 +7385,9 @@ const NewActiveApplication = ({
                           RECOMMENDED WITH NOTES
                         </div>
                       </div>
-                      <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApproveMoveFunction}
                         >
                           RECOMMENDED
@@ -7437,9 +7437,9 @@ const NewActiveApplication = ({
                             RECOMMENDED WITH NOTES
                           </div>
                         </div>
-                        <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
                             onClick={onClickApproveMoveFunction}
                           >
                             RECOMMENDED
@@ -7465,9 +7465,9 @@ const NewActiveApplication = ({
                                 RECOMMENDED WITH NOTES
                               </div>
                             </div>
-                            <div className={`${style.bigButtonStyle} ${style.cursorPointer}`}>
+                            <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                               <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                 onClick={onClickApprovalFunction}
                               >
                                 RECOMMENDED
@@ -7504,12 +7504,12 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                              className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                              className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                             // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                 // onClick={isApproved ? onClickApproveMoveFunction : undefined}
                                 onClick={onClickApprovalFunction}
                               >
@@ -7547,12 +7547,12 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                             <div
-                              className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                              className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                             // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                 onClick={onClickApprovalFunction}
                               >
                                 RECOMMENDED
@@ -7591,12 +7591,12 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div
-                        className={`${style.bigButtonStyle} ${style.cursorPointer}`}
+                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                       // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
                       //  style={{ opacity: isApproved ? 1 : 0.5 }}
                       >
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApprovalFunction}
                         >
                           RECOMMENDED
@@ -7973,7 +7973,7 @@ const NewActiveApplication = ({
                   )}
                 </div>
               </>
-            ) : (selectedTab === 'level-5' &&  applicationType === "NEW" ) ? (
+            ) : (selectedTab === 'level-5' && applicationType === "NEW") ? (
               <>
                 <div className={`${style.cardLeftStyle2}`}>
                   <div className={`${style.displayInCol}`}>
@@ -8187,8 +8187,8 @@ const NewActiveApplication = ({
                   )}
                 </div>
               </>
-            ) : 
-            ""     
+            ) :
+              ""
             }
           </div>
         </div>

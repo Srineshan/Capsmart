@@ -80,13 +80,13 @@
 // export default ApplicationDecline;
 
 
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 import DeclineMailTemplate from './declineMailTemplate';
 import { GET, PUT } from "../../Screens/dataSaver";
 
-const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveApplicationView }) => {
+const ApplicationDecline = ({ getIsOpen, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
   const [notes, setNotes] = useState('');
   const [formDetails, setFormDetails] = useState([]);
@@ -125,7 +125,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
         `application-management-service/application/${id}/workflow/complete/REJECTED?isDelegate=false`,
         payload
       );
-      
+
       await getApplication();
       onClose();
     } catch (error) {
@@ -138,43 +138,40 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
       <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
         <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
           <div className={style.spaceBetween}>
-            <p className={style.extensionStyle1}>Not Recommended For <span>{formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}</span> As <span>{formDetails?.providerType?.serviceProviderType}</span></p>
+            <p className={style.extensionStyle1}>Credentialing Committee Review & Approval</p>
             <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
           </div>
           <div>
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={style.displayInRow}>
-                <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                  <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
+                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}</span>
-                  <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
+                    : ""}{", "}
+                    {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}</span>
+                  <div className={`${style.rejectionTextStyle} ${style.marginLeft20} `}>{formDetails?.providerType?.serviceProviderType}</div>
+
                 </div>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
               </div>
-              <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div>
               <div className={style.marginTop10}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                  <div className={`${style.twoColumnGridInner}`}>
+                  <div>
                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department}</span>
+                    <span className={`${style.rejectionTextStyle} ${style.marginLeft20}`}>{formDetails?.basicDetails?.departmentSpecialty?.department}</span>
                   </div>
-                  <div className={`${style.twoColumnGridInner}`}>
+                  <div>
                     <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}</span>
+                    <span className={`${style.rejectionTextStyle} ${style.marginLeft20}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}</span>
                   </div>
                 </div>
               </div>
               <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Speciality:</span>
-                    <span className={`${style.rejectionTextStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty}</span>
+                  <div>
+                    <span className={`${style.rejectionTextStyle}`}>Division Or Specialty:</span>
+                    <span className={`${style.rejectionTextStyle} ${style.marginLeft20}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty}</span>
                   </div>
                   {/* <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
@@ -183,7 +180,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
                 </div>
               </div>
             </div>
-            <div className={`${style.marginTop20} ${style.rejectionTextStyle}`}>Not Recommended With Notes*
+            <div className={`${style.marginTop20} ${style.rejectionTextStyle}`}>Not Recommended Reason*
               <div className={`${style.rejectionBorderStyle} ${style.marginTop10}`}>
                 <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                   <textarea
@@ -197,7 +194,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
             </div>
             <div className={`${style.displayInRow} ${style.alignCenter} ${style.marginTop10}`}>
               <button
-                className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer}`}
+                className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.floatRight} ${style.cursorPointer}`}
                 onClick={handleApplicationReject}
                 disabled={!notes}
                 style={{
@@ -205,7 +202,7 @@ const ApplicationDecline = ({ getIsOpen,getApplicationDeclineDialog ,getActiveAp
                   pointerEvents: notes ? 'auto' : 'none',
                 }}
               >
-                NOT RECOMMENDED
+                SUBMIT
               </button>
             </div>
           </div>

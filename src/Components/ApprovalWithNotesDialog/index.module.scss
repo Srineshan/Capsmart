@@ -18,6 +18,10 @@
   margin-left: 20px;
 }
 
+.marginRight {
+  margin-right: 20px;
+}
+
 .marginTop10 {
   margin-top: 10px;
 }
@@ -264,14 +268,13 @@
   color: #2C2C2C;
   text-transform: uppercase;
   opacity: 0.9;
-  margin-left: 10px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin-left: 10px;
-  line-height: 3;
+  line-height: 2;
 }
 
 .marginLeft10 {
@@ -409,6 +412,6 @@
   opacity: 1;
 }
 
-.editorcontainer{
+.editorcontainer {
   height: 300px;
 }
