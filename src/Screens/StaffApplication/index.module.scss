@@ -3839,52 +3839,57 @@ input[type="number"] {
 
 .businessMailingAddressGrid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(12, 1fr);
   gap: 10px;
 }
 
 .businessMailingAddressGrid> :nth-child(1) {
-  grid-column: span 2;
+  grid-column: span 12;
+  margin-top: 0px;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-  grid-column: span 4;
+  grid-column: span 5;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-  grid-column: span 6;
+  grid-column: span 7;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-  grid-column: span 3;
+  grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(6) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(7) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(8) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(9) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(10) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(11) {
-  grid-column: span 3;
+  grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(12) {
+  grid-column: span 6;
 }
 
 .licenseGrid {
@@ -4121,7 +4126,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyleCredReappointment {
-  font: normal normal bold 16px/20px proxima-nova;
+  font: normal normal bold 20px/26px proxima-nova;
   margin-left: 20px;
   letter-spacing: 0px;
   color: #52575d;
