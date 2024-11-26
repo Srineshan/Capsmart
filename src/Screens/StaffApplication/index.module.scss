@@ -19,6 +19,7 @@ body::-webkit-scrollbar {
 .margin20 {
   margin: 20px;
 }
+.mar
 
 .displayInCol {
   display: flex;
@@ -217,7 +218,7 @@ body::-webkit-scrollbar {
   font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
   color: red;
-  text-transform: uppercase;
+  // text-transform: uppercase;
   opacity: 1;
 }
 
@@ -1622,7 +1623,7 @@ select {
 
 .dialogStyle {
   height: 80%;
-  width: 60% !important;
+  width: 75% !important;
   border-radius: 20px;
 }
 
@@ -4703,4 +4704,19 @@ input[type="number"] {
 
 .padding30{
   padding: 30px;
+}
+
+.commentsNotesHeadingFontStyle {
+
+  text-align: left;
+  font: normal normal 600 22px/27px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginBothText{
+  margin-top: 5px;
+  margin-left: 10px;
 }

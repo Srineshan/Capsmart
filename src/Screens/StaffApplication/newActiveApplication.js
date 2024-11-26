@@ -67,6 +67,7 @@ const NewActiveApplication = ({
   selectedTab,
   getActiveApplicationView,
   getApprovalNotesCommentBox,
+  getApprovalwithoutNotesCommentBox,
   getApprovalNotesCommentBoxDept,
   getActiveApplicationTask,
   getEmailDialogBox,
@@ -760,6 +761,10 @@ const NewActiveApplication = ({
   const onClickApprovalFunction = () => {
     getApprovalNotesCommentBox(true);
   };
+
+  const onClickApprovalwithoutnotesFunction = () => {
+  getApprovalwithoutNotesCommentBox(true);
+};
 
   const onClickApprovalDeptFunction = () => {
     getApprovalNotesCommentBoxDept(true);
@@ -4279,7 +4284,7 @@ const NewActiveApplication = ({
                                           onClickApprovalFunction();
                                         }}
                                       >
-                                        RECOMMENDED WITH NOTES
+                                        RECOMMENDED WITH COMMENTS
                                       </div>
                                     </div>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7288,7 +7293,7 @@ const NewActiveApplication = ({
                           }}
                         >
                           {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div
@@ -7317,7 +7322,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7341,13 +7346,13 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalFunction}
+                          onClick={onClickApprovalwithoutnotesFunction}
                         >
                           RECOMMENDED
                         </div>
@@ -7365,7 +7370,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7382,7 +7387,7 @@ const NewActiveApplication = ({
                   {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
-                        Pending Cred. Comm. Verification
+                        Pending Cred. Comm. Recommendation                    
                       </div>
                     </div>
                   </>)}
@@ -7397,7 +7402,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7449,7 +7454,7 @@ const NewActiveApplication = ({
                               onClickApprovalFunction();
                             }}
                           >
-                            RECOMMENDED WITH NOTES
+                            RECOMMENDED WITH COMMENTS
                           </div>
                         </div>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7467,7 +7472,7 @@ const NewActiveApplication = ({
                   {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
-                        Pending MAC Verification
+                       Pending MAC Recommendation
                       </div>
                     </div>
                   </>)}
@@ -7475,7 +7480,7 @@ const NewActiveApplication = ({
                   {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
-                        Pending BOD Verification
+                        Pending BOD Recommendation
                       </div>
                     </div>
                   </>)}
@@ -7493,7 +7498,7 @@ const NewActiveApplication = ({
                                   onClickApprovalFunction();
                                 }}
                               >
-                                RECOMMENDED WITH NOTES
+                                RECOMMENDED WITH COMMENTS
                               </div>
                             </div>
                             <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7531,7 +7536,7 @@ const NewActiveApplication = ({
                                   onClickApprovalFunction();
                                 }}
                               >
-                                RECOMMENDED WITH NOTES
+                                RECOMMENDED WITH COMMENTS
                               </div>
                             </div>
                             <div
@@ -7574,7 +7579,7 @@ const NewActiveApplication = ({
                                   onClickApprovalFunction();
                                 }}
                               >
-                                RECOMMENDED WITH NOTES
+                                RECOMMENDED WITH COMMENTS
                               </div>
                             </div>
                             <div
@@ -7618,7 +7623,7 @@ const NewActiveApplication = ({
                             onClickApprovalFunction();
                           }}
                         >
-                          RECOMMENDED WITH NOTES
+                          RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div
@@ -8229,6 +8234,8 @@ const NewActiveApplication = ({
             <ApplicationDecline
               getApplicationDeclineDialog={getApplicationDeclineDialog}
               getActiveApplicationView={getActiveApplicationView}
+              selectedTab={selectedTab}
+              applicationType={applicationType}
             />
           )
         }
