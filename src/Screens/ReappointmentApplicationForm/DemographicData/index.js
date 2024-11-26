@@ -55,6 +55,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        if (formIndex !== undefined) {
+            setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
+            setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
+        }
+    }, [formIndex])
+
+    useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 
@@ -381,6 +388,31 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         //     });
     }
 
+    const handleYesOrNo = async (skip) => {
+        let yesOrNoData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
+        yesOrNoData.yesOrNoData = {
+            yesOrNoDemographic: yesOrNoDemographic,
+            yesOrNoAddress: yesOrNoAddress
+        }
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: yesOrNoData,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
+
     const addPath = (newPath) => {
         setFieldPaths((prevPaths) => {
             // Use spread operator to append new paths to existing array
@@ -402,6 +434,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const handleContinue = () => {
+        handleYesOrNo()
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         } else {
@@ -453,6 +486,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 setIsChanged={setShowDemographicInfo}
                                 isView={viewDemographicInfo}
                                 setIsView={setViewDemographicInfo}
+                                yesOrNoDemographic={yesOrNoDemographic}
+                                setYesOrNoDemographic={setYesOrNoDemographic}
                             />
                             {/* )}
                             <div className={style.displayInRow}>
@@ -581,13 +616,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
                                     <div
-                                        className={`${style.reappointmentButtonOutlined}`}
+                                        className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
                                         onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
                                         Yes
                                     </div>
                                     <div
-                                        className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                        className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
                                         NO

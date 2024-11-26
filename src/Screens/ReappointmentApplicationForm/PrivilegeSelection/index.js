@@ -330,6 +330,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     }
 
+    const handleSubmitAcknowledgement = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+
+    }
+
     const handleContinue = async () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
@@ -604,9 +625,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     onClick={() => handleSign('Core', 'Basic')}
                                 >
                                     <ESignature
-                                        userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
-                                        encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
-                                        showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
+                                        userName={selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                                        encData={selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                                        showData={(selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
                                         showDatais={true}
                                     />
                                 </div>
@@ -1239,7 +1260,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={style.threeColForButton}>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { setShowPaymentDialog(true); handleSubmitAcknowledgement() }}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
@@ -1247,7 +1268,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { setShowPaymentDialog(true); handleSubmitAcknowledgement() }}>CONTINUE</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                     </div>
                     {/* <div className={style.marginTop}>

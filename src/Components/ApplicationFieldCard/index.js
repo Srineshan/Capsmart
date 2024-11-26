@@ -75,7 +75,9 @@ const ApplicationFieldCard = ({
     setIsChanged,
     isView,
     setIsView,
-    isEdited
+    isEdited,
+    yesOrNoDemographic,
+    setYesOrNoDemographic
 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const { section, step } = useParams();
@@ -2230,14 +2232,14 @@ const ApplicationFieldCard = ({
                                             className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                         >
                                             <div
-                                                className={`${style.reappointmentButtonOutlined}`}
-                                                onClick={() => setIsChanged(true)}
+                                                className={`${yesOrNoDemographic === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
+                                                onClick={() => { setIsChanged(true); setYesOrNoDemographic('Yes') }}
                                             >
                                                 Yes
                                             </div>
                                             <div
-                                                className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                                onClick={() => setIsChanged(false)}
+                                                className={`${yesOrNoDemographic === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                                onClick={() => { setIsChanged(false); setYesOrNoDemographic('No') }}
                                             >
                                                 NO
                                             </div>
