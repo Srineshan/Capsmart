@@ -117,7 +117,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     if (userRole.includes('Chief Of Staff')) {
       setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && isSigned);
     } else if (userRole.includes('Credentialing Committee')) {
-      setIsApproveEnabled(isChecked.isChecked2 && hasValidComments && isSigned);
+      setIsApproveEnabled(isChecked.isChecked2 && isSigned);
     }
   };
   const onClose = () => {
@@ -335,7 +335,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
               </div> */}
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Comments*
+              Comments
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
