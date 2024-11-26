@@ -4246,7 +4246,7 @@ const NewActiveApplication = ({
                                         </>
                                       )}
                                     </div>))}
-                              {(userRole?.includes("Staff Manager") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
+                              {(userRole?.includes("Staff Manager") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4291,6 +4291,58 @@ const NewActiveApplication = ({
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                         onClick={onClickApproveMoveFunction}
+                                      >
+                                        RECOMMENDED
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (" ")}
+                                {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
+                                <div className={`${style.margin20}`}>
+                                  <div className={`${style.fourColumnGrid}`}>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={() => {
+                                          onClose();
+                                        }}
+                                      >
+                                        SAVE IN PROGRESS
+                                      </div>
+                                    </div>
+                                    <div
+                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                    >
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        // onClick={() => {
+                                        //   setShowApplicationDeclineDialog(true);
+                                        // }}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
+                                      >
+                                        NOT RECOMMENDED
+                                      </div>
+                                    </div>
+                                    {/* </div> */}
+                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        // onClick={onClickApproveFunction}
+                                        onClick={() => {
+                                          onClickApprovalFunction();
+                                        }}
+                                      >
+                                        RECOMMENDED WITH COMMENTS
+                                      </div>
+                                    </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={onClickApprovalwithoutnotesFunction}
                                       >
                                         RECOMMENDED
                                       </div>
