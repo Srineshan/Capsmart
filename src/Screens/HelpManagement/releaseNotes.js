@@ -164,7 +164,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                                 <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
                                                 <p className={style.tableDataFontStyle}>5</p>
                                             </div>
-                                            <Icon icon="trash" color="#52575D" className={style.marginTop15} />
+                                            <Icon icon="trash" color="#2C2C2C" className={style.marginTop15} />
                                         </div>
                                     </div>
                                     <div className={`${style.tableData} ${style.displayInCol} ${style.alternativeBackgroundColor}`} onClick={() => { setIsSelected(!isSelected); setSelectedRow('1'); setShowFeedbackPage(true) }}>
@@ -187,7 +187,7 @@ const ReleaseNotes = ({ getSelectedHelp }) => {
                                                 <img src={GreenPage} alt="warning" className={style.colorFileStyle} />
                                                 <p className={style.tableDataFontStyle}>5</p>
                                             </div>
-                                            <Icon icon="trash" color="#52575D" className={style.marginTop15} />
+                                            <Icon icon="trash" color="#2C2C2C" className={style.marginTop15} />
                                         </div>
                                     </div>
                                     <div className={style.spaceBetween}>

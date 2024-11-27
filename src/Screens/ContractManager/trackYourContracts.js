@@ -688,7 +688,7 @@ const TrackYourContracts = () => {
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
                                                     font: ' normal normal bold 15px/18px proxima-nova',
-                                                    color: '#52575D',
+                                                    color: '#2C2C2C',
                                                     textAlign: 'left'
                                                 }
                                             }}
@@ -736,7 +736,7 @@ const TrackYourContracts = () => {
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
                                                     font: ' normal normal bold 15px/18px proxima-nova',
-                                                    color: '#52575D',
+                                                    color: '#2C2C2C',
                                                     textAlign: 'left'
                                                 }
                                             }}
@@ -795,7 +795,7 @@ const TrackYourContracts = () => {
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
                                                     font: ' normal normal bold 15px/18px proxima-nova',
-                                                    color: '#52575D',
+                                                    color: '#2C2C2C',
                                                     textAlign: 'left'
                                                 }
                                             }}
@@ -842,7 +842,7 @@ const TrackYourContracts = () => {
                                                 '& .MuiInputBase-input': {
                                                     backgroundColor: "#F1EFFC",
                                                     font: ' normal normal bold 15px/18px proxima-nova',
-                                                    color: '#52575D',
+                                                    color: '#2C2C2C',
                                                     textAlign: 'left'
                                                 }
                                             }}

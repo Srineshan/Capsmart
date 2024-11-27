@@ -69,7 +69,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const getUserRoleType = async () => {
     try {
       const response = await GET(
-        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}`
+        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationType}`
       );
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {
@@ -81,7 +81,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   useEffect(() => {
     setUserDetails();
     getUserRoleType();
-  }, []);
+  }, [applicationType]);
 
   // Handle refetch metadata changes
   useEffect(() => {
@@ -115,15 +115,28 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
 
     setCurrentRoleIndex(newCurrentRoleIndex);
-  }, [userFlow, userRole, getSelectedTab, initialTabSet]);
+  }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType]);
 
   const UserFlowType = userFlow?.workflow || [];
 
+  // const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
+  //   label: currentRoleIndex === index ? "Applicants to Verify" : value.tabDisplayName,
+  //   count: counts[`level-${key}`],
+  //   level: `level-${key}`,
+  // }));
+
   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
-    label: currentRoleIndex === index ? "Applicants to Verify" : value.tabDisplayName,
+    label: currentRoleIndex === index
+      ? (applicationType === "NEW"
+        ? "Applicants to Verify"
+        : (applicationType === "REAPPOINTMENT"
+          ? "Reappointments to Process"
+          : value.tabDisplayName))
+      : value.tabDisplayName,
     count: counts?.[`level-${key}`],
     level: `level-${key}`,
   }));
+
 
   const handleTabClick = (tab) => {
     getSelectedTab(tab);

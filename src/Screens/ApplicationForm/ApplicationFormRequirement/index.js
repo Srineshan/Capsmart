@@ -19,7 +19,7 @@ import jwt from 'jwt-decode';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import DoItLaterDialog from '../../../Components/DoItLaterDialog';
 // import { Logout } from '../../../utils/auth';
 
@@ -123,74 +123,77 @@ const ApplicationFormRequirement = () => {
     console.log(basicForm, '75')
 
     return (
-        <div className={style.screenBackground}>
-            <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} close={true} closeClick={() => logout()} />
-            <div className={style.screenPadding}>
-                <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
-                    <div>
-                        <WelcomeCard title={''} description={''} >
-                            {applicantTypeForm !== undefined && 'applicant' in applicantTypeForm?.properties && (
-                                <ApplicationFieldCard object={applicantTypeForm?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                            )}
-                        </WelcomeCard>
-                        <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                            <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
-                            {/* <div className={style.marginTop}>
+        isOpen ? (
+            <LoginDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
+        ) : (
+            <>
+                <div className={style.screenBackground}>
+                    <ApplicationHeader title={`New ${basicForm?.basicDetails?.applicant?.applicantType !== undefined ? basicForm?.basicDetails?.applicant?.applicantType : '{Applicant Type}'} Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}`} close={true} closeClick={logout} />
+                    <div className={style.screenPadding}>
+                        <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                            <div>
+                                <WelcomeCard title={''} description={''} >
+                                    {applicantTypeForm !== undefined && 'applicant' in applicantTypeForm?.properties && (
+                                        <ApplicationFieldCard object={applicantTypeForm?.properties?.applicant} gridStyle={style.twoCol} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                                    )}
+                                </WelcomeCard>
+                                <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                                    <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
+                                    {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div> */}
-                            <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
-                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
-                                <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
-                            </div>
-                            {basicForm?.documentsRequired?.map((data, index) => (
-                                <div>
-                                    <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
-                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                            <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
-                                            <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
-                                        </div>
-                                        <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
-                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                    <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
+                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
+                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                     </div>
+                                    {basicForm?.documentsRequired?.map((data, index) => (
+                                        <div>
+                                            <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
+                                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                </div>
+                                                <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                        <div className={style.marginTop}>
-                            <WelcomeCard title={''} description={''} >
-                                {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
-                                    <ApplicationFieldCard object={applicantTypeForm?.properties?.immunizationHistory} gridStyle={style.twoCol} baseKey={'immunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                                )}
-                            </WelcomeCard>
-                        </div>
-                        <div className={style.marginTop}>
-                            <WelcomeCard title={''} description={''} >
-                                {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (
-                                    <ApplicationFieldCard object={applicantTypeForm?.properties?.fitTest} gridStyle={style.twoCol} baseKey={'fitTest'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                                )}
-                            </WelcomeCard>
+                                <div className={style.marginTop}>
+                                    <WelcomeCard title={''} description={''} >
+                                        {applicantTypeForm !== undefined && 'immunizationHistory' in applicantTypeForm?.properties && (
+                                            <ApplicationFieldCard object={applicantTypeForm?.properties?.immunizationHistory} gridStyle={style.twoCol} baseKey={'immunizationHistory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                                        )}
+                                    </WelcomeCard>
+                                </div>
+                                <div className={style.marginTop}>
+                                    <WelcomeCard title={''} description={''} >
+                                        {applicantTypeForm !== undefined && 'fitTest' in applicantTypeForm?.properties && (
+                                            <ApplicationFieldCard object={applicantTypeForm?.properties?.fitTest} gridStyle={style.twoCol} baseKey={'fitTest'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
+                                        )}
+                                    </WelcomeCard>
+                                </div>
+                            </div>
+                            <div>
+                                {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
+                                <div>
+                                    <DaysToComplete days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
+                                </div>
+                                <div className={style.marginTop10}>
+                                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                                </div>
+                                <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
-                        <div>
-                            <DaysToComplete days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
-                        </div>
-                        <div className={style.marginTop10}>
-                            <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                        </div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>NOT READY TO START</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>READY TO START MY APPLICATION</div>
-                    </div>
+                    {isDoItLaterOpen && (
+                        <DoItLaterDialog getIsOpen={getIsDoItLaterOpen} />
+                    )}
                 </div>
-            </div>
-            {!isAuthenticated && !isSessionLoading && (
-                <LoginDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(basicForm?.createdDate))} />
-            )}
-            {isDoItLaterOpen && (
-                <DoItLaterDialog getIsOpen={getIsDoItLaterOpen} />
-            )}
-        </div>
+            </>
+        )
     )
 }
 

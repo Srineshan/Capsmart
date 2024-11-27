@@ -18,12 +18,15 @@
     grid-gap: 20px;
 }
 
+.cursorPointer {
+    cursor: pointer;
+}
 
 .cardTitle {
     text-align: left;
     font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .saveInProgress {
@@ -73,6 +76,12 @@
     gap: 10px;
 }
 
+.threeColForButton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 70px;
+}
+
 .fourCol {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -105,7 +114,7 @@
 .siteDisplaySiteTextStyle {
     text-align: left;
     font: normal normal bold 13px/20px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .siteDisplayDepartmentTextStyle {
@@ -244,15 +253,15 @@
 }
 
 .businessMailingAddressGrid> :nth-child(1) {
-    grid-column: span 5;
+    grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-    grid-column: span 7;
+    grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-    grid-column: span 12;
+    grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
@@ -336,7 +345,7 @@
     text-align: left;
     font: normal normal normal 15px/25px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     max-width: 95%;
 }
 
@@ -356,7 +365,7 @@
 }
 
 .reappointmentButtonOutlined {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
+    background: #14358F1A 0% 0% no-repeat padding-box;
     border-radius: 8px;
     border: 1px solid $primarycolor;
     padding: 10px 15px;

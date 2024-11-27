@@ -124,6 +124,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   const handleContinue = () => {
     if (processReappointment === 'Yes') {
       setIsContinue(true);
+      getIsOpen(false);
     }
     if (processReappointment === 'No') {
       setShowAlert(true);
@@ -290,7 +291,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                         className={style.leftAlign}
                         value={processReappointment}
                         onChange={(e) => setProcessReappointment(e.target.value)}
-                        sx={{ color: "#52575D" }}
+                        sx={{ color: "#2C2C2C" }}
                       >
                         <FormControlLabel
                           value={'No'}
@@ -343,7 +344,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           >
             <div className={`${style.verticalAlignCenter} ${style.alignCenter}`}>
               <div className={style.textStyle}>{"YOU HAVE"}</div>
-              <div className={style.daysCountStyle}>{days || 30}</div>
+              <div className={style.daysCountStyle}>{days}</div>
               <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
             </div>
           </div>
@@ -362,7 +363,8 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
+            {`If we do not receive a completed reappointment application by Jun 30, 2024 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <div
@@ -375,7 +377,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => { handleTerminate() }}
             >
-              OKAY & LOGOUT
+              OKAY & EXIT
             </div>
           </div>
 

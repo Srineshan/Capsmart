@@ -40,10 +40,8 @@
 }
 
 .activeMenuColor {
-    color: $primarycolor
-;
-    border-bottom: 2px solid $primarycolor
-;
+    color: $primarycolor;
+    border-bottom: 2px solid $primarycolor;
     padding-bottom: 17px;
     font: normal normal 600 15px/25px proxima-nova;
     margin-top: 27px;
@@ -95,7 +93,7 @@
 
 .optionsCardStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 11px #52575D;
+    box-shadow: 0px 3px 11px #2C2C2C;
     border-radius: 4px 4px 0px 0px;
     width: 200px;
     position: absolute;

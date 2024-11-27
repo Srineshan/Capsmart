@@ -43,6 +43,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [updateFrom, setUpdateFrom] = useState('');
+    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('');
+    const [yesOrNoAddress, setYesOrNoAddress] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -51,6 +53,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
         }
     }, [basicForm, formIndex])
+
+    useEffect(() => {
+        if (formIndex !== undefined) {
+            setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
+            setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
+        }
+    }, [formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
@@ -311,11 +320,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
-        if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
-            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
-            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
+        // if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+        //     let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+        //     let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+        //     missingKeys = temp;
+        // }
         setWarningFieldsContact(missingKeys)
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
@@ -379,6 +388,31 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         //     });
     }
 
+    const handleYesOrNo = async (skip) => {
+        let yesOrNoData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
+        yesOrNoData.yesOrNoData = {
+            yesOrNoDemographic: yesOrNoDemographic,
+            yesOrNoAddress: yesOrNoAddress
+        }
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: yesOrNoData,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+    }
+
     const addPath = (newPath) => {
         setFieldPaths((prevPaths) => {
             // Use spread operator to append new paths to existing array
@@ -400,6 +434,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const handleContinue = () => {
+        handleYesOrNo()
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         } else {
@@ -451,6 +486,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 setIsChanged={setShowDemographicInfo}
                                 isView={viewDemographicInfo}
                                 setIsView={setViewDemographicInfo}
+                                yesOrNoDemographic={yesOrNoDemographic}
+                                setYesOrNoDemographic={setYesOrNoDemographic}
                             />
                             {/* )}
                             <div className={style.displayInRow}>
@@ -579,20 +616,25 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
                                     <div
-                                        className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => setShowContactInfo(true)}
+                                        className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
+                                        onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
                                         Yes
                                     </div>
                                     <div
-                                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                        onClick={() => setShowContactInfo(false)}
+                                        className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                        onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
                                         NO
                                     </div>
                                 </div>
                             </>
                         )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>

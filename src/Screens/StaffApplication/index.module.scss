@@ -19,6 +19,7 @@ body::-webkit-scrollbar {
 .margin20 {
   margin: 20px;
 }
+.mar
 
 .displayInCol {
   display: flex;
@@ -105,12 +106,22 @@ body::-webkit-scrollbar {
 }
 
 .buttonCardStyle {
-  height: 50px;
-  width: 270px;
+  height: 70px;
+  // width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border: 0.5px solid $primarycolor;
   border-radius: 8px;
+  opacity: 1;
+}
+
+.textCardStyle {
+  height: 100px;
+  // width: 270px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  // border: 0.5px solid $primarycolor;
+  // border-radius: 8px;
   opacity: 1;
 }
 
@@ -119,10 +130,7 @@ body::-webkit-scrollbar {
   height: 40px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor
-
-
-;
+  border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
 }
@@ -155,15 +163,9 @@ body::-webkit-scrollbar {
 
   width: 108px;
   height: 35px;
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor
-
-
-;
+  border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
 
@@ -173,15 +175,9 @@ body::-webkit-scrollbar {
 
   padding: 10px;
   height: 25px;
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor
-
-
-;
+  border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
 
@@ -194,10 +190,7 @@ body::-webkit-scrollbar {
   height: 35px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor
-
-
-;
+  border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
 
@@ -213,13 +206,19 @@ body::-webkit-scrollbar {
 
 .buttonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
+  opacity: 1;
+}
+
+.pendingTextStyle {
+  text-align: center;
+  font: normal normal bold 16px/25px proxima-nova;
+  letter-spacing: 0px;
+  color: red;
+  // text-transform: uppercase;
   opacity: 1;
 }
 
@@ -315,10 +314,7 @@ body::-webkit-scrollbar {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked~.checkmark {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -374,7 +370,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 14px/18px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   margin-left: 21px;
 }
@@ -382,7 +378,7 @@ body::-webkit-scrollbar {
 .statisticsProgress {
   font: normal normal normal 14px/18px proxima-nova;
   letter-spacing: -0.3px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   text-align: left;
   margin-bottom: 1px !important;
@@ -392,7 +388,7 @@ body::-webkit-scrollbar {
 .viewStyle {
   font: normal normal normal 9px/15px proxima-nova;
   letter-spacing: -0.3px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
@@ -486,7 +482,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 16px/22px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   text-transform: capitalize;
 }
@@ -495,7 +491,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 20px/26px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
 }
 
@@ -511,7 +507,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 18px/22px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   text-transform: capitalize;
 }
@@ -524,7 +520,7 @@ body::-webkit-scrollbar {
   text-align: right;
   font: normal normal bold 12px/14px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   margin-top: 5px;
 }
 
@@ -540,7 +536,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 16px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   margin: 5px;
 }
@@ -567,7 +563,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 16px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   padding: 5px;
 }
@@ -672,7 +668,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 16px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
@@ -721,6 +717,10 @@ body::-webkit-scrollbar {
 
 .spaceBetween {
   display: flex;
+  justify-content: space-between;
+}
+
+.spaceBetweenOnly {
   justify-content: space-between;
 }
 
@@ -779,7 +779,7 @@ body::-webkit-scrollbar {
   height: fit-content;
 }
 
-.textAlign{
+.textAlign {
   align-items: center;
 }
 
@@ -872,7 +872,7 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 2% 13% 12% 19% 6% 5% 5% 10% 14% 6%;
+  grid-template-columns: 2% 13% 13% 19% 6% 5% 5% 10% 14% 6%;
   grid-gap: 1%;
 }
 
@@ -895,15 +895,27 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.applicationStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 2% 20% 15% 20% 6% 5% 15% 11%;
+  grid-gap: 1%;
+}
+
 .macStaffGrid {
   display: grid;
   grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
   grid-gap: 1%;
 }
 
+.macStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 14% 13% 15% 15% 15% 15% 13%;
+  grid-gap: 1%;
+}
+
 .bodStaffGrid {
   display: grid;
-  grid-template-columns: 13% 12% 20% 18% 10% 16% 7%;
+  grid-template-columns: 13% 13% 18% 18% 10% 16% 7%;
   grid-gap: 1%;
 }
 
@@ -1006,10 +1018,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -1030,30 +1039,21 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 26px/22px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .extensionStyle {
   text-align: left;
   font: normal normal bold 15px/13px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .extensionStyle1 {
   text-align: left;
   font: normal normal bold 20px/24px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1075,7 +1075,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 16px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1084,7 +1084,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 14px/22px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 0.5;
 }
@@ -1093,7 +1093,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1135,10 +1135,7 @@ body::-webkit-scrollbar {
   // color: rgba(143, 153, 168, 0.5);
   // background-color: #f1f2f3;
   color: white !important;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   height: 32px;
   min-width: 130px;
   border: none;
@@ -1287,10 +1284,7 @@ body::-webkit-scrollbar {
 }
 
 .extentionBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   width: 100%;
@@ -1298,10 +1292,7 @@ body::-webkit-scrollbar {
 }
 
 .serviceBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   height: 60vh;
@@ -1323,19 +1314,13 @@ body::-webkit-scrollbar {
   width: 11px;
   height: 311px;
   /* UI Properties */
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border-radius: 6px;
   opacity: 0.4;
 }
 
 .deleteDraftBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   height: 20vh;
@@ -1345,10 +1330,7 @@ body::-webkit-scrollbar {
 }
 
 .newContractFromCloneBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   // height: calc(100vh - 160px);
@@ -1362,7 +1344,7 @@ body::-webkit-scrollbar {
   text-align: right;
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 0.8;
 }
@@ -1371,7 +1353,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: uppercase;
   opacity: 1;
 }
@@ -1403,6 +1385,11 @@ body::-webkit-scrollbar {
   margin-left: 10px;
 }
 
+.justifyCenterReappointment {
+  display: flex;
+  justify-content: center;
+}
+
 .floatLeft {
   float: left !important;
 }
@@ -1416,7 +1403,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 16px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1425,7 +1412,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 13px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
@@ -1449,7 +1436,7 @@ body::-webkit-scrollbar {
   text-align: center;
   font: normal normal bold 17px/20px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
@@ -1457,7 +1444,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   opacity: 0.6;
 }
@@ -1472,19 +1459,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .newContractCrossStyle {
-  color: linear-gradient($primarycolor
-
-
-, #ff6562) !important;
+  color: linear-gradient($primarycolor, #ff6562) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -1553,10 +1534,7 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor
-
-
-, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1585,10 +1563,7 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor
-
-
-, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1604,10 +1579,7 @@ select {
 .nextButton {
   border-radius: 12px;
   opacity: 1;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
   border: none;
   height: 40px;
@@ -1651,7 +1623,7 @@ select {
 
 .dialogStyle {
   height: 80%;
-  width: 60% !important;
+  width: 75% !important;
   border-radius: 20px;
 }
 
@@ -1680,34 +1652,19 @@ select {
 
 .outlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .newContractOutlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1716,14 +1673,8 @@ select {
 
 .cloneOutlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1732,32 +1683,20 @@ select {
 }
 
 .buttonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .bigButtonStyle {
-  height: 50px;
+  height: 70px;
   /* UI Properties */
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -1765,7 +1704,7 @@ select {
 
 .bigButtonTextStyle {
   text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
+  font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
   color: #FFFFFF;
   text-transform: uppercase;
@@ -1774,15 +1713,9 @@ select {
 
 
 .newContractButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1790,15 +1723,9 @@ select {
 }
 
 .cloneButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1816,10 +1743,7 @@ select {
 }
 
 .myActiveContractsButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid $secondarycolor;
   color: #fff;
   border-radius: 6px;
@@ -1829,15 +1753,9 @@ select {
 }
 
 .timesheetNextButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 35px;
   width: 120px;
   border-radius: 6px;
@@ -2001,21 +1919,12 @@ select {
 }
 
 .selectedContractEntityStyle {
-  border: 1px solid $primarycolor
-
-
-;
-  color: $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
+  color: $primarycolor;
 }
 
 .selectedColor {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .smallHeadingStyle {
@@ -2023,10 +1932,7 @@ select {
   font: normal normal 600 17px/16px proxima-nova;
   letter-spacing: 0px;
   line-height: 20px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 1;
 }
 
@@ -2076,10 +1982,7 @@ select {
 }
 
 .blueColor {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .selectFieldWidth {
@@ -2304,10 +2207,7 @@ select {
 }
 
 .proofBorder {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   overflow: scroll;
   margin-top: 10px;
@@ -2444,6 +2344,12 @@ select {
   grid-gap: 20px;
 }
 
+.grid2to1 {
+  display: grid;
+  grid-template-columns: 74% 25%;
+  grid-gap: 1%;
+}
+
 .grid5and1 {
   display: grid;
   grid-template-columns: 7fr 2fr;
@@ -2554,10 +2460,7 @@ select {
 
 .timesheetButtonStyle {
   background: #ebf2f7 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 6px 6px 0px 0px;
   min-width: 180px;
   height: 40px;
@@ -2568,10 +2471,7 @@ select {
 }
 
 .timeSheetBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 0px 6px 0px 0px;
   opacity: 1;
   height: calc(100vh - 160px);
@@ -2615,10 +2515,7 @@ input[type="file"] {
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   border: none;
   position: relative;
   top: 7px;
@@ -2649,10 +2546,7 @@ input[type="file"] {
 
 .purpleTitle {
   font: normal 15px/13px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   font-size: 15px;
   text-align: left;
   min-width: 100vw;
@@ -2668,10 +2562,7 @@ input[type="file"] {
 
 .popUpHeading {
   font: bold 18px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .popUpHeaderBlock {
@@ -2718,10 +2609,7 @@ input[type="file"] {
 }
 
 .addStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -2729,10 +2617,7 @@ input[type="file"] {
 }
 
 .addSmallStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 4px;
   height: 23px;
@@ -2746,10 +2631,7 @@ input[type="file"] {
 }
 
 .addAddonServiceButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal medium 20px/27px proxima-nova;
@@ -2760,10 +2642,7 @@ input[type="file"] {
 }
 
 .addCptCodeButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal bolder 14px/18px proxima-nova;
@@ -2784,14 +2663,8 @@ input[type="file"] {
 }
 
 .addonAddBox {
-  border: 1px solid $primarycolor
-
-
-;
-  box-shadow: 0px 1px 6px $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
+  box-shadow: 0px 1px 6px $primarycolor;
   border-radius: 8px;
   padding: 20px 10px;
 }
@@ -2810,10 +2683,7 @@ input[type="file"] {
 .additionalDetailsSelected {
   background: #dbd8fa 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 4px #0000001f;
-  border: 0.30000001192092896px solid $primarycolor
-
-
-;
+  border: 0.30000001192092896px solid $primarycolor;
 }
 
 .additionalDetailsTextStyle {
@@ -2847,10 +2717,7 @@ input[type="file"] {
 
 .blueChip {
   background: #dbd8fa 0% 0% no-repeat padding-box;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .redChip {
@@ -2892,10 +2759,7 @@ input[type="file"] {
   text-align: left;
   font: normal normal bold 34px/58px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 0.1;
 }
 
@@ -2903,10 +2767,7 @@ input[type="file"] {
   width: 108px;
   height: 108px;
   /* UI Properties */
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border-radius: 10px;
   opacity: 0.1;
 }
@@ -2939,10 +2800,7 @@ input[type="file"] {
   text-align: left;
   font: normal normal medium 13px/18px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .disabledOpacity {
@@ -2965,14 +2823,8 @@ input[type="file"] {
 
 .specificActionCard:hover {
   background: #f5f9fc 0% 0% no-repeat padding-box;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   border-radius: 4px;
 }
 
@@ -3085,10 +2937,7 @@ input[type="file"] {
 
 .popUpPreImplementationHeading {
   font: bold 15px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .popUpPreImplementationSubHeading {
@@ -3098,10 +2947,7 @@ input[type="file"] {
 
 .popUpPreImplementationTitle {
   font: bold 13px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .preImplementationGrid {
@@ -3131,10 +2977,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 14px/14px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -3142,10 +2985,7 @@ input[type="number"] {
   text-align: center;
   font: normal normal normal 12px/12px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
 }
 
@@ -3282,7 +3122,11 @@ input[type="number"] {
   grid-gap: 20px;
 }
 
-
+.fourColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-gap: 20px;
+}
 
 .serviceSpecificationGridActive {
   display: grid;
@@ -3432,7 +3276,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal 600 16px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
 }
 
@@ -3472,19 +3316,13 @@ input[type="number"] {
 }
 
 .selectedDay {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   color: white;
 }
 
 .dateNotSet {
   font: normal normal 600 23px/30px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -3524,10 +3362,7 @@ input[type="number"] {
 .moveToDraftHeaderBox {
   height: 80px;
   width: 100%;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   border-radius: 6px 6px 0 0;
 }
 
@@ -3576,10 +3411,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal 600 15px/23px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -3587,10 +3419,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 12px/23px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 0.88;
 }
@@ -3613,10 +3442,7 @@ input[type="number"] {
 
 .trackPeriodCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   height: 60px;
 }
@@ -3624,20 +3450,14 @@ input[type="number"] {
 .trackPeriodOptionsCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
   height: 40px;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-top: 0;
   padding-left: 20px;
 }
 
 .trackPeriodOptionsCard:hover {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
 }
 
 // .intervalPeriodBorder {
@@ -3659,12 +3479,12 @@ input[type="number"] {
 
 .trackContractUserAndPeriod {
   font: normal normal bold 18px/20px proxima-nova;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .timesheetIntervalListText {
   font: normal normal 600 14px/20px proxima-nova;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .trackTableHeaderGrid {
@@ -3759,14 +3579,14 @@ input[type="number"] {
 .arrowDown {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 15px solid #52575D;
+  border-top: 15px solid #2C2C2C;
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
 .arrowUp {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 15px solid #52575D;
+  border-top: 15px solid #2C2C2C;
   transform: matrix(-1, 0, 0, -1, 0, 0);
 }
 
@@ -3787,20 +3607,14 @@ input[type="number"] {
   letter-spacing: 0px;
   text-transform: uppercase;
   color: #A4A4A4;
-  border: 1px solid #52575D;
+  border: 1px solid #2C2C2C;
   height: 45px;
   cursor: pointer;
 }
 
 .selectedPaymentTabStyle {
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   background-color: #F1EFFC;
 }
 
@@ -3839,7 +3653,7 @@ input[type="number"] {
   font: normal normal bolder 15px/20px proxima-nova !important;
   letter-spacing: 0px;
   text-align: left;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: uppercase;
   opacity: 1;
 
@@ -3851,10 +3665,7 @@ input[type="number"] {
 .applicationButton {
   /* UI Properties */
   height: 65px;
-  background: transparent linear-gradient(174deg, $primarycolor 0%, $primarycolor 47%, $primarycolor
-
-
- 100%) 0% 0% no-repeat padding-box;
+  background: transparent linear-gradient(174deg, $primarycolor 0%, $primarycolor 47%, $primarycolor 100%) 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #130D4B1F;
   border-radius: 20px;
   text-align: left;
@@ -3880,7 +3691,7 @@ input[type="number"] {
   border-radius: 2px;
   text-align: left;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: capitalize;
   padding: 5px;
 }
@@ -3893,10 +3704,7 @@ input[type="number"] {
 }
 
 .applicantionActiveCardStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 11px #52575D1A;
   border: 0.4000000059604645px solid $primarycolor;
   border-radius: 4px 4px 0px 0px;
@@ -4060,52 +3868,57 @@ input[type="number"] {
 
 .businessMailingAddressGrid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(12, 1fr);
   gap: 10px;
 }
 
 .businessMailingAddressGrid> :nth-child(1) {
-  grid-column: span 2;
+  grid-column: span 12;
+  margin-top: 0px;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-  grid-column: span 4;
+  grid-column: span 5;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-  grid-column: span 6;
+  grid-column: span 7;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-  grid-column: span 3;
+  grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(6) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(7) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(8) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(9) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(10) {
-  grid-column: span 3;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(11) {
-  grid-column: span 3;
+  grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(12) {
+  grid-column: span 6;
 }
 
 .licenseGrid {
@@ -4197,14 +4010,14 @@ input[type="number"] {
   text-align: left;
   font: normal normal medium 18px/34px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .clickToVerify {
   text-align: left;
   font: normal normal medium 16px/34px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .verifyImage {
@@ -4216,7 +4029,7 @@ input[type="number"] {
 
 .eSignDialog {
   height: 75%;
-  width: 60% !important;
+  width: 70% !important;
 }
 
 .eSignDialogBackground {
@@ -4226,10 +4039,7 @@ input[type="number"] {
 }
 
 .continue {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   text-align: center;
@@ -4245,10 +4055,7 @@ input[type="number"] {
 .heading {
   text-align: left;
   font: normal normal bold 20px/28px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
 }
 
@@ -4278,14 +4085,14 @@ input[type="number"] {
   text-align: left;
   font: normal normal bold 17px/26px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .date {
   text-align: left;
   font: normal normal normal 17px/26px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 @media print {
@@ -4300,10 +4107,11 @@ input[type="number"] {
 
   .pagebreak:nth-child(odd) {
     background-color: #ffffff;
-}
-.pagebreak:nth-child(even) {
+  }
+
+  .pagebreak:nth-child(even) {
     background-color: #ffffff;
-}
+  }
 }
 
 .tableHeaderStyleCred {
@@ -4318,13 +4126,13 @@ input[type="number"] {
 
 .tableHeaderGridStyleCred {
   display: grid;
-  grid-template-columns:75% 15% 10%;
+  grid-template-columns: 91% 10%;
   grid-gap: 10px;
 }
 
 .tableHeaderGridStyleCred1 {
   display: grid;
-  grid-template-columns:91% 7%;
+  grid-template-columns: 91% 7%;
   grid-gap: 10px;
 }
 
@@ -4333,7 +4141,7 @@ input[type="number"] {
   margin-left: 20px;
   font: normal normal bold 16px/22px proxima-nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   text-transform: capitalize;
 }
@@ -4346,9 +4154,29 @@ input[type="number"] {
   text-align: left;
 }
 
+.tableDataFontStyleCredReappointment {
+  font: normal normal bold 20px/26px proxima-nova;
+  margin-left: 20px;
+  letter-spacing: 0px;
+  color: #52575d;
+  text-align: left;
+}
+
 .tableHeaderGridStyleFormCred {
   display: grid;
-  grid-template-columns: 77% 16% 4%;
+  grid-template-columns: 70% 21% 9%;
+  grid-gap: 1%;
+}
+
+.tableHeaderGridStyleFormReappointmentForStaff {
+  display: grid;
+  grid-template-columns: 5% 78% 14%;
+  grid-gap: 1%;
+}
+
+.tableHeaderGridStyleFormReappointment {
+  display: grid;
+  grid-template-columns: 85% 14%;
   grid-gap: 1%;
 }
 
@@ -4369,32 +4197,29 @@ input[type="number"] {
   padding: 10px;
 }
 
-.overallStatus{
+.overallStatus {
   color: var(--unnamed-color-52575d);
-text-align: left;
-font: normal normal bold 20px Proxima Nova;
-letter-spacing: 0px;
-color: #52575D;
-text-transform: capitalize;
-opacity: 1;
-padding-left: 20px;
-padding-top: 20px;
+  text-align: left;
+  font: normal normal bold 20px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+  padding-left: 20px;
+  padding-top: 20px;
 }
 
 .bigButtonStyle1 {
   height: 50px;
   /* UI Properties */
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
   margin-top: 20px;
 }
 
-.statusCard{
+.statusCard {
   background: var(---ffffff) 0% 0% no-repeat padding-box;
   border: 0.4px solid var(--unnamed-color-e9e9f0);
   background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -4405,18 +4230,18 @@ padding-top: 20px;
   height: 20%;
 }
 
-.statusCardTextStyle1{
+.statusCardTextStyle1 {
   color: var(--unnamed-color-52575d);
   text-align: left;
   font: normal normal bold 23px/26px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   opacity: 1;
   margin-left: 10px;
   margin-bottom: 10px;
 }
 
-.statusStartTextStyle{
+.statusStartTextStyle {
   text-align: center;
   font: normal normal bold 28px/34px Proxima Nova;
   letter-spacing: 0px;
@@ -4425,16 +4250,16 @@ padding-top: 20px;
   opacity: 1;
 }
 
-.statusRoleTextStyle{
+.statusRoleTextStyle {
   text-align: center;
   font: normal normal bold 16px/26px Proxima Nova;
   letter-spacing: 0px;
-  color: #52575D;
+  color: #2C2C2C;
   text-transform: uppercase;
   opacity: 0.6;
 }
 
-.dateWidth{
+.dateWidth {
   padding: 5px 10px;
 }
 
@@ -4453,8 +4278,7 @@ padding-top: 20px;
   height: 50px;
   width: 90%;
   /* UI Properties */
-  background: $primarycolor
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
@@ -4492,8 +4316,8 @@ padding-top: 20px;
   padding-bottom: 30px;
 }
 
-.referenceCardStyle{
-  
+.referenceCardStyle {
+
 
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
@@ -4504,10 +4328,10 @@ padding-top: 20px;
   width: 90%;
   margin: auto;
   padding: 10px;
-  
+
 }
 
-.sideHeadingFontStyle{
+.sideHeadingFontStyle {
   text-align: left;
   font: normal normal bold 18px/22px proxima-nova;
   letter-spacing: 0px;
@@ -4516,7 +4340,7 @@ padding-top: 20px;
   text-transform: capitalize;
 }
 
-.sideHeadingRefFrontStyle{
+.sideHeadingRefFrontStyle {
   text-align: left;
   font: italic normal medium 14px/22px Proxima Nova;
   letter-spacing: 0px;
@@ -4531,7 +4355,7 @@ padding-top: 20px;
   gap: 10px;
 }
 
-.gridGap1{
+.gridGap1 {
   display: grid;
   grid-template-columns: 5% 75% 5%;
   gap: 10px;
@@ -4540,13 +4364,13 @@ padding-top: 20px;
   // justify-content: space-between;
 }
 
-.buttonCenter{
+.buttonCenter {
   align-self: start;
   margin-top: 5px;
   margin-left: 5px;
 }
 
-.viewButton{
+.viewButton {
 
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
@@ -4557,7 +4381,7 @@ padding-top: 20px;
   width: 60px;
 }
 
-.viewTextStyle{
+.viewTextStyle {
 
   text-align: center;
   font: normal normal 600 16px/34px Proxima Nova;
@@ -4567,7 +4391,7 @@ padding-top: 20px;
   opacity: 1;
 }
 
-.gridGap3{
+.gridGap3 {
   display: grid;
   grid-template-columns: 5% 85% 5%;
   gap: 10px;
@@ -4576,8 +4400,8 @@ padding-top: 20px;
   // justify-content: space-between;
 }
 
-.clarificationCardStyle{
-  
+.clarificationCardStyle {
+
 
   background: #E9E9F04D 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D14;
@@ -4587,17 +4411,17 @@ padding-top: 20px;
   width: 90%;
   margin: auto;
   padding: 10px;
-  
+
 }
 
-.assessInCred{
+.assessInCred {
   background: #FFEFEF 0% 0% no-repeat padding-box;
-border: 0.4000000059604645px solid #FF6562;
-border-radius: 12px;
-opacity: 1;
+  border: 0.4000000059604645px solid #FF6562;
+  border-radius: 12px;
+  opacity: 1;
 }
 
-.assessTextStyle{
+.assessTextStyle {
   text-align: center;
   font: normal normal bold 16px/26px Proxima Nova;
   letter-spacing: 0px;
@@ -4605,44 +4429,49 @@ opacity: 1;
   opacity: 1;
 }
 
-.approvedButtonStyle{
+.approvedButtonStyle {
   background: #14B15A1A 0% 0% no-repeat padding-box;
-border: 0.4000000059604645px solid #14B15A;
-border-radius: 12px;
-opacity: 1;
+  border: 0.4000000059604645px solid #14B15A;
+  border-radius: 12px;
+  opacity: 1;
 }
 
-.ApprovedTextStyle{
+.ApprovedTextStyle {
   text-align: center;
   font: normal normal bold 16px/26px Proxima Nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
 }
- .alignItem{
+
+.alignItem {
   align-self: center;
- }
-
- .alignContent{
- justify-content: center;
- }
-
- .docsIcon{
-  text-align: left;
-font: normal normal normal 20px/24px la-solid-900;
-letter-spacing: 0px;
-color: #173790;
-opacity: 1;
- }
-
- .my-custom-description {
-  text-align: center; /* or any other styles you want to override */
-  font: normal normal normal 16px/20px Arial, sans-serif; /* Customize as needed */
-  color: #000000; /* New color */
-  padding: 0 40px; /* Adjust padding */
 }
 
-.correcticon{
+.alignContent {
+  justify-content: center;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: #173790;
+  opacity: 1;
+}
+
+.my-custom-description {
+  text-align: center;
+  /* or any other styles you want to override */
+  font: normal normal normal 16px/20px Arial, sans-serif;
+  /* Customize as needed */
+  color: #000000;
+  /* New color */
+  padding: 0 40px;
+  /* Adjust padding */
+}
+
+.correcticon {
   text-align: left;
   font: normal normal normal 27px la-solid-900;
   color: #14B15A;
@@ -4650,22 +4479,22 @@ opacity: 1;
   place-self: center;
 }
 
-.checkListitem{
+.checkListitem {
   // color: var(--unnamed-color-52575d);
-text-align: left;
-font: italic normal medium 16px/24px Proxima Nova;
-letter-spacing: 0px;
-color: #52575D;
-opacity: 0.5;
+  text-align: left;
+  font: italic normal medium 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  opacity: 0.5;
 }
 
-.warning{
+.warning {
   color: var(--unnamed-color-f94848);
-text-align: left;
-font: normal normal normal 27px la-solid-900;
-letter-spacing: 0px;
-color: #F94848;
-opacity: 1;
+  text-align: left;
+  font: normal normal normal 27px la-solid-900;
+  letter-spacing: 0px;
+  color: #F94848;
+  opacity: 1;
 }
 
 .uploadBorderStyle {
@@ -4685,7 +4514,7 @@ opacity: 1;
 .uploadDescriptionText {
   text-align: center;
   font: normal normal normal 14px/18px proxima-nova;
-  color: #52575D;
+  color: #2C2C2C;
   // padding: 0 80px;
 }
 
@@ -4696,6 +4525,198 @@ opacity: 1;
   padding: 10px;
 }
 
-.paddingButton{
-padding: 10px;
+.paddingButton {
+  padding: 10px;
+}
+
+.textAreaStyle {
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 10px;
+}
+
+.uploadYourDocGrid {
+  display: grid;
+  grid-template-columns: 3% 23% 7% 28% 15% 10% 7%;
+  gap: 1%;
+}
+
+.docTypeImgStyle {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+}
+
+.tableGridCME {
+  display: grid;
+  grid-template-columns: 5% 5% 25% 29% 15% 15%;
+  gap: 1%;
+}
+
+.medicalDirectivesGridStyle {
+  display: grid;
+  grid-template-columns: 5% 51% 10% 10% 15% 3%;
+  gap: 1%;
+}
+
+.blueSignImgStyle {
+  height: 30px;
+  width: auto;
+  object-fit: contain;
+}
+
+.iconBackgroundColor {
+  background-color: #2C2C2C;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.iconBackgroundColorYellow {
+  background-color: #FEC106;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.iconBackgroundColorGreen {
+  background-color: #25BF6A;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.iconBackgroundColorRed {
+  background-color: #FF6562;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.markedAsText {
+  text-align: left;
+  font: italic normal medium 16px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+}
+
+.yesText {
+  font: italic normal bold 18px/24px proxima-nova;
+  color: #14B15A;
+}
+
+.noText {
+  font: italic normal bold 18px/24px proxima-nova;
+  color: #FF5555;
+}
+
+.cardTitle {
+  text-align: left;
+  font: normal normal bold 20px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+}
+
+.lableReadOnlyStyleInPOD {
+  text-align: left;
+  font: normal normal normal 16px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+  opacity: 1;
+  margin-top: 10px;
+  max-width: 85%;
+}
+
+.warningText {
+  text-align: left;
+  font: normal normal medium 20px/28px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.itemLeft {
+  padding: 10px;
+  /* Inner padding for each line */
+  text-align: left;
+}
+
+.privilegeCodeGrid {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 10px;
+}
+
+.cardDescription {
+  text-align: left;
+  font: normal normal normal 18px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+}
+
+.restrictedPrivilegeGrid {
+  display: grid;
+  grid-template-columns: 5% 78% 15%;
+  gap: 1%;
+}
+
+.restrictedPrivilegeGrid> :nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(5) {
+  grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(6) {
+  grid-column: 1 / -1;
+}
+
+.fileDisplay {
+  padding: 0 10px;
+  background-color: $secondarycolor;
+}
+
+.fileDisplayText {
+  font: normal normal normal 15px/20px proxima-nova;
+  color: #2C2C2C;
+}
+
+.padding {
+  padding: 20px;
+}
+
+.privilegeTitleStyle {
+  text-align: left;
+  text-decoration: underline;
+  font: normal normal bold 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.padding30{
+  padding: 30px;
+}
+
+.commentsNotesHeadingFontStyle {
+
+  text-align: left;
+  font: normal normal 600 22px/27px Proxima Nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginBothText{
+  margin-top: 5px;
+  margin-left: 10px;
 }

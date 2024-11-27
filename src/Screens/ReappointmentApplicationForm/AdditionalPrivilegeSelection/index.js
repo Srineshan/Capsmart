@@ -73,7 +73,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
     const [formIndex, setFormIndex] = useState();
     const [navigateURL, setNavigateURL] = useState();
     const [showPrivileges, setShowPrivileges] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
+    const [isEdit, setIsEdit] = useState(true);
     const [selectedPrivilegesForDisplayMultiple, setSelectedPrivilegesForDisplayMultiple] = useState([]);
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
@@ -751,7 +751,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
             </div>
             <div className={`${style.cardTitle} ${style.marginTop}`}>
-                Do you want to update your additional privilege change request?
+                Do you want to update / change / request your additional privileges?
             </div>
             {!isPrivilegeCategoryChanging && (
                 <>
@@ -766,7 +766,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                 Yes
                             </div>
                             <div
-                                className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
                             >
                                 NO

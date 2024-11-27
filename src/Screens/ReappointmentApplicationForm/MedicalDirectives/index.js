@@ -273,7 +273,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(-1);
+                        navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
                     }
                     else {
                         navigate(navigateURL)
@@ -287,7 +287,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
         else {
             if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
+                navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
             }
             else {
                 navigate(navigateURL)
@@ -328,8 +328,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
         temp.push({
             "type": "icon", "icon": medicalDirectives?.map(innerData =>
-                <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
-            ), 'isShowHoverText': false
+                <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => handleEdit(innerData)} />
+            ), 'isShowHoverText': true, 'hoverText': medicalDirectives?.map(innerData => 'Click to attest')
         });
         console.log(temp, medicalDirectives)
         return temp;
@@ -338,6 +338,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     // const getIsEdited = (value) => {
     //     setIsEdited(value)
     // }
+    console.log(medicalDirectives?.length === allMedicalDirectives?.completed?.length, medicalDirectives?.length, allMedicalDirectives?.completed)
 
     return (
         <div>
@@ -374,11 +375,16 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <div className={style.marginLeft}>{allMedicalDirectives?.pastDue?.length} Past Due</div>
                                     </div>
                                 )}
+                                {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
+                                    <div className={`${style.description} ${style.marginTop}`}>You have attested to all of the Medical Directives.</div>
+                                )}
                             </>
                         ) : (
                             <>
                                 <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
-                                <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${medicalDirectives?.length !== 0 ? '' : style.disabledButton}`} onClick={medicalDirectives?.length !== 0 ? () => { handleSubmitAttestBulk() } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && (
+                                    <div className={`${style.attestButton} ${style.marginTop} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${medicalDirectives?.length !== 0 ? '' : style.disabledButton}`} onClick={medicalDirectives?.length !== 0 ? () => { handleSubmitAttestBulk() } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                )}
                                 <div className={style.marginTop}>
                                     <TableTwo
                                         tableHeaderValues={[
@@ -399,43 +405,45 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         onClickFunction={() => { }}
                                     />
                                 </div>
-                            </>
-                        )}
-                        {medicalDirectives?.length === 0 && (
-                            <div className={`${style.description} ${style.marginTop}`}>You have no Medical Directives that requires your review and attestation at this time.</div>
-                        )}
-                        <div className={`${style.marginTop}`}>
-                            <div>
-                                <div className={`${style.checkGrid}`}>
-                                    {formContent?.disclaimer?.content !== null && (
-                                        <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
-                                    )}
-                                    <div
-                                        className={`${style.leftAlign} ${style.marginTop}`}
-                                        dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
-                                    />
-                                </div>
-                                {formSchemaWholeObject?.esignatureRequired && (
-                                    <div className={style.twoCol}>
-                                        <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
-                                        >
-                                            <ESignature
-                                                userName={isSigned ? name : ""}
-                                                encData={isSigned ? encryptedText : ''}
-                                                showData={isSigned}
-                                                showDatais={true}
+                                <div className={`${style.marginTop}`}>
+                                    <div>
+                                        <div className={`${style.checkGrid}`}>
+                                            {formContent?.disclaimer?.content !== null && (
+                                                <CommonCheckBox checked={isChecked} onChange={medicalDirectives?.length === allMedicalDirectives?.completed?.length ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
+                                            )}
+                                            <div
+                                                className={`${style.leftAlign} ${style.marginTop}`}
+                                                dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                                             />
                                         </div>
-                                        <div className={style.verticalAlignCenter}>
-                                            <div className={style.displayInRow}>
-                                                <div className={style.dateTitle}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                        {formSchemaWholeObject?.esignatureRequired && (
+                                            <div className={style.twoCol}>
+                                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                >
+                                                    <ESignature
+                                                        userName={isSigned ? name : ""}
+                                                        encData={isSigned ? encryptedText : ''}
+                                                        showData={isSigned}
+                                                        showDatais={true}
+                                                    />
+                                                </div>
+                                                <div className={style.verticalAlignCenter}>
+                                                    <div className={style.displayInRow}>
+                                                        <div className={style.dateTitle}>Date: </div>
+                                                        <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
@@ -443,7 +451,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10} ${isSigned ? '' : style.disabledButton}`} onClick={isSigned ? showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue() : () => { }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

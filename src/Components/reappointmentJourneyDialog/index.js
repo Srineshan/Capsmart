@@ -4,9 +4,10 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import style from './index.module.scss'
 import { POST } from '../../Screens/dataSaver';
+import Pencil from "./../../images/pencil.png";
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import WarningIcon from '@mui/icons-material/Warning';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
 import { useDescope } from '@descope/react-sdk';
 
@@ -16,6 +17,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const { logout } = useDescope();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const entityName = sessionStorage.getItem('title')
+    const navigate = useNavigate()
     const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory'])
     const getIsShowSubmitDialog = (value) => {
         setShowSubmitDialog(value);
@@ -57,7 +59,10 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                                 </>
                                             )}
                                             <div className={style.spaceBetween}>
-                                                <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`}>{data?.title}</div>
+                                                <div className={style.displayInRow}>
+                                                    <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`}>{data?.title}</div>
+                                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${data?.schemaCategory}`); getIsOpen(false) }} />
+                                                </div>
                                                 <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
                                             </div>
                                             {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (

@@ -105,7 +105,7 @@ const ActiveStaffList = ({
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
       .then((response) => {
-        SuccessToaster("Reappoint Application Send as Email Successfully");
+        SuccessToaster("Reappointment Application Sent Successfully");
         console.log(response?.data);
         getActiveUserData();
         setReFetchMetaData(true);
@@ -263,7 +263,7 @@ const ActiveStaffList = ({
   //     crs.push(data?.crs || '0');
   //     crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"])
   //     notes.push(data?.notes || '1');
-  //     notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />);
+  //     notesIcon.push(<NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />);
   //     notesHoverText.push(["June 13 00:00, Nina Grealy", "Lorem ipsum dolor sit amet, consetetur sadipscing."])
   //     lastUpdated.push(format(new Date(data?.lastModifiedDate), 'MMM dd, yyyy'))
   //     lastUpdatedBy.push('-')
@@ -327,9 +327,9 @@ const ActiveStaffList = ({
         },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
       // applicantId.push(data?.displayId || "123");
-      applicantId.push("123");
+      applicantId.push(data?.staffId || "123");
       // applicantType.push(data?.providerType?.serviceProviderType || "Doctor");
-      applicantType.push("Doctor");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -343,7 +343,7 @@ const ActiveStaffList = ({
       // docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
-      //     style={{ fontSize: 20, color: `#52575D` }}
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
       //   />
       // );
 
@@ -370,7 +370,7 @@ const ActiveStaffList = ({
       // notes.push(data?.notes.length || "0");
       notes.push("0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       // const notesDetails = data?.notes || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
@@ -469,14 +469,13 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
-      applicantType.push("Doctor");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       // applicantId.push(data?.displayId);
-      applicantId.push("345");
+      applicantId.push(data?.staffId || "123");
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -519,7 +518,7 @@ const ActiveStaffList = ({
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
       //   )
       // } else { ccdate.push("-") }
-      ccdate.push("-");
+      ccdate.push("-")
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -557,6 +556,7 @@ const ActiveStaffList = ({
     ];
   };
 
+
   const getTemporaryStaffValues = () => {
     applicantName = [];
     applicantId = [];
@@ -573,8 +573,8 @@ const ActiveStaffList = ({
         data?.applicant?.name?.firstName.slice(1).toLowerCase()
         },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
       );
-      applicantId.push(data?.displayId || "123");
-      applicantType.push(data?.providerType?.serviceProviderType || "Dentist");
+      applicantId.push(data?.staffId || "123");
+      applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
       ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
@@ -782,7 +782,7 @@ const ActiveStaffList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
@@ -799,7 +799,7 @@ const ActiveStaffList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
@@ -816,7 +816,7 @@ const ActiveStaffList = ({
                   <div className={`${style.displayInCol} ${style.marginTop}`}>
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
-                        color: "#52575D",
+                        color: "#2C2C2C",
                         font: "normal normal bold 16px/24px proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{

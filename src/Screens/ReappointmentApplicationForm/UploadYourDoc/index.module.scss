@@ -67,7 +67,7 @@
     text-align: left;
     font: normal normal bold 17px/26px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .descriptionText {
@@ -98,7 +98,7 @@
     text-align: center;
     font: normal normal normal 18px/36px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .tableHeader {
@@ -112,7 +112,7 @@
     text-align: left;
     font: normal normal bold 15px/23px proxima-nova;
     letter-spacing: 0.9px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: capitalize;
 }
 
@@ -148,7 +148,7 @@
     text-align: left;
     font: normal normal normal 15px/21px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .displayInRow {
@@ -182,6 +182,12 @@
     gap: 10px;
 }
 
+.threeColForButton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 70px;
+}
+
 .setupCompleteGrid {
     display: grid;
     grid-template-columns: 0.5fr 1fr 0.5fr;
@@ -210,7 +216,7 @@
 .uploadDescriptionText {
     text-align: center;
     font: normal normal 300 14px/14px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .gridStyle {
@@ -227,7 +233,7 @@
     text-align: left;
     font: normal normal bold 17px/25px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .addMoreBorder {
@@ -265,7 +271,7 @@
     text-align: center;
     font: normal normal 600 23px/26px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .justifyCenter {
@@ -307,7 +313,7 @@
 .heading {
     text-align: left;
     font: normal normal bold 20px/28px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: capitalize;
 }
 
@@ -319,7 +325,7 @@
     text-align: left;
     font: normal normal normal 16px/24px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .eSignDialog {

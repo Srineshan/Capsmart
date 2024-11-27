@@ -205,8 +205,10 @@ const LoginDialog = ({ getIsOpen, days }) => {
               <span className={style.bold}>CAP</span>Smart
             </p>
           </div> */}
-          <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
-          <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+          <div className={style.spaceBetween}>
+            <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+            <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
+          </div>
           <div className={style.welcomeText}>Welcome!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
             Cambridge Memorial Hospital (CMH) is a thriving 180-bed community hospital with over 1300 staff, 250
@@ -226,6 +228,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => {
                 setIsContinue(true);
+                getIsOpen(false);
               }}
             >
               CONTINUE

@@ -122,10 +122,7 @@ body::-webkit-scrollbar {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked~.checkmark {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
@@ -254,7 +251,7 @@ body::-webkit-scrollbar {
 
 .loginStatus {
   text-align: left;
-  font: italic normal normal 10px/15px Roboto;
+  font: normal normal 600 12px/15px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   margin-top: 5px;
@@ -474,10 +471,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal normal 11px/14px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 1;
   margin: 5px 0 0 10px;
 }
@@ -498,20 +492,14 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal bold 20px/18px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .extensionStyle {
   text-align: left;
   font: normal normal bold 15px/13px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .extensionBorder {
@@ -549,10 +537,7 @@ body::-webkit-scrollbar {
   // color: rgba(143, 153, 168, 0.5);
   // background-color: #f1f2f3;
   color: white !important;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   height: 32px;
   min-width: 130px;
   border: none;
@@ -687,10 +672,7 @@ body::-webkit-scrollbar {
 }
 
 .extentionBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   width: 100%;
@@ -698,10 +680,7 @@ body::-webkit-scrollbar {
 }
 
 .serviceBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   height: 60vh;
@@ -712,10 +691,7 @@ body::-webkit-scrollbar {
 }
 
 .deleteDraftBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   height: 20vh;
@@ -725,10 +701,7 @@ body::-webkit-scrollbar {
 }
 
 .newContractFromCloneBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
   // height: calc(100vh - 160px);
@@ -853,10 +826,7 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor
-
-
-, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -879,10 +849,7 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor
-
-
-, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -898,10 +865,7 @@ select {
 .nextButton {
   border-radius: 12px;
   opacity: 1;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
   border: none;
   height: 40px;
@@ -974,34 +938,19 @@ select {
 
 .outlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .newContractOutlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1010,14 +959,8 @@ select {
 
 .cloneOutlinedButton {
   background-color: white;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1026,35 +969,20 @@ select {
 }
 
 .buttonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 140px;
   border-radius: 10px;
   margin-bottom: -20px;
-  box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+  box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .newContractButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 40px;
   width: 180px;
   border-radius: 10px;
@@ -1062,15 +990,9 @@ select {
 }
 
 .cloneButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 30px;
   min-width: 80px;
   padding-left: 40px;
@@ -1088,10 +1010,7 @@ select {
 }
 
 .myActiveContractsButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid $secondarycolor;
   color: #fff;
   border-radius: 6px;
@@ -1101,15 +1020,9 @@ select {
 }
 
 .timesheetNextButtonStyle {
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   color: white;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 35px;
   width: 120px;
   border-radius: 6px;
@@ -1273,21 +1186,12 @@ select {
 }
 
 .selectedContractEntityStyle {
-  border: 1px solid $primarycolor
-
-
-;
-  color: $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
+  color: $primarycolor;
 }
 
 .selectedColor {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .smallHeadingStyle {
@@ -1295,10 +1199,7 @@ select {
   font: normal normal 600 17px/16px proxima-nova;
   letter-spacing: 0px;
   line-height: 20px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   opacity: 1;
 }
 
@@ -1348,10 +1249,7 @@ select {
 }
 
 .blueColor {
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .selectFieldWidth {
@@ -1576,10 +1474,7 @@ select {
 }
 
 .proofBorder {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   overflow: scroll;
   margin-top: 10px;
@@ -1809,10 +1704,7 @@ select {
 
 .timesheetButtonStyle {
   background: #ebf2f7 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 6px 6px 0px 0px;
   min-width: 180px;
   height: 40px;
@@ -1823,10 +1715,7 @@ select {
 }
 
 .timeSheetBoxStyle {
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 0px 6px 0px 0px;
   opacity: 1;
   height: calc(100vh - 160px);
@@ -1870,10 +1759,7 @@ input[type="file"] {
   font-size: 14px;
   line-height: 1.25;
   background-color: #f1f2f3;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   border: none;
   position: relative;
   top: 7px;
@@ -1904,10 +1790,7 @@ input[type="file"] {
 
 .purpleTitle {
   font: normal 15px/13px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   font-size: 15px;
   text-align: left;
   min-width: 100vw;
@@ -1923,10 +1806,7 @@ input[type="file"] {
 
 .popUpHeading {
   font: bold 18px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .popUpHeaderBlock {
@@ -1973,10 +1853,7 @@ input[type="file"] {
 }
 
 .addStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 8px;
   height: 33px;
@@ -1984,10 +1861,7 @@ input[type="file"] {
 }
 
 .addSmallStyle {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 4px;
   height: 23px;
@@ -2001,10 +1875,7 @@ input[type="file"] {
 }
 
 .addAddonServiceButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal medium 20px/27px proxima-nova;
@@ -2015,10 +1886,7 @@ input[type="file"] {
 }
 
 .addCptCodeButton {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
   border-radius: 6px;
   font: normal normal bolder 14px/18px proxima-nova;
@@ -2039,14 +1907,8 @@ input[type="file"] {
 }
 
 .addonAddBox {
-  border: 1px solid $primarycolor
-
-
-;
-  box-shadow: 0px 1px 6px $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
+  box-shadow: 0px 1px 6px $primarycolor;
   border-radius: 8px;
   padding: 20px 10px;
 }
@@ -2065,10 +1927,7 @@ input[type="file"] {
 .additionalDetailsSelected {
   background: #dbd8fa 0% 0% no-repeat padding-box;
   box-shadow: 0px 1px 4px #0000001f;
-  border: 0.30000001192092896px solid $primarycolor
-
-
-;
+  border: 0.30000001192092896px solid $primarycolor;
 }
 
 .additionalDetailsTextStyle {
@@ -2102,10 +1961,7 @@ input[type="file"] {
 
 .blueChip {
   background: #dbd8fa 0% 0% no-repeat padding-box;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .redChip {
@@ -2149,10 +2005,7 @@ input[type="file"] {
   text-align: left;
   font: normal normal medium 13px/18px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .disabledOpacity {
@@ -2175,14 +2028,8 @@ input[type="file"] {
 
 .specificActionCard:hover {
   background: #f5f9fc 0% 0% no-repeat padding-box;
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   border-radius: 4px;
 }
 
@@ -2295,10 +2142,7 @@ input[type="file"] {
 
 .popUpPreImplementationHeading {
   font: bold 15px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .popUpPreImplementationSubHeading {
@@ -2308,10 +2152,7 @@ input[type="file"] {
 
 .popUpPreImplementationTitle {
   font: bold 13px/15px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 .preImplementationGrid {
@@ -2341,10 +2182,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 14px/14px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -2352,10 +2190,7 @@ input[type="number"] {
   text-align: center;
   font: normal normal normal 12px/12px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
 }
 
@@ -2533,10 +2368,7 @@ input[type="number"] {
 
 .addServiceCountStyle {
   background: #ffffff 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   height: 15px;
   width: 15px;
   position: absolute;
@@ -2634,19 +2466,13 @@ input[type="number"] {
 }
 
 .selectedDay {
-  background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
+  background: $primarycolor 0% 0% no-repeat padding-box;
   color: white;
 }
 
 .dateNotSet {
   font: normal normal 600 23px/30px proxima-nova;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
@@ -2686,10 +2512,7 @@ input[type="number"] {
 .moveToDraftHeaderBox {
   height: 80px;
   width: 100%;
-  background-color: $primarycolor
-
-
-;
+  background-color: $primarycolor;
   border-radius: 6px 6px 0 0;
 }
 
@@ -2738,10 +2561,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal 600 15px/23px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: uppercase;
 }
 
@@ -2749,10 +2569,7 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 12px/23px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-
-
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 0.88;
 }
@@ -2775,10 +2592,7 @@ input[type="number"] {
 
 .trackPeriodCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   height: 60px;
 }
@@ -2786,20 +2600,14 @@ input[type="number"] {
 .trackPeriodOptionsCard {
   background: #F1EFFC 0% 0% no-repeat padding-box;
   height: 40px;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
   border-top: 0;
   padding-left: 20px;
 }
 
 .trackPeriodOptionsCard:hover {
   background: #F1EFFC 0% 0% no-repeat padding-box;
-  border: 1px solid $primarycolor
-
-
-;
+  border: 1px solid $primarycolor;
 }
 
 // .intervalPeriodBorder {
@@ -2821,12 +2629,12 @@ input[type="number"] {
 
 .trackContractUserAndPeriod {
   font: normal normal bold 18px/20px proxima-nova;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .timesheetIntervalListText {
   font: normal normal 600 14px/20px proxima-nova;
-  color: #52575D;
+  color: #2C2C2C;
 }
 
 .trackTableHeaderGrid {
@@ -2921,14 +2729,14 @@ input[type="number"] {
 .arrowDown {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 15px solid #52575D;
+  border-top: 15px solid #2C2C2C;
   transform: matrix(1, 0, 0, 1, 0, 0);
 }
 
 .arrowUp {
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-top: 15px solid #52575D;
+  border-top: 15px solid #2C2C2C;
   transform: matrix(-1, 0, 0, -1, 0, 0);
 }
 
@@ -2949,20 +2757,14 @@ input[type="number"] {
   letter-spacing: 0px;
   text-transform: uppercase;
   color: #A4A4A4;
-  border: 1px solid #52575D;
+  border: 1px solid #2C2C2C;
   height: 45px;
   cursor: pointer;
 }
 
 .selectedPaymentTabStyle {
-  color: $primarycolor
-
-
-;
-  border: 1px solid $primarycolor
-
-
-;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
   background-color: #F1EFFC;
 }
 

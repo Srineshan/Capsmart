@@ -75,7 +75,9 @@ const ApplicationFieldCard = ({
     setIsChanged,
     isView,
     setIsView,
-    isEdited
+    isEdited,
+    yesOrNoDemographic,
+    setYesOrNoDemographic
 }) => {
     const [calendarStart, setCalendarStart] = useState(false);
     const { section, step } = useParams();
@@ -960,7 +962,12 @@ const ApplicationFieldCard = ({
                                                             ? e.target.value
                                                             : fieldData.maximum
                                                     )
-                                                    : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) : e.target.value,
+                                                    : fieldKey === "pinCode" ? FormatPostalCode(e.target.value) :
+                                                        (fieldData.type === "string" && fieldData.maxLength !== 0)
+                                                            ? e.target.value.length <= fieldData.maxLength
+                                                                ? e.target.value
+                                                                : e.target.value.slice(0, fieldData.maxLength)
+                                                            : e.target.value,
                                                 baseKey
                                             )
                                         }
@@ -1153,13 +1160,15 @@ const ApplicationFieldCard = ({
                                     ) || ""
                                 }
                                 className={style.fullWidth}
-                                onChange={(e) =>
-                                    handleChange(
-                                        fieldKey,
-                                        FormatPhoneNumber(e.target.value),
-                                        baseKey
-                                    )
-                                }
+                                onChange={(e) => {
+                                    const formattedValue = FormatPhoneNumber(e.target.value);
+                                    handleChange(fieldKey, formattedValue, baseKey);
+                                
+                                    // Dynamically update mobileNumber if cellPhone is updated
+                                    if (fieldKey === "cellPhone") {
+                                        handleChange("mobileNumber", formattedValue, baseKey);
+                                    }
+                                }}                                
                                 placeholder={
                                     fieldData.placeHolder !== null
                                         ? fieldData.placeHolder
@@ -1502,7 +1511,7 @@ const ApplicationFieldCard = ({
                                     <div className={style.uploadGrid}>
                                         {(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== null && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== '' && getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL !== null) ? (
                                             <img src={VerifiedImage} alt="" className={`${style.imgIcon} ${style.cursorPointer}`}
-                                            //  onClick={window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
+                                                onClick={() => window.open(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileURL, '_blank')}
                                             />
                                         ) : (
                                             <img src={ToBeVerifiedImage} alt="" className={style.imgIcon} />
@@ -2102,29 +2111,27 @@ const ApplicationFieldCard = ({
                                 )}
                             </div>
                         )}
-                        {object?.tableHeaders !== null &&
-                            basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !==
-                            null && (
-                                <TableTwo
-                                    tableHeaderValues={Object.values(object?.tableHeaders)}
-                                    tableDataValues={getApplicantValues(
-                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                            ?.data[baseKey]
-                                    )}
-                                    tableData={
-                                        basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                                            ?.data[baseKey]
-                                    }
-                                    gridStyle={tableGrid}
-                                    // actions={!isPOD ? actions : []}
-                                    scrollStyle={style.contractScrollStyle}
-                                    tableSortValues={[]}
-                                    heading={heading}
-                                    subHeading={subHeading}
-                                    subHeading2={subHeading2}
-                                    onClickFunction={() => { }}
-                                />
-                            )}
+                        {object?.tableHeaders !== null && (
+                            <TableTwo
+                                tableHeaderValues={Object.values(object?.tableHeaders)}
+                                tableDataValues={basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !== null ?
+                                    getApplicantValues(basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data[baseKey]) :
+                                    []
+                                }
+                                tableData={basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data !== null ?
+                                    basicForm?.forms?.filter((data) => data?.id === formId)[0]?.data[baseKey] :
+                                    []
+                                }
+                                gridStyle={tableGrid}
+                                // actions={!isPOD ? actions : []}
+                                scrollStyle={style.contractScrollStyle}
+                                tableSortValues={[]}
+                                heading={heading}
+                                subHeading={subHeading}
+                                subHeading2={subHeading2}
+                                onClickFunction={() => { }}
+                            />
+                        )}
                     </div>
                 ) : !addMoreType && collapsableQuestionCard ? (
                     <div className={`${style.addMoreBorder} ${style.marginTop}`}>
@@ -2227,14 +2234,14 @@ const ApplicationFieldCard = ({
                                             className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                         >
                                             <div
-                                                className={`${style.reappointmentButtonOutlined}`}
-                                                onClick={() => setIsChanged(true)}
+                                                className={`${yesOrNoDemographic === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
+                                                onClick={() => { setIsChanged(true); setYesOrNoDemographic('Yes') }}
                                             >
                                                 Yes
                                             </div>
                                             <div
-                                                className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                                onClick={() => setIsChanged(false)}
+                                                className={`${yesOrNoDemographic === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
+                                                onClick={() => { setIsChanged(false); setYesOrNoDemographic('No') }}
                                             >
                                                 NO
                                             </div>

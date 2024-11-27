@@ -139,67 +139,67 @@ const ContactAddress = ({ basicForm, setBasicForm, applicationId, getPreApplicat
     };
 
     keyValuePair?.map(data => {
-      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0 ||
-        (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
-          !validateBusinessPhone(data?.value)) ||
-        (data?.key ===
-          `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
-          !validateBusinessWebsite(data?.value))
+      if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
+        // || (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+        //   !validateBusinessPhone(data?.value)) ||
+        // (data?.key ===
+        //   `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+        //   !validateBusinessWebsite(data?.value))
       ) {
-        if (
-          data?.key ===
-          `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
-          !validateBusinessPhone(data?.value)
-        ) {
-          setBasicForm((prevForm) => ({
-            ...prevForm,
-            forms: prevForm.forms.map((form) => {
-              if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-                return {
-                  ...form,
-                  data: {
-                    ...form.data,
-                    contactAddress3: {
-                      ...form.data.contactAddress3,
-                      business: {
-                        ...form.data.contactAddress3.business,
-                        businessPhone: "",
-                      },
-                    },
-                  },
-                };
-              }
-              return form;
-            }),
-          }));
-        }
-        if (
-          data?.key ===
-          `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
-          !validateBusinessWebsite(data?.value)
-        ) {
-          setBasicForm((prevForm) => ({
-            ...prevForm,
-            forms: prevForm.forms.map((form) => {
-              if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-                return {
-                  ...form,
-                  data: {
-                    ...form.data,
-                    contactAddress3: {
-                      ...form.data.contactAddress3,
-                      business: {
-                        ...form.data.contactAddress3.business,
-                        businessWebsite: "",
-                      },
-                    },
-                  },
-                };
-              }
-              return form;
-            }),
-          }));
-        }
+        // if (
+        //   data?.key ===
+        //   `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+        //   !validateBusinessPhone(data?.value)
+        // ) {
+        //   setBasicForm((prevForm) => ({
+        //     ...prevForm,
+        //     forms: prevForm.forms.map((form) => {
+        //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+        //         return {
+        //           ...form,
+        //           data: {
+        //             ...form.data,
+        //             contactAddress3: {
+        //               ...form.data.contactAddress3,
+        //               business: {
+        //                 ...form.data.contactAddress3.business,
+        //                 businessPhone: "",
+        //               },
+        //             },
+        //           },
+        //         };
+        //       }
+        //       return form;
+        //     }),
+        //   }));
+        // }
+        // if (
+        //   data?.key ===
+        //   `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+        //   !validateBusinessWebsite(data?.value)
+        // ) {
+        //   setBasicForm((prevForm) => ({
+        //     ...prevForm,
+        //     forms: prevForm.forms.map((form) => {
+        //       if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+        //         return {
+        //           ...form,
+        //           data: {
+        //             ...form.data,
+        //             contactAddress3: {
+        //               ...form.data.contactAddress3,
+        //               business: {
+        //                 ...form.data.contactAddress3.business,
+        //                 businessWebsite: "",
+        //               },
+        //             },
+        //           },
+        //         };
+        //       }
+        //       return form;
+        //     }),
+        //   }));
+        // }
         missingKeys.push(data)
       }
     })

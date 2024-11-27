@@ -380,7 +380,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
   console.log(showRedBorderForESign, eSignInitial, eSignTitle)
 
   const handleContinue = async (skip) => {
-    if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
+    if (basicForm?.forms?.[formIndex]?.data?.table !== undefined && tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0) {
       ErrorToaster('Please select the missing document type for the uploaded documents')
     }
     else {
@@ -703,7 +703,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
               onClick={
                 (basicForm?.forms?.[formIndex]?.data !== null &&
                   showRedBorderForESign) ||
-                  (basicForm?.forms?.[formIndex]?.data !== null &&
+                  (basicForm?.forms?.[formIndex]?.data !== null && basicForm?.forms?.[formIndex]?.data?.table !== undefined &&
                     getMissingDocs()?.length !== 0)
                   ? () => { }
                   : () => handleContinue()

@@ -3,7 +3,10 @@
 .screenPadding {
     padding: 20px 100px;
     height: calc(100vh - 80px);
-    overflow: scroll;
+    overflow: auto;
+    overflow-y: auto !important;
+    scrollbar-width: thin !important;
+    scrollbar-color: gray transparent !important;
 }
 
 .applicationScreenGrid {
@@ -97,7 +100,7 @@
 .siteDisplaySiteTextStyle {
     text-align: left;
     font: normal normal bold 13px/20px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .siteDisplayDepartmentTextStyle {

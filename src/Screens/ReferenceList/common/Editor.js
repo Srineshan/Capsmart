@@ -133,7 +133,7 @@ const CustomToolbar = ({
         <option value="#FF0000">Red</option>
         <option value="#00FF00">Green</option>
         <option value="#0000FF">Blue</option>
-        <option value="#52575D">Gray</option>
+        <option value="#2C2C2C">Gray</option>
         <option value="#94979A">Gray</option>
       </select>
       <select className="ql-opacity" onChange={handleOpacityChange}>
