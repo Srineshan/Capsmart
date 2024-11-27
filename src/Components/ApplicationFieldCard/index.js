@@ -1160,13 +1160,15 @@ const ApplicationFieldCard = ({
                                     ) || ""
                                 }
                                 className={style.fullWidth}
-                                onChange={(e) =>
-                                    handleChange(
-                                        fieldKey,
-                                        FormatPhoneNumber(e.target.value),
-                                        baseKey
-                                    )
-                                }
+                                onChange={(e) => {
+                                    const formattedValue = FormatPhoneNumber(e.target.value);
+                                    handleChange(fieldKey, formattedValue, baseKey);
+                                
+                                    // Dynamically update mobileNumber if cellPhone is updated
+                                    if (fieldKey === "cellPhone") {
+                                        handleChange("mobileNumber", formattedValue, baseKey);
+                                    }
+                                }}                                
                                 placeholder={
                                     fieldData.placeHolder !== null
                                         ? fieldData.placeHolder
