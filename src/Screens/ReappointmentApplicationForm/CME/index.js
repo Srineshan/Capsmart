@@ -191,7 +191,23 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         // } 
     }
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            })
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
         }

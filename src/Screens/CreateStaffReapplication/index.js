@@ -496,7 +496,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
                 disabled={!isDataAvailable}
                 style={{ opacity: isDataAvailable ? 1 : 0.5 }}
               >
-                SENT REAPPOINTMENT APPLICATION
+                SEND REAPPOINTMENT APPLICATION
               </div>
             </div>
           </div>
