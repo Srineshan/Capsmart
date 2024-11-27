@@ -60,7 +60,7 @@ const CreateStaffMemberApplication = () => {
         email: {
           officialEmail: "",
         },
-        cellPhone: "",
+        mobileNumber: "",
         applicantType: "",
         startDate: "",
         category: "GUEST",
@@ -217,7 +217,7 @@ const CreateStaffMemberApplication = () => {
               applicant: {
                 ...prevForm.basicDetails.applicant,
                 email: {
-                  officialEmail: "", 
+                  officialEmail: "",
                 },
               },
             },
@@ -232,7 +232,21 @@ const CreateStaffMemberApplication = () => {
               : "",
         });
       }
+      // Handle cellPhone -> mobileNumber transformation
+      if (data.key === "basicDetails.applicant.cellPhone" && data.value) {
+        setBasicForm((prevForm) => ({
+            ...prevForm,
+            basicDetails: {
+                ...prevForm.basicDetails,
+                applicant: {
+                    ...prevForm.basicDetails.applicant,
+                    mobileNumber: data.value || prevForm.basicDetails.applicant.mobileNumber,
+                },
+            },
+        }));
+    }    
     });
+
     if (
       !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
         ?.map((data) => data?.properties?.department?.enum[0])
@@ -463,34 +477,6 @@ const CreateStaffMemberApplication = () => {
             </>
           ) : (
             <>
-              {/* {form !== undefined && 'sites' in form?.properties && (
-                            <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} isBasicPath={true} />
-                                <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                                    <div className={style.cardTitle}>Added Sites</div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )} */}
               <div className={style.applicationCardStyle}>
                 <div className={style.marginTop}>
                   <div className={style.cardTitle}>
@@ -517,14 +503,6 @@ const CreateStaffMemberApplication = () => {
                   >
                     <div className={style.fileGrid}>
                       <div className={style.centerAlign}>
-                        {/* <CommonSwitch
-                                                className={`${style.textAlignLeft}`}
-                                                checked={true}
-                                                onChange={(e) =>
-                                                    handleSwitchChange(e.target.checked)
-                                                }
-                                                label={true ? "YES" : "NO"}
-                                            /> */}
                         <ThemeProvider theme={switchTheme}>
                           <FormControlLabel
                             control={
@@ -573,45 +551,6 @@ const CreateStaffMemberApplication = () => {
               </div>
             </>
           )}
-          {/* {
-                    <>
-                        {form !== undefined && 'sites' in form?.properties && (
-                            <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} />
-                                <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                                    <div className={style.cardTitle}>Added Sites</div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
-                            <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SEND APPLICATION LINK</div>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
-                            </div>
-                        </div>
-                    </>
-                } */}
         </div>
         {isShowMailSendDialog && (
           <SendEmailFromStaffManagerConfirmationDialog

@@ -237,8 +237,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                     ref={contentRef}
                                     style={{
                                         fontFamily: selectedESignTypeStyle,
-                                        padding: "20px",
-                                        marginTop: "10px",
+                                        padding: "26px",
+                                        marginTop: "2px",
+                                        marginLeft: "3px",
+                                        marginRight: "3px",
+                                        marginBottom: "-7px",
                                         fontSize: "44px",
                                         textAlign: 'center'
                                     }}
