@@ -300,9 +300,9 @@ const App = ({ props }) => {
   // const navigate = useNavigate();
 
   useEffect(() => {
-    if ((cookie.get('entityId') === undefined || cookie.get('entityId') === null) && authorization !== undefined) {
-      getEntityId();
-    }
+    // if ((cookie.get('entityId') === undefined || cookie.get('entityId') === null) && authorization !== undefined) {
+    getEntityId();
+    // }
   }, [authorization])
 
   useEffect(() => {
@@ -741,7 +741,7 @@ const App = ({ props }) => {
         )}
         <div className="App">
           {/* {(accessToken !== false && accessToken !== undefined) ? ( */}
-          {isAuthenticated ? (
+          {!isAuthenticated ? (
             <>
               <Routes>
                 <Route path="/" element={<LoginRoute />} />
