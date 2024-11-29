@@ -309,7 +309,7 @@
 .notesBorderStyle {
   border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #173790 !important;
+  border: 0.4000000059604645px solid $primarycolor !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;
@@ -364,7 +364,7 @@
 }
 
 // .reviewButton {
-//   background-color: #173790;
+//   background-color: $primarycolor;
 //   color: white;
 //   font-weight: 600;
 //   padding: 10px 20px;

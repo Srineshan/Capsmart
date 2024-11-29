@@ -172,7 +172,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                         </div>
                     </div>
 
-                    <p className={`${style.description} ${style.marginTop}`}>CAPSmart uses Electronic Signatures for you to sign off on the required forms and documents that are part of this application. Draw or type your signature below to set it up for use:</p>
+                    <p className={`${style.description} ${style.marginTop}`}>CAPManager uses Electronic Signatures for you to sign off on the required forms and documents that are part of this application. Draw or type your signature below to set it up for use:</p>
                     <div className={`${style.displayInRow} ${style.marginTop}`}>
                         <div>
                             <div className={`${style.drawOrTypeTextStyle}`} onClick={() => { setSelectedESignFormat('DRAW') }}> DRAW</div>
@@ -243,7 +243,8 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                         marginRight: "3px",
                                         marginBottom: "-7px",
                                         fontSize: "44px",
-                                        textAlign: 'center'
+                                        textAlign: 'center',
+                                        // border: "1px solid #E759CB",
                                     }}
                                 >
                                 </div>

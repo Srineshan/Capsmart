@@ -127,7 +127,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -482,7 +482,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -492,7 +492,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -593,14 +593,14 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .videoSequenceHeadingStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #E9E9F0;
 }
@@ -617,7 +617,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -663,7 +663,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;

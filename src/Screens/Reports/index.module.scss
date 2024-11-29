@@ -447,7 +447,7 @@
 
 .headingStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #8A8C8D;
 }
@@ -540,7 +540,7 @@
 
 .darkLabel {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -572,7 +572,7 @@
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -618,20 +618,20 @@
 }
 
 .privateLabelStyle {
-    font: normal normal medium 15px/20px proxima-nova;
+    font: normal normal medium $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .typographyStyle {
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .smallHeading {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -747,7 +747,7 @@
 }
 
 .mailBoldText {
-    font: normal normal 600 15px/20px proxima-nova;
+    font: normal normal 600 $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1257,7 +1257,7 @@
 }
 
 .entityNameHeaderStyle {
-    font: normal normal bold 14px/15px proxima-nova;
+    font: normal normal bold $tableheadtext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1270,7 +1270,7 @@
 
 .reportRunByTextStyle {
     text-align: left;
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1403,7 +1403,7 @@
 
 .contractNameCardStyle {
     text-align: left;
-    font: normal normal bold 16px/24px proxima-nova;
+    font: normal normal bold $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -1465,7 +1465,7 @@
 }
 
 .summaryTextStyle {
-    font: normal normal bold 15px/20px proxima-nova;
+    font: normal normal bold $navbartext proxima-nova;
     color: #858c93;
 }
 

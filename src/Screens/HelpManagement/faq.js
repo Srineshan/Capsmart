@@ -278,8 +278,8 @@ const FAQ = ({ getSelectedHelp }) => {
                     </div>
                     {/* </div> */}
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - CAPSmart</p>
-                        <p className={style.poweredBy}>© CAPSmart</p>
+                        <p className={style.poweredBy}>Powered by - HapiCare</p>
+                        <p className={style.poweredBy}>© HapiCare</p>
                     </div>
                     {newFAQPostDialog && <NewFAQPost getNewFAQPostDialog={getNewFAQPostDialog} />}
                 </div>
@@ -464,8 +464,8 @@ const FAQ = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - CAPSmart</p>
-                        <p className={style.poweredBy}>© CAPSmart</p>
+                        <p className={style.poweredBy}>Powered by - HapiCare</p>
+                        <p className={style.poweredBy}>© HapiCare</p>
                     </div>
                     {requestFAQPostDialog && <RequestFAQPost getRequestFAQPostDialog={getRequestFAQPostDialog} />}
                 </div>

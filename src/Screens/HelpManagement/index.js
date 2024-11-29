@@ -386,7 +386,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>CAPSmart Team</div>
+                            <div className={style.justifyCenter}>CAPManager Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -425,7 +425,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to CAPSmart Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to CAPManager Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>

@@ -1,3 +1,5 @@
+@import "../../index.scss";
+
 .marginTop20 {
     margin-top: 20px !important;
 }
@@ -7,7 +9,7 @@
 }
 
 .entityNameHeaderStyle {
-    font: normal normal bold 14px/15px proxima-nova;
+    font: normal normal bold $tableheadtext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -34,7 +36,7 @@
 
 .reportRunByTextStyle {
     text-align: left;
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }

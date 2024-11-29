@@ -29,7 +29,7 @@
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold 13px/18px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -109,7 +109,7 @@
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;

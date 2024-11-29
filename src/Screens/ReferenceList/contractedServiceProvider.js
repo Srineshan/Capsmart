@@ -313,8 +313,8 @@ const ContractedServiceProvidedByIndustries = () => {
           </div>
         </div>
         <div className={style.spaceBetween}>
-          <p className={style.poweredBy}>Powered by - CAPSmart</p>
-          <p className={style.poweredBy}>© CAPSmart</p>
+          <p className={style.poweredBy}>Powered by - HapiCare</p>
+          <p className={style.poweredBy}>© HapiCare</p>
         </div>
       </div>
 

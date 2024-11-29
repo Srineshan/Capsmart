@@ -244,7 +244,7 @@ body::-webkit-scrollbar {
 
 .userNameStyle {
   text-align: left;
-  font: normal normal 600 15px/13px proxima-nova;
+  font: normal normal 600 16px/13px proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -447,7 +447,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofTextWidth {
-  font: normal normal bold 13px/17px proxima-nova;
+  font: normal normal bold $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -457,7 +457,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofDataTextWidth {
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -497,7 +497,7 @@ body::-webkit-scrollbar {
 
 .extensionStyle {
   text-align: left;
-  font: normal normal bold 15px/13px proxima-nova;
+  font: normal normal bold $usernametext proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
 }
@@ -509,7 +509,7 @@ body::-webkit-scrollbar {
 
 .extensionOptionsStyle {
   text-align: left;
-  font: normal normal medium 15px/13px proxima-nova;
+  font: normal normal medium $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -577,7 +577,7 @@ body::-webkit-scrollbar {
 
 .contractId {
   text-align: left;
-  font: normal normal medium 15px/13px proxima-nova;
+  font: normal normal medium $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -638,7 +638,7 @@ body::-webkit-scrollbar {
 
 .extentionLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: capitalize;
@@ -742,7 +742,7 @@ body::-webkit-scrollbar {
 }
 
 .switchFontStyle {
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   color: #52575d;
 }
 
@@ -1418,7 +1418,7 @@ select {
 
 .plusOneText {
   text-align: left;
-  font: normal normal medium 16px/20px proxima-nova;
+  font: normal normal medium $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #aeb2b7;
 }
@@ -1789,7 +1789,7 @@ input[type="file"] {
 }
 
 .purpleTitle {
-  font: normal 15px/13px proxima-nova;
+  font: normal $usernametext proxima-nova;
   color: $primarycolor;
   font-size: 15px;
   text-align: left;
@@ -2256,7 +2256,7 @@ input[type="number"] {
 
 .validationHeaderText {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #18191b;
   text-transform: uppercase;
@@ -2278,14 +2278,14 @@ input[type="number"] {
 
 .validationTopicText {
   text-align: left;
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #94979a;
 }
 
 .statusText {
   text-align: left;
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #000000;
 }
@@ -2423,7 +2423,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle {
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;

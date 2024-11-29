@@ -8,7 +8,7 @@ import React, {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
-import CapSmartTransparent from "./../../images/capSmartTransparent.png";
+import HapiCare from "./../../images/hapicare.png";
 import ActionStaffTiles from "./activeStaffTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -783,7 +783,7 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #14B15A",
@@ -800,7 +800,7 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #FEC106",
@@ -817,7 +817,7 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #F94848",
@@ -1022,12 +1022,12 @@ const ActiveStaffList = ({
             Powered by
           </p>
           <img
-            src={CapSmartTransparent}
+            src={HapiCare}
             alt="footer"
             className={`${style.footerIconStyle} ${style.marginLeft10}`}
           />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
     </div>
   );

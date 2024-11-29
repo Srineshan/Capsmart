@@ -44,7 +44,7 @@
 
 .description {
     text-align: left;
-    font: normal normal normal 16px/24px proxima-nova;
+    font: normal normal normal $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -108,7 +108,7 @@
 
 .dateAndTimeTextStyle {
     text-align: left;
-    font: normal normal normal 16px/24px proxima-nova;
+    font: normal normal normal $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #94979A;
     text-transform: capitalize;

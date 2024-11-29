@@ -99,7 +99,7 @@ body {
 
 .welcomeDescriptionStyle {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     width: 70%;
@@ -108,7 +108,7 @@ body {
 }
 
 .switchFontStyle {
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     color: #2C2C2C;
 }
 
@@ -135,7 +135,7 @@ body {
 
 .loginToStyle {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -149,7 +149,7 @@ body {
 
 .otpHeading {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #707070;
 }
@@ -167,7 +167,7 @@ body {
 
 .regHeading {
     text-align: left;
-    font: normal normal 600 15px/20px proxima-nova;
+    font: normal normal 600 $navbartext proxima-nova;
     letter-spacing: 0px;
 }
 
@@ -624,7 +624,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -891,7 +891,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -900,7 +900,7 @@ body {
 }
 
 .tableHeaderFontStyleActiveCustomer {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -988,7 +988,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -998,7 +998,7 @@ body {
 }
 
 .tableDataFontStyleActiveCustomers {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1061,7 +1061,7 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -1407,7 +1407,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1772,7 +1772,7 @@ body {
 }
 
 .tableHeaderFontStyleToDo {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1784,7 +1784,7 @@ body {
 }
 
 .multipleContractorTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1796,7 +1796,7 @@ body {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1806,7 +1806,7 @@ body {
 }
 
 .tableDataFontStyleToDo {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1818,7 +1818,7 @@ body {
 }
 
 .tableDataFontStyleAlerts {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1829,7 +1829,7 @@ body {
 }
 
 .multipleDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1840,7 +1840,7 @@ body {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -2033,7 +2033,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     height: 40px;
@@ -2069,7 +2069,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;

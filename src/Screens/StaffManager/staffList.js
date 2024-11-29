@@ -1,7 +1,8 @@
 import React, { useState, createRef, useRef } from 'react';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg.png';
+import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg-1.png';
+import HapiCare from "./../../images/hapicare.png";
 import StaffTiles from './staffTiles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -344,12 +345,12 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
             Powered by -
           </p>
           <img
-            src={TimeSmartLogo}
+            src={HapiCare}
             alt="footer"
             className={`${style.footerIconStyle} ${style.marginLeft10}`}
           />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
     </div>
   );

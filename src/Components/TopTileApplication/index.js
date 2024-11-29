@@ -5,7 +5,7 @@ import { Tooltip } from "@mui/material";
 import ClearIcon from '@mui/icons-material/Clear';
 // import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-const TileApplication = ({
+const TopTileApplication = ({
   selectedTab,
   getSelectedTab,
   tileLabel,
@@ -44,7 +44,7 @@ const TileApplication = ({
 
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter}  ${isSelected ? style.selectedApplicantBackground1 : ''} ${isDisabled ? style.disabled : ''}`}
+      className={`${style.applicationCardStyle} ${style.alignCenter}  ${isSelected ? style.selectedApplicantBackground : ''} ${isDisabled ? style.disabled : ''}`}
       onClick={handleClick}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}
@@ -68,4 +68,4 @@ const TileApplication = ({
   );
 };
 
-export default TileApplication;
+export default TopTileApplication;

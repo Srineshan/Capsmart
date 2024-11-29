@@ -215,7 +215,7 @@
 
 .addMoreDescriptionText {
     text-align: left;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -273,7 +273,7 @@
 
 .lableStylePOD {
     text-align: left;
-    font: normal normal 500 16px/20px proxima-nova;
+    font: normal normal 500 $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -282,7 +282,7 @@
 
 .lableRadioStyle {
     text-align: left;
-    font: normal normal 500 15px/20px proxima-nova;
+    font: normal normal 500 $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     // text-transform: capitalize;
@@ -292,7 +292,7 @@
 
 .lableRadioSerialNumberStyle {
     text-align: left;
-    font: normal normal 500 15px/20px proxima-nova;
+    font: normal normal 500 $navbartext proxima-nova;
     color: #2C2C2C;
     margin-top: 5px;
 }
@@ -349,7 +349,7 @@
 
 .viewMyInfoText {
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }

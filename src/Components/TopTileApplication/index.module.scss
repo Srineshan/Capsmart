@@ -2,12 +2,26 @@
 @import "../../index.scss";
 
 .cardStyle {
-    height: 115px;
-    background: #FFFFFF 0% 0% no-repeat padding-box;
-    box-shadow: 0px 10px 20px #C4C8D066;
-    border-radius: 10px;
+    height: 50px;
+    background: #E8E9E9 0% 0% no-repeat padding-box;
+    // box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 5px;
     opacity: 1;
     cursor: pointer;
+    padding: 10px;
+}
+
+.applicationCardStyle {
+    height: 50px;
+    opacity: 1;
+    cursor: pointer;
+    padding: 10px;
+    background: #E8E9E9 0% 0% no-repeat padding-box;
+    // box-shadow: 0px 3px 15px #9AAFB5;
+    border-radius: 4px 4px 0px 0px;
+}
+
+.padding10 {
     padding: 10px;
 }
 
@@ -24,17 +38,26 @@
 }
 
 .selectedContractBackground {
-    background-color: $secondarycolor;
-    border: 1px solid #d1cefd;
+    background-color: $primarycolor;
+    border: 0.4px solid $primarycolor;
+    border-radius: 0.4px;
+    border-radius: 4px 4px 0px 0px;
+}
+
+.selectedApplicationText {
+    text-align: left;
+    font: normal normal bold 20px proxima-nova;
+    letter-spacing: 0px;
+    color: #06617A;
 }
 
 .headingForContracts {
-    font: normal normal bolder $navbartext proxima-nova !important;
+    font: normal normal bold 20px proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
-    color: #2C2C2C;
-    text-transform: uppercase;
+    color: #737575;
     opacity: 1;
+    // align-items: center;
 
     @include breakpoint(md) {
         font: normal normal bold 14px/12px proxima-nova;
@@ -56,6 +79,14 @@
 .grid2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
+}
+// 
+.selectedApplicantBackground {
+    background: #06617A1A 0% 0% no-repeat padding-box;
+    // box-shadow: 0px 3px 11px #9AAFB5;
+    border: 0.4000000059604645px solid #9AAFB5;
+    border-radius: 4px 4px 0px 0px;
+    opacity: 1;
 }
 
 .displayInCol {
@@ -174,12 +205,13 @@
 
 .countDesign {
     border-radius: 8px;
-    height: 20px;
-    min-width: 40px;
+    height: 25px;
+    min-width: 35px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-left: 10px;
+    font-size: 22px;
 }
 
 .defaultSmallNumber {
@@ -209,6 +241,13 @@
     justify-content: flex-end;
 }
 
+.alignCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 .displayInGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -223,12 +262,91 @@
 }
 
 .clickableText {
-    color: $primarycolor;
+    color: blue;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .clickableText:hover {
-    color: $primarycolor;
+    color: darkblue;
     text-decoration: underline;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.marginAuto {
+    margin: auto;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+/**
+ * Tabs
+ */
+.tabs {
+    display: flex;
+    flex-wrap: wrap; // make sure it wraps
+}
+
+.tabs label {
+    order: 1; // Put the labels first
+    display: block;
+    padding: 1rem 2rem;
+    margin-right: 0.2rem;
+    cursor: pointer;
+    background: #90CAF9;
+    font-weight: bold;
+    transition: background ease 0.2s;
+    text-align: left;
+}
+
+.tabs .tab {
+    order: 99; // Put the tabs last
+    flex-grow: 1;
+    width: 100%;
+    display: none;
+    padding: 1rem;
+    background: #fff;
+}
+
+.tabs input[type="radio"] {
+    display: none;
+}
+
+.tabs input[type="radio"]:checked+label {
+    background: #fff;
+}
+
+.tabs input[type="radio"]:checked+label+.tab {
+    display: block;
+}
+
+.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.selectedNewApplicantBackground {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 11px #52575D1A;
+    border: 0.4000000059604645px solid $primarycolor;
+    border-radius: 4px 4px 0px 0px;
+    opacity: 1;
+}
+
+.center {
+    align-self: end;
+    margin-top: -10px;
+}
+
+.flexspaceBetween {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
 }

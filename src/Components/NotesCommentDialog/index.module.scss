@@ -226,7 +226,7 @@
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid #173790;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 0.5;
 }
@@ -292,7 +292,7 @@
 .notesBorderStyle {
   border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #173790;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 4px;
   opacity: 1;
 }
@@ -328,7 +328,7 @@
 }
 
 .reviewButton {
-  background-color: #173790;
+  background-color: $primarycolor;
   color: white;
   font-weight: 600;
   padding: 10px 20px;
@@ -413,7 +413,7 @@
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;

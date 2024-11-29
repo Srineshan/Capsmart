@@ -1,5 +1,5 @@
 import React from 'react';
-import TimeSmartLogo from './../../images/timeSmartAILogo.png';
+import HapiCare from "./../../images/hapicare.png";
 
 import style from './index.module.scss';
 
@@ -10,13 +10,13 @@ const ReportFooter = () => {
             <div className={style.spaceBetween}>
                 <div>
                     <div className={style.poweredByTextStyle}>Powered By</div>
-                    <img src={TimeSmartLogo} alt="poweredBy" className={style.reportFooterLogo} />
+                    <img src={HapiCare} alt="poweredBy" className={style.reportFooterLogo} />
                 </div>
                 {/* <div id='content'>
                     <div className={`${style.reportFooterTextStyle}`} id="pageFooter"></div>
                 </div> */}
                 <div className={style.marginTop20}>
-                    <div className={style.reportFooterTextStyle}>© Copyright {new Date()?.getFullYear()}. CAPSmart.</div>
+                    <div className={style.reportFooterTextStyle}>© Copyright {new Date()?.getFullYear()}. HapiCare.</div>
                     <div className={style.reportFooterTextStyle}>All Rights Reserved.</div>
                 </div>
             </div>
