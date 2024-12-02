@@ -1182,8 +1182,190 @@ const ApplicationFieldCard = ({
                             />
                         );
                     }
-                case "datepicker":
-                    console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'datecheck', isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)))
+                // case "datepicker":
+                //     console.log(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`), 'datecheck', isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)))
+                //     if (isPOD) {
+                //         return (
+                //             <div>
+                //                 <div className={`${style.lableStylePOD}`}>
+                //                     {fieldData.label}
+                //                     {isLableEmpty(fieldData.label)
+                //                         ? false
+                //                         : (object.required?.includes(fieldKey) ||
+                //                             (parentData !== null
+                //                                 ? parentData.required?.includes(fieldKey)
+                //                                 : false)) &&
+                //                         "*"}
+                //                 </div>
+                //                 <div className={style.lableReadOnlyStyleInPOD}>
+                //                     {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)) ? format(
+                //                         new Date(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)),
+                //                         canadaData?.dateFormat || "dd/MM/yyyy"
+                //                     ) : "-"}
+                //                 </div>
+                //             </div>
+                //         );
+                //     } else {
+                //         return (
+                //             <CommonDateField
+                //                 className={style.fullWidth}
+                //                 open={calendarStart}
+                //                 onOpen={() => setCalendarStart(true)}
+                //                 onClose={() => setCalendarStart(false)}
+                //                 // minDate={sub(new Date(), { years: 3 })}
+                //                 // maxDate={add(new Date(), { months: 6 })}
+                //                 value={
+                //                     getValueByPath(
+                //                         basicForm,
+                //                         `${basicpath}.${baseKey}.${fieldKey}`
+                //                     ) || null
+                //                 }
+                //                 onChange={(newValue) =>
+                //                     handleChange(
+                //                         fieldKey,
+                //                         fieldData.format === "date-time"
+                //                             ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+                //                             : format(new Date(newValue), "yyyy-MM-dd"),
+                //                         baseKey
+                //                     )
+                //                 }
+                //                 InputProps={{
+                //                     style: {
+                //                         fontSize: 14,
+                //                         height: 30,
+                //                     },
+
+                //                 }}
+                //                 renderInput={(params) => (
+                //                     <TextField
+                //                         {...params}
+                //                         inputProps={{
+                //                             ...params.inputProps,
+                //                             placeholder:
+                //                                 fieldData.placeHolder !== null
+                //                                     ? fieldData.placeHolder
+                //                                     : fieldData.label !== null
+                //                                         ? `Enter ${fieldData.label}`
+                //                                         : null,
+                //                             readOnly: true
+                //                         }}
+                //                         color={
+                //                             warningFields
+                //                                 ?.map((data) => data?.key)
+                //                                 ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
+                //                                 (getValueByPath(
+                //                                     basicForm,
+                //                                     `${basicpath}.${baseKey}.${fieldKey}`
+                //                                 ) === null ||
+                //                                     getValueByPath(
+                //                                         basicForm,
+                //                                         `${basicpath}.${baseKey}.${fieldKey}`
+                //                                     ) === "")
+                //                                 ? "error"
+                //                                 : ""
+                //                         }
+                //                         fullWidth
+                //                         focused={
+                //                             warningFields
+                //                                 ?.map((data) => data?.key)
+                //                                 ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
+                //                                 (getValueByPath(
+                //                                     basicForm,
+                //                                     `${basicpath}.${baseKey}.${fieldKey}`
+                //                                 ) === null ||
+                //                                     getValueByPath(
+                //                                         basicForm,
+                //                                         `${basicpath}.${baseKey}.${fieldKey}`
+                //                                     ) === "")
+                //                                 ? true
+                //                                 : false
+                //                         }
+                //                     // style={
+                //                     //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                //                     //         && (value === '' || value === null || value === undefined)
+                //                     //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
+                //                     //         : {}
+                //                     // }
+                //                     />
+                //                 )}
+                //                 label={fieldData.label}
+                //                 required={
+                //                     isLableEmpty(fieldData.label)
+                //                         ? false
+                //                         : object.required?.includes(fieldKey) ||
+                //                         (parentData !== null
+                //                             ? parentData.required?.includes(fieldKey)
+                //                             : false)
+                //                 }
+                //             />
+                //         );
+                //     }
+                case "datepicker": {
+                    // Determine minDate and maxDate dynamically
+                
+                    // Check if Date1 should be greater than the current date
+                    const shouldSetMinDateToToday = (() => {
+                        const validation = object?.customValidations?.find((validation) => {
+                            const validationDate1 = validation.parameters.date1;
+                            const fieldPath = `${baseKey}.${fieldKey}`;
+                            return (
+                                validation.condition === "Date1GreaterThanCurrentDate" &&
+                                (validationDate1 === fieldPath || validationDate1 === fieldKey) // Match with or without prefix
+                            );
+                        });
+                
+                        console.log(
+                            "Validation for Date1GreaterThanCurrentDate:",
+                            validation,
+                            "Expected:",
+                            `${baseKey}.${fieldKey}`
+                        );
+                
+                        return !!validation; // Return true if validation exists
+                    })();
+                
+                    // Check if Date2 is greater than Date1
+                    const minDateForDate2 = (() => {
+                        const validation = object?.customValidations?.find((validation) =>
+                            validation.condition === "Date2GreaterThanDate1" &&
+                            validation.parameters.date2 === `${baseKey}.${fieldKey}`
+                        );
+                        if (validation) {
+                            const date1Path = `${basicpath}.${baseKey}.${validation.parameters.date1.split('.').pop()}`;
+                            const date1Value = getValueByPath(basicForm, date1Path);
+                
+                            if (isValidDateString(date1Value)) {
+                                return new Date(date1Value);
+                            }
+                        }
+                        return null;
+                    })();
+                
+                    // Check if the birthday should be less than today
+                    const shouldSetMaxDateForBirthday = object?.customValidations?.some(
+                        (validation) =>
+                            validation.condition === "Date1LessThanCurrentDate" &&
+                            `${baseKey}.${fieldKey}` === validation.parameters.date1
+                    );
+                
+                    // Final minDate logic
+                    const minDate = (() => {
+                        if (shouldSetMinDateToToday) {
+                            return new Date(); // Today's date for Date1GreaterThanCurrentDate
+                        }
+                        if (minDateForDate2) {
+                            return minDateForDate2; // Date2 > Date1 logic
+                        }
+                        return null; // Default
+                    })();
+                
+                    const maxDate = shouldSetMaxDateForBirthday ? new Date() : null;
+                
+                    // Debugging logs
+                    console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
+                    console.log("minDateForDate2:", minDateForDate2);
+                    console.log("Final minDate:", minDate);
+                
                     if (isPOD) {
                         return (
                             <div>
@@ -1192,16 +1374,19 @@ const ApplicationFieldCard = ({
                                     {isLableEmpty(fieldData.label)
                                         ? false
                                         : (object.required?.includes(fieldKey) ||
-                                            (parentData !== null
-                                                ? parentData.required?.includes(fieldKey)
-                                                : false)) &&
-                                        "*"}
+                                              (parentData !== null
+                                                  ? parentData.required?.includes(fieldKey)
+                                                  : false)) &&
+                                          "*"}
                                 </div>
                                 <div className={style.lableReadOnlyStyleInPOD}>
-                                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined && isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)) ? format(
-                                        new Date(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)),
-                                        canadaData?.dateFormat || "dd/MM/yyyy"
-                                    ) : "-"}
+                                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) !== undefined &&
+                                    isValidDateString(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`))
+                                        ? format(
+                                              new Date(getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)),
+                                              canadaData?.dateFormat || "dd/MM/yyyy"
+                                          )
+                                        : "-"}
                                 </div>
                             </div>
                         );
@@ -1212,29 +1397,25 @@ const ApplicationFieldCard = ({
                                 open={calendarStart}
                                 onOpen={() => setCalendarStart(true)}
                                 onClose={() => setCalendarStart(false)}
-                                // minDate={sub(new Date(), { years: 3 })}
-                                // maxDate={add(new Date(), { months: 6 })}
                                 value={
-                                    getValueByPath(
-                                        basicForm,
-                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                    ) || null
+                                    getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) || null
                                 }
-                                onChange={(newValue) =>
+                                onChange={(newValue) => {
                                     handleChange(
                                         fieldKey,
                                         fieldData.format === "date-time"
                                             ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'")
                                             : format(new Date(newValue), "yyyy-MM-dd"),
                                         baseKey
-                                    )
-                                }
+                                    );
+                                }}
+                                minDate={minDate} // Dynamically set minDate
+                                maxDate={maxDate} // Dynamically set maxDate
                                 InputProps={{
                                     style: {
                                         fontSize: 14,
                                         height: 30,
                                     },
-
                                 }}
                                 renderInput={(params) => (
                                     <TextField
@@ -1245,22 +1426,22 @@ const ApplicationFieldCard = ({
                                                 fieldData.placeHolder !== null
                                                     ? fieldData.placeHolder
                                                     : fieldData.label !== null
-                                                        ? `Enter ${fieldData.label}`
-                                                        : null,
-                                            readOnly: true
+                                                    ? `Enter ${fieldData.label}`
+                                                    : null,
+                                            readOnly: true,
                                         }}
                                         color={
                                             warningFields
                                                 ?.map((data) => data?.key)
                                                 ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
-                                                (getValueByPath(
+                                            (getValueByPath(
+                                                basicForm,
+                                                `${basicpath}.${baseKey}.${fieldKey}`
+                                            ) === null ||
+                                                getValueByPath(
                                                     basicForm,
                                                     `${basicpath}.${baseKey}.${fieldKey}`
-                                                ) === null ||
-                                                    getValueByPath(
-                                                        basicForm,
-                                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                                    ) === "")
+                                                ) === "")
                                                 ? "error"
                                                 : ""
                                         }
@@ -1269,23 +1450,17 @@ const ApplicationFieldCard = ({
                                             warningFields
                                                 ?.map((data) => data?.key)
                                                 ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
-                                                (getValueByPath(
+                                            (getValueByPath(
+                                                basicForm,
+                                                `${basicpath}.${baseKey}.${fieldKey}`
+                                            ) === null ||
+                                                getValueByPath(
                                                     basicForm,
                                                     `${basicpath}.${baseKey}.${fieldKey}`
-                                                ) === null ||
-                                                    getValueByPath(
-                                                        basicForm,
-                                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                                    ) === "")
+                                                ) === "")
                                                 ? true
                                                 : false
                                         }
-                                    // style={
-                                    //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
-                                    //         && (value === '' || value === null || value === undefined)
-                                    //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
-                                    //         : {}
-                                    // }
                                     />
                                 )}
                                 label={fieldData.label}
@@ -1293,13 +1468,15 @@ const ApplicationFieldCard = ({
                                     isLableEmpty(fieldData.label)
                                         ? false
                                         : object.required?.includes(fieldKey) ||
-                                        (parentData !== null
-                                            ? parentData.required?.includes(fieldKey)
-                                            : false)
+                                          (parentData !== null
+                                              ? parentData.required?.includes(fieldKey)
+                                              : false)
                                 }
                             />
                         );
                     }
+                }
+                
                 case "radiobutton":
                     return (
                         <div
