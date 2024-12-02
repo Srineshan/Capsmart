@@ -24,6 +24,7 @@ import style from "./index.module.scss";
 import SideBar from "../../Components/Sidebar";
 import ProgressBar from "@ramonak/react-progress-bar";
 import ApplicationRejection from "./applicationRejectionDialog";
+import ApplicationApprovedDeclined from "./applicationApprovedDecline";
 import { useNavigate } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
@@ -63,6 +64,7 @@ const StaffApplicationList = ({
   });
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
+  const [declineListData, setDeclineListData] = useState([]);
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
   const [page, setPage] = useState(1);
@@ -71,12 +73,16 @@ const StaffApplicationList = ({
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
+  const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+  const [applicationType, setApplicationType] = useState(() =>
+    sessionStorage.getItem('applicationCreationType') || 'NEW'
+  );
 
   const applicantHeaderValues = [
     "",
-    "Applicant Name",
-    "Applicant ID",
-    "Applicant Type",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "DOCs",
     // "Data & Disclosures",
@@ -86,26 +92,37 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ];
-
-  const departmentHeadHeaderValues = [
+  const departmentHeadHeaderValues = applicationType === "NEW" ? [
     "",
     "Applicant Name",
     "Applicant ID",
     "Applicant Type",
-    // "Department",
     "DOCS",
-    // "Data & Disclosures",
     "CRs",
     "Notes",
     "Task list Status",
     "Last Updated",
+    "Action"
+  ] : [
+    "",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
+    // "Department",
+    // "Commitee",
+    // "Board",
+    // "CEO",
+    "CR",
+    "CC",
+    "Last Updated",
     "Action",
   ];
-  const applicationHeaderValues = [
+
+  const applicationHeaderValues = applicationType === "NEW" ? [
     "",
-    "Applicant Name",
-    "Applicant ID",
-    "Applicant Type",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
     // "Commitee",
     // "Board",
@@ -116,21 +133,38 @@ const StaffApplicationList = ({
     "CC Date",
     "Last Updated",
     "Action",
+  ] : [
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    "CC Approval",
+    "Tasklist Status",
+    "Last Updated",
+    "Action",
   ];
-  const macHeaderValues = [
-    "Applicant Name",
-    "Applicant ID",
-    "Applicant Type",
+  const macHeaderValues = applicationType === "NEW" ? [
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
     "COS Approval",
     "Tasklist Status",
     "Last Updated",
     "Action",
+  ] : [
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    // "Ref",
+    "MAC Approval",
+    "Task list Status",
+    "Last Updated",
+    "Action",
   ];
   const bodHeaderValues = [
-    "Applicant Name",
-    "Applicant ID",
-    "Applicant Type",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
     "MAC Approval",
     "Task list Status",
@@ -139,7 +173,7 @@ const StaffApplicationList = ({
   ];
   const clarificationHeaderValues = [
     "",
-    "Applicant Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Clarification Title",
     "Raised By",
@@ -150,9 +184,9 @@ const StaffApplicationList = ({
 
   const rejectedHeaderValues = [
     "",
-    "Applicant Name",
-    "Applicant ID",
-    "Applicant Type",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "Docs",
     // "Data & Disclosures",
@@ -164,7 +198,7 @@ const StaffApplicationList = ({
   ];
   const approvedHeaderValues = [
     "",
-    "Applicant Name",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     "Type",
     "Notes",
     "Last Updated On",
@@ -172,8 +206,8 @@ const StaffApplicationList = ({
   ];
   const reappointmentValues = [
     "",
-    "Applicant Name",
-    "Applicant Type",
+    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Department",
     "Docs",
     "Data & Disclosures",
@@ -196,7 +230,7 @@ const StaffApplicationList = ({
     false,
   ];
 
-  const departmentHeadColSortValues = [
+  const departmentHeadColSortValues = applicationType === "NEW" ? [
     false,
     true,
     true,
@@ -207,19 +241,38 @@ const StaffApplicationList = ({
     false,
     true,
     false,
-  ];
-  const applicationColSortValues = [
+  ] : [
     false,
     true,
     true,
     true,
-    false,
     false,
     false,
     false,
     true,
     false,
   ];
+  const applicationColSortValues = applicationType === "NEW" ? [
+    false,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false
+  ] : [
+    true,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+  ]
   const macColSortValues = [
     true,
     true,
@@ -290,12 +343,14 @@ const StaffApplicationList = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
+    const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
+    useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
-  const [applicationCreationType, setApplicationCreationType] = useState('NEW');
-  const [applicationType, setApplicationType] = useState(() =>
-    sessionStorage.getItem('applicationCreationType') || 'NEW'
-  );
+  // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+  // const [applicationType, setApplicationType] = useState(() => 
+  //   sessionStorage.getItem('applicationCreationType') || 'NEW'
+  // );
   // const [counts, setCounts] = useState({
   //   chiefOfStaff: 0,
   //   credentialingCommittee: 0,
@@ -322,7 +377,7 @@ const StaffApplicationList = ({
       if (currentValue !== applicationType) {
         setApplicationType(currentValue);
       }
-    });
+    }, 500);
 
   }, [applicationType]);
 
@@ -357,6 +412,11 @@ const StaffApplicationList = ({
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
     setRejectionTab("rejected");
+  };
+
+  const getApplicationApprovedDeclineDialog = (value) => {
+    setShowApplicationApprovedDeclineDialog(value);
+    // setRejectionTab("rejected");
   };
 
   const getCheckListDialog = (value) => {
@@ -509,7 +569,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getDeclineData();
-  }, [showApplicationRejectionDialog]);
+  }, [showApplicationApprovedDeclineDialog]);
 
 
   const handleIconClick = () => {
@@ -569,7 +629,7 @@ const StaffApplicationList = ({
         // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
       console.log("Rejection data", response?.data?.applications);
-      setRejectionListData(response?.data?.applications);
+      setDeclineListData(response?.data?.applications);
       return response?.data.applications || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -578,15 +638,15 @@ const StaffApplicationList = ({
   };
 
   const handleClick = async () => {
-    await getDeclineData();
+    // await getDeclineData();
     setShowApplicationRejectionDialog(true);
   };
 
-  useEffect(() => {
-    if (showApplicationRejectionDialog) {
-      getDeclineData();
-    }
-  }, [showApplicationRejectionDialog]);
+  // useEffect(() => {
+  //   if (showApplicationRejectionDialog) {
+  //     getDeclineData();
+  //   }
+  // }, [showApplicationRejectionDialog]);
 
   const getSentConfirmationCount = async () => {
     await GET(
@@ -749,7 +809,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -758,17 +818,18 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
-      //     style={{ fontSize: 20, color: `#52575D` }}
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
       //   />
       // );
 
-      if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
+      if (data?.documents?.uploadedCount === data?.documents?.uploadedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
-      } else if (data?.documents?.verifiedCount === 0) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
-      } else {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
       }
+      // else if (data?.documents?.verifiedCount === 0) {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
+      // } else {
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      // }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
       //   ? "yellow"
@@ -780,7 +841,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
       const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
@@ -855,7 +916,7 @@ const StaffApplicationList = ({
     ];
   };
 
-  const getDepartmentHeadValues = () => {
+  const getDepartmentHeadValues = applicationType === "NEW" ? () => {
     dot = [];
     applicantName = [];
     applicantId = [];
@@ -911,7 +972,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -920,7 +981,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       docsIcon.push(
         <TextSnippetOutlinedIcon
-          style={{ fontSize: 20, color: `#52575D` }}
+          style={{ fontSize: 20, color: `#00C07F` }}
         />
       );
       // dataStatus.push(data?.dataStatus || "green");
@@ -934,7 +995,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
       const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
@@ -1007,10 +1068,131 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
+  } : () => {
+    dot = [];
+    applicantName = [];
+    applicantType = [];
+    applicantId = [];
+    // department = [];
+    // commiteeStatus = [];
+    // boardStatus = [];
+    // ceoStatus = [];
+    cr = [];
+    cos = [];
+    cc = [];
+    ccdate = [];
+    lastUpdatedOn = [];
+
+    action = [];
+
+    tableData?.map((data) => {
+      // dot.push(
+      //   data?.status === "REVIEW_INPROGRESS"
+      //     ? "yellow"
+      //     : data?.status === "APPROVED"
+      //       ? "green"
+      //       : "grey"
+      // );
+
+      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
+
+      applicantName.push(
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
+      );
+      applicantType.push(data?.providerType.serviceProviderType);
+      applicantId.push(data?.displayId);
+      // department.push(
+      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      // );
+      // commiteeStatus.push(data?.commiteeStatus || "yellow");
+      // boardStatus.push(data?.boardStatus || "green");
+      // ceoStatus.push(data?.ceoStatus || "grey");
+      cr.push(data?.clarificationRequiredFor || "-");
+      // cr.push(data?.logs[data.logs.length - 1]?.role)
+      // cos.push(data?.boardStatus || "green");
+      // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
+      //   ? "yellow"
+      //   : data?.logs[data.logs.length - 1].workflowAction === "APPROVED"
+      //   ? "green"
+      //   : "grey");
+      // if (data?.logs[data.logs.length - 1]?.role === "Chief Of Staff") {
+      //   if (data.logs[data.logs.length - 1].workflowAction === "SUBMITTED") {
+      //     cos.push("yellow");
+      //   } else if (data.logs[data.logs.length - 1].workflowAction === "APPROVED") {
+      //     cos.push("green");
+      //   }
+      // }
+      // else {
+      //   cos.push("grey"); // If the role is not "Chief of Staff"
+      // }
+      // cc.push(data?.ceoStatus || "grey");
+      if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+        if (data.logs[data.logs.length - 2].workflowAction === "SUBMITTED") {
+          cc.push("yellow");
+        } else if (data.logs[data.logs.length - 2].workflowAction === "APPROVED") {
+          cc.push("green");
+        }
+      }
+      else {
+        cc.push("grey"); // If the role is not "Chief of Staff"
+      }
+      // if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
+      //   ccdate.push(
+      //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
+      //   )
+      // } else { ccdate.push("-") }
+      lastUpdatedOn.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      // lastUpdatedBy.push([data?.updatedBy || "-"]);
+      action.push(true);
+    });
+
+    return [
+      { type: "dot", value: dot },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+
+      // { type: "text", value: department },
+      // { type: "dot", value: commiteeStatus },
+      // { type: "dot", value: boardStatus },
+      // { type: "dot", value: ceoStatus },
+
+      { type: "text", value: cr },
+      // { type: "dot", value: cos },
+      { type: "dot", value: cc },
+      // {
+      //   type: "iconWithCount",
+      //   value: ccdate,
+      //   // hoverText: lastUpdatedBy,
+      //   // isShowHoverText: true,
+      // },
+      {
+        type: "iconWithCount",
+        value: lastUpdatedOn,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ]
   };
 
 
-  const getApplicationValues = () => {
+
+  const getApplicationValues = applicationType === "NEW" ? () => {
     dot = [];
     applicantName = [];
     applicantType = [];
@@ -1130,7 +1312,69 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
-  };
+  } : () => {
+    applicantName = [];
+    applicantId = [];
+    applicantType = [];
+    ccapproval = [];
+    // cosapproval = [];
+    taskListStatus = [];
+    lastUpdated = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " "
+      );
+      applicantId.push(data?.displayId);
+      applicantType.push(data?.providerType?.serviceProviderType);
+      // ccapproval.push(data?.ccapproval || "05/05/2024");
+      // ccapproval.push(
+      //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+      // );
+      if (data?.logs[data.logs.length - 1]?.role === "Credentialing Committee") {
+        ccapproval.push(
+          format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+        )
+      } else { ccapproval.push("-") }
+      // cosapproval.push(
+      //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
+      // );
+      // if (data?.logs[data.logs.length - 2]?.role === "Chief Of Staff") {
+      //   cosapproval.push(
+      //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
+      //   )
+      // } else { cosapproval.push("-") }
+      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      lastUpdated.push(
+        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      );
+      lastUpdatedBy.push(["-"]);
+      // const lastUpdatedDate = new Date(data?.lastModifiedDate);
+      // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
+      // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
+      action.push(true);
+
+      console.log("tabledata" + tableData);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: ccapproval },
+      // { type: "text", value: cosapproval },
+      { type: "text", value: taskListStatus },
+      {
+        type: "iconWithCount",
+        value: lastUpdated,
+        hoverText: lastUpdatedBy,
+        isShowHoverText: true,
+      },
+      { type: "action", value: action },
+    ];
+  }
 
   const getMacValues = () => {
     applicantName = [];
@@ -1194,7 +1438,7 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
-  };
+  }
 
   const getBodValues = () => {
     applicantName = [];
@@ -1339,7 +1583,7 @@ const StaffApplicationList = ({
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
       notes.push(data?.notes.length || "0");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#52575D` }} />
+        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       notesHoverText.push([
         "June 13 00:00, Nina Grealy",
@@ -1441,7 +1685,7 @@ const StaffApplicationList = ({
     //   onClick: onClickMoveToNextFunction,
     // },
     {
-      data: "Applicant Processing Tasks",
+      data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
       requiredValue: "boolean",
       onClick: onClickProcessingTaskFunction,
     },
@@ -1450,7 +1694,7 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       isParagraph: true,
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ];
@@ -1460,6 +1704,14 @@ const StaffApplicationList = ({
       data: userRole?.includes("Staff Manager") ? "View" : "View & Verify",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyFunction,
+    },
+    {
+      data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
+      requiredValue: "boolean",
+      onClick: onClickProcessingTaskFunction,
+      hideForRoles: "Staff Manager",
+      showForRoles: "Chief Of Staff",
+      showForRoles2: "Department Head",
     },
     // {
     //   data: "Send for Cred Comm Review",
@@ -1481,7 +1733,7 @@ const StaffApplicationList = ({
       showForRoles: "Chief Of Staff",
       showForRoles2: "Department Head",
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
     { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
   ];
@@ -1529,7 +1781,7 @@ const StaffApplicationList = ({
       // showForRoles: "Chief Of Staff",
       // showForRoles: ["Chief Of Staff","Credentialing Committee"],
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
     { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
   ];
@@ -1562,7 +1814,7 @@ const StaffApplicationList = ({
     // { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "MAC View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ];
 
   const bodActionsData = [
@@ -1584,7 +1836,7 @@ const StaffApplicationList = ({
     // { data: "BOD Move Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "BOD View" : "BOD Approval Status", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ];
   const clarificationActionsData = [
     { data: "View & Verify", requiredValue: "boolean", onClick: "" },
@@ -1598,7 +1850,7 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: "",
     },
-    { data: "From Applicant", requiredValue: "boolean", onClick: "" },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "" },
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
     { data: "From Institution", requiredValue: "boolean", onClick: "" },
   ];
@@ -1621,14 +1873,14 @@ const StaffApplicationList = ({
     // },
     { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
-    { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "" },
+    { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: "" },
   ];
 
   const approvedActionsData = [
     {
       data: "Add as active staff",
       requiredValue: "boolean",
-      onClick: onClickMoveToActiveStaffFunction
+      onClick: ""
     },
     // {
     //   data: "Send follow up disclosures",
@@ -1669,18 +1921,20 @@ const StaffApplicationList = ({
         ? departmentHeadColSortValues
         : selectedTab === "level-3"
           ? applicationColSortValues
-          : selectedTab === "level-4"
+          : selectedTab === "level-4" && applicationType === "NEW"
             ? macColSortValues
-            : selectedTab === "level-5"
+            : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
               ? bodColSortValues
-              : selectedTab === "clarificationsRequired"
-                ? applicantColSortValues
-                : selectedTab === "rejected"
-                  ? rejectedColSortValues
-                  // :[];
+              : selectedTab === "level-5"
+                ? bodColSortValues
+                : selectedTab === "clarificationsRequired"
+                  ? applicantColSortValues
+                  : selectedTab === "rejected"
+                    ? rejectedColSortValues
+                    // :[];
 
-                  // : approvedColSortValues;
-                  : applicantColSortValues;
+                    // : approvedColSortValues;
+                    : applicantColSortValues;
   let tableDataValues =
     selectedTab === "level-1"
       ? getApplicantValues()
@@ -1688,329 +1942,259 @@ const StaffApplicationList = ({
         ? getDepartmentHeadValues()
         : selectedTab === "level-3"
           ? getApplicationValues()
-          : selectedTab === "level-4"
+          : selectedTab === "level-4" && applicationType === "NEW"
             ? getMacValues()
-            : selectedTab === "level-5"
+            : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
               ? getBodValues()
-              : selectedTab === "clarificationsRequired"
-                ? getApplicantValues()
-                : selectedTab === "rejected"
-                  ? getRejectedValues()
-                  // :[];
+              : selectedTab === "level-5"
+                ? getBodValues()
+                : selectedTab === "clarificationsRequired"
+                  ? getApplicantValues()
+                  : selectedTab === "rejected"
+                    ? getRejectedValues()
+                    // :[];
 
-                  // : getApprovedValues();
-                  : getApplicantValues();
+                    // : getApprovedValues();
+                    : getApplicantValues();
   let actions =
     selectedTab === "level-1"
       ? applicantActionsData
-      : selectedTab === "level-2"
+      : selectedTab === "level-2" && applicationType === "NEW"
         ? departmentHeadActionsData
-        : selectedTab === "level-3"
+        : selectedTab === "level-2" && applicationType === "REAPPOINTMENT"
           ? applicationActionsData
-          : selectedTab === "level-4"
-            ? macActionsData
-            : selectedTab === "level-5"
-              ? bodActionsData
-              : selectedTab === "clarificationsRequired"
-                ? clarificationActionsData
-                : selectedTab === "rejected"
-                  ? rejectedActionsData
-                  // :[];
+          : selectedTab === "level-3" && applicationType === "NEW"
+            ? applicationActionsData
+            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT"
+              ? macActionsData
+              : selectedTab === "level-4" && applicationType === "NEW"
+                ? macActionsData
+                : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                  ? bodActionsData
+                  : selectedTab === "level-5"
+                    ? bodActionsData
+                    : selectedTab === "clarificationsRequired"
+                      ? clarificationActionsData
+                      : selectedTab === "rejected"
+                        ? rejectedActionsData
+                        // :[];
 
-                  : approvedActionsData;
+                        : approvedActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1"
       ? style.applicantStaffGrid
-      : selectedTab === "level-2"
+      : selectedTab === "level-2" && applicationType === "NEW"
         ? style.departmentHeadStaffGrid
-        : selectedTab === "level-3"
-          ? style.applicationStaffGrid
-          : selectedTab === "level-4"
-            ? style.macStaffGrid
-            : selectedTab === "level-5"
-              ? style.bodStaffGrid
-              : selectedTab === "clarificationsRequired"
-                ? style.applicantStaffGrid
-                : selectedTab === "rejected"
-                  ? style.rejectedStaffGrid
-                  // :[];
+        : selectedTab === "level-2" && applicationType === "REAPPOINTMENT"
+          ? style.applicationStaffReappointGrid
+          : selectedTab === "level-3" && applicationType === "NEW"
+            ? style.applicationStaffGrid
+            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT"
+              ? style.macStaffReappointGrid
+              : selectedTab === "level-4" && applicationType === "NEW"
+                ? style.macStaffGrid
+                : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                  ? style.bodStaffGrid
+                  : selectedTab === "level-5"
+                    ? style.bodStaffGrid
+                    : selectedTab === "clarificationsRequired"
+                      ? style.applicantStaffGrid
+                      : selectedTab === "rejected"
+                        ? style.rejectedStaffGrid
+                        // :[];
 
-                  // : style.approvedStaffGrid;
-                  : style.applicantStaffGrid;
+                        // : style.approvedStaffGrid;
+                        : style.applicantStaffGrid;
 
   return (
     <div className={style.margin20}>
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <div
-              className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
-            >
-              <div
-                className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                // onClick={() => navigate("/createStaffMemberApplication) }
-                onClick={() =>
-                  applicationType === "NEW"
-                    ? navigate("/createStaffMemberApplication")
-                    // : navigate("/createStaffReapplication")
-                    : navigate("/createStaffMemberApplication")
-                }
-              >
-                {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
-              </div>
-              <div className={`${style.displayInRow} ${style.marginLeft20} `}>
-                <AddCircleOutlineIcon sx={{ fontSize: 20, color: "white" }} onClick={() => navigate("/createStaffMemberApplication")} />
-              </div>
-            </div>
-
-            {/* <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-              <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                  Requests For Appointment ({requestAppointment})
-                </div>
-                <div className={`${style.marginLeft10} `} >
-                  {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
-                  )}
-                </div>
-              </div>
-              {showCardAppointment && (<>
-                <div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #14B15A",
-                          color: "#14B15A"
-                        }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
-                        color: "#52575D",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #FEC106",
-                          color: "#FEC106"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                  <div className={`${style.displayInCol} ${style.marginTop}`}>
-                    <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
-                      <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
-                        color: "#52575D",
-                        font: "normal normal bold 16px/24px proxima-nova"
-                      }}> (Doctor) </span> <span className={style.dayTextStyle}
-                        style={{
-                          border: "0.4px solid #F94848",
-                          color: "#F94848"
-                        }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197', marginRight: "5px" }} />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </>)}
-            </div> */}
-
-            <div
-              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-            >
-              <div
-                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
-              >
+            <>
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
-                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                  className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
-                  Sent for Completion{" "}
-                  <span
-                    className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                  <div
+                    className={`${style.displayInRow} ${style.marginLeftRight10} `}
+                    onClick={() =>
+                      applicationType === "NEW"
+                        ? navigate("/createStaffMemberApplication")
+                        : navigate("/createStaffReapplication")
+                    }
                   >
-                    {sentCompletion?.totalApplicationsSent || 0}
-                  </span>
-                </div>
-                <div className={`${style.marginLeft10} `}>
-                  {!showCardCompletion ? (
-                    <AddIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardCompletion(!showCardCompletion)}
+                    {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
+                  </div>
+                  <div className={`${style.displayInRow} ${style.marginLeft20} `}>
+                    <AddCircleOutlineIcon
+                      sx={{ fontSize: 20, color: "white" }}
+                      onClick={() =>
+                        applicationType === "NEW"
+                          ? navigate("/createStaffMemberApplication")
+                          : navigate("/createStaffReapplication")
+                      }
                     />
-                  ) : (
-                    <RemoveIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardCompletion(!showCardCompletion)}
-                    />
-                  )}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
-              {showCardCompletion && (
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
-                  style={{
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                    scrollbarWidth: "thin",
-                    scrollbarColor: "gray transparent",
-                  }}
+                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >
-                  {sentCompletion?.applicationsStatus?.map((status, index) => (
+                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                     <div
-                      key={index}
-                      className={`${style.displayInCol} ${style.marginTop}`}
+                      className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      <div
-                        className={`${style.warningTextAlign} ${style.staffTextStyle}`}
+                      Sent for Completion{" "}
+                      <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
-                        <div className={style.progressbarStyle}>
-                          <div className={style.spaceBetween}>
-                            <div className={style.statisticsProgress}>
-                              {/* <div className={status?.remainingCompletionPercentage === 0 ? style.greenDotStyle : status?.remainingCompletionPercentage === 100 ? style.greyDotStyle : status?.dueStatus === "PastDue" ? style.redDotStyle : style.yellowDotStyle}></div> */}
-                              <div className={
-                                status?.dueStatus === "PastDue" ? style.redDotStyle :
-                                  status?.remainingCompletionPercentage === 0 ? style.greenDotStyle :
-                                    status?.remainingCompletionPercentage === 100 ? style.greyDotStyle :
-                                      style.yellowDotStyle
-                              }></div>
-                              <div className={style.marginLeft10}>
-                                {/* {`${status?.basicDetail?.applicant?.name?.firstName} ${status.basicDetail.applicant.name.lastName}`} */}
-                                {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() + status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}, {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
-                              </div>
-
-                              {/* <span className={style.textStyleProgress}> ({status.providerType.serviceProviderType}) </span> */}
-
-                            </div>
-                            <div
-                              className={`${style.smallTextStyle} ${style.justifyCenter}`}
-                            >
-
-                              {/* {`${status.basicDetail.applicant.startDate}`} */}
-                              {status?.createdDate
-                                ? format(
-                                  new Date(
-                                    status?.createdDate
-                                  ),
-                                  "MMM dd, yyyy"
-                                )
-                                : "N/A"}
-
-                            </div>
-                            {/* <p className={style.progressTopText}>
-                              {" "}
-                              Due in {status.dueDays} Days{" "}
-                            </p> */}
-                          </div>
-                          <ProgressBar
-                            completed={
-                              100 - status.remainingCompletionPercentage
-                            }
-                            isLabelVisible={false}
-                            height="5px"
-                            bgColor="#0e5197"
-                            baseBgColor="#E9E9F0"
-                            className={style.marginLeft20}
-                          />
-                          <div className={style.spaceBetween}>
-                            <span className={style.textStyleProgress}>
-                              {/* <span className={style.textalign}> */}{" "}
-                              {status?.providerType?.serviceProviderType}{" "}
-                            </span>
-                            {/* <div className={style.progressBottomText}>
-                              {status.remainingCompletionPercentage}% remaining
-                            </div> */}
-                            {/* <p className={style.progressTopText}>
-                              {" "}
-                              Due in {status.dueDays} Days{" "}
-                            </p> */}
-                            <p className={style.progressTopText}>
-                              {status?.dueStatus === "Due"
-                                ? `Due in ${status.dueDays} Days`
-                                : `${status.dueDays} days past due`}
-                            </p>
-                          </div>
-                          {/* <div className={style.progressBottomText}>{status.remainingCompletionPercentage}% remaining</div> */}
-                        </div>
-                      </div>
+                        {sentCompletion?.totalApplicationsSent || 0}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    <div className={`${style.marginLeft10} `}>
+                      {!showCardCompletion ? (
+                        <AddIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardCompletion(!showCardCompletion)}
+                        />
+                      ) : (
+                        <RemoveIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardCompletion(!showCardCompletion)}
+                        />
+                      )}
+                    </div>
+                  </div>
 
-            <div
-              className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-            >
-              <div
-                className={`${style.spaceBetween}  ${style.marginLeftRight10}`}
-              >
-                <div
-                  className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
-                >
-                  Rejected / Declined{" "}
-                  <span
-                    className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
-                  >
-                    {applicationRejected.totalRejections}
-                  </span>
-                </div>
-                <div className={`${style.marginLeft10} `}>
-                  {!showCardDetails ? (
-                    <AddIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardDetails(!showCardDetails)}
-                    />
-                  ) : (
-                    <RemoveIcon
-                      sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
-                      onClick={() => setShowCardDetails(!showCardDetails)}
-                    />
+                  {showCardCompletion && (
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      {sentCompletion?.applicationsStatus?.map((status, index) => (
+                        <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.statisticsProgress}>
+                                  <div
+                                    className={
+                                      status?.dueStatus === "PastDue"
+                                        ? style.redDotStyle
+                                        : status?.remainingCompletionPercentage === 0
+                                          ? style.greenDotStyle
+                                          : status?.remainingCompletionPercentage === 100
+                                            ? style.greyDotStyle
+                                            : style.yellowDotStyle
+                                    }
+                                  ></div>
+                                  <div className={style.marginLeft10}>
+                                    {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                      status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}
+                                    , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
+                                  </div>
+                                </div>
+                                <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
+                                  {status?.createdDate
+                                    ? format(new Date(status?.createdDate), "MMM dd, yyyy")
+                                    : "N/A"}
+                                </div>
+                              </div>
+                              <ProgressBar
+                                completed={100 - status?.remainingCompletionPercentage}
+                                isLabelVisible={false}
+                                height="5px"
+                                bgColor="#0e5197"
+                                baseBgColor="#E9E9F0"
+                                className={style.marginLeft20}
+                              />
+                              <div className={style.spaceBetween}>
+                                <span className={style.textStyleProgress}>
+                                  {status?.providerType?.serviceProviderType}{" "}
+                                </span>
+                                <p className={style.progressTopText}>
+                                  {status?.dueStatus === "Due"
+                                    ? `Due in ${status.dueDays} Days`
+                                    : `${status?.dueDays} days past due`}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </div>
-              {showCardDetails && (
-                <>
-                  {/* <div className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}>
-                    Appointment Requests Denied ({applicationRejected.appointmentRequestsDenied})
-                  </div> */}
-                  <div
-                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                    onClick={() => {
-                      handleClick();
-                    }}
-                  >
-                    Applicants Rejected (
-                    {applicationRejected.appointmentRequestsDenied})
+              ) : null}
+
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+                <div
+                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                >
+                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
+                    <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                      Rejected / Declined{" "}
+                      <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
+                      >
+                        {applicationRejected?.totalRejections}
+                      </span>
+                    </div>
+                    <div className={`${style.marginLeft10} `}>
+                      {!showCardDetails ? (
+                        <AddIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardDetails(!showCardDetails)}
+                        />
+                      ) : (
+                        <RemoveIcon
+                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          onClick={() => setShowCardDetails(!showCardDetails)}
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div
-                    className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                    onClick={() => {
-                      setShowApplicationRejectionDialog(true);
-                    }}
-                  >
-                    Approved But Declined (
-                    {applicationRejected.totalRejections})
-                  </div>
-                </>
-              )}
-            </div>
+                  {showCardDetails && (
+                    <>
+                      <div
+                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                        onClick={() => {
+                          handleClick();
+                        }}
+                      >
+                        {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                        Approved But Declined ({applicationRejected?.applicationsRejected})
+                      </div>
+                      <div
+                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                        onClick={() => {
+                          setShowApplicationApprovedDeclineDialog(true);
+                        }}
+                      >
+                        Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                        {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                      </div>
+                    </>
+                  )}
+                </div>
+              ) : null}
+            </>
           </SideBar>
+
         </div>
         <div>
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`STAFF MANAGER >> APPLICATIONS`}
+            {`${userRole} > STAFF APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles
@@ -2110,7 +2294,16 @@ const StaffApplicationList = ({
         <ApplicationRejection
           getApplicationRejectionDialog={getApplicationRejectionDialog}
           rejectionListData={rejectionListData}
-          rejectedCount={applicationRejected.appointmentRequestsDenied}
+          // rejectedCount={applicationRejected?.appointmentRequestsDenied}
+          declineCount={applicationRejected?.applicationsRejected}
+        />
+      )}
+      {showApplicationApprovedDeclineDialog && (
+        <ApplicationApprovedDeclined
+          getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
+          declineListData={declineListData}
+          // declineCount={applicationRejected?.applicationsRejected}
+          rejectedCount={applicationRejected?.appointmentRequestsDenied}
         />
       )}
       {showCheckListDialog && (

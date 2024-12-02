@@ -26,17 +26,13 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     );
     setBasicForm(basicForm);
     let profilePicData =
-      basicForm?.forms[formIndex]?.data !== null && basicForm !== undefined
-        ? basicForm?.forms[formIndex]?.data?.table
-          ?.filter(
-            (fileData) => fileData?.documentType === "Passport Size Photo"
-          )
-          ?.map((data) => data)
-        : [];
+      basicForm?.applicant?.profilePicture !== null && basicForm !== undefined
+        ? basicForm?.applicant?.profilePicture
+        : null;
     setProfilePic(
-      (profilePicData?.length !== 0 && profilePicData !== undefined) ? profilePicData?.[0]?.fileURL : ""
+      (profilePicData !== null && profilePicData !== undefined) ? profilePicData?.fileURL : ""
     );
-    console.log(profilePicData, "pic", profilePicData?.length !== 0);
+    console.log(profilePicData, "pic");
   };
   return (
     <div className={`${style.applicationUserCard} ${style.profileGrid}`}>

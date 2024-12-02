@@ -38,9 +38,13 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("your-publishable-key");
 
 const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
     const { section, step } = useParams()
+    const [sessionDetails, setSessionDetails] = useState(null);
     const [formSchema, setFormSchema] = useState();
     const fileInputRef = useRef(null);
     const [isEdited, setIsEdited] = useState(false);
@@ -80,6 +84,31 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     useEffect(() => {
         getApplicantProfile()
     }, [applicationId])
+
+    useEffect(() => {
+        const fetchSessionDetails = async () => {
+            const query = new URLSearchParams(window.location.search);
+            const sessionId = query.get("session_id");
+            console.log(sessionId, 'sessionDetails');
+            if (!sessionId) {
+                console.error("No session_id found in URL");
+                return;
+            }
+
+            const stripe = await stripePromise;
+
+            // try {
+            // const session = await stripe.retrieveSession(sessionId);
+            const session = await stripe?.checkout?.session(sessionId);
+            console.log(session, 'sessionDetails');
+            setSessionDetails(session);
+            // } catch (error) {
+            //     console.error("Error fetching session details:", error.message);
+            // }
+        };
+
+        fetchSessionDetails();
+    }, []);
 
     const getApplicantProfile = async () => {
         const { data: profile } = await GET(
@@ -679,6 +708,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 </div>
                             </div>
                         )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>

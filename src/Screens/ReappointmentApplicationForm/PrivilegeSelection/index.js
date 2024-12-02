@@ -142,6 +142,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 
+    useEffect(() => {
+        sessionStorage.removeItem('hasReloaded');
+    }, []);
+
     const getSelectedPrivilegeList = (value) => {
         let temp = selectedAdditionalPrivilegeForDisplay;
         if (selectedAdditionalPrivilegeForEdit?.id !== undefined) {
@@ -326,6 +330,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     }
 
+    const handleSubmitAcknowledgement = async () => {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: basicForm?.forms?.[formIndex]?.data,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: true
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                setBasicForm(response?.data)
+                SuccessToaster("Application Updated Successfully");
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+
+    }
+
     const handleContinue = async () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
             navigate(-1);
@@ -364,7 +389,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const handleChange = (privilegeId) => {
         setSelectedPrivilege(privilegeId);
+        // let temp = staffPrivilege?.filter(data => data?.id === privilegeId);
+        // if (temp?.length !== 0 && temp?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length !== 0) {
+        //     temp[0].privilegeDetails.restrictedPrivileges.privilegesByCategories[0].privileges =
+        //         staffPrivilege
+        //             ?.filter(data => data?.id === privilegeId)?.[0]?.
+        //             privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+        //             ?.map(privilege => ({
+        //                 ...privilege,
+        //                 response: "NO"
+        //             }));
+        //     setSelectedPrivilegeForDisplay(temp)
+        // } else {
         setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
+        // }
+        // console.log(staffPrivilege?.filter(data => data?.id === privilegeId), 'privilegeId', temp)
     }
 
     const handleRestrictedFileSelection = async (index, categoriesIndex, privilegesIndex, value) => {
@@ -586,9 +625,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     onClick={() => handleSign('Core', 'Basic')}
                                 >
                                     <ESignature
-                                        userName={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
-                                        encData={selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
-                                        showData={(selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
+                                        userName={selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign?.name : ""}
+                                        encData={selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign?.esign : ""}
+                                        showData={(selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ? true : false}
                                         showDatais={true}
                                     />
                                 </div>
@@ -829,18 +868,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div>
                         {!isPrivilegeCategoryChanging && (
                             <>
-                                {!isEdit ? (
+                                {isEdit ? (
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                     >
                                         <div
                                             className={`${style.reappointmentButtonOutlined}`}
-                                            onClick={() => setIsEdit(true)}
+                                            onClick={() => setIsEdit(false)}
                                         >
                                             Yes
                                         </div>
                                         <div
-                                            className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                            className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                             onClick={() => setIsPrivilegeCategoryChanging(true)}
                                         >
                                             NO
@@ -854,7 +893,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         >
                                             <div
                                                 className={`${style.reappointmentButtonEdit}`}
-                                                onClick={() => setIsEdit(false)}
+                                                onClick={() => setIsEdit(true)}
                                             >
                                                 Edit
                                             </div>
@@ -863,7 +902,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 )}
                             </>
                         )}
-                        {isEdit && (
+                        {!isEdit && (
                             <>
 
                                 {!isPrivilegeSetChanging && (
@@ -871,18 +910,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         <div className={`${style.cardTitle} ${style.marginTop}`}>
                                             Would you like to keep the privilege set you have?
                                         </div>
-                                        {!isEditPrivilege ? (
+                                        {isEditPrivilege ? (
                                             <div
                                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                             >
                                                 <div
                                                     className={`${style.reappointmentButtonOutlined}`}
-                                                    onClick={() => setIsEditPrivilege(true)}
+                                                    onClick={() => setIsEditPrivilege(false)}
                                                 >
                                                     Yes
                                                 </div>
                                                 <div
-                                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
+                                                    className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                                     onClick={() => setIsPrivilegeSetChanging(true)}
                                                 >
                                                     NO
@@ -896,7 +935,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 >
                                                     <div
                                                         className={`${style.reappointmentButtonEdit}`}
-                                                        onClick={() => setIsEditPrivilege(false)}
+                                                        onClick={() => setIsEditPrivilege(true)}
                                                     >
                                                         Edit
                                                     </div>
@@ -1099,7 +1138,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                                 className={style.leftAlign}
                                                                 value={doYouHavePrivilegeAtAnyOtherHospital}
                                                                 onChange={(e) => setDoYouHavePrivilegeAtAnyOtherHospital(e.target.value)}
-                                                                sx={{ color: "#52575D" }}
+                                                                sx={{ color: "#2C2C2C" }}
                                                             >
                                                                 <FormControlLabel
                                                                     value={'No'}
@@ -1218,18 +1257,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
                         </div>
                     )}
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { setShowPaymentDialog(true); handleSubmitAcknowledgement() }}>CONTINUE</div>
+                    </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowPaymentDialog(true)}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { setShowPaymentDialog(true); handleSubmitAcknowledgement() }}>CONTINUE</div>
                         {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                     </div>
-                    <div className={style.marginTop}>
+                    {/* <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             <Dialog isOpen={showPrivileges} onClose={() => setShowPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>

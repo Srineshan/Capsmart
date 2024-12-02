@@ -25,6 +25,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
     const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
+    const [eSignImgState, setESignImgState] = useState(eSignImg !== undefined ? eSignImg : '');
     const [signatureData, setSignatureData] = useState(null);
 
 
@@ -34,6 +35,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
             sigCanvas.current.clear();
         }
     };
+
+    useEffect(() => {
+        setESignType(eSignTypeContent !== undefined ? eSignTypeContent : '')
+    }, [eSignTypeContent])
+
+    useEffect(() => {
+        setESignImgState(eSignImg !== undefined ? eSignImg : '')
+    }, [eSignImg])
 
     useEffect(() => {
         if (contentRef.current && contentRef.current.innerHTML !== eSignType && eSignType !== null) {
@@ -176,9 +185,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
-                            {(eSignImg !== undefined && !isShowDrawCanvas && basicForm?.forms?.[formIndex]?.data !== null) ? (
+                            {(eSignImgState !== undefined && !isShowDrawCanvas && basicForm?.forms?.[formIndex]?.data !== null) ? (
                                 <div>
-                                    <img src={eSignImg?.fileURL} alt="ESign" className={style.eSignImg} />
+                                    <img src={eSignImgState?.fileURL} alt="ESign" className={style.eSignImg} />
                                 </div>
                             ) : !isShowDrawCanvas ? (
                                 <div className={style.verticalAlignCenter}>
@@ -228,8 +237,11 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                                     ref={contentRef}
                                     style={{
                                         fontFamily: selectedESignTypeStyle,
-                                        padding: "20px",
-                                        marginTop: "10px",
+                                        padding: "26px",
+                                        marginTop: "2px",
+                                        marginLeft: "3px",
+                                        marginRight: "3px",
+                                        marginBottom: "-7px",
                                         fontSize: "44px",
                                         textAlign: 'center'
                                     }}

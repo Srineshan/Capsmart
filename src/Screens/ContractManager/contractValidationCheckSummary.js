@@ -168,7 +168,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     //         <div className={`${style.documentationProofGrid} ${style.marginTop20}`}>
                     //             <div className={style.statusText}>Medical license Certificate</div>
                     //             <div className={style.displayInRow}>
-                    //                 <TextSnippetOutlinedIcon style={{ color: "#52575D", fontSize: 20 }} />
+                    //                 <TextSnippetOutlinedIcon style={{ color: "#2C2C2C", fontSize: 20 }} />
                     //                 <div className={`${style.statusText} ${style.marginLeft10}`}>ss.png</div>
                     //             </div>
                     //             <div className={style.statusText}>PASS</div>
@@ -176,7 +176,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     //         <div className={`${style.documentationProofGrid} ${style.marginTop20}`}>
                     //             <div className={style.statusText}>Medical license Certificate</div>
                     //             <div className={style.displayInRow}>
-                    //                 <TextSnippetOutlinedIcon style={{ color: "#52575D", fontSize: 20 }} />
+                    //                 <TextSnippetOutlinedIcon style={{ color: "#2C2C2C", fontSize: 20 }} />
                     //                 <div className={`${style.statusText} ${style.marginLeft10}`}>MISSING</div>
                     //             </div>
                     //             <div className={style.statusText}>PASS</div>
@@ -184,7 +184,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     //         <div className={`${style.documentationProofGrid} ${style.marginTop20}`}>
                     //             <div className={style.statusText}>Medical license Certificate</div>
                     //             <div className={style.displayInRow}>
-                    //                 <TextSnippetOutlinedIcon style={{ color: "#52575D", fontSize: 20 }} />
+                    //                 <TextSnippetOutlinedIcon style={{ color: "#2C2C2C", fontSize: 20 }} />
                     //                 <div className={`${style.statusText} ${style.marginLeft10}`}>ss.png</div>
                     //             </div>
                     //             <div className={style.statusText}>FAIL</div>

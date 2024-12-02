@@ -454,7 +454,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                                             <p className={`${style.mailIdTextColor}`}>Ronald Jones (Myself)</p>
                                             <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                         </div>
-                                        <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                        <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                     </div>
                                     <div className={`${style.extensionBorder}`}></div>
                                     <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
@@ -463,7 +463,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                                             <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
                                             <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                         </div>
-                                        <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                        <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                     </div>
                                     <div className={`${style.extensionBorder} `}></div>
                                     <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10} `}>
@@ -472,7 +472,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                                             <p className={`${style.mailIdTextColor}`}>Mathew Bailey, MD</p>
                                             <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                         </div>
-                                        <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                        <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                     </div>
                                     <div className={`${style.extensionBorder}`}></div>
                                     <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
@@ -484,7 +484,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
                                             </div>
                                             <div className={`${style.expertStyle} ${style.blueCard}`}>Expert</div>
                                         </div>
-                                        <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                        <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                     </div>
                                     <div className={`${style.extensionBorder}`}></div>
                                 </div>

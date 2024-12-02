@@ -1,4 +1,5 @@
 @import "../../index.scss";
+
 body {
     background: #F8FCFF 0% 0% no-repeat padding-box;
     -ms-overflow-style: none !important;
@@ -132,14 +133,14 @@ body {
     text-align: left;
     font: normal normal 600 15px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .loginStatus {
     text-align: left;
     font: normal normal normal 11px/15px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     max-width: 200px;
     opacity: 1;
 }
@@ -176,7 +177,7 @@ body {
     font: normal normal bold 17px/15px proxima-nova;
     letter-spacing: 0px;
     text-align: left;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
     margin-left: 20px;
@@ -184,7 +185,7 @@ body {
 }
 
 .headingCountForContracts {
-    color: #52575D;
+    color: #2C2C2C;
     font-size: 50px;
     margin-top: -20px;
     font-weight: bold;
@@ -205,7 +206,7 @@ body {
     margin: -3px 15px 0 10px;
     text-align: left;
     font-size: 13px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .green {
@@ -221,10 +222,7 @@ body {
 }
 
 .blue {
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .activeUserDotColor {
@@ -239,7 +237,7 @@ body {
 .last30Style {
     text-align: left;
     font: normal normal normal 10px/18px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     margin-top: -30px;
     margin-left: 20px;
@@ -276,7 +274,7 @@ body {
 }
 
 .mailIdTextColor {
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .progressbarStyle {
@@ -291,14 +289,14 @@ body {
 .viewStyle {
     font: normal normal normal 10px/15px proxima-nova;
     letter-spacing: -0.3px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
 }
 
 .statisticsProgress {
     font: normal normal normal 9px/13px proxima-nova;
     letter-spacing: -0.3px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     text-align: left;
     margin-bottom: 1px !important;
@@ -337,14 +335,8 @@ body {
 }
 
 .registeredButton {
-    background: $primarycolor
-
-
- 0% 0% no-repeat padding-box !important;
-    border: 0.4000000059604645px solid $primarycolor
-
-
-;
+    background: $primarycolor 0% 0% no-repeat padding-box !important;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 6px;
     opacity: 0.75;
     color: white;
@@ -366,17 +358,11 @@ body {
 }
 
 .unblockButton {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     opacity: 1;
     height: 30px;
     width: 100px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     border-radius: 6px;
     margin-top: 3px;
 }
@@ -398,14 +384,8 @@ body {
 .contractButton {
     width: 124px;
     height: 40px;
-    background: $primarycolor
-
-
- 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 5px $primarycolor
-
-
-;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 5px $primarycolor;
     border-radius: 8px;
     opacity: 1;
     border: none;
@@ -456,7 +436,7 @@ body {
 .sideDivideStyle {
     height: 80%;
     width: 1px;
-    background-color: #52575D;
+    background-color: #2C2C2C;
     margin-top: 10px;
 }
 
@@ -533,7 +513,7 @@ body {
     font: normal normal normal 13px/23px proxima-nova;
     letter-spacing: 0px;
     opacity: 1;
-    color: #52575D;
+    color: #2C2C2C;
     line-height: 20px;
     width: 100%;
     padding: 0 50px;
@@ -552,7 +532,7 @@ body {
 .tableHeaderFontStyle {
     font: normal normal bold 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
     text-align: left;
@@ -562,7 +542,7 @@ body {
 .multipleContractorTextWidth {
     font: normal normal bold 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
     margin-left: 10px;
@@ -574,7 +554,7 @@ body {
 .documentProofTextWidth {
     font: normal normal bold 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
     margin-left: 10px;
@@ -585,7 +565,7 @@ body {
 .tableDataFontStyle {
     font: normal normal normal 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     margin-right: 20px;
     text-align: left;
@@ -595,7 +575,7 @@ body {
 .multipleDataTextWidth {
     font: normal normal normal 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 1;
     text-align: center;
@@ -606,7 +586,7 @@ body {
 .documentProofDataTextWidth {
     font: normal normal normal 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     display: flex;
     justify-content: center;
@@ -648,7 +628,7 @@ body {
 .accountActivityStyle {
     font: normal normal normal 15px/22px proxima-nova;
     letter-spacing: 0.66px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 0.38;
     margin-left: 20px;
     margin-top: 7px;
@@ -657,7 +637,7 @@ body {
 .paginationStyle {
     font: normal normal 600 12px/15px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     margin-top: 10px;
 }
@@ -698,16 +678,13 @@ body {
     text-align: left;
     font: normal normal normal 11px/14px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     opacity: 1;
     margin: 5px 0 0 10px;
 }
 
 .leftChevronColor {
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .marginRight {
@@ -722,20 +699,14 @@ body {
     text-align: left;
     font: normal normal bold 20px/18px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .extensionStyle {
     text-align: left;
     font: normal normal bold 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .extensionBorder {
@@ -747,7 +718,7 @@ body {
     text-align: left;
     font: normal normal medium 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 0.9;
     margin-top: 10px;
@@ -790,10 +761,7 @@ body {
 }
 
 .addSymbolStyle {
-    background-color: $primarycolor
-
-
-;
+    background-color: $primarycolor;
     color: white;
     font-size: 25px;
     box-shadow: 0px 0px 6px #00000029;
@@ -816,7 +784,7 @@ body {
 }
 
 .addBoxDescription {
-    color: #52575D;
+    color: #2C2C2C;
     background-color: rgba(143, 153, 168, 0.5);
     width: 260px;
     padding: 10px;
@@ -831,7 +799,7 @@ body {
     text-align: left;
     font: normal normal medium 15px/13px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: uppercase;
     opacity: 0.9;
     margin: 5px 20px 0 20px;
@@ -893,7 +861,7 @@ body {
     text-align: left;
     font: normal normal normal 13px/17px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
@@ -908,15 +876,12 @@ body {
 }
 
 .toStyle {
-    color: #52575D;
+    color: #2C2C2C;
     margin: 5px 20px 0 20px;
 }
 
 .extentionBoxStyle {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -931,10 +896,7 @@ body {
 }
 
 .serviceBoxStyle {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     border-radius: 8px;
     opacity: 1;
     height: 60vh;
@@ -945,10 +907,7 @@ body {
 }
 
 .deleteDraftBoxStyle {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     border-radius: 8px;
     opacity: 1;
     height: 20vh;
@@ -958,10 +917,7 @@ body {
 }
 
 .newContractFromCloneBoxStyle {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     border-radius: 8px;
     opacity: 1;
     height: calc(100vh - 160px);
@@ -990,19 +946,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor
-
-
-, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .trashStyle {
-    color: linear-gradient($primarycolor
-
-
-, #FF6562) !important;
+    color: linear-gradient($primarycolor, #FF6562) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
@@ -1044,7 +994,7 @@ select {
     text-align: left;
     font: normal normal normal 17px/16px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     margin-top: 10px;
 }
@@ -1070,10 +1020,7 @@ select {
 .contractCards:hover {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor
-
-
-, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1096,7 +1043,7 @@ select {
     text-align: center;
     font: normal normal 600 12px/14px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     opacity: 1;
     width: 150px;
 }
@@ -1104,10 +1051,7 @@ select {
 .selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor
-
-
-, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1123,10 +1067,7 @@ select {
 .nextButton {
     border-radius: 12px;
     opacity: 1;
-    background-color: $primarycolor
-
-
-;
+    background-color: $primarycolor;
     color: white;
     border: none;
     height: 40px;
@@ -1154,7 +1095,7 @@ select {
 }
 
 .activeContractText {
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .dialogStyle {
@@ -1171,77 +1112,41 @@ select {
 
 .outlinedButton {
     background-color: white;
-    color: $primarycolor
-
-
-;
-    border: 1px solid $primarycolor
-
-
-;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+    box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .cloneOutlinedButton {
     background-color: white;
-    color: $primarycolor
-
-
-;
-    border: 1px solid $primarycolor
-
-
-;
-    box-shadow: 0px 1px 5px $primarycolor
-
-
-;
+    color: $primarycolor;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
     height: 30px;
     width: 80px;
     border-radius: 6px;
 }
 
 .buttonStyle {
-    background-color: $primarycolor
-
-
-;
+    background-color: $primarycolor;
     color: white;
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     height: 40px;
     width: 140px;
     border-radius: 10px;
     margin-bottom: -20px;
-    box-shadow: 0px 3px 11px $primarycolor
-
-
-;
+    box-shadow: 0px 3px 11px $primarycolor;
 }
 
 .cloneButtonStyle {
-    background-color: $primarycolor
-
-
-;
+    background-color: $primarycolor;
     color: white;
-    border: 1px solid $primarycolor
-
-
-;
-    box-shadow: 0px 1px 5px $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
+    box-shadow: 0px 1px 5px $primarycolor;
     height: 30px;
     width: 80px;
     border-radius: 6px;
@@ -1255,7 +1160,7 @@ select {
     text-align: left;
     font: normal normal medium 18px/28px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .cloneDialog {
@@ -1332,7 +1237,7 @@ select {
     text-align: left;
     font: normal normal normal 17px/21px proxima-nova;
     letter-spacing: 0px;
-    color: #52575D;
+    color: #2C2C2C;
     width: 80%;
     padding: 20px;
 }
@@ -1343,21 +1248,12 @@ select {
 }
 
 .selectedContractEntityStyle {
-    border: 1px solid $primarycolor
-
-
-;
-    color: $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
+    color: $primarycolor;
 }
 
 .selectedColor {
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .smallHeadingStyle {
@@ -1365,10 +1261,7 @@ select {
     font: normal normal 600 17px/16px proxima-nova;
     letter-spacing: 0px;
     line-height: 20px;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     opacity: 1;
 }
 
@@ -1377,7 +1270,7 @@ select {
     font: normal normal normal 15px/30px proxima-nova;
     letter-spacing: 0px;
     opacity: 1;
-    color: #52575D;
+    color: #2C2C2C;
 }
 
 .deleteDescriptionStyle {
@@ -1385,7 +1278,7 @@ select {
     font: normal normal normal 13px/23px proxima-nova;
     letter-spacing: 0px;
     opacity: 1;
-    color: #52575D;
+    color: #2C2C2C;
     line-height: 20px;
 }
 
@@ -1411,10 +1304,7 @@ select {
 }
 
 .blueColor {
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
 }
 
 .selectFieldWidth {
@@ -1433,10 +1323,7 @@ select {
 
 .uploadButtonStyle {
     background-color: #f1f2f3;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1445,10 +1332,7 @@ select {
 
 .chooseFileStyle {
     background-color: #f1f2f3;
-    color: $primarycolor
-
-
-;
+    color: $primarycolor;
     border: none;
     height: 30px;
     font-size: 12px;
@@ -1482,10 +1366,7 @@ select {
 }
 
 .proofBorder {
-    border: 1px solid $primarycolor
-
-
-;
+    border: 1px solid $primarycolor;
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -1503,7 +1384,7 @@ select {
 
 .renewalBoxStyle {
     background-color: #EBECED;
-    color: #52575D;
+    color: #2C2C2C;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
@@ -1515,7 +1396,7 @@ select {
 
 .siteLevelBoxStyle {
     background-color: #EBECED;
-    color: #52575D;
+    color: #2C2C2C;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;
@@ -1526,7 +1407,7 @@ select {
 }
 
 .renewalRemainderBoxStyle {
-    color: #52575D;
+    color: #2C2C2C;
     text-align: left;
     border: 1px solid #B3B8BD;
     border-radius: 10px;

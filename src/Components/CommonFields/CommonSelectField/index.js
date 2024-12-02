@@ -8,8 +8,8 @@ import style from './index.module.scss';
 const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required, warning }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
     const warningCheck = (value === '' || value === undefined || value === null);
-    const [touched, setTouched] = useState(false); 
-     const handleBlur = () => {
+    const [touched, setTouched] = useState(false);
+    const handleBlur = () => {
         setTouched(true);
     };
     const theme = createTheme({
@@ -41,7 +41,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             color: warningCheck ? !required ? theme.palette.error.main : theme.palette.warning.main : '',
                         },
                     }}`}
-                      error={(warningCheck && warning) || (touched && warningCheck)}
+                        error={(warningCheck && warning) || (touched && warningCheck)}
                     >
                         <Select
                             labelId="demo-simple-select-error-label"
@@ -56,16 +56,16 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                             inputProps={{ style: { textAlign: "right" } }}
                             color={(warning && warningCheck) || (touched && warningCheck) ? 'error' : ''}
                             focused={(warning && warningCheck) || (touched && warningCheck) ? true : false}
-                            onBlur={handleBlur} 
-                            // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
-                            
+                            onBlur={handleBlur}
+                        // helperText={warningCheck ? (<div className={`${style.helperText} ${required ? style.errorColor : style.warningColor}`}>Could not find data</div>) : ''}
+
                         // disabled={(contractStatus === "ACTIVE" && !window.location.pathname.includes('moveToDraft')) ? true : disabledSelect || false}
                         >
                             {firstOptionLabel !== '' && firstOptionLabel && (
                                 <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                             )}
                             {valueList?.map((data, index) => (
-                                <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : '' }}>{labelList[index]}</MenuItem>
+                                <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : "", opacity: disabledList[index] ? 0.7 : 1 }}>{labelList[index]}</MenuItem>
                             ))}
                         </Select>
                         {/* <div>

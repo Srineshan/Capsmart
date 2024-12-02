@@ -50,6 +50,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        sessionStorage.setItem('fromSummary', false);
+    }, [])
+
+    useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
     }, [basicForm, step])
 
@@ -236,6 +240,11 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                                 </div>
                             </div>
                         )}
+                    </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
                     </div>
                 </div>
                 <div>

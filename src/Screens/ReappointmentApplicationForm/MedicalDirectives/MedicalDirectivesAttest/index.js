@@ -179,7 +179,7 @@ const MedicalDirectivesAttest = () => {
                     <div>
                         <div className={style.medicalDirectivesCard}>
                             <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
-                            <div className={`${style.marginTop10} ${style.description}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd.</div>
+                            {/* <div className={`${style.marginTop10} ${style.description}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd.</div> */}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <PdfViewer pdfurl={medicalDirectives?.file?.fileURL} setIsScrolledToBottom={setIsScrolledToBottom} />
@@ -190,7 +190,9 @@ const MedicalDirectivesAttest = () => {
                     <div>
                         <div className={style.medicalDirectivesCard}>
                             <div className={style.title}>{`Attestation Required In 43 Days`} </div>
-                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                            {(!isScrolledToBottom) && (
+                                <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                            )}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>

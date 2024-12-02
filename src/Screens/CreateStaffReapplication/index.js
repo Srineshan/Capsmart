@@ -1,464 +1,509 @@
-import React, { useEffect, useState } from 'react';
-import ApplicationHeader from '../../Components/ApplicationHeader';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { GET, POST, PUT } from '../dataSaver';
-import ApplicationFieldCard from '../../Components/ApplicationFieldCard';
-import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
-import Switch from '@mui/material/Switch';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import React, { useState, useEffect, forwardRef, useCallback } from 'react';
+import { GET, POST } from '../../Screens/dataSaver';
+import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
+import ApplicationHeader from "../../Components/ApplicationHeader";
+import { useNavigate } from "react-router-dom";
+import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
+import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
+import CircularProgress from "@mui/material/CircularProgress";
+import { format } from "date-fns";
+import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
-import SendEmailFromStaffManagerConfirmationDialog from '../../Components/sendEmailFromStaffManagerConfirmation';
-import jwt from 'jwt-decode';
-import Cookie from "universal-cookie";
-import { useNavigate } from 'react-router-dom';
-import { getValueByPath } from '../../utils/formatting';
-import ValidationDialog from '../../Components/validationDialog';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Checkbox from '@mui/material/Checkbox';
+import { SuccessToaster } from '../../utils/toaster';
 
-const CreateStaffMemberApplication = () => {
-    let cookie = new Cookie();
-    let userDetails = cookie.get('user');
-    const navigate = useNavigate();
-    const user = jwt(userDetails);
-    const [form, setForm] = useState();
-    const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
-    const [isNextpage, setIsNextPage] = useState(false);
-    const [isShowMailSendDialog, setIsShowMailSendDialog] = useState(false);
-    const [applicationId, setApplicationId] = useState('');
-    const [basicFormForDocuments, setBasicFormForDocuments] = useState()
-    const [requiredDocumentList, setRequiredDocumentList] = useState();
-    const [metadata, setMetadata] = useState([]);
-    const [labels, setLabels] = useState([]);
-    const [warningFields, setWarningFields] = useState([]);
-    const [showValidationDialog, setShowValidationDialog] = useState(false);
-    const [basicForm, setBasicForm] = useState(
-        {
-            "applicant": {
-                "name": {
-                    "firstName": "",
-                    "lastName": "",
-                    "middleName": ""
-                },
-                "email": {
-                    "officialEmail": ""
-                },
-                "mobileNumber": "",
-                "category": "GUEST"
-            },
-            "providerType": {
-                "id": "",
-                "serviceProviderType": ""
-            },
-            "basicDetails": {
-                "applicant": {
-                    "name": {
-                        "firstName": "",
-                        "lastName": "",
-                        "middleName": ""
-                    },
-                    "email": {
-                        "officialEmail": ""
-                    },
-                    "cellPhone": "",
-                    "applicantType": "",
-                    "startDate": "",
-                    "category": "GUEST",
-                    "curriculumVitae": {
-                        "filePath": "",
-                        "fileName": "",
-                        "fileURL": ""
-                    },
-                    "letterOfInterest": {
-                        "filePath": "",
-                        "fileName": "",
-                        "fileURL": ""
-                    }
-                },
-                "credentialingPrivilegeCategory": {
-                    "credentialingCategory": "",
-                    "from": null,
-                    "to": null
-                },
-                "departmentSpecialty": {
-                    "department": "",
-                    "specialty": ""
-                },
-                "regionalCallResponsibilities": {
-                    "regionalCallResponsibilities": ""
-                },
-                "billingNumber": {
-                    "billingNumber": "",
-                    "specialityBillingCode": ""
-                }
-            }
-        }
-    )
-    useEffect(() => {
-        setUserDetails();
-    }, [user?.id])
+const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues, selectedContract, getFilterValues, updatedFilter, isLoading, basicForm, setBasicForm, getPreApplication }, ref) => {
+  let individualCount = metadata?.metaData?.individualContractCount;
+  let multipleCount = metadata?.metaData?.multipleContractCount;
+  let expiringDoc = metadata?.metaData?.contractWithExpiringDocCount;
+  const month = new Date(Date.now());
+  const year = new Date().getFullYear();
+  const navigate = useNavigate();
+  const [contractTypeFilter, setContractTypeFilter] = useState(false);
+  const [compensationPolicyFilter, setCompensationPolicyFilter] = useState(false);
+  const [contractPolicyTypeFilter, setContractPolicyTypeFilter] = useState(false);
+  const [contractManagersFilter, setContractManagersFilter] = useState(false);
+  const [contractExpireInDaysFilter, setContractExpireInDaysFilter] = useState(false);
+  const [contractIdFilter, setContractIdFilter] = useState(false);
+  const [numberOfContractFilter, setNumberOfContractFilter] = useState(false);
+  const [contractTimeCommitmentFilter, setContractTimeCommitmentFilter] = useState(false);
+  const [calendarStart, setCalendarStart] = useState(false);
+  const [calendarEnd, setCalendarEnd] = useState(false);
+  const [selectedContractType, setSelectedContractType] = useState([]);
+  const [selectedContractPolicyType, setSelectedContractPolicyType] = useState([]);
+  const [selectedCompensationPolicy, setSelectedCompensationPolicy] = useState([]);
+  const [selectedContractManagers, setSelectedContractManagers] = useState([]);
+  const [contractFilter, setContractFilter] = useState({
+    contractType: '',
+    contractId: '',
+    numberOfContract: { min: 0, max: 0 },
+    contractTimeCommitment: { from: null, to: null },
+    compensationPolicyCount: [],
+    contractManagers: [],
+    contractPolicyTypeCount: [],
+    contractTypeCount: [],
+    contractExpireInDays: 0
+  })
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [selectedOption, setSelectedOption] = useState({});
+  const [tableData, setTableData] = useState([]);
+  const [sortField, setSortField] = useState("DEFAULT");
+  const [sortValue, setSortValue] = useState("ASCENDING");
+  const [departmentList, setDepartmentList] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [privilegeCategories, setPrivilegeCategories] = useState([]);
+  const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState('');
+  const [applicantType, setApplicantType] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState('');
+  // const [reappointmentStatus, setReappointmentStatus] = useState([]);
+  const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+  const [checkedIds, setCheckedIds] = useState(() => {
+    const storedCheckedIds = sessionStorage.getItem('checkedIds');
+    return storedCheckedIds ? JSON.parse(storedCheckedIds) : [];
+  });
 
-    const switchTheme = createTheme({
-        palette: {
-            primary: {
-                main: '#25BF6A',
-            },
-        },
+  const initialCheckboxState = tableData.reduce((acc, item) => ({
+    ...acc,
+    [item.id]: checkedIds?.includes(item.id)
+  }), {});
+
+  const [checked, setChecked] = useState(initialCheckboxState);
+
+  useEffect(() => {
+    handleCheckboxClick();
+  }, []);
+
+  const handleSelectAllClick = () => {
+    if (checkedIds.length === tableData.length) {
+      // If all are already selected, deselect all
+      setCheckedIds([]);
+      setChecked(tableData.reduce((acc, item) => ({
+        ...acc,
+        [item.id]: false
+      }), {}));
+      sessionStorage.removeItem('checkedIds');
+    } else {
+      // Select all IDs
+      const allIds = tableData.map(data => data.id);
+      setCheckedIds(allIds);
+      setChecked(tableData.reduce((acc, item) => ({
+        ...acc,
+        [item.id]: true
+      }), {}));
+      sessionStorage.setItem('checkedIds', JSON.stringify(allIds));
+    }
+  };
+
+  const handleCheckboxClick = (id) => {
+    setChecked(prev => {
+      const newChecked = {
+        ...prev,
+        [id]: !prev[id]
+      };
+
+      // Update checkedIds
+      const newCheckedIds = newChecked[id]
+        ? [...new Set([...checkedIds, id])]  // Add if checked
+        : checkedIds.filter(checkedId => checkedId !== id);  // Remove if unchecked
+
+      // Filter out null or undefined values before storing
+      const filteredCheckedIds = newCheckedIds.filter(checkedId => checkedId !== null && checkedId !== undefined);
+
+      setCheckedIds(filteredCheckedIds);
+      sessionStorage.setItem('checkedIds', JSON.stringify(filteredCheckedIds));
+
+      return newChecked;
+    });
+  };
+
+
+  // const handleCheckboxClick = useCallback((id) => {
+  //   setCheckedIds(prevCheckedIds => {
+  //     // Toggle the ID in the array
+  //     const newCheckedIds = prevCheckedIds.includes(id)
+  //       ? prevCheckedIds.filter(checkedId => checkedId !== id)
+  //       : [...prevCheckedIds, id];
+
+  //     // Update session storage
+  //     sessionStorage.setItem('checkedIds', JSON.stringify(newCheckedIds));
+
+  //     return newCheckedIds;
+  //   });
+  // }, []);
+
+  const headerValues = [
+    <Checkbox
+      size="medium"
+      checked={checkedIds.length === tableData.length}
+      onChange={handleSelectAllClick}
+    />,
+    "Staff Name",
+    "Staff ID",
+    "Staff Type",
+    "Department",
+    // "Status",
+    "Reappointment"
+  ];
+  const colSortValues = [false, true, false, false, false, false, false];
+
+
+  useEffect(() => {
+    getActiveUserData();
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue]);
+
+  useEffect(() => {
+    sessionStorage.setItem('checkedIds', JSON.stringify(checkedIds));
+  }, [checkedIds]);
+
+  useEffect(() => {
+    getDepartmentList();
+    getPrivilegeCategory();
+    getApplicantType();
+  }, [])
+
+  const getIsExpanded = (value) => {
+    setIsExpanded(value);
+  };
+
+  const handleCloseClick = () => {
+    navigate("/applications");
+  };
+
+  const handleChange = (taskId, event, label) => {
+    const status = event.target.value;
+    console.log("status: " + status);
+    console.log("label: " + label);
+
+    setSelectedOption((prevState) => ({
+      ...prevState,
+      [taskId]: status,
+    }));
+  };
+
+  const getActiveUserData = async () => {
+    try {
+      // Build query parameters based on selections
+      const queryParams = new URLSearchParams({
+        status: 'ACTIVE'
+      });
+
+      if (selectedDepartment) {
+        queryParams.append('departmentId', selectedDepartment);
+      }
+
+      if (selectedPrivilegeCategory) {
+        queryParams.append('credentialingAndPrivilegingCategoryId', selectedPrivilegeCategory);
+      }
+
+      if (selectedApplicantType) {
+        queryParams.append('applicantTypeId', selectedApplicantType);
+      }
+
+      if (selectedReappointmentStatus) {
+        queryParams.append('reappointmentStatus', selectedReappointmentStatus);
+      }
+
+      // Add 'type' parameters for both PERMANENT and LOCUM
+      // queryParams.append('type', 'PERMANENT');
+      // queryParams.append('type', 'LOCUM');
+
+      const response = await GET(
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}`
+      );
+
+      // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+      const filteredData = response?.data?.filter(item => item?.type !== 'PROVISIONAL' && item?.reappointed !== true) || [];
+
+      setTableData(filteredData);
+      return filteredData;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
+
+  const getDepartmentList = async () => {
+    const { data: department } = await GET(
+      `entity-service/department`
+    );
+    setDepartmentList(department);
+  }
+
+  const getPrivilegeCategory = async () => {
+    const { data: privilege } = await GET(
+      `entity-service/privilege`
+    );
+    setPrivilegeCategories(privilege);
+  }
+
+  const getApplicantType = async () => {
+    const { data: applicant } = await GET(
+      `entity-service/applicantType`
+    );
+    setApplicantType(applicant);
+  }
+
+  // Reappointment bulk application
+  const reappointmentApplicationbulk = async () => {
+    const checkedIds = sessionStorage.getItem('checkedIds');
+    if (!checkedIds) {
+      console.log('No checked IDs to process');
+      return;
+    }
+
+    try {
+      const response = await POST(
+        `application-management-service/staff/reappoint/bulk`,
+        JSON.parse(checkedIds)
+      );
+      if (response?.data) {
+        SuccessToaster('Reappointment Application Sent Successfully');
+      }
+      console.log(response?.data);
+      getActiveUserData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getHandleSort = (value, sortBy) => {
+    if (sortBy === "ASCENDING") {
+      setSortField(value);
+      setSortValue("DESCENDING");
+    } else if (sortBy === "DESCENDING") {
+      setSortField("DEFAULT");
+      setSortValue("ASCENDING");
+    } else if (sortBy === "NONE") {
+      setSortField(value);
+      setSortValue("ASCENDING");
+    }
+  };
+
+  const getTableValues = () => {
+    const checkbox = [];
+    const applicantName = [];
+    const applicantId = [];
+    const applicantType = [];
+    const department = [];
+    // const status = [];
+    const reappointment = [];
+
+    tableData?.forEach((data) => {
+      // Checkbox with individual checked state
+      checkbox.push(
+        <Checkbox
+          checked={Boolean(checkedIds?.includes(data.id))}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
+
+      // Rest of the table value preparations remain the same
+      applicantName.push(
+        <>
+          {`${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+            data?.applicant?.name?.firstName.slice(1).toLowerCase()
+            },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "}
+        </>
+      );
+
+      applicantId.push(`${data?.staffId}` || "123");
+      applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
+      // status.push("verified");
+      reappointment.push(
+        <>
+          {data?.reAppointmentInitiated !== undefined && (
+            data.reAppointmentInitiated ? (
+              <span>Sent</span>
+            ) : (
+              <span>Not Sent</span>
+            )
+          )}
+        </>
+      );
     });
 
-    useEffect(() => {
-        getBasicForm()
-    }, [])
+    return [
+      { type: "checkbox", value: checkbox },
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantId },
+      { type: "text", value: applicantType },
+      { type: "text", value: department },
+      // { type: "text", value: status},
+      { type: "text", value: reappointment },
+    ];
+  };
 
-    useEffect(() => {
-        getPreApplication()
-    }, [applicationId])
+  const isDataAvailable = tableData.length > 0;
 
-    useEffect(() => {
-        setRequiredDocumentList(basicFormForDocuments?.documentsRequired)
-    }, [basicFormForDocuments])
 
-    const setUserDetails = async () => {
-        const { data: userDetails } = await GET(`user-management-service/user/${user?.id}`);
-        sessionStorage.setItem('user', JSON.stringify(userDetails))
-    }
-
-    const getShowMailSendDialog = (value) => {
-        setIsShowMailSendDialog(value)
-    }
-
-    const handleSendMail = async () => {
-        await POST(`application-management-service/application/${basicForm?.id}/sendEmail`)
-            .then(response => {
-                console.log(response)
-            })
-            .catch((error) => {
-                console.log(error)
-            });
-    }
-
-    const handleSwitchChange = (value, id) => {
-        // let temp = requiredDocumentList;
-        // temp[index].required = value;
-        // setRequiredDocumentList(temp)
-        // console.log(temp)
-
-        setRequiredDocumentList((prevStates) =>
-            prevStates.map((data) =>
-                data.document.id === id
-                    ? { ...data, required: value } // Update the checked status
-                    : data
-            )
-        );
-    }
-    console.log(requiredDocumentList)
-
-    const getSkipClicked = (value) => {
-        if (value) {
-            handleSubmitApplicationReq()
+  return (
+    <div>
+      <ApplicationHeader
+        title={
+          "Staff Member Reappointment Credentialing and Privileging Status Tracker"
         }
-    }
-
-    const getAllPath = (data) => {
-        let temp = metadata;
-        if (!temp?.includes(data)) {
-            console.log(temp, data, 'Metadata')
-            temp.push(data);
-        }
-        setMetadata(temp);
-    }
-
-    const getAllLabels = (data) => {
-        let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
-            tempLabels.push(data);
-        }
-        setLabels(tempLabels);
-    }
-
-    const getMissingFields = () => {
-        let missingKeys = [];
-        let keyValuePair = [];
-        metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        })
-        keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-                missingKeys.push(data)
-            }
-        })
-        if (!formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf?.map(data => data?.properties?.department?.enum[0])?.includes(getValueByPath(basicForm, 'basicDetails.departmentSpecialty.department'))) {
-            let temp = missingKeys?.filter(data => !['basicDetails.departmentSpecialty.specialty']?.includes(data?.key));
-            missingKeys = temp;
-        }
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
-        }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
-    }
-
-    const getIsValidationDialogOpen = (value) => {
-        setShowValidationDialog(value);
-    }
-
-    const getPreApplication = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/${applicationId}`
-        );
-        setBasicFormForDocuments(basicForm)
-    }
-
-    const getBasicForm = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/basicForm`
-        );
-        if (basicForm) {
-            // if (!isNextpage) {
-            const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.generalSchemas?.[1]?.id}`
-            );
-            let temp = form?.schema;
-            if (temp.properties.applicant.properties !== null) {
-                delete temp.properties.applicant.properties['letterOfInterest']
-                delete temp.properties.applicant.properties['curriculumVitae']
-            }
-            setForm(form?.schema)
-            setFormSchemaWholeObject(form)
-            // } else {
-            //     const { data: form } = await GET(
-            //         `application-management-service/formSchema/${basicForm?.generalSchemas?.[2]?.id}`
-            //     );
-            //     setForm(form)
-            // }
-        }
-    }
-
-    const handleSubmitApplicationReq = async () => {
-        let data = basicForm;
-        data.providerType = {
-            "id": "6398687f95164c0bb67ff4b2",
-            "serviceProviderType": "Physician / Doctor"
-        }
-
-        data.basicDetails.providerType = {
-            "id": "6398687f95164c0bb67ff4b2",
-            "serviceProviderType": "Physician / Doctor"
-        }
-
-        console.log(data)
-        if (applicationId === '') {
-            await POST('application-management-service/application', data)
-                .then(response => {
-                    console.log(response, 'applicationResponse')
-                    if (response?.response?.status === 409) {
-                        ErrorToaster("Email ID already exists");
-                    } else {
-                        setBasicForm(response?.data)
-                        setApplicationId(response?.data?.id)
-                        SuccessToaster("Staff Member Applicationnnnnn Created Successfully");
-                        setIsNextPage(true);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error, 'applicationResponse')
-                    ErrorToaster("Unexpected Error Creating Staff Member Application");
-                });
-        } else {
-            await PUT(`application-management-service/application/${applicationId}`, data)
-                .then(response => {
-                    console.log(response)
-                    setBasicForm(response?.data)
-                    SuccessToaster("Staff Member Application Updated Successfully");
-                    if (!isNextpage) {
-                        setIsNextPage(true);
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Staff Member Application");
-                });
-        }
-    }
-
-    const handleRequiredFileSubmit = async () => {
-        let data = basicFormForDocuments;
-        data.documentsRequired = requiredDocumentList;
-        await PUT(`application-management-service/application/${applicationId}`, data)
-            .then(response => {
-                handleSendMail()
-                getPreApplication()
-                setIsShowMailSendDialog(true)
-                SuccessToaster("Staff Member Application Updated Successfully");
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Staff Member Application");
-            });
-    }
-
-    const handleCloseClick = () => {
-        navigate('/applications')
-    }
-    return (
-        <div className={style.screenBackground}>
-            <ApplicationHeader title={'Create A New Staff Member Credentialing And Privileging Application'} close={true} closeClick={handleCloseClick} />
-            <div className={style.screenPadding}>
-                <div className={style.displayInRowRev}>
-                    {/* <div className={style.breadcrumbStyle}>{`STAFF APPOINTMENT APPLICATION >> NEW APPLICATION`}</div> */}
-                    <div className={style.cardTitle}>{`* - Required`}</div>
+        close={true}
+        closeClick={handleCloseClick}
+      />
+      <div className={`${style.margin20} ${style.screenPadding}`}>
+        <div>
+          <div className={style.bigCardStyle1}>
+            <div className={`${style.numberOfContractorsGrid} ${style.filterPadding}`}>
+              <div>
+                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
+                    Department
+                  </div>
                 </div>
-                {!isNextpage ? (
-                    <>
-                        {/* {form !== undefined && 'applicant' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-                        )} */}
-                        {form !== undefined && 'credentialingPrivilegeCategory' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-                        )}
-                        {form !== undefined && 'departmentSpecialty' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.departmentSpecialty} gridStyle={style.appointmentGrid} baseKey={'departmentSpecialty'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} getAllPath={getAllPath} getAllLabels={getAllLabels} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-                        )}
-                        {/* {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                                <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.regionalCallGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                            )} */}
-                        <div className={style.spaceBetween}>
-                            <div></div>
-                            <div className={style.displayInRow}>
-                                <div className={style.displayInRow}>
-                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => window.location.reload()}>DISCARD</div>
-                                    <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => getMissingFields()}>CONTINUE</div>
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        {/* {form !== undefined && 'sites' in form?.properties && (
-                            <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} isBasicPath={true} />
-                                <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                                    <div className={style.cardTitle}>Added Sites</div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )}
-                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} isBasicPath={true} />
-                        )} */}
-                        <div className={style.applicationCardStyle}>
-                            <div className={style.marginTop}>
-                                <div className={style.cardTitle}>Required and Recommended documents & forms for this Application</div>
-                            </div>
-                            <div className={`${style.fileGrid} ${style.marginTop} ${style.tableHeader}`}>
-                                <div className={`${style.tableHeaderFont} ${style.centerAlign}`}>Required?</div>
-                                <div className={style.tableHeaderFont}>Document / Form</div>
-                            </div>
-                            {requiredDocumentList?.map((data, index) => (
-                                <div className={`${style.tableData} ${index % 2 === 0 ? style.alternativeBackgroundColor : ''}`} key={`${index}radio`}>
-                                    <div className={style.fileGrid}>
-                                        <div className={style.centerAlign}>
-                                            {/* <CommonSwitch
-                                                className={`${style.textAlignLeft}`}
-                                                checked={true}
-                                                onChange={(e) =>
-                                                    handleSwitchChange(e.target.checked)
-                                                }
-                                                label={true ? "YES" : "NO"}
-                                            /> */}
-                                            <ThemeProvider theme={switchTheme}>
-                                                <FormControlLabel
-                                                    control={
-                                                        <Switch className={`${style.textAlignLeft}`} onChange={(e) =>
-                                                            handleSwitchChange(e.target.checked, data?.document?.id)
-                                                        } checked={data?.required} size="small" key={`${index}radio`} />
-                                                    }
-                                                    color='primary'
-                                                    className={`${style.textAlignLeft}`}
-                                                    label={data?.required ? "YES" : "NO"}
-                                                    key={`${index}radio`}
-                                                />
-                                            </ThemeProvider>
-                                        </div>
-                                        <div className={style.fileNameText}>{data?.document?.name}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsNextPage(false)}>BACK</div>
-                            <div className={style.displayInRow}>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleRequiredFileSubmit()}>SEND APPLICATION LINK</div>
-                            </div>
-                        </div>
-                    </>
-                )}
-                {/* {
-                    <>
-                        {form !== undefined && 'sites' in form?.properties && (
-                            <div className={style.siteCardGrid}>
-                                <ApplicationFieldCard object={form?.properties?.sites} gridStyle={style.siteGrid} baseKey={'sites'} basicForm={basicForm} setBasicForm={setBasicForm} showAdd={true} />
-                                <div className={`${style.backgroundCard} ${style.marginTop}`}>
-                                    <div className={style.cardTitle}>Added Sites</div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (Cardiothoracic Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                    <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
-                                        <div>
-                                            <div className={style.siteDisplaySiteTextStyle}>Cambridge Memorial Hospital </div>
-                                            <div className={style.siteDisplayDepartmentTextStyle}>Department of Surgery (General Surgery)</div>
-                                        </div>
-                                        <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                        {form !== undefined && 'natureOfPractice' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.natureOfPractice} gridStyle={style.natureOfPracticeGrid} baseKey={'natureOfPractice'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        {form !== undefined && 'regionalCallResponsibilities' in form?.properties && (
-                            <ApplicationFieldCard object={form?.properties?.regionalCallResponsibilities} gridStyle={style.jobInterviewGrid} baseKey={'regionalCallResponsibilities'} basicForm={basicForm} setBasicForm={setBasicForm} />
-                        )}
-                        <div className={style.spaceBetween}>
-                            <div className={`${style.saveInProgress} ${style.marginTop}`}>DISCARD</div>
-                            <div className={style.displayInRow}>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`}>SEND APPLICATION LINK</div>
-                                <div className={`${style.continue} ${style.marginTop} ${style.marginLeft}`} onClick={() => handleSubmitApplicationReq()}>Next</div>
-                            </div>
-                        </div>
-                    </>
-                } */}
-            </div>
-            {isShowMailSendDialog && (
-                <SendEmailFromStaffManagerConfirmationDialog getIsOpen={getShowMailSendDialog} basicForm={basicForm} />
-            )}
-            {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
-            )}
-        </div>
-    )
-}
+                <div className={style.marginTop10}>
 
-export default CreateStaffMemberApplication;
+
+                  <CommonSelectField
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={departmentList?.map(data => data?.id)}
+                    labelList={departmentList?.map(data => data?.departmentName?.name)}
+                    disabledList={departmentList?.map(data => false)}
+                    // label={'Department / Division or Specialty'}
+                    required={false}
+                  />
+
+                </div>
+              </div>
+              <div>
+                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
+                    Privilege Category
+                  </div>
+
+                </div>
+                <div className={style.marginTop10}>
+
+
+                  <CommonSelectField
+                    value={selectedPrivilegeCategory}
+                    onChange={(e) => setSelectedPrivilegeCategory(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={privilegeCategories?.map(data => data?.id)}
+                    labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
+                    disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
+                    required={false}
+                  />
+
+                </div>
+              </div>
+              <div>
+                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
+                    Staff Type
+                  </div>
+                </div>
+                <div className={style.marginTop10}>
+
+
+                  <CommonSelectField
+                    value={selectedApplicantType}
+                    onChange={(e) => setSelectedApplicantType(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={applicantType?.map(data => data?.id)}
+                    labelList={applicantType?.map(data => data?.applicantType)}
+                    disabledList={applicantType?.map(data => false)}
+                    required={false}
+                  />
+
+                </div>
+              </div>
+              <div>
+                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                  <div className={`${style.filterType} ${(contractFilter?.contractTypeCount?.filter(data => data?.selected)?.length !== 0 && !contractTypeFilter) ? style.purpleText : ''}`}>
+                    reappointment status
+                  </div>
+                </div>
+                <div className={style.marginTop10}>
+
+
+                  <CommonSelectField
+                    value={selectedReappointmentStatus}
+                    onChange={(e) => setSelectedReappointmentStatus(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={["SENT", "NOT_SENT"]}
+                    labelList={['Sent', 'Not Sent']}
+                    disabledList={false}
+                    required={false}
+                  />
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
+            {isLoading ? (
+              <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
+                <CircularProgress sx={{ color: "#0e5197" }} />
+              </div>
+            ) : (
+              <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>
+                <TableTwo
+                  tableHeaderValues={headerValues}
+                  tableDataValues={getTableValues()}
+                  tableData={tableData}
+                  gridStyle={style.permanentStaffGrid}
+                  scrollStyle={style.contractScrollStyle}
+                  tableSortValues={colSortValues}
+                  heading={"There are no Record for you to manage"}
+                  getHandleSort={getHandleSort}
+                  sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                  handleCheckboxClick={handleCheckboxClick}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className={style.spaceBetween}>
+          <div></div>
+          <div className={style.displayInRow}>
+            <div className={style.displayInRow}>
+              <div
+                className={`${style.saveInProgress} ${style.marginTop} ${style.marginLeft}`}
+                onClick={() => window.location.reload()}
+              >
+                CLEAR
+              </div>
+              <div
+                className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
+                onClick={() => {
+                  if (isDataAvailable) {
+                    reappointmentApplicationbulk();
+                  }
+                }}
+                // disabled={isLoading}
+                disabled={!isDataAvailable}
+                style={{ opacity: isDataAvailable ? 1 : 0.5 }}
+              >
+                SEND REAPPOINTMENT APPLICATION
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+})
+
+export default ReappointmentApplication;

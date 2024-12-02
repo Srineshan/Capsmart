@@ -1,4 +1,5 @@
 @import "../../index.scss";
+
 .margin20 {
     margin: 20px;
 }
@@ -53,8 +54,7 @@
 }
 
 .profileImgStyle {
-    border: 2px solid $primarycolor
-;
+    border: 2px solid $primarycolor;
     height: 100px;
     width: 100px;
     border-radius: 50%;
@@ -63,8 +63,7 @@
 .headingStyle {
     text-align: left;
     font: normal normal 600 16px/16px proxima-nova;
-    color: $primarycolor
-;
+    color: $primarycolor;
     text-transform: capitalize;
 }
 
@@ -76,7 +75,7 @@
 .extentionLableStyle {
     text-align: left;
     font: normal normal normal 13px/20px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;
@@ -96,7 +95,7 @@
 .infoTextStyle {
     text-align: left;
     font: normal normal normal 12px/20px proxima-nova;
-    color: #52575D;
+    color: #2C2C2C;
     text-transform: capitalize;
 }
 
@@ -107,20 +106,17 @@
 }
 
 .outlinedButton {
-    border: 1px solid $primarycolor
-;
+    border: 1px solid $primarycolor;
     border-radius: 4px;
     max-height: 35px;
     width: 160px;
     background-color: transparent;
-    color: $primarycolor
-;
+    color: $primarycolor;
     font: normal normal normal 12px/14px proxima-nova;
 }
 
 .normalButton {
-    background: $primarycolor
- 0% 0% no-repeat padding-box;
+    background: $primarycolor 0% 0% no-repeat padding-box;
     border-radius: 4px;
     border: none;
     color: white;
@@ -171,8 +167,7 @@
 }
 
 .blueText {
-    color: $primarycolor
-;
+    color: $primarycolor;
 }
 
 .uploadBox {

@@ -47,6 +47,7 @@ import LoginDialog from '../../Components/LoginDialog';
 import PODCheck from './PODCheck';
 import AcknowledgementCheck from './AcknowledgementCheck';
 import { logout } from '../../utils/auth';
+import MiscellaneousQuestions from './MiscellaneousQuestions';
 
 
 const ApplicationForm = () => {
@@ -136,6 +137,8 @@ const ApplicationForm = () => {
                 return <Step14 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'Immunization':
                 return <Immunization basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'MISCELLANEOUS_QUESTIONS':
+                return <MiscellaneousQuestions basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'ScheduleA':

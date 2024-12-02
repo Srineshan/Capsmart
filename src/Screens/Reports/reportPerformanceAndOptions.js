@@ -134,13 +134,13 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             </Popover>
                         </div>
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`}>
-                            <ShareOutlinedIcon style={{color:"#52575D"}} onClick={() => setShowShareDialog(true)} />
+                            <ShareOutlinedIcon style={{color:"#2C2C2C"}} onClick={() => setShowShareDialog(true)} />
                         </div> */}
                         <div className={`${style.iconPadding} ${style.cursorPointer} ${isNoData && style.disabledCursor}`}
                             onMouseEnter={(e) => !isNoData ? setAnchorElSchedule(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElSchedule(null) : {}} aria-owns={openSchedule ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsSchedule} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={() => !isNoData ? setShowSaveReport(true) : {}} />
-                            {/* <CalendarTodayIcon style={{ color: "#52575D" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} /> */}
+                            {/* <CalendarTodayIcon style={{ color: "#2C2C2C" }} onClick={() => !isNoData ? setShowSaveReport(true) : {}} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -161,7 +161,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         {/* <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => setShowSaveReportOutput(true)}
                             onMouseEnter={(e) => setAnchorElSave(e.currentTarget)} onMouseLeave={() => setAnchorElSave(null)} aria-owns={openSave ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
-                            <SaveOutlinedIcon style={{ color: "#52575D" }} />
+                            <SaveOutlinedIcon style={{ color: "#2C2C2C" }} />
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -183,7 +183,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             onMouseEnter={(e) => !isNoData ? setAnchorElDownload(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElDownload(null) : {}} aria-owns={openDownload ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsDownload} alt="" className={`${style.reportsActions} ${style.marginTop5}`} />
-                            {/* <DownloadingOutlinedIcon style={{ color: "#52575D" }} /> */}
+                            {/* <DownloadingOutlinedIcon style={{ color: "#2C2C2C" }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -205,7 +205,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             onMouseEnter={(e) => !isNoData ? setAnchorElPrint(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElPrint(null) : {}} aria-owns={openPrint ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true">
                             <img src={ReportsPrint} alt="" className={`${style.reportsActions} ${style.marginTop5}`} />
-                            {/* <PrintOutlinedIcon style={{ color: "#52575D" }} /> */}
+                            {/* <PrintOutlinedIcon style={{ color: "#2C2C2C" }} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -227,7 +227,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                             onMouseEnter={(e) => !isNoData ? setAnchorElFullscreen(e.currentTarget) : {}} onMouseLeave={() => !isNoData ? setAnchorElFullscreen(null) : {}} aria-owns={openFullscreen ? 'mouse-over-popover' : undefined}
                             aria-haspopup="true" >
                             <img src={ReportsFullScreen} alt="" className={`${style.reportsActions} ${style.marginTop5}`} onClick={!isNoData ? handle.enter : {}} />
-                            {/* <ZoomOutMapIcon style={{ color: "#52575D" }} onClick={!isNoData ? handle.enter : {}} /> */}
+                            {/* <ZoomOutMapIcon style={{ color: "#2C2C2C" }} onClick={!isNoData ? handle.enter : {}} /> */}
                             <Popover
                                 id={'mouse-over-popover'}
                                 sx={{
@@ -322,7 +322,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                         <p className={`${style.mailIdTextColor}`}>Ronald Jones (Myself)</p>
                                         <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                     </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
                                 <div className={`${style.extensionBorder}`}></div>
                                 <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
@@ -331,7 +331,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                         <p className={`${style.mailIdTextColor}`}>Kyle Wright, MD</p>
                                         <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                     </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
                                 <div className={`${style.extensionBorder} `}></div>
                                 <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10} `}>
@@ -340,7 +340,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                         <p className={`${style.mailIdTextColor}`}>Mathew Bailey, MD</p>
                                         <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                     </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
                                 <div className={`${style.extensionBorder}`}></div>
                                 <div className={`${style.userMailListGrid} ${style.padding10} ${style.marginTop10}`}>
@@ -351,7 +351,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                                             <p className={`${style.descriptionText} ${style.reduceMarginTop}`}>Medical Director, Dept. of Surgery</p>
                                         </div>
                                     </div>
-                                    <Icon icon="cross" className={style.marginTop10} color="#52575D" />
+                                    <Icon icon="cross" className={style.marginTop10} color="#2C2C2C" />
                                 </div>
                                 <div className={`${style.extensionBorder}`}></div>
                             </div>

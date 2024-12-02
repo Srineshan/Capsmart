@@ -14,7 +14,7 @@ const ValidationHeader = ({ heading, result }) => {
                     <TaskAltOutlinedIcon style={{ color: "#14B15A" }} />
                 ) : (
                     <div className={style.displayInRow}>
-                        <DraftsOutlinedIcon style={{ color: "#52575D" }} />
+                        <DraftsOutlinedIcon style={{ color: "#2C2C2C" }} />
                         <div className={style.marginLeft20}>
                             <EditOutlinedIcon style={{ color: "#F94848" }} />
                         </div>
