@@ -736,7 +736,7 @@ const SiteUsers = ({ getActiveStep }) => {
                               checked={selectedRoles
                                 ?.map((data) => data?.id)
                                 ?.includes(option?.id)}
-                              style={{ color: "#0e5197" }}
+                              style={{ color: "#06617A" }}
                             />
                           </ListItemIcon>
                           <ListItemText primary={option?.roleName} />

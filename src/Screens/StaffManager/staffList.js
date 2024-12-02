@@ -2,7 +2,7 @@ import React, { useState, createRef, useRef } from 'react';
 import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 import TimeSmartLogo from './../../images/timeSmartAI-logo-withoutbg-1.png';
-import HapiCare from "./../../images/hapicare.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import StaffTiles from './staffTiles';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
@@ -266,7 +266,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <SearchOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#0e5197",
+                      color: isPrintClicked ? "#fff" : "#06617A",
                     }}
                   />
                 </div>
@@ -278,7 +278,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <PrintOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#0e5197",
+                      color: isPrintClicked ? "#fff" : "#06617A",
                     }}
                   />
                 </div>
@@ -290,7 +290,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
                   <FilterAltOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#0e5197",
+                      color: isPrintClicked ? "#fff" : "#06617A",
                     }}
                   />
                 </div>
@@ -301,7 +301,7 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div ref={componentRef}>
@@ -341,9 +341,9 @@ const StaffList = ({ isLoading, getSelectedApplicant, selectedApplicant, getActi
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by -
-          </p>
+          </p> */}
           <img
             src={HapiCare}
             alt="footer"

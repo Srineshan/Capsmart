@@ -596,8 +596,8 @@ const TrackYourContracts = () => {
                                                 ))}
                                             </Select>
                                         </FormControl>
-                                        {/* <PrintOutlinedIcon sx={{ color: '#0e5197' }} />
-                                    <DownloadIcon sx={{ color: '#0e5197' }} /> */}
+                                        {/* <PrintOutlinedIcon sx={{ color: '#06617A' }} />
+                                    <DownloadIcon sx={{ color: '#06617A' }} /> */}
                                     </div>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
@@ -652,7 +652,7 @@ const TrackYourContracts = () => {
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`TIMESHEET SUBMITTED PROCESSING STATUS BY SERVICE PROVIDER`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {/* {timesheetIntervals?.length !== 0 && (
                                     <>
@@ -780,7 +780,7 @@ const TrackYourContracts = () => {
                             <div>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`PAYMENT PROCESSING STATUS BY SERVICE PROVIDER`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' ? (
                                     <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
@@ -898,7 +898,7 @@ const TrackYourContracts = () => {
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`STATUS OF ACTIVITIES/ SERVICES BY SERVICE PROVIDER FOR ${format(new Date(), 'MMMM yyyy')}`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' && (
                                     <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20}`}>

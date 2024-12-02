@@ -4,15 +4,23 @@ export const FormatPhoneNumber = (value) => {
   if (!value) return value;
 
   const phoneNumber = value.replace(/[^\d]/g, "");
+  if (/^(\d)\1{9}$/.test(phoneNumber)) {
+    return ""; // Invalid phone number with all digits the same
+  }
   const phoneNumberLength = phoneNumber.length;
 
   if (phoneNumberLength < 4) return phoneNumber;
 
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  const areaCode = phoneNumber.slice(0, 3);
+  if (!/^[2-9]\d{2}$/.test(areaCode)) {
+    return ""; // Invalid area code
   }
 
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+  if (phoneNumberLength < 7) {
+    return `(${areaCode}) ${phoneNumber.slice(3)}`;
+  }
+
+  return `(${areaCode}) ${phoneNumber.slice(
     3,
     6
   )}-${phoneNumber.slice(6, 10)}`;

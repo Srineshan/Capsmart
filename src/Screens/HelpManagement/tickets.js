@@ -746,7 +746,7 @@ const Tickets = ({ getSelectedHelp }) => {
                                 </div>
                                 <div className={style.displayInRow}>
                                     <p className={style.feedbackFontStyle}>Updated On 01-06-2022 23:34</p>
-                                    <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
+                                    <Icon icon="chevron-up" color='#06617A' className={style.marginLeft20} />
                                 </div>
                             </div>
                             <div className={style.collapseBody}>
@@ -847,7 +847,7 @@ const Tickets = ({ getSelectedHelp }) => {
                             <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                 <p className={style.collapseHeaderText}>Log File Reference</p>
                                 <div className={style.reduceTop10}>
-                                    <Icon icon={ticketStatus !== "Resolved" ? "chevron-up" : "chevron-down"} color='#0e5197' className={style.marginLeft20} />
+                                    <Icon icon={ticketStatus !== "Resolved" ? "chevron-up" : "chevron-down"} color='#06617A' className={style.marginLeft20} />
                                 </div>
                             </div>
                             {ticketStatus !== "Resolved" && (
@@ -870,7 +870,7 @@ const Tickets = ({ getSelectedHelp }) => {
                                     <>
                                         <p className={style.collapseHeaderText}>Comments</p>
                                         <div className={style.reduceTop10}>
-                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#06617A' className={style.marginLeft20} />
                                         </div>
                                     </>
                                 ) : (
@@ -878,7 +878,7 @@ const Tickets = ({ getSelectedHelp }) => {
                                         <p className={style.collapseHeaderText}>Resolution Comments</p>
                                         <div className={style.displayInRow}>
                                             <p className={style.collapseHeaderText}>1 Unread</p>
-                                            <Icon icon="chevron-up" color='#0e5197' className={style.marginLeft20} />
+                                            <Icon icon="chevron-up" color='#06617A' className={style.marginLeft20} />
                                         </div>
                                     </>
                                 )}

@@ -8,7 +8,7 @@ import React, {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
-import HapiCare from "./../../images/hapicare.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -2333,7 +2333,7 @@ const StaffApplicationList = ({
                         <AddIcon
                           sx={{
                             fontSize: 20,
-                            color: "#0e5197",
+                            color: "#06617A",
                             cursor: "pointer",
                           }}
                           onClick={() =>
@@ -2344,7 +2344,7 @@ const StaffApplicationList = ({
                         <RemoveIcon
                           sx={{
                             fontSize: 20,
-                            color: "#0e5197",
+                            color: "#06617A",
                             cursor: "pointer",
                           }}
                           onClick={() =>
@@ -2417,7 +2417,7 @@ const StaffApplicationList = ({
                                   }
                                   isLabelVisible={false}
                                   height="5px"
-                                  bgColor="#0e5197"
+                                  bgColor="#06617A"
                                   baseBgColor="#E9E9F0"
                                   className={style.marginLeft20}
                                 />
@@ -2468,7 +2468,7 @@ const StaffApplicationList = ({
                         <AddIcon
                           sx={{
                             fontSize: 20,
-                            color: "#0e5197",
+                            color: "#06617A",
                             cursor: "pointer",
                           }}
                           onClick={() => setShowCardDetails(!showCardDetails)}
@@ -2477,7 +2477,7 @@ const StaffApplicationList = ({
                         <RemoveIcon
                           sx={{
                             fontSize: 20,
-                            color: "#0e5197",
+                            color: "#06617A",
                             cursor: "pointer",
                           }}
                           onClick={() => setShowCardDetails(!showCardDetails)}
@@ -2554,7 +2554,7 @@ const StaffApplicationList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -2566,7 +2566,7 @@ const StaffApplicationList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                   onClick={handlePrintClick}
                 />
@@ -2579,7 +2579,7 @@ const StaffApplicationList = ({
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -2608,9 +2608,9 @@ const StaffApplicationList = ({
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by
-          </p>
+          </p> */}
           <img
             src={HapiCare}
             alt="footer"

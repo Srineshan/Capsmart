@@ -19,10 +19,10 @@ import { Switch, makeStyles } from "@material-ui/core";
 const useStyles = makeStyles({
   switch: {
     "& .Mui-checked": {
-      color: "#0e5197",
+      color: "#06617A",
     },
     "& .MuiSwitch-track": {
-      backgroundColor: "#0e5197 !important",
+      backgroundColor: "#06617A !important",
     },
   },
 });

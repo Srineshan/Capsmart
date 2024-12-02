@@ -1,5 +1,5 @@
 import React from 'react';
-import HapiCare from "./../../images/hapicare.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 
 import style from './index.module.scss';
 
@@ -9,7 +9,7 @@ const ReportFooter = () => {
             <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
             <div className={style.spaceBetween}>
                 <div>
-                    <div className={style.poweredByTextStyle}>Powered By</div>
+                    {/* <div className={style.poweredByTextStyle}>Powered By</div> */}
                     <img src={HapiCare} alt="poweredBy" className={style.reportFooterLogo} />
                 </div>
                 {/* <div id='content'>

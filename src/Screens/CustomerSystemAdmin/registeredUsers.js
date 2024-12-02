@@ -378,15 +378,15 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                     </div>
                     <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
                         <div className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handleDownloadClicked()}>
-                            {/* <DownloadIcon sx={{ fontSize: 30, color: '#0e5197' }} /> */}
+                            {/* <DownloadIcon sx={{ fontSize: 30, color: '#06617A' }} /> */}
                             <img src={Download} alt='' className={style.iconSize} />
                         </div>
                         <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handlePrint()}>
-                            <PrintOutlinedIcon sx={{ fontSize: 30, color: '#0e5197' }} />
+                            <PrintOutlinedIcon sx={{ fontSize: 30, color: '#06617A' }} />
                         </div>
                         {selectedOption === 'ENTITY REGISTERED USERS' && (
                             <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`}>
-                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#0e5197' }} onClick={() => setShowAddUserDialog(true)} />
+                                <AddCircleOutlineIcon sx={{ fontSize: 30, color: '#06617A' }} onClick={() => setShowAddUserDialog(true)} />
                             </div>
                         )}
                     </div>

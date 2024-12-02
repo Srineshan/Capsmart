@@ -454,7 +454,7 @@ const ReappointmentApplication = forwardRef(({ metadata, getContractFilterValues
           <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
             {isLoading ? (
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>

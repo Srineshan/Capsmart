@@ -521,7 +521,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -580,7 +580,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -636,7 +636,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         position: "relative",
                                                                         mt: "10px",
                                                                         "&::before": {
-                                                                            backgroundColor: "#0e5197",
+                                                                            backgroundColor: "#06617A",
                                                                             content: '""',
                                                                             display: "block",
                                                                             position: "absolute",

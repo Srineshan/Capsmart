@@ -41,7 +41,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
             color: '#fff',
             '& + .MuiSwitch-track': {
                 opacity: 1,
-                backgroundColor: theme.palette.mode === 'dark' ? '#0e5197' : '#0e5197',
+                backgroundColor: theme.palette.mode === 'dark' ? '#06617A' : '#06617A',
             },
         },
     },
@@ -58,7 +58,7 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
         borderRadius: 16 / 2,
         opacity: 1,
         backgroundColor:
-            theme.palette.mode === 'dark' ? '#0e5197' : '#0e5197',
+            theme.palette.mode === 'dark' ? '#06617A' : '#06617A',
         boxSizing: 'border-box',
     },
 }));

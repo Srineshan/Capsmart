@@ -8,7 +8,7 @@ import React, {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
-import HapiCare from "./../../images/hapicare.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import ActionStaffTiles from "./activeStaffTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -765,12 +765,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
@@ -789,7 +789,7 @@ const ActiveStaffList = ({
                           border: "0.4px solid #14B15A",
                           color: "#14B15A"
                         }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PermIdentityIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -806,7 +806,7 @@ const ActiveStaffList = ({
                           border: "0.4px solid #FFCA27",
                           color: "#FFCA27"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -823,7 +823,7 @@ const ActiveStaffList = ({
                           border: "0.4px solid #F94848",
                           color: "#F94848"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -841,12 +841,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
@@ -863,7 +863,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 15 Days</p>
                       </div>
-                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -880,7 +880,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 2 Days</p>
                       </div>
-                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -897,7 +897,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Kate SLATE</div> <span className={style.textStyleProgress}> (Doctor) </span></div>
                         <p className={style.progressTopText}>Due in 7 Days</p>
                       </div>
-                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -915,12 +915,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
@@ -966,7 +966,7 @@ const ActiveStaffList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -977,7 +977,7 @@ const ActiveStaffList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -989,7 +989,7 @@ const ActiveStaffList = ({
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div ref={componentRef}>
@@ -1018,9 +1018,9 @@ const ActiveStaffList = ({
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by
-          </p>
+          </p> */}
           <img
             src={HapiCare}
             alt="footer"
