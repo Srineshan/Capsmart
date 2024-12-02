@@ -9,7 +9,7 @@ import jwt from 'jwt-decode';
 const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
-  const user = jwt(userDetails);
+  const [user, setUser] = useState();
   const [userRole, setUserRole] = useState('');
   const [initialTabSet, setInitialTabSet] = useState(false);
   const [counts, setCounts] = useState({
@@ -44,6 +44,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
   }, [applicationType]);
 
+  useEffect(() => {
+    if (userDetails !== undefined) {
+      setUser(jwt(userDetails));
+    }
+  }, [userDetails])
+
   const getTitleCounts = async () => {
     try {
       const response = await GET(
@@ -57,12 +63,14 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   };
 
   const setUserDetails = async () => {
-    try {
-      const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-      sessionStorage.setItem('user', JSON.stringify(userData));
-      setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
-    } catch (error) {
-      console.error('Error fetching user details:', error);
+    if (user !== undefined) {
+      try {
+        const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
     }
   };
 

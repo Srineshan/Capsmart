@@ -219,21 +219,31 @@ const Navbar = () => {
   useEffect(() => {
     var cookie = new Cookies();
     var accessToken = cookie.get("user");
-    let roles = jwt(accessToken)?.roles?.split(",");
-    // console.log(roles);
-    setCurrentUserRoles(roles);
-    setIsContractManager(roles?.includes("Contract Manager") ? true : false);
-    setIsEntityLevelAdmin(
-      roles?.includes("Super Sys Admin") ||
-        roles?.includes("Entity Sys Admin") ||
-        roles?.includes("Entity Sys User") ||
-        roles?.includes("Distributor Admin")
-        ? true
-        : false
-    );
+    if (accessToken !== undefined) {
+      let roles = jwt(accessToken)?.roles?.split(",");
+      // console.log(roles);
+      setCurrentUserRoles(roles);
+      setIsContractManager(roles?.includes("Contract Manager") ? true : false);
+      setIsEntityLevelAdmin(
+        roles?.includes("Super Sys Admin") ||
+          roles?.includes("Entity Sys Admin") ||
+          roles?.includes("Entity Sys User") ||
+          roles?.includes("Distributor Admin")
+          ? true
+          : false
+      );
+    }
   }, []);
 
   const classes = useStyles();
+
+  const handleLogout = () => {
+    var cookies = new Cookies();
+    cookies.remove("user", { path: "/" });
+    cookies.remove("entityId", { path: "/" });
+    logout()
+    navigate('/')
+  }
 
   const handleScreenshot = () => {
     setShowToolsMenu(false);
@@ -242,7 +252,7 @@ const Navbar = () => {
       setScreenCapture(base64image);
       sessionStorage.setItem("screenCapture", base64image);
       // sessionStorage.setItem("selectedOption", "OPEN FEEDBACK TICKETS");
-      window.location.href = "/app/help";
+      window.location.href = "/help";
     });
   };
   // console.log('currentUserRoles', currentUserRoles);
@@ -629,7 +639,7 @@ const Navbar = () => {
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
-            onClick={() => logout()}
+            onClick={() => handleLogout()}
           >
             <p>Logout</p>
           </div>
@@ -637,7 +647,7 @@ const Navbar = () => {
             src={LogoutIcon}
             alt="print"
             className={style.logoutIcons}
-            onClick={() => logout()}
+            onClick={() => handleLogout()}
           />
         </div>
       </div>

@@ -12,10 +12,12 @@ const roles = GetRoles();
 export const isSuperAdminAccess = roles?.includes('Super Sys Admin') || roles?.includes('Distributor Admin') ? true : false;
 let cookie = new Cookie();
 let tenantId = cookie.get("entityId");
+let authorization = cookie.get("authorization");
 const headers = {
     "Content-Type": "application/json",
     "X-tenantID": TenantID,
     "X-Authorization": `Bearer ${accessToken}`,
+    "Authorization": `Bearer ${authorization}`,
 };
 
 export const GET = (url) => {

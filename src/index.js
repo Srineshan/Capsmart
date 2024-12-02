@@ -8,6 +8,7 @@ import "@blueprintjs/core/lib/css/blueprint.css";
 import "@blueprintjs/icons/lib/css/blueprint-icons.css";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import { ErrorBoundary } from "react-error-boundary";
+import { createRoot } from 'react-dom/client';
 import { browserName, browserVersion, osName, osVersion, isMobile, isDesktop, isTablet } from "react-device-detect";
 import { AuthProvider } from '@descope/react-sdk';
 import UnexpectedError from './Components/ErrorPage/unexpectedError';
@@ -126,28 +127,29 @@ const logError = async (error, info) => {
   formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
     type: "application/json"
   }));
-  if (errorInfo !== error.message) {
-    await POST(`feedback-management-service/ticket`, formData)
-      .then(response => {
-        sessionStorage.setItem('errorInfo', error.message);
-        SuccessToaster('Error Logged Successfully');
-      })
-      .catch(error => {
-        ErrorToaster('Unexpected Error Occured');
-      })
-  }
+  // if (errorInfo !== error.message) {
+  //   await POST(`feedback-management-service/ticket`, formData)
+  //     .then(response => {
+  //       sessionStorage.setItem('errorInfo', error.message);
+  //       SuccessToaster('Error Logged Successfully');
+  //     })
+  //     .catch(error => {
+  //       ErrorToaster('Unexpected Error Occured');
+  //     })
+  // }
   console.log(error.message, data, info?.componentStack.toString())
 };
 
-const rootElement = document.getElementById("root");
+// const rootElement = document.getElementById("root");
+const root = createRoot(document.getElementById('root'));
 if (window.self === window.top) {
-  ReactDOM.render(
+  root.render(
     <AuthProvider projectId={process.env.REACT_APP_DESCOPE_PROJECT_ID}>
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
         <App />
       </ErrorBoundary>
     </AuthProvider >
-    , rootElement);
+  );
 }
 // ReactDOM.render(
 //   <StrictMode>

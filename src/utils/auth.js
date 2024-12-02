@@ -51,32 +51,33 @@ export const GetEntityDetails = () => {
 }
 
 export const currentUser = () => {
-  // if (!window.location.href?.includes('user/ssoId')) {
-  //   let cookie = new Cookie();
-  //   let accessToken = cookie.get('user');
-  //   let decoded = jwt(accessToken);
-  //   let user = {};
-  //   if (accessToken) {
-  //     user.id = decoded?.id;
-  //     user.firstName = decoded?.userName?.split(' ')[0];
-  //     user.lastName = decoded?.userName?.split(' ')[1];
-  //     user.fullName = decoded?.userName;
-  //     user.email = decoded?.sub;
-  //     user.roles = decoded?.roles?.split(',');
-  //   }
-  //   return user;
-  // }
+  if (!window.location.href?.includes('user/ssoId')) {
+    let cookie = new Cookie();
+    let accessToken = cookie.get('user');
+    let decoded;
+    let user = {};
+    if (accessToken) {
+      decoded = jwt(accessToken);
+      user.id = decoded?.id;
+      user.firstName = decoded?.userName?.split(' ')[0];
+      user.lastName = decoded?.userName?.split(' ')[1];
+      user.fullName = decoded?.userName;
+      user.email = decoded?.sub;
+      user.roles = decoded?.roles?.split(',');
+    }
+    return user;
+  }
 }
 
 
 export const GetRoles = () => {
-  // let cookie = new Cookie();
-  // let token = cookie.get('user');
-  // let roles = [];
-  // if (token) {
-  //   roles = jwt(token)?.roles?.split(',');
-  // }
-  // return roles;
+  let cookie = new Cookie();
+  let token = cookie.get('user');
+  let roles = [];
+  if (token) {
+    roles = jwt(token)?.roles?.split(',');
+  }
+  return roles;
 }
 
 export const Logout = async () => {

@@ -46,7 +46,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [userRole, setUserRole] = useState('');
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
-    const users = jwt(userDetails);
+    const [users, setUsers] = useState();
     const openTextWithHover = Boolean(anchorElTextWithHover);
     const open = Boolean(anchorEl);
     const [anchorElSite, setAnchorElSite] = useState(null);
@@ -408,6 +408,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     };
 
     const classes = useStyles();
+
+    useEffect(() => {
+        if (userDetails !== undefined) {
+            setUsers(jwt(userDetails));
+        }
+    }, [userDetails])
 
     useEffect(() => {
         setUserDetails();

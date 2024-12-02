@@ -71,7 +71,7 @@ const StaffApplicationList = ({
   const [limit, setLimit] = useState(10);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
-  const users = jwt(userDetails);
+  const [users, setUsers] = useState();
   const [userRole, setUserRole] = useState('');
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   const [applicationType, setApplicationType] = useState(() =>
@@ -343,7 +343,7 @@ const StaffApplicationList = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
-    const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
+  const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
@@ -391,14 +391,22 @@ const StaffApplicationList = ({
   }, [applicationType]);
 
   useEffect(() => {
+    if (userDetails !== undefined) {
+      setUsers(jwt(userDetails));
+    }
+  }, [userDetails])
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
   const setUserDetails = async () => {
-    const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
-    console.log("userdataaaa" + JSON.stringify(userData))
-    sessionStorage.setItem('user', JSON.stringify(userData))
-    setUserRole(userData?.roles?.map((data) => data?.roleName));
+    if (users !== undefined) {
+      const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+      console.log("userdataaaa" + JSON.stringify(userData))
+      sessionStorage.setItem('user', JSON.stringify(userData))
+      setUserRole(userData?.roles?.map((data) => data?.roleName));
+    }
   }
 
   const getReFetchMetaData = (value) => {

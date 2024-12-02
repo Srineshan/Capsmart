@@ -19,7 +19,7 @@ import {
 import { SuccessToaster, ErrorToaster } from "./utils/toaster";
 import axios from "axios";
 import jwt from "jwt-decode";
-import { isSessionTokenExpired, useSession, getSessionToken, refresh } from '@descope/react-sdk';
+import { isSessionTokenExpired, useSession, getSessionToken, refresh, useDescope } from '@descope/react-sdk';
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 import LoginDialog from "./Components/LoginDialog";
@@ -283,7 +283,8 @@ const ApplicationSetup = React.lazy(() =>
 );
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
-  const { isAuthenticated } = useSession();
+  const { isAuthenticated, isSessionLoading } = useSession();
+  const { refreshSession, setSession, logout } = useDescope();
   const sessionToken = getSessionToken();
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
@@ -292,29 +293,37 @@ const App = ({ props }) => {
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
-  const loggedInUser = currentUser();
+  const [loggedInUser, setLoggedInUser] = useState();
   let authorization = cookie.get("authorization");
+  let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
-  console.log(authorization, 'authorization', TenantID)
-
-  // const navigate = useNavigate();
-
-  useEffect(() => {
-    // if ((cookie.get('entityId') === undefined || cookie.get('entityId') === null) && authorization !== undefined) {
-    getEntityId();
-    // }
-  }, [authorization])
+  let errorInfo = sessionStorage.getItem('errorInfo');
+  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie)
 
   useEffect(() => {
-    if (!cookie.get("user") && cookie.get('entityId') !== undefined && authorization !== undefined) {
+    console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
+    if ((cookie.get("authorization") !== undefined && isAuthenticated) || (authorization !== undefined && isAuthenticated && (errorInfo === 'Invalid token specified'))) {
+      console.log('entered')
+      getEntityId();
+    }
+  }, [cookie.get("authorization"), isAuthenticated, errorInfo, isSessionLoading])
+
+  useEffect(() => {
+    if ((!userFromCookie && entityId !== undefined && entityId !== '' && authorization !== undefined && isAuthenticated) || (!userFromCookie && entityId !== undefined && entityId !== '' && authorization !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
       login(entityId);
     }
-  }, [entityId, authorization])
+  }, [entityId, authorization, isAuthenticated, errorInfo])
+
+  useEffect(() => {
+    if (userFromCookie) {
+      setLoggedInUser(currentUser());
+    }
+  }, [userFromCookie])
 
   useEffect(() => {
     if (sessionToken) {
       let token = sessionToken
-      console.log('sessionToken', token, typeof token, JSON.stringify(token))
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(), JSON.parse(atob(sessionToken.split('.')[1])))
       if (typeof token !== 'string') {
         // If the token is not a string, make sure to convert it into a string
         token = JSON.stringify(token);
@@ -335,18 +344,20 @@ const App = ({ props }) => {
     }
   }, [entityIdFromCookie]);
 
-  useEffect(() => {
-    const reloadCount = sessionStorage.getItem("reloadCount");
-    if (reloadCount < 1) {
-      sessionStorage.setItem("reloadCount", String(reloadCount + 1));
-      window.location.reload();
-    } else {
-      sessionStorage.removeItem("reloadCount");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const reloadCount = sessionStorage.getItem("reloadCount");
+  //   if (reloadCount < 1) {
+  //     sessionStorage.setItem("reloadCount", String(reloadCount + 1));
+  //     window.location.reload();
+  //   } else {
+  //     sessionStorage.removeItem("reloadCount");
+  //   }
+  // }, []);
 
   useEffect(() => {
-    setUserDetails();
+    if (loggedInUser?.id !== undefined) {
+      setUserDetails();
+    }
   }, [loggedInUser?.id]);
 
   useEffect(() => {
@@ -547,36 +558,66 @@ const App = ({ props }) => {
     }
   };
 
-  const refreshTokens = async () => {
+  // const refreshTokens = async () => {
+  //   try {
+  //     const response = await refresh(); // Refresh the tokens
+  //     const { sessionJwt, refreshJwt } = response;
+
+  //     console.log("Session Token:", sessionJwt);
+  //     console.log("Refresh Token:", refreshJwt);
+  //     if (isSessionTokenExpired()) {
+  //       cookie.set('authorization', sessionJwt, { path: '/' });
+  //     }
+  //     // Optionally, store tokens in cookies/localStorage for use
+  //   } catch (error) {
+  //     console.error("Failed to refresh tokens:", error);
+
+  //     // Handle token refresh failure (e.g., logout the user)
+  //   }
+  // };
+
+  // const startTokenRefreshInterval = () => {
+  //   const interval = 5 * 60 * 1000; // 5 minutes (adjust based on token expiry time)
+
+  //   setInterval(async () => {
+  //     try {
+  //       if (isSessionTokenExpired()) {
+  //         await refreshTokens();
+  //       }
+  //     } catch (error) {
+  //       console.error("Token refresh failed:", error);
+  //     }
+  //   }, interval);
+  // };
+
+  const refreshToken = async () => {
     try {
-      const response = await refresh(); // Refresh the tokens
-      const { sessionJwt, refreshJwt } = response;
-
-      console.log("Session Token:", sessionJwt);
-      console.log("Refresh Token:", refreshJwt);
-      if (isSessionTokenExpired()) {
-        cookie.set('authorization', sessionJwt, { path: '/' });
-      }
-      // Optionally, store tokens in cookies/localStorage for use
+      const { sessionToken, refreshToken } = await refreshSession();
+      setSession(sessionToken); // Update the session with the new token
+      cookie.set('authorization', sessionToken, {
+        path: '/',
+      });
+      console.log('Token refreshed successfully!');
     } catch (error) {
-      console.error("Failed to refresh tokens:", error);
-
-      // Handle token refresh failure (e.g., logout the user)
+      console.error('Failed to refresh token:', error);
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
+      // window.location.href = '/';
     }
   };
 
-  const startTokenRefreshInterval = () => {
-    const interval = 5 * 60 * 1000; // 5 minutes (adjust based on token expiry time)
+  const scheduleTokenRefresh = (decodedToken) => {
+    console.log('entered')
+    const currentTime = Date.now() / 1000; // Current time in seconds
+    const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
+    console.log(timeToExpiry, currentTime, 'exp', sessionToken)
 
-    setInterval(async () => {
-      try {
-        if (isSessionTokenExpired()) {
-          await refreshTokens();
-        }
-      } catch (error) {
-        console.error("Token refresh failed:", error);
-      }
-    }, interval);
+    // Schedule the refresh 1 minute before expiration
+    console.log(timeToExpiry, currentTime, 'exp', sessionToken)
+    setTimeout(() => {
+      refreshToken();
+    }, (timeToExpiry - 60) * 1000);
   };
 
   const setUserDetails = async () => {
@@ -600,7 +641,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'acm-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -609,7 +650,7 @@ const App = ({ props }) => {
         if (response?.data?.id) {
           cookie.set("entityId", response?.data?.id, { path: "/" });
           setEntityId(response?.data?.id);
-          if ((cookie.get("user") === undefined || cookie.get("user") === null) && authorization !== undefined) {
+          if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
             login(response?.data?.id);
           }
         }
@@ -620,19 +661,31 @@ const App = ({ props }) => {
   };
 
   const login = (id) => {
-    const requestOptions = {
+    let hostname = window.location.hostname;
+    const requestOptions = hostname?.split('.')?.length === 3 ? {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
+        "X-subdomain": hostname?.split('.')?.[0]
       },
-    };
+    } : {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-tenantID": id,
+        "Authorization": `Bearer ${authorization}`,
+        "X-subdomain": 'acm-hospital',
+      },
+    }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
         cookie.set("user", data?.accessToken, { path: "/" });
       });
+    console.log('entered')
+    scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
     return true;
   };
 
@@ -656,7 +709,9 @@ const App = ({ props }) => {
 
   useEffect(() => {
     changeFavicon();
-    getLogo();
+    if (TenantID !== undefined && TenantID !== '' && TenantID) {
+      getLogo();
+    }
   }, []);
 
   const getLogo = async () => {
@@ -693,47 +748,70 @@ const App = ({ props }) => {
   // }
 
   const LoginRoute = () => {
-    let roles = jwt(Auth())?.roles?.split(",");
-    let isAppUser =
-      roles?.includes("Approver") ||
-      roles?.includes("Reviewer") ||
-      roles?.includes("Activity Logger");
-    let isContractManager = roles?.includes("Contract Manager");
-    let isEntityLevelAdmin =
-      roles?.includes("Super Sys Admin") ||
-      roles?.includes("Entity Sys Admin") ||
-      roles?.includes("Entity Sys User") ||
-      roles?.includes("Distributor Admin");
-    let isStaffManager = roles?.includes("Staff Manager");
-    let isApplicant = roles?.includes("Applicant");
+    const navigate = useNavigate();
+    const fetchData = () => {
+      console.log('login route', Auth())
+      if (Auth()) {
+        console.log('login route')
+        let roles = jwt(Auth())?.roles?.split(",");
+        let isAppUser =
+          roles?.includes("Approver") ||
+          roles?.includes("Reviewer") ||
+          roles?.includes("Activity Logger");
+        let isContractManager = roles?.includes("Contract Manager");
+        let isEntityLevelAdmin =
+          roles?.includes("Super Sys Admin") ||
+          roles?.includes("Entity Sys Admin") ||
+          roles?.includes("Entity Sys User") ||
+          roles?.includes("Distributor Admin");
+        let isStaffManager = roles?.includes("Staff Manager");
+        let isApplicant = roles?.includes("Applicant");
 
-    if (isAppUser) {
-      window.location.href = "/";
-      return <Login />;
-    } else if (isContractManager) {
-      window.location.pathname = "/app/contracts";
-      // navigate("/contracts");
-      // window.location.reload();
-      return <ActiveContracts />;
-    } else if (isEntityLevelAdmin) {
-      window.location.pathname = "/app/entitySitePortal";
-      // navigate("/entitySitePortal");
-      // window.location.reload();
-      return <Home />;
-    } else if (isStaffManager) {
-      window.location.pathname = "/app/applications";
-    } else if (isApplicant) {
-      window.location.pathname = "/app/applicant";
+        if (isAppUser) {
+          // window.location.href = "/";
+          navigate("/");
+          return <Login />;
+        } else if (isContractManager) {
+          // window.location.pathname = "/contracts";
+          navigate("/contracts");
+          // window.location.reload();
+          return <ActiveContracts />;
+        } else if (isEntityLevelAdmin) {
+          // window.location.pathname = "/entitySitePortal";
+          navigate("/entitySitePortal");
+          // window.location.reload();
+          return <Home />;
+        } else if (isStaffManager) {
+          // window.location.pathname = "/applications";
+          navigate("/applications");
+        } else if (isApplicant) {
+          // window.location.pathname = "/applicant";
+          navigate("/applicant");
+        } else {
+          // window.location.pathname = "/entitySitePortal";
+          navigate("/entitySitePortal");
+          // window.location.reload();
+          return <Home />;
+        }
+      }
+    }
+    if (!Auth()) {
+      console.log('login route', Auth())
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
     } else {
-      window.location.pathname = "/app/entitySitePortal";
-      // navigate("/entitySitePortal");
-      // window.location.reload();
-      return <Home />;
+      console.log('login route', Auth())
+      fetchData();
     }
   };
 
+  if (isSessionLoading) {
+    return <Loader />;
+  }
+
   return (
-    <BrowserRouter basename="/app">
+    <BrowserRouter basename="/">
       <Suspense fallback={<Loader />}>
         {/* {accessToken !== undefined && accessToken !== false && ( */}
         {isAuthenticated && (
@@ -741,7 +819,7 @@ const App = ({ props }) => {
         )}
         <div className="App">
           {/* {(accessToken !== false && accessToken !== undefined) ? ( */}
-          {!isAuthenticated ? (
+          {isAuthenticated ? (
             <>
               <Routes>
                 <Route path="/" element={<LoginRoute />} />
