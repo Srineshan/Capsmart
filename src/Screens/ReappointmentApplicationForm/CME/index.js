@@ -17,6 +17,7 @@ import ESignature from '../../../Components/ESignature';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { format } from 'date-fns';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import WelcomeCard from '../../../Components/WelcomeCard';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -235,7 +236,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
+                    <WelcomeCard title={'As approved by the Professional Staff, the CME requirement is 40 hours of college approved education hours.'}
+                        description={'Please include a print out of your continuing education transcripts or certificates for the past 12 months, including any peer review / evaluations you have had.'} />
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'education' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.education} gridStyle={style.EducationGrid} baseKey={'education'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
                                 heading={'Information Requirement Alert'}
