@@ -116,7 +116,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     if (userRole.includes('Chief Of Staff')) {
       setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && isSigned);
-    } else if (userRole.includes('Credentialing Committee')) {
+    } else  {
       setIsApproveEnabled(isChecked.isChecked2 && isSigned);
     }
   };
@@ -131,49 +131,80 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   }
 
   const handleApplicationApprove = async () => {
+    // let role;
+    // let notes = { userRoleComments }
+    // let isDelegate = true; // Default value for isDelegate
+    // // notes = { userRoleComments }
+
+    // if (selectedTab === 'level-2' && applicationType === "NEW") {
+    //   role = "Department Head";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+    //   role = "Credentialing Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+    //   role = "Credentialing Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    //   role = "Advisory Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+    //   role = "Advisory Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    //   role = "Board";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    //   role = "Board";
+    //   // notes = { userRoleComments };
+    // }
+
+    // if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+    //   isDelegate = false;
+    // }
+    // else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    //   isDelegate = false;
+    // }
+    // else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    //   isDelegate = false;
+    // } else {
+    //   notes = { userRoleComments: '' }
+    // }
+
+    // let temp = {
+    //   role: isDelegate ? role : "",
+    //   notes: notes,
+    // };
     let role;
-    let notes = { userRoleComments }
-    let isDelegate = true; // Default value for isDelegate
-    // notes = { userRoleComments }
+    let notes = userRoleComments;
+    let isDelegate = true;
 
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Credentialing Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+      } else {
+          role = "Department Head";
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("chief of staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
-      role = "Board";
-      // notes = { userRoleComments };
     }
 
-    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
-      isDelegate = false;
-    }
-    else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
-      isDelegate = false;
-    }
-    else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
-      isDelegate = false;
-    } else {
-      notes = { userRoleComments: '' }
-    }
-
+    // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: notes,
+      notes: isDelegate ? notes : "",
     };
 
     await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
@@ -188,48 +219,80 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplicationMoveToNext = async () => {
 
+    // let role;
+    // let notes;
+    // let isDelegate = true; // Default value for isDelegate
+
+    // // Determine role based on selectedTab and applicationType
+    // if (selectedTab === 'level-2' && applicationType === "NEW") {
+    //   role = "Department Head";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+    //   role = "Credentialing Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+    //   role = "Credentialing Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    //   role = "Advisory Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+    //   role = "Advisory Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    //   role = "Board";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    //   role = "Board";
+    //   // notes = {userRoleComments};
+    // }
+
+    // // Override isDelegate logic for specific conditions
+    // if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+    //   isDelegate = false;
+    // }
+    // if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    //   isDelegate = false;
+    // }
+    // if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    //   isDelegate = false;
+    // }
+
+    // let temp = {
+    //   role: isDelegate ? role : " ",
+    //   notes: notes,
+    // };
+
     let role;
-    let notes;
-    let isDelegate = true; // Default value for isDelegate
+    let notes = userRoleComments;
+    let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Credentialing Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+      } else {
+          role = "Department Head";
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("chief of staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
-      role = "Board";
-      // notes = {userRoleComments};
     }
 
-    // Override isDelegate logic for specific conditions
-    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
-      isDelegate = false;
-    }
-    if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
-      isDelegate = false;
-    }
-    if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
-      isDelegate = false;
-    }
-
+    // Prepare the payload
     let temp = {
-      role: isDelegate ? role : " ",
-      notes: notes,
+      role: isDelegate ? role : "",
+      notes: isDelegate ? notes : "",
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
@@ -258,29 +321,33 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const formatLabel = (template, values) =>
     template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
 
-  const getUserRole = (selectedTab, applicationType) => {
-    if (applicationType === "REAPPOINTMENT") {
-      switch (selectedTab) {
-        case "level-1":
-          return "Staff Manager";
-        case "level-2":
+  const getUserRole = (selectedTab) => {
+    switch (selectedTab) {
+      case "level-1":
+        return "Staff Manager";
+      case "level-2":
+        return "Department Head";
+      case "level-3":
+        if (userRole?.includes("Credentialing Committee")) {
           return "Credentialing Committee";
-        case "level-3":
-          return "Advisory Committee";
-        case "level-4":
-          return "Board";
-        default:
-          return "";
-      }
+        }
+        if (userRole?.includes("Chief Of Staff")) {
+          return "Chief Of Staff";
+        }
+        return "Credentialing Committee";
+      case "level-4":
+        return "Advisory Committee";
+      case "level-5":
+        return "Board";
+      default:
+        return "";
     }
-    return "";
   };
 
-  const userRoleTab = getUserRole(selectedTab, applicationType);
-
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
-    return null;
-  }
+  const userRoleTab = getUserRole(selectedTab);
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
+  //   return null;
+  // }
 
   return (
 
@@ -374,7 +441,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 onChange={handleCheckboxChange('isChecked1')}
               />
             )}
-            {userRole.includes('Credentialing Committee') && (
+            {/* {userRole.includes('Credentialing Committee') && ( */}
               <>
                 <CommonCheckBox
                   className={`${style.marginTop}`}
@@ -390,7 +457,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 onChange={handleCheckboxChange('isChecked3')}
                 /> */}
               </>
-            )}
+            {/* )} */}
             {/* <ESignature/> */}
             {/* {formDetails?.esignatureRequired && ( */}
             <div className={style.twoCol}>
