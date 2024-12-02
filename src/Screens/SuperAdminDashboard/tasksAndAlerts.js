@@ -97,7 +97,7 @@ const TasksAndAlerts = () => {
                       completed={60}
                       isLabelVisible={false}
                       height="5px"
-                      bgColor="#FEC106"
+                      bgColor="#FFCA27"
                       baseBgColor="#fff2cc"
                       className={style.progressMargin}
                     />
@@ -153,7 +153,7 @@ const TasksAndAlerts = () => {
                       completed={60}
                       isLabelVisible={false}
                       height="5px"
-                      bgColor="#FEC106"
+                      bgColor="#FFCA27"
                       baseBgColor="#fff2cc"
                       className={style.progressMargin}
                     />

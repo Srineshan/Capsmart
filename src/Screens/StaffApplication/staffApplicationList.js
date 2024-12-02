@@ -827,13 +827,13 @@ const StaffApplicationList = ({
 
       if (data?.documents?.uploadedCount === data?.documents?.uploadedCount) {
         docsIcon.push(
-          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />
+          <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#14B15A` }} />
         );
       }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
       // } else {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />);
       // }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -861,7 +861,7 @@ const StaffApplicationList = ({
 
       if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
         taskListDotColor.push(
-          <CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />
+          <CircleIcon style={{ fontSize: 14, color: `#14B15A` }} />
         );
       } else if (data?.tasks?.completedCount === 0) {
         taskListDotColor.push(
@@ -869,7 +869,7 @@ const StaffApplicationList = ({
         );
       } else {
         taskListDotColor.push(
-          <CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />
+          <CircleIcon style={{ fontSize: 14, color: `#FFCA27` }} />
         );
       }
 
@@ -1015,7 +1015,7 @@ const StaffApplicationList = ({
             docsHoverText.push(docHoverTextArray);
             docsIcon.push(
               <TextSnippetOutlinedIcon
-                style={{ fontSize: 20, color: `#00C07F` }}
+                style={{ fontSize: 20, color: `#14B15A` }}
               />
             );
             // dataStatus.push(data?.dataStatus || "green");
@@ -1047,7 +1047,7 @@ const StaffApplicationList = ({
 
             if (data?.tasks.completedCount === data?.tasks.totalCount) {
               taskListDotColor.push(
-                <CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />
+                <CircleIcon style={{ fontSize: 14, color: `#14B15A` }} />
               );
             } else if (data?.tasks.completedCount === 0) {
               taskListDotColor.push(
@@ -1055,7 +1055,7 @@ const StaffApplicationList = ({
               );
             } else {
               taskListDotColor.push(
-                <CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />
+                <CircleIcon style={{ fontSize: 14, color: `#FFCA27` }} />
               );
             }
 

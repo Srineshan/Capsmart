@@ -221,14 +221,14 @@ const LeftStatsCard = forwardRef(({ metadata, getContractFilterValues, selectedC
                         <p className={style.statisticsProgress}><strong>{individualCount}</strong> <span className={style.marginLeft20}>INDIVIDUAL CONTRACTOR</span></p>
                         <p className={style.viewStyle}>View</p>
                     </div>
-                    <ProgressBar completed={individualCount} isLabelVisible={false} height='5px' bgColor='#00C07F' baseBgColor="#ccffee" className={style.progressMargin} />
+                    <ProgressBar completed={individualCount} isLabelVisible={false} height='5px' bgColor='#14B15A' baseBgColor="#ccffee" className={style.progressMargin} />
                 </div>
                 <div className={style.progressbarStyle}>
                     <div className={style.spaceBetween}>
                         <p className={style.statisticsProgress}><strong>{multipleCount}</strong> <span className={style.marginLeft20}>MULTIPLE PROVIDER CONTRACT</span></p>
                         <p className={style.viewStyle}>View</p>
                     </div>
-                    <ProgressBar completed={multipleCount} isLabelVisible={false} height='5px' bgColor='#FEC106' baseBgColor="#fff2cc" className={style.progressMargin} />
+                    <ProgressBar completed={multipleCount} isLabelVisible={false} height='5px' bgColor='#FFCA27' baseBgColor="#fff2cc" className={style.progressMargin} />
                 </div>
 
                 {

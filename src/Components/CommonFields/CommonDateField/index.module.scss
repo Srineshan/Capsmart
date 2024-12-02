@@ -1,3 +1,4 @@
+@import "../../../index.scss";
 .marginTop {
     margin-top: 10px;
 }
@@ -31,5 +32,5 @@
 }
 
 .errorColor {
-    background: #FF6562 0% 0% no-repeat padding-box;
+    background: $statusred 0% 0% no-repeat padding-box;
 }

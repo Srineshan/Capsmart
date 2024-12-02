@@ -348,14 +348,14 @@ const ActiveStaffList = ({
       // );
 
       // if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }}/>);
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#14B15A` }}/>);
       // } else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }}/>);
       // } else {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }}/>);
       // }
       docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
       );
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -381,11 +381,11 @@ const ActiveStaffList = ({
       // notesHoverText.push(notesHoverTextArray);
 
       // if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#14B15A` }}/>);
       // } else if (data?.tasks?.completedCount === 0) {
       //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
       // } else {
-      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FFCA27` }}/>);
       // }
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
@@ -803,8 +803,8 @@ const ActiveStaffList = ({
                         font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
-                          border: "0.4px solid #FEC106",
-                          color: "#FEC106"
+                          border: "0.4px solid #FFCA27",
+                          color: "#FFCA27"
                         }}> +1 Day</span> </p> <span>
                         <PublicIcon sx={{ fontSize: 20, color: '#0e5197
 

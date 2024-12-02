@@ -1,3 +1,4 @@
+@import "../../../index.scss";
 .phoneGrid {
     display: grid;
     grid-template-columns: 20px 1fr;
@@ -37,5 +38,5 @@
 }
 
 .errorColor {
-    background: #FF6562 0% 0% no-repeat padding-box;
+    background: $statusred 0% 0% no-repeat padding-box;
 }

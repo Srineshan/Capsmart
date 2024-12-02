@@ -578,7 +578,7 @@
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1200,7 +1200,7 @@
 }
 
 .reportTypeCardStyle {
-    background: #FEC106 0% 0% no-repeat padding-box;
+    background: $statusyellow 0% 0% no-repeat padding-box;
     border-radius: 65px;
     height: 60px;
     width: 80%;
@@ -1367,7 +1367,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 8px;
 }
 
@@ -1375,7 +1375,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 8px;
 }
 
@@ -1384,7 +1384,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 8px;
 }
 
@@ -1633,7 +1633,7 @@
 }
 
 .yellowBigNumber {
-    color: #fec106 !important;
+    color: $statusyellow !important;
 }
 
 .redBigNumber {

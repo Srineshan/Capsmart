@@ -199,11 +199,11 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .purple {
@@ -512,7 +512,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -531,7 +531,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -540,7 +540,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -695,7 +695,7 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }

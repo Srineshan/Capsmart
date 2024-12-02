@@ -80,15 +80,15 @@
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .grey {
@@ -99,7 +99,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
 }
 
 .purpleDotStyle {
@@ -113,14 +113,14 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .redDotStyle {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
 }
 
 .greyDotStyle {

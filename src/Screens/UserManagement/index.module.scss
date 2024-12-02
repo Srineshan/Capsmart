@@ -210,15 +210,15 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .blue {
@@ -344,7 +344,7 @@ body {
 }
 
 .blockedButton {
-    background: #FF6562 0% 0% no-repeat padding-box !important;
+    background: $statusred 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid #B3B8BD;
     border-radius: 6px;
     opacity: 0.75;
@@ -598,7 +598,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -607,7 +607,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -616,7 +616,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -946,13 +946,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .trashStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
@@ -1020,7 +1020,7 @@ select {
 .contractCards:hover {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1051,7 +1051,7 @@ select {
 .selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }

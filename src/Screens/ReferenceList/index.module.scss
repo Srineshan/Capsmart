@@ -311,7 +311,7 @@
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
   position: absolute;
@@ -1264,13 +1264,13 @@
 }
 
 .dialogCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 25px;
   cursor: pointer;
   position: absolute;
@@ -1281,7 +1281,7 @@
   font-size: 32px;
   color: #9c47fc;
   display: block;
-  background: -webkit-linear-gradient(#9c47fc, #ff6562);
+  background: -webkit-linear-gradient(#9c47fc, $statusred);
   background-clip: text;
 }
 
@@ -3350,7 +3350,7 @@
 }
 
 .departmentCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   cursor: pointer;
 }
 

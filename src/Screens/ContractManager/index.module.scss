@@ -308,15 +308,15 @@ body::-webkit-scrollbar {
 }
 
 .green {
-  color: #00c07f;
+  color: $statusgreen;
 }
 
 .yellow {
-  color: #fec106;
+  color: $statusyellow;
 }
 
 .orange {
-  color: orange;
+  color: $statusorange;
 }
 
 .searchBarStyle {
@@ -751,13 +751,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .newContractCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -826,7 +826,7 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -849,7 +849,7 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1950,13 +1950,13 @@ input[type="file"] {
 }
 
 .orangeChip {
-  background: orange 0% 0% no-repeat padding-box;
+  background: $statusorange 0% 0% no-repeat padding-box;
   color: orangered;
 }
 
 .yellowChip {
   background: lemonchiffon 0% 0% no-repeat padding-box;
-  color: orange;
+  color: $statusorange;
 }
 
 .blueChip {
@@ -2099,7 +2099,7 @@ input[type="file"] {
 }
 
 .yellowBigNumber {
-  color: #fec106 !important;
+  color: $statusyellow !important;
 }
 
 .redBigNumber {
@@ -2117,13 +2117,13 @@ input[type="file"] {
 }
 
 .yellowSmallNumber {
-  color: #fec106;
+  color: $statusyellow;
   background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
   color: #fff;
-  background-color: #fec106;
+  background-color: $statusyellow;
 }
 
 .redSmallNumber {

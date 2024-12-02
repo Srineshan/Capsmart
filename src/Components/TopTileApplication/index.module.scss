@@ -84,7 +84,7 @@
 .selectedApplicantBackground {
     background: #06617A1A 0% 0% no-repeat padding-box;
     // box-shadow: 0px 3px 11px #9AAFB5;
-    border: 0.4000000059604645px solid #9AAFB5;
+    border: 0.4000000059604645px solid #06617A1A;
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
 }
@@ -153,19 +153,19 @@
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .orange {
-    color: orange;
+    color: $statusorange;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .purple {

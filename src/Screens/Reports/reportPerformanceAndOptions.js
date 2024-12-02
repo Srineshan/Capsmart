@@ -106,9 +106,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                     <div className={style.displayInRow}>
                         {/* <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} /> */}
                         {/* <div className={`${style.displayInRow} ${style.marginLeft20}`}>
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div> */}

@@ -40,13 +40,13 @@
 }
 
 .printStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 5px;
     margin-top: -5px;
     margin-right: -30px !important;
@@ -511,11 +511,11 @@
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .orange {
-    color: #ED784A;
+    color: $statusorange;
 }
 
 .userProfileStyle {

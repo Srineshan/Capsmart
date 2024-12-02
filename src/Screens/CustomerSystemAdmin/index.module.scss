@@ -188,7 +188,7 @@
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -255,13 +255,13 @@
 }
 
 .yellowSmallNumber {
-    color: #FEC106;
+    color: $statusyellow;
     background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
     color: #fff;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .greenSmallNumber {

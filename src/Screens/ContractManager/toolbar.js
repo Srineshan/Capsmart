@@ -588,7 +588,7 @@ const ToolBar = () => {
           fontSize={12}
           text="YES"
           fontFamily="proxima-nova"
-          fill="#00C07F"
+          fill="#14B15A"
           x={27}
           y={120}
         />
@@ -596,7 +596,7 @@ const ToolBar = () => {
           fontSize={12}
           text="YES"
           fontFamily="proxima-nova"
-          fill="#00C07F"
+          fill="#14B15A"
           x={27}
           y={120}
           name="draggableYes"
@@ -635,7 +635,7 @@ const ToolBar = () => {
           fontSize={12}
           text="HOLD"
           fontFamily="proxima-nova"
-          fill="#FEC106"
+          fill="#FFCA27"
           x={23}
           y={155}
         />
@@ -643,7 +643,7 @@ const ToolBar = () => {
           fontSize={12}
           text="HOLD"
           fontFamily="proxima-nova"
-          fill="#FEC106"
+          fill="#FFCA27"
           x={23}
           y={155}
           name="draggableHold"

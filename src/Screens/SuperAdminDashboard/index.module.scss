@@ -347,13 +347,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin: 25px;
     cursor: pointer;
 }
 
 .crossStyleWelcomePage {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1102,7 +1102,7 @@ body {
 }
 
 .alertCrossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1167,7 +1167,7 @@ body {
 .failedTesxtColor {
     font: normal normal 600 14px/20px proxima-nova;
     letter-spacing: 0px;
-    color: #FF6562;
+    color: $statusred;
 }
 
 .resetStyle {
@@ -1524,15 +1524,15 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .blue {
@@ -1854,7 +1854,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 8px;
 }
 
@@ -1862,7 +1862,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 8px;
 }
 
@@ -1871,7 +1871,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 8px;
 }
 
@@ -2093,7 +2093,7 @@ body {
 }
 
 .crossStyle2 {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -2222,27 +2222,27 @@ body {
 }
 
 .redBorderField {
-    border: 1px solid #FF6562 !important;
+    border: 1px solid $statusred !important;
 }
 
 .greenBorderField {
-    border: 1px solid #00C07F !important;
+    border: 1px solid $statusgreen !important;
 }
 
 .activePasswordProgressLength1 {
-    background-color: #FF6562 !important;
+    background-color: $statusred !important;
 }
 
 .activePasswordProgressLength2 {
-    background-color: #FEC106 !important;
+    background-color: $statusyellow !important;
 }
 
 .activePasswordProgressLength3 {
-    background-color: #ED784A !important;
+    background-color: $statusorange !important;
 }
 
 .activePasswordProgressLength4 {
-    background-color: #00C07F !important;
+    background-color: $statusgreen !important;
 }
 
 .subscriptionRow {
@@ -2382,13 +2382,13 @@ input[type="file"] {
 }
 
 .yellowSmallNumber {
-    color: #FEC106;
+    color: $statusyellow;
     background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
     color: #fff;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .greenSmallNumber {
@@ -2416,7 +2416,7 @@ input[type="file"] {
 }
 
 .yellowBigNumber {
-    color: #FEC106 !important;
+    color: $statusyellow !important;
 }
 
 .redBigNumber {

@@ -462,20 +462,20 @@ const TrackYourContracts = () => {
                     value: format(new Date(timesheetData?.submissionStausLog?.status === "PENDING" ? timesheetData?.submissionStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.submissionStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.submissionStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.submissionStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.submissionStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.submissionStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 reviewAndApprovalStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? {
                     value: format(new Date(timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? timesheetData?.reviewApprovalStausLog?.dueDate : timesheetData?.reviewApprovalStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 reviewAndApprovalApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []),
                 paymentProcessingStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? {
                     value: format(new Date(timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? timesheetData?.paymentProcessingStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 paymentProcessingApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']),
                 timesheetContractName: data?.timesheetsWithLogs?.map(timesheetData => data?.contract?.contractName?.contractName),
