@@ -287,8 +287,8 @@ const TrialCustomers = ({ getSelectedCustomer, getAddContract, entityList, viewI
             {/* </div>
                 </div>
                 <div className={style.spaceBetween}>
-                    <p className={style.poweredBy}>Powered by - TimeSmartAI LLP</p>
-                    <p className={style.poweredBy}>© TimeSmartAI</p>
+                    <p className={style.poweredBy}>Powered by - HapiCare</p>
+                    <p className={style.poweredBy}>© HapiCare</p>
                 </div>
             </div> */}
             {stopTrialDialog && (

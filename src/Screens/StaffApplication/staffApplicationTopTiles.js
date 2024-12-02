@@ -84,7 +84,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import TileApplication from '../../Components/TileApplication';
+import TopTileApplication from '../../Components/TopTileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 
@@ -157,7 +157,7 @@ const StaffApplicationTopTiles = () => {
 
   return (
     <div className={style.tabs}>
-      <TileApplication 
+      <TopTileApplication 
         selectedTab={selectedTab} 
         getSelectedTab={getSelectedTab} 
         tileCount={sumCounts(newCounts)}
@@ -165,7 +165,7 @@ const StaffApplicationTopTiles = () => {
         currentTile="NewApplicants"
         isLoading={isLoading}
       />
-      <TileApplication 
+      <TopTileApplication 
         selectedTab={selectedTab} 
         getSelectedTab={getSelectedTab} 
         tileCount={sumCounts(reappointmentCounts)}

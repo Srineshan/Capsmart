@@ -113,10 +113,10 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
     }, [isReset])
 
     useEffect(() => {
-        if (serviceSelected !== {}) {
+        if (Object.keys(serviceSelected).length > 0) {
             setSelectedValues();
         }
-    }, [serviceSelected, addOnWorkFlow, user]);
+    }, [serviceSelected, addOnWorkFlow, user]);    
 
     const getTimeSheetWorkFlow = async () => {
         const { data: timesheetWorkFlow } = await GET('timesheet-management-service/workflow');
@@ -218,7 +218,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                     <div className={`${style.documentHITGrid}`}>
                         <a href={fullyExecutedContractData?.[i]?.fileURL} target="_blank">
                             <Tooltip title={'Preview'} arrow>
-                                <ArticleOutlinedIcon sx={{ color: '#0e5197', fontSize: 35 }} />
+                                <ArticleOutlinedIcon sx={{ color: '#06617A', fontSize: 35 }} />
                             </Tooltip>
                         </a>
                         <div className={style.marginTop}>
@@ -666,7 +666,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                                     {data?.podRequired && <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>}
                                 </>)}
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#0e5197', cursor: 'pointer' }} className={`${style.cursorPointer}`} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#06617A', cursor: 'pointer' }} className={`${style.cursorPointer}`} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -774,7 +774,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197">Administrative & Business Reports Creation</Typography>} />
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#06617A">Administrative & Business Reports Creation</Typography>} />
                             </FormGroup>
                             <div className={`${style.chipStyle} ${style.blueChip}`}>Billable</div>
                             <div className={`${style.chipStyle} ${style.greenChip}`}>POD</div>
@@ -791,7 +791,7 @@ const HITService = ({ getMetaData, services, serviceSelected, editService, isRes
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197">Corrective Action Plan Participation</Typography>} />
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#06617A">Corrective Action Plan Participation</Typography>} />
                             </FormGroup>
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter}`}>

@@ -29,7 +29,7 @@
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold 13px/18px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -58,15 +58,15 @@
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .grey {
@@ -77,7 +77,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
 }
 
 .purpleDotStyle {
@@ -91,14 +91,14 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .redDotStyle {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
 }
 
 .greyDotStyle {
@@ -109,7 +109,7 @@
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;

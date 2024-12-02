@@ -52,7 +52,7 @@ const AIAssistantDialog = ({ getIsOpen }) => {
                         <div className={style.advantagesCard}>
                             <img src={Reminder} alt='' className={style.advantagesImageStyle} />
                             <div className={`${style.advantageHeading} ${style.marginTop}`}>AI Aided Auto-Fill</div>
-                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Simply upload or take pictures of your documents and CAPSmart will autofill required data fields throughout your application.</div>
+                            <div className={`${style.advantageDescription} ${style.marginTop10}`}>Simply upload or take pictures of your documents and CAPManager will autofill required data fields throughout your application.</div>
                         </div>
                         <div className={style.advantagesCard}>
                             <img src={DataEntry} alt='' className={style.advantagesImageStyle} />

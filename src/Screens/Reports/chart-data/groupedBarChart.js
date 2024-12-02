@@ -20,7 +20,7 @@ const ApexGroupedBarChart = ({ series, categories }) => {
           endingShape: 'rounded'
         },
       },
-      colors: ["#1DD174", "#FFD950", "#F46044", '#0e5197', '#AE3CEA'],
+      colors: ["#1DD174", "#FFD950", "#F46044", '#06617A', '#AE3CEA'],
       dataLabels: {
         enabled: false
       },

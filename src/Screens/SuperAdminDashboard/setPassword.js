@@ -311,7 +311,7 @@ const SetPassword = () => {
                   checked={isMin8CharacterAvailable}
                   sx={{
                     "&.Mui-checked": {
-                      color: "#00C07F",
+                      color: "#14B15A",
                     },
                   }}
                 />
@@ -330,7 +330,7 @@ const SetPassword = () => {
                   checked={isSmallCharacterAvailable}
                   sx={{
                     "&.Mui-checked": {
-                      color: "#00C07F",
+                      color: "#14B15A",
                     },
                   }}
                 />
@@ -349,7 +349,7 @@ const SetPassword = () => {
                   checked={isCapitalCharacterAvailable}
                   sx={{
                     "&.Mui-checked": {
-                      color: "#00C07F",
+                      color: "#14B15A",
                     },
                   }}
                 />
@@ -368,7 +368,7 @@ const SetPassword = () => {
                   checked={isNumberAvailable}
                   sx={{
                     "&.Mui-checked": {
-                      color: "#00C07F",
+                      color: "#14B15A",
                     },
                   }}
                 />
@@ -387,7 +387,7 @@ const SetPassword = () => {
                   checked={isSpecialCharacterAvailable}
                   sx={{
                     "&.Mui-checked": {
-                      color: "#00C07F",
+                      color: "#14B15A",
                     },
                   }}
                 />

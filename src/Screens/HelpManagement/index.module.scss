@@ -127,7 +127,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -199,11 +199,11 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .purple {
@@ -482,7 +482,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -492,7 +492,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -512,7 +512,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -531,7 +531,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -540,7 +540,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 15px;
     margin-left: 30px;
 }
@@ -593,14 +593,14 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .videoSequenceHeadingStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #E9E9F0;
 }
@@ -617,7 +617,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -663,7 +663,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -695,7 +695,7 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }

@@ -70,7 +70,7 @@ const Applicant = () => {
             {
                 isLoading && (
                     <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                        {/* <CircularProgress sx={{ color: "#0e5197" }} /> */}
+                        {/* <CircularProgress sx={{ color: "#06617A" }} /> */}
                         <LoadingScreen />
                     </div>
                 )

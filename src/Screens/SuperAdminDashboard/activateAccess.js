@@ -239,7 +239,7 @@ const ActivateAccess = () => {
                         <FormControlLabel control={<Checkbox checked={isMin8CharacterAvailable}
                             sx={{
                                 '&.Mui-checked': {
-                                    color: '#00C07F',
+                                    color: '#14B15A',
                                 },
                             }} />} label={<Typography variant="body2" color="textSecondary">8 Characters Minimum</Typography>} />
                     </FormGroup>
@@ -247,7 +247,7 @@ const ActivateAccess = () => {
                         <FormControlLabel control={<Checkbox checked={isSmallCharacterAvailable}
                             sx={{
                                 '&.Mui-checked': {
-                                    color: '#00C07F',
+                                    color: '#14B15A',
                                 },
                             }} />} label={<Typography variant="body2" color="textSecondary">1 Lowercase Letter</Typography>} />
                     </FormGroup>
@@ -255,7 +255,7 @@ const ActivateAccess = () => {
                         <FormControlLabel control={<Checkbox checked={isCapitalCharacterAvailable}
                             sx={{
                                 '&.Mui-checked': {
-                                    color: '#00C07F',
+                                    color: '#14B15A',
                                 },
                             }} />} label={<Typography variant="body2" color="textSecondary">1 Uppercase Letter</Typography>} />
                     </FormGroup>
@@ -263,7 +263,7 @@ const ActivateAccess = () => {
                         <FormControlLabel control={<Checkbox checked={isNumberAvailable}
                             sx={{
                                 '&.Mui-checked': {
-                                    color: '#00C07F',
+                                    color: '#14B15A',
                                 },
                             }} />} label={<Typography variant="body2" color="textSecondary">1 Number(0 - 9)</Typography>} />
                     </FormGroup>
@@ -271,7 +271,7 @@ const ActivateAccess = () => {
                         <FormControlLabel control={<Checkbox checked={isSpecialCharacterAvailable}
                             sx={{
                                 '&.Mui-checked': {
-                                    color: '#00C07F',
+                                    color: '#14B15A',
                                 },
                             }} />} label={<Typography variant="body2" color="textSecondary">1 Special Character</Typography>} />
                     </FormGroup> */}
