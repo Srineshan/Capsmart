@@ -229,6 +229,13 @@
     width: 100%;
 }
 
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Four equal columns */
+    align-items: center; /* Vertically center items */
+    gap: 16px; 
+}
+
 .collapsableCardText {
     text-align: left;
     font: normal normal bold 17px/25px proxima-nova;

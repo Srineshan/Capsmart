@@ -12,9 +12,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { GET, PUT, POST, DELETE } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
-import PdfDoc from './../../../images/pdfDoc.png';
+import PDFDocs from './../../../images/PDFDocs.png';
 import WordDoc from './../../../images/wordDoc.png';
-import ImgDoc from './../../../images/imgDoc.png';
+import imgDocs from './../../../images/imgDocs.png';
 import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
@@ -62,6 +62,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [formIndex, setFormIndex] = useState();
     let eSignTitle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.title`);
     let eSignInitial = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.initial`)
+    let eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
+    let eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
+    let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
     let showRedBorderForESign = ((eSignTitle === '' || eSignTitle === undefined) || (eSignInitial === '' || eSignInitial === undefined))
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
@@ -247,7 +250,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileSize: `${(data?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
+                table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
@@ -340,9 +343,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             if (data === "file") {
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-                        <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
                         : innerData?.fileType?.startsWith("image/") ?
-                            <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
                 });
             } else {
                 if (data === "documentType") {
@@ -359,11 +362,26 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />)
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,display:"flex",justifyContent:"center" }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,display:"flex",justifyContent:"center" }} />), 'isShowHoverText': false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,display:"flex",justifyContent:"center" }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,display:"flex",justifyContent:"center" }} />), 'isShowHoverText': false });
                 } else {
-                    temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
+                    temp.push({
+                        "type": "text",
+                        "value": array?.map(innerData => 
+                            innerData[data] && (
+                                <span 
+                                    onClick={() => { 
+                                        setShowFileDisplayDialog(true); 
+                                        setselectedFile(innerData); 
+                                    }}
+                                >
+                                    {innerData[data]}
+                                </span>
+                            )
+                        )
+                    });
+                    ;
                 }
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
@@ -561,7 +579,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                                Requirements
+                                               
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -627,7 +645,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <CommonDropZone
                                 title={"Upload A Photo"}
                                 description={
-                                    "Click a picture of the document with your camera and Upload or Upload from your photo gallery."
+                                    "Take a picture of the document with your camera and Upload or Upload from your photo gallery."
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
@@ -639,7 +657,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 tableHeaderValues={[
                                     "",
                                     "File Uploaded",
-                                    "Size",
+                                    "",
                                     "Document Type",
                                     "Requirement",
                                     "Verified",
@@ -664,6 +682,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />
                         {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
+                                <>
                             <div
                                 className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.cursorPointer} ${style.marginTop}`}
                                 onClick={() => setIsShowESignDialog(true)}
@@ -676,11 +695,21 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.setupCompletedText} ${style.marginLeft10}`}
                                     >
-                                        eSignature Confirmation Complete
+                                        eSignature Available on File
                                     </div>
                                 </div>
                                 <div className={style.editOrUpdateESign}>Edit / Update</div>
                             </div>
+                            <div className={`${style.marginTop} ${style.gridContainer}`}>
+                                <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100}/></div>
+                                <div><strong>{eSignTitle}</strong></div>
+                                <div><strong>{eSignInitial}</strong></div>
+                                <div style={{
+                                    fontFamily: eSignTypeContentStyle,
+                                    fontSize: "24px",
+                                }}>{eSignTypeContent}</div>
+                            </div>
+                            </>
                         ) : (
                             <div
                                 className={style.marginTop}

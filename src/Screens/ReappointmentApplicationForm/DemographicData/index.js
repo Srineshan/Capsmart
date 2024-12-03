@@ -506,7 +506,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                                 /> */}
                                 {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
-                                    <div>
+                                    <div >
+                                        <div className={`${style.applicationCardStyle} `}>
                                         <div className={` ${style.marginTop}`}>
                                             {/* {showDemographicInfo && ( */}
                                             <ApplicationFieldCard
@@ -545,6 +546,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             />
 
                                         </div>
+                                        </div>
+                                        <div className={`${style.applicationCardStyle} ${style.marginTop} `}>
                                         <div className={` ${style.marginTop}`}>
                                             {/* {showDemographicInfo && ( */}
                                             <ApplicationFieldCard
@@ -562,6 +565,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 warningFields={warningFields}
                                                 formSchema={formSchemaWholeObject}
                                             />
+                                        </div>
                                         </div>
                                     </div>
                                 )}
