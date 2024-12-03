@@ -338,6 +338,15 @@ const App = ({ props }) => {
   //   startTokenRefreshInterval();
   // }, []);
 
+  // useEffect(() => {
+  //   console.log(sessionToken, sessionToken.split('.')[1], JSON.parse(atob(sessionToken.split('.')[1])), 'session check')
+  //   const interval = setInterval(() => {
+  //     scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+  //   }, 30000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
   useEffect(() => {
     if (entityIdFromCookie !== undefined) {
       setEntityId(entityIdFromCookie)
@@ -591,20 +600,35 @@ const App = ({ props }) => {
   // };
 
   const refreshToken = async () => {
-    try {
-      const { data } = refresh();
-      setSession(data?.sessionJwt); // Update the session with the new token
-      cookie.set('authorization', data?.sessionJwt, {
-        path: '/',
+    // try {
+    refresh()
+      .then((refreshedSession) => {
+        if (refreshedSession) {
+          cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
+            path: '/'
+          });
+          console.log('Session refreshed and cookie updated!', refreshedSession);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to refresh token:', error);
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout();
       });
-      console.log('Token refreshed successfully!', data?.sessionJwt);
-    } catch (error) {
-      console.error('Failed to refresh token:', error);
-      cookie.remove("user", { path: "/" });
-      cookie.remove("entityId", { path: "/" });
-      logout();
-      // window.location.href = '/';
-    }
+    // const { data } = refresh();
+    // setSession(data?.sessionJwt); // Update the session with the new token
+    // cookie.set('authorization', data?.sessionJwt, {
+    //   path: '/',
+    // });
+    // console.log('Token refreshed successfully!', data?.sessionJwt);
+    // } catch (error) {
+    //   console.error('Failed to refresh token:', error);
+    //   cookie.remove("user", { path: "/" });
+    //   cookie.remove("entityId", { path: "/" });
+    //   logout();
+    //   // window.location.href = '/';
+    // }
   };
 
   const scheduleTokenRefresh = (decodedToken) => {
@@ -617,7 +641,7 @@ const App = ({ props }) => {
     console.log(timeToExpiry, currentTime, 'exp', sessionToken)
     setTimeout(() => {
       refreshToken();
-    }, (timeToExpiry - 540) * 1000);
+    }, (timeToExpiry - 30) * 1000);
   };
 
   const setUserDetails = async () => {

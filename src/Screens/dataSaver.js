@@ -10,14 +10,14 @@ const roles = GetRoles();
 
 export const isSuperAdminAccess = roles?.includes('Super Sys Admin') || roles?.includes('Distributor Admin') ? true : false;
 let cookie = new Cookie();
-let tenantId = cookie.get("entityId");
 
 const getHeaders = () => {
+    let tenantId = cookie.get("entityId");
     let accessToken = cookie.get('user');
     let authorization = cookie.get("authorization");
     return {
         "Content-Type": "application/json",
-        "X-tenantID": TenantID,
+        "X-tenantID": tenantId,
         "X-Authorization": `Bearer ${accessToken}`,
         "Authorization": `Bearer ${authorization}`,
     };
