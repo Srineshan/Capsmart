@@ -253,7 +253,7 @@ const ApplicationFieldCard = ({
                 data?.properties?.department?.enum[0] ===
                 getValueByPath(basicForm, "basicDetails.departmentSpecialty.department")
         )[0];
-        return temp?.properties?.specialty?.enum;
+        return temp?.properties?.specialty?.enum || [];
     };
 
     
@@ -684,69 +684,67 @@ const ApplicationFieldCard = ({
             switch (fieldData.fieldType) {
                 case "dropdown":
                     if (isPOD) {
-                        return (
-                            <div>
-                                <div className={`${style.lableStylePOD}`}>
-                                    {fieldData.label}
-                                    {isLableEmpty(fieldData.label)
-                                        ? false
-                                        : (object.required?.includes(fieldKey) ||
-                                            (parentData !== null
-                                                ? parentData.required?.includes(fieldKey)
-                                                : false)) &&
-                                        "*"}
-                                </div>
-                                <div className={style.lableReadOnlyStyleInPOD}>
-                                    {getValueByPath(
-                                        basicForm,
-                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                    ) || "-"}
-                                </div>
-                            </div>
-                        );
+                      return (
+                        <div>
+                          <div className={`${style.lableStylePOD}`}>
+                            {fieldData.label}
+                            {isLableEmpty(fieldData.label)
+                              ? false
+                              : (object.required?.includes(fieldKey) ||
+                                  (parentData !== null
+                                    ? parentData.required?.includes(fieldKey)
+                                    : false)) &&
+                                "*"}
+                          </div>
+                          <div className={style.lableReadOnlyStyleInPOD}>
+                            {getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            ) || "-"}
+                          </div>
+                        </div>
+                      );
                     } else {
-                        return (
-                            <CommonSelectField
-                                value={
-                                    getValueByPath(
-                                        basicForm,
-                                        `${basicpath}.${baseKey}.${fieldKey}`
-                                    ) || null
-                                }
-                                onChange={(e) =>
-                                    handleChange(fieldKey, e.target.value, baseKey)
-                                }
-                                className={style.fullWidth}
-                               
-                                valueList={
-                                    fieldKey !== "specialty"
-                                        ? fieldData.enum
-                                        : getSpecialityValues(object)
-                                }
-                                labelList={
-                                    fieldKey !== "specialty"
-                                        ? fieldData.enum
-                                        : getSpecialityValues(object)
-                                }
-                                disabledList={
-                                    fieldKey !== "specialty"
-                                        ? fieldData.enum.map((data) => false)
-                                        : getSpecialityValues(object)?.map((data) => false)
-                                }
-                                label={fieldData.label}
-                                required={
-                                    isLableEmpty(fieldData.label)
-                                        ? false
-                                        : object.required?.includes(fieldKey) ||
-                                        (parentData !== null
-                                            ? parentData.required?.includes(fieldKey)
-                                            : false)
-                                }
-                                warning={warningFields
-                                    ?.map((data) => data?.key)
-                                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                            />
-                        );
+                      const specialityValues =
+                        fieldKey === "specialty"
+                          ? getSpecialityValues(object)
+                          : fieldData.enum;
+          
+                      // Render the dropdown conditionally for "specialty" only if there are values
+                      return fieldKey === "specialty" &&
+                        specialityValues.length === 0 ? null : (
+                        <CommonSelectField
+                          value={
+                            getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            ) || null
+                          }
+                          onChange={(e) =>
+                            handleChange(fieldKey, e.target.value, baseKey)
+                          }
+                          className={style.fullWidth}
+                          valueList={specialityValues}
+                          labelList={specialityValues}
+                          disabledList={specialityValues.map(() => false)}
+                          label={fieldData.label}
+                          required={
+                            isLableEmpty(fieldData.label)
+                              ? false
+                              : object.required?.includes(fieldKey) ||
+                                (parentData !== null
+                                  ? parentData.required?.includes(fieldKey)
+                                  : false)
+                          }
+                          // Hide warning specifically for specialty field
+                          warning={
+                            fieldKey !== "specialty" && 
+                            warningFields
+                              ?.map((data) => data?.key)
+                              ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                          }
+                        />
+                      );
                     }
                 case "datalist":
                     if (isPOD) {

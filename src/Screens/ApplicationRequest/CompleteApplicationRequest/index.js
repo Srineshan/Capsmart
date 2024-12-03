@@ -149,7 +149,7 @@ const CompleteApplicationRequest = () => {
                         </div>
                       </div>
                       <DeleteOutlineIcon
-                        sx={{ color: "#0e5197", cursor: "pointer" }}
+                        sx={{ color: "#06617A", cursor: "pointer" }}
                       />
                     </div>
                     <div
@@ -164,7 +164,7 @@ const CompleteApplicationRequest = () => {
                         </div>
                       </div>
                       <DeleteOutlineIcon
-                        sx={{ color: "#0e5197", cursor: "pointer" }}
+                        sx={{ color: "#06617A", cursor: "pointer" }}
                       />
                     </div>
                   </div>

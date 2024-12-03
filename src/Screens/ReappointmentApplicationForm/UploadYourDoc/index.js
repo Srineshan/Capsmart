@@ -691,7 +691,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 <div
                                     className={`${style.displayInRow} ${style.justifyCenter}`}
                                 >
-                                    <DoneIcon sx={{ color: "#0e5197", fontSize: 25 }} />
+                                    <DoneIcon sx={{ color: "#06617A", fontSize: 25 }} />
                                     <div
                                         className={`${style.setupCompletedText} ${style.marginLeft10}`}
                                     >

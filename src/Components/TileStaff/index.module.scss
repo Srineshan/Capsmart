@@ -29,7 +29,7 @@
 }
 
 .headingForContracts {
-    font: normal normal bolder 15px/20px proxima-nova !important;
+    font: normal normal bolder $navbartext proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -122,19 +122,19 @@
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .orange {
-    color: orange;
+    color: $statusorange;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .purple {

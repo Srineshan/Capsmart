@@ -159,14 +159,14 @@
 
 .labelText {
     text-align: left;
-    font: normal normal bold 16px/26px proxima-nova;
+    font: normal normal bold $labelvaluetext proxima-nova;
     letter-spacing: 0px;
     color: #94979A;
 }
 
 .valueText {
     text-align: left;
-    font: normal normal 600 16px/26px proxima-nova;
+    font: normal normal 600 $labelvaluetext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }

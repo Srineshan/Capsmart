@@ -269,7 +269,7 @@ const NewActiveApplication = ({
   useEffect(() => {
     if (form?.formSchemas) {
 
-      const relevantSchemas = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
+      const relevantSchemas = form?.forms?.filter(schema => schema?.schemaCategory);
 
       console.log("relevantSchemas" + JSON.stringify(relevantSchemas));
 
@@ -279,7 +279,7 @@ const NewActiveApplication = ({
         form?.forms[index]?.status === "APPROVED"
       );
 
-      setIsApproved(areAllFormsApproved);
+      // setIsApproved(areAllFormsApproved);
 
       console.log("areAllFormsApproved" + areAllFormsApproved)
 
@@ -299,8 +299,9 @@ const NewActiveApplication = ({
 
       if (hasAllApproved) {
         setStatusStyle(style.greenBigDotStyle);
+        setIsApproved(hasAllApproved)
       } else if (hasAnyApproved) {
-        setStatusStyle(style.yellowBigDotStyle);
+        setStatusStyle(style.yellowBigDotStyle);  
       } else {
         setStatusStyle(style.greyBigDotStyle);
       }
@@ -556,7 +557,7 @@ const NewActiveApplication = ({
             <a href={fileFields?.[i]?.fileURL} target="_blank">
               <Tooltip title={"Preview"} arrow>
                 <ArticleOutlinedIcon
-                  sx={{ color: "#0e5197", fontSize: 35 }}
+                  sx={{ color: "#06617A", fontSize: 35 }}
                   onClick={() => {
                     setSelectedFileURL(fileFields?.[i]?.fileURL);
                   }}
@@ -789,31 +790,52 @@ const NewActiveApplication = ({
   const handleApplicationAccept = async () => {
     let role;
     let notes = "";
+    let isDelegate = true;
 
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Chief Of Staff";
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
-      role = "Board";
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-1') {
+      if (userRole?.includes("Staff Manager")) {
+          role = "Staff Manager";
+          isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Staff Manager";
+      }
+     } else if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+      } else {
+          role = "Department Head";
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+    } else if (selectedTab === 'level-4') {
+      if (userRole?.includes("Advisory Committee")) {
+        role = "Advisory Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Advisory Committee";
+      }
+    } else if (selectedTab === 'level-5') {
       role = "Board";
     }
 
+    // Prepare the payload
     let temp = {
-      role: role,
-      notes: notes
+      role: isDelegate ? role : "",
+      notes: isDelegate ? notes : "",
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
-    const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, requestData)
+
+    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    // const requestData = { ...temp, notes: "" };
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('success')
         onClose()
@@ -827,31 +849,44 @@ const NewActiveApplication = ({
   const handleApplicationReject = async () => {
     let role;
     let notes = "";
+    let isDelegate = true;
 
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Chief Of Staff";
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-1') {
+      if (userRole?.includes("Staff Manager")) {
+          role = "Staff Manager";
+          isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Chief Of Staff";
+      }
+     } else if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+      } else {
+          role = "Department Head";
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
-      role = "Board";
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
     }
 
+    // Prepare the payload
     let temp = {
-      role: role,
-      notes: notes
+      role: isDelegate ? role : "",
+      notes: isDelegate ? notes : "",
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
-    const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/REJECTED?isDelegate=${isDelegate}`, requestData)
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/REJECTED?isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('success')
         onClose()
@@ -865,31 +900,45 @@ const NewActiveApplication = ({
   const getApplicationMoveToNext = async () => {
     let role;
     let notes = "";
+    let isDelegate = true;
 
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Chief Of Staff";
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-1') {
+      if (userRole?.includes("Staff Manager")) {
+          role = "Staff Manager";
+          isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+     } else if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+      } else {
+          role = "Department Head";
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+      }
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
-      role = "Board";
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
     }
 
+    // Prepare the payload
     let temp = {
-      role: role,
-      notes: notes
+      role: isDelegate ? role : "",
+      notes: isDelegate ? notes : "",
     };
 
-    const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
-    const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, requestData)
+    await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('successfull')
         onClose()
@@ -3449,7 +3498,7 @@ const NewActiveApplication = ({
                                   )}
                                 </div>
                               ))}
-                            {applicationType === "REAPPOINTMENT" ? (
+                            {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
                               <div className={`${style.margin20}`}>
                                 <div className={`${style.twoColumnGrid}`}>
                                   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -3464,18 +3513,20 @@ const NewActiveApplication = ({
                                   </div>
                                   <div
                                     className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                    // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                                    // style={{ opacity: isApproved ? 1 : 0.5 }}
                                   >
                                     <div
                                       className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                       // onClick={() => {
-                                      //   setShowApplicationDeclineDialog(true);
+                                      //   onClickApprovalDeptFunction();
                                       // }}
+                                      // onClick={isApproved ? onClickApproveMoveFunction : undefined}
                                       onClick={() => {
-                                        // onClickRejectFunction();
                                         onClickApproveMoveFunction();
                                       }}
                                     >
-                                      Verified, Send to Cred. Comm.
+                                      Verified, Send to Dept. Chief
                                     </div>
                                   </div>
                                 </div>
@@ -4246,59 +4297,7 @@ const NewActiveApplication = ({
                                         </>
                                       )}
                                     </div>))}
-                              {(userRole?.includes("Staff Manager") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") ? (
-                                <div className={`${style.margin20}`}>
-                                  <div className={`${style.fourColumnGrid}`}>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={() => {
-                                          onClose();
-                                        }}
-                                      >
-                                        SAVE IN PROGRESS
-                                      </div>
-                                    </div>
-                                    <div
-                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                                    >
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        // onClick={() => {
-                                        //   setShowApplicationDeclineDialog(true);
-                                        // }}
-                                        onClick={() => {
-                                          setShowApplicationDeclineDialog(true);
-                                        }}
-                                      >
-                                        NOT RECOMMENDED
-                                      </div>
-                                    </div>
-                                    {/* </div> */}
-                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        // onClick={onClickApproveFunction}
-                                        onClick={() => {
-                                          onClickApprovalFunction();
-                                        }}
-                                      >
-                                        RECOMMENDED WITH COMMENTS
-                                      </div>
-                                    </div>
-                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                      <div
-                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        onClick={onClickApproveMoveFunction}
-                                      >
-                                        RECOMMENDED
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : (" ")}
-                                {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
+                              {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4344,12 +4343,58 @@ const NewActiveApplication = ({
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                         onClick={onClickApprovalwithoutnotesFunction}
                                       >
-                                        RECOMMENDED
+                                        RECOMMEND
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               ) : (" ")}
+                                {/* {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
+                                <div className={`${style.margin20}`}>
+                                  <div className={`${style.fourColumnGrid}`}>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={() => {
+                                          onClose();
+                                        }}
+                                      >
+                                        SAVE IN PROGRESS
+                                      </div>
+                                    </div>
+                                    <div
+                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                    >
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
+                                      >
+                                        NOT RECOMMENDED
+                                      </div>
+                                    </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        onClick={() => {
+                                          onClickApprovalFunction();
+                                        }}
+                                      >
+                                        RECOMMENDED WITH COMMENTS
+                                      </div>
+                                    </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={onClickApprovalwithoutnotesFunction}
+                                      >
+                                        RECOMMENDED
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (" ")} */}
                               {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                                     <div className={${style.margin20}}>
                                       <div className={${style.textCardStyle} ${style.buttonTextStyle} ${style.alignCenter}}>
@@ -7266,9 +7311,9 @@ const NewActiveApplication = ({
             )}
           </>
           <div>
-            {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
+            {userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Department Head') ? (
               <>
-                {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-3") && (
+                {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7296,8 +7341,8 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   </div>
-                )}
-                {(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                )} */}
+                {(userRole?.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")  ? (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7311,84 +7356,131 @@ const NewActiveApplication = ({
                     </div>
                     <div
                       className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      // style={{ opacity: isApproved ? 1 : 0.5 }}
                     >
                       <div
                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
                         // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
+                        //   onClickApprovalDeptFunction();
                         // }}
+                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                         onClick={() => {
-                          // onClickRejectFunction();
                           onClickApproveMoveFunction();
                         }}
+                        
                       >
-                        Verified, Send to Cred. Comm.
+                        Verified, Send to Dept. Chief
                       </div>
                     </div>
                   </div>
+                ) : ("")}
+                   {(applicationType === "NEW" && (selectedTab === "level-1" ||selectedTab === "level-2"||selectedTab === "level-3") ) ? (
+                  <>
+                  <div className={`${style.twoColumnGrid}`}>
+                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        onClick={() => {
+                          onClose();
+                        }}
+                      >
+                        SAVE IN PROGRESS
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      // style={{ opacity: isApproved ? 1 : 0.5 }}
+                    >
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        // onClick={() => {
+                        //   onClickApprovalDeptFunction();
+                        // }}
+                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                      >
+                        Reject
+                      </div>
+                    </div>
+                  </div>
+                  </>
+                ) : ("")}
+
+              {(applicationType === "NEW" && selectedTab === "level-1" ) ? (
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={onClickApproveMoveFunction}
+                  >
+                    VERIFY & SEND FOR DEPARTMENT HEAD
+                  </div>
+                </div>
+                ) : ("")}
+
+              {(applicationType === "NEW" && selectedTab === "level-2" ) ? (
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={onClickApproveMoveFunction}
+                  >
+                    VERIFY & SEND FOR CRED. COMM.
+                  </div>
+                </div>
+                ) : ("")}
+
+                {(applicationType === "NEW" && selectedTab === "level-3") ? (
+                  <div 
+                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${userRole?.includes("Chief Of Staff") ? style.disabledButton : ""}`}
+                    style={{ opacity: userRole?.includes("Chief Of Staff") ? 0.5 : 1 }}
+                    onClick={() => {
+                      if (!userRole?.includes("Chief Of Staff")) {
+                        // Call your approve move function here
+                        onClickApproveMoveFunction();
+                      }
+                    }}
+                  >
+                    <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                      APPROVE APPLICANT
+                    </div>
+                  </div>
+                ) : (
+                  ""
                 )}
+                
                 <div className={`${style.marginBottom20}`}>
 
-                  {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
+                  {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}                      
                       >
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={isApproved ? onClickApproveFunction : undefined}
                           onClick={() => {
                             onClickApprovalFunction();
                           }}
                         >
-                          {/* {selectedTab === 'level-1' ? 'VERIFY FOR DEPT. HEAD' : selectedTab === 'level-2' ? 'VERIFY FOR CRED COMM REVIEW' : selectedTab === 'level-3' ? 'NOT READY FOR MAC' : selectedTab === 'level-4' ? ' MAC APPROVED' : selectedTab === 'level-5' ? ' BOD APPROVED' : " " } */}
+  
                           RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
                       <div
                         className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      // className={`${style.bigButtonStyle} ${selectedTab === 'level-1' && !isApproved ? '' : style.cursorPointer}`}
-                      // style={{ opacity: selectedTab === 'level-1' && !isApproved ? 0.5 : 1 }}
+                  
                       >
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          // onClick={selectedTab === 'level-1' && isApproved ? onClickApproveMoveFunction : undefined}
+                          
                           onClick={onClickApprovalFunction}
                         >
                           RECOMMENDED
                         </div>
                       </div>
                     </div>
-                  )}
-
+                  )} */}
+{/* 
                   {userRole?.includes('Department Head') && selectedTab === 'level-2' && (
-                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={onClickApprovalFunction}
-                        >
-                          RECOMMENDED
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {userRole?.includes('Credentialing Committee') && selectedTab === 'level-2' && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -7410,7 +7502,31 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
+
+                  {/* {userRole?.includes('Credentialing Committee') && selectedTab === 'level-2' && (
+                    <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                          // onClick={onClickApproveFunction}
+                          onClick={() => {
+                            onClickApprovalFunction();
+                          }}
+                        >
+                          RECOMMENDED WITH COMMENTS
+                        </div>
+                      </div>
+                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          onClick={onClickApprovalwithoutnotesFunction}
+                        >
+                          RECOMMENDED
+                        </div>
+                      </div>
+                    </div>
+                  )} */}
 
                   {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
@@ -7435,15 +7551,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   )} */}
-
-                  {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
-                    <div>
-                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
-                        Pending Cred. Comm. Recommendation                    
-                      </div>
-                    </div>
-                  </>)}
-
+{/* 
                   {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7466,9 +7574,9 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
-                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7512,36 +7620,52 @@ const NewActiveApplication = ({
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div
                             className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={onClickApproveMoveFunction}
+                            onClick={onClickApprovalwithoutnotesFunction}
                           >
-                            RECOMMENDED
+                            RECOMMEND
                           </div>
                         </div>
                       </div>
                     </>
-                  )}
+                  ) : (" ")}
 
-                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (<>
+                  {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending Dept. Head. Recommendation                    
+                      </div>
+                    </div>
+                  </>)}
+
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                        Pending Cred. Comm. Recommendation                    
+                      </div>
+                    </div>
+                  </>) : ("")}
+          
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
                        Pending MAC Recommendation
                       </div>
                     </div>
-                  </>)}
+                  </>) : ( " ")}
 
-                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") && (<>
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Board') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
                         Pending BOD Recommendation
                       </div>
                     </div>
-                  </>)}
+                  </>) : ( " ")}
 
                   {userRole?.includes('Chief Of Staff') && (
                     <>
                       {selectedTab === "level-3" && (
                         <>
-                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                               <div
                                 className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -7558,15 +7682,15 @@ const NewActiveApplication = ({
                                 className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                 onClick={onClickApprovalFunction}
                               >
-                                RECOMMENDED
+                                RECOMMEND
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <div
                                 className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              // onClick={onClickApprovalFunction}
+                                onClick={onClickApproveMoveFunction}
                               >
                                 OVERRIDE FOR TEMPORARY PRIVILEGES
                               </div>
@@ -7601,7 +7725,7 @@ const NewActiveApplication = ({
                                 // onClick={isApproved ? onClickApproveMoveFunction : undefined}
                                 onClick={onClickApprovalFunction}
                               >
-                                RECOMMENDED
+                                RECOMMEND
                               </div>
                             </div>
                           </div>
@@ -7619,7 +7743,7 @@ const NewActiveApplication = ({
                       )}
                       {(selectedTab === "level-2") && (
                         <>
-                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div
                               className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
@@ -7643,10 +7767,10 @@ const NewActiveApplication = ({
                                 className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                 onClick={onClickApprovalFunction}
                               >
-                                RECOMMENDED
+                                RECOMMEND
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <div
@@ -7662,7 +7786,7 @@ const NewActiveApplication = ({
                     </>
                   )}
 
-                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW") || (userRole?.includes('Department Head') && selectedTab === 'level-3')) && (
+                  {/* {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW")) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -7687,11 +7811,11 @@ const NewActiveApplication = ({
                           className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           onClick={onClickApprovalFunction}
                         >
-                          RECOMMENDED
+                          RECOMMEND
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {applicationType === "NEW" ? (
                     ((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') ||
                       (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") ||
@@ -7747,9 +7871,9 @@ const NewActiveApplication = ({
 
                 </div>
                 <>
-                  {selectedTab !== "level-4" && selectedTab !== "level-5" && (
+                  {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
                     <>
-                      {/* <div className={style.cardLeftStyle}>
+                      <div className={style.cardLeftStyle}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -7787,8 +7911,8 @@ const NewActiveApplication = ({
                   </div>
                 </div>
               </div>
-            </div> */}
-                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+            </div>
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -7852,7 +7976,7 @@ const NewActiveApplication = ({
               </div>
            
               <div className={style.marginBottom20}></div>
-            </div> */}
+            </div>
                       {applicationType === "NEW" && (
                         <>
                           <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
@@ -8247,11 +8371,15 @@ const NewActiveApplication = ({
                                       > */}
                       <div
                         className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
+                        style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                        onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                       >
                         <div
                           className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
                           //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                          onClick={onClickApproveMoveFunction}
+                          // onClick={onClickApproveMoveFunction}
+                          // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                         >
                           BOD APPROVED
                         </div>
@@ -8287,7 +8415,6 @@ const NewActiveApplication = ({
               getApplicationDeclineDialog={getApplicationDeclineDialog}
               getActiveApplicationView={getActiveApplicationView}
               selectedTab={selectedTab}
-              applicationType={applicationType}
             />
           )
         }

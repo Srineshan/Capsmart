@@ -329,7 +329,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       notification.push(<WarningAmberIcon style={{ color: '#FF6562' }} />);
       name.push(data?.contractName?.contractName);
       contractors.push(contractorList?.length || '-');
-      contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#0e5197' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#0e5197' }} />);
+      contractorsIcon.push(contractorList?.length > 1 ? <GroupOutlinedIcon style={{ fontSize: 20, color: '#06617A' }} /> : contractorList?.length === 0 ? '' : <PersonOutlinedIcon style={{ fontSize: 20, color: '#06617A' }} />);
       effectiveDate.push(data?.contractDetail?.contractTerm !== null ? format(new Date(data?.contractDetail?.contractTerm?.effectiveDate), 'MM-dd-yyyy') : '-');
       // podStatus.push("3");
       manager.push(`${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.firstName} ${users?.filter(userData => userData?.id === data?.contractDetail?.contractManager?.userID)?.map(data => data)[0]?.name?.lastName}`);
@@ -606,10 +606,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
                 <div className={`${isDownloadClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsDownloadClicked(!isDownloadClicked); handleDownloadClicked() }}>
                   <img src={contracts?.length !== 0 ? Download : DownloadLight} alt='' className={style.iconSize} />
 
-                  {/* <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#0e5197' }} /> */}
+                  {/* <DownloadIcon sx={{ fontSize: isDownloadClicked ? 20 : 25, color: isDownloadClicked ? '#fff' : '#06617A' }} /> */}
                 </div>
                 <div className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft}`} onClick={() => { setIsPrintClicked(!isPrintClicked); handlePrint() }}>
-                  <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#0e5197' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                  <PrintOutlinedIcon sx={{ fontSize: isPrintClicked ? 20 : 25, color: isPrintClicked ? '#fff' : '#06617A' }} onClick={(e) => handleClick(e)} aria-describedby={id} />
                   {/* <Popover
                     id={id}
                     open={open}
@@ -715,7 +715,7 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
             ) : ''}
             {isLoading ?
               <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div> :
               <div ref={componentRef}>
                 <div className={`${style.reduceMarginTop10} contractList`} ref={PDFRef}>
@@ -767,10 +767,10 @@ const ContractList = ({ isLoading, getSearchKey, searchKey, getDeleteDraftDialog
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - CAPSmart</p>
+          <p className={`${style.poweredBy} ${style.marginTop10}`}>Powered by - HapiCare</p>
           {/* <img src={TimeSmartLogo} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} /> */}
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} CAPSmart</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
       <PreImplementationDataDialog showPreImplementationDialog={showPreImplementationDialog} getPreImplementationDialogBoolean={getPreImplementationDialogBoolean} contractId={selectedContractId} selectedContractPreImplementationData={selectedContractPreImplementationData} />
       <ReviewAndApprovalStatusSummary showReviewAndApprovalStatusSummaryDialog={showReviewAndApprovalStatusSummaryDialog} getReviewAndApprovalStatusSummaryDialogBoolean={getReviewAndApprovalStatusSummaryDialogBoolean} contractId={selectedContractId} />

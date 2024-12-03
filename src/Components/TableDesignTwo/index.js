@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue ,checkedIds}) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -82,7 +82,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     //       ? JSON.parse(storedCheckedIds)
     //       : tableData?.map(item => item.id)?.filter(id => id != null);
     //   });
-    const [checkedIds, setCheckedIds] = useState([]);
+    // const [checkedIds, setCheckedIds] = useState([]);
     const menuRef = useRef(null);
     const countHoverRef = useRef(null);
     const textHoverRef = useRef(null);
@@ -177,15 +177,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorEl(null);
     };
 
-    const getCheckedIdsFromSession = useCallback(() => {
-        const storedIds = sessionStorage.getItem('checkedIds');
-        return storedIds ? JSON.parse(storedIds) : [];
-    }, []);
+    // const getCheckedIdsFromSession = useCallback(() => {
+    //     const storedIds = sessionStorage.getItem('checkedIds');
+    //     return storedIds ? JSON.parse(storedIds) : [];
+    // }, []);
 
-    useEffect(() => {
-        // Fetch checked IDs from session storage on component mount
-        setCheckedIds(getCheckedIdsFromSession());
-    }, [sessionStorage.getItem('checkedIds')]);
+    // useEffect(() => {
+    //     // Fetch checked IDs from session storage on component mount
+    //     setCheckedIds(getCheckedIdsFromSession());
+    // }, [sessionStorage.getItem('checkedIds')]);
 
     // useEffect(() => {
     //     // Retrieve the string from session storage
@@ -521,7 +521,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -580,7 +580,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -636,7 +636,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         position: "relative",
                                                                         mt: "10px",
                                                                         "&::before": {
-                                                                            backgroundColor: "#0e5197",
+                                                                            backgroundColor: "#06617A",
                                                                             content: '""',
                                                                             display: "block",
                                                                             position: "absolute",

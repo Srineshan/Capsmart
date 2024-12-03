@@ -24,7 +24,7 @@ const ApplicationHeader = ({ title, close, closeClick }) => {
                             className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20}`}
                             onClick={closeClick}
                         /> */}
-                        <CloseIcon sx={{ fontSize: 40, color: '#173790', cursor: 'pointer' }} onClick={closeClick} />
+                        <CloseIcon sx={{ fontSize: 40, color: '#06617A', cursor: 'pointer' }} onClick={closeClick} />
                     </div>
                 )}
             </div>

@@ -840,7 +840,7 @@ const FeedbackTicketResolution = ({
                                     <div className={`${style.collapseHeader} ${style.marginTop20} ${style.spaceBetween}`}>
                                         <p className={style.collapseHeaderText}>Log File Reference</p>
                                         <div className={style.reduceTop10}>
-                                            <Icon icon={ticketStatus !== "Resolved" ? "chevron-up" : "chevron-down"} color='#0e5197
+                                            <Icon icon={ticketStatus !== "Resolved" ? "chevron-up" : "chevron-down"} color='#06617A
 
 
 ' className={style.marginLeft20} />
@@ -889,7 +889,7 @@ const FeedbackTicketResolution = ({
                         </p>
                         <Icon
                           icon="chevron-up"
-                          color="#0e5197"
+                          color="#06617A"
                           className={style.marginLeft20}
                         />
                       </div>
@@ -1165,7 +1165,7 @@ const FeedbackTicketResolution = ({
                                 </p>
                                 <Icon
                                   icon="chevron-up"
-                                  color="#0e5197"
+                                  color="#06617A"
                                   className={style.marginLeft20}
                                 />
                               </div>

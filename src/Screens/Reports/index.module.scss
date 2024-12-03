@@ -447,7 +447,7 @@
 
 .headingStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #8A8C8D;
 }
@@ -540,7 +540,7 @@
 
 .darkLabel {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -572,13 +572,13 @@
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -618,20 +618,20 @@
 }
 
 .privateLabelStyle {
-    font: normal normal medium 15px/20px proxima-nova;
+    font: normal normal medium $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .typographyStyle {
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .smallHeading {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -747,7 +747,7 @@
 }
 
 .mailBoldText {
-    font: normal normal 600 15px/20px proxima-nova;
+    font: normal normal 600 $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1200,7 +1200,7 @@
 }
 
 .reportTypeCardStyle {
-    background: #FEC106 0% 0% no-repeat padding-box;
+    background: $statusyellow 0% 0% no-repeat padding-box;
     border-radius: 65px;
     height: 60px;
     width: 80%;
@@ -1257,7 +1257,7 @@
 }
 
 .entityNameHeaderStyle {
-    font: normal normal bold 14px/15px proxima-nova;
+    font: normal normal bold $tableheadtext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1270,13 +1270,13 @@
 
 .reportRunByTextStyle {
     text-align: left;
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
 
 .reportFooterLogo {
-    width: 130px;
+    width: 150px;
     height: 70px;
     object-fit: contain;
 }
@@ -1367,7 +1367,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 8px;
 }
 
@@ -1375,7 +1375,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 8px;
 }
 
@@ -1384,7 +1384,7 @@
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 8px;
 }
 
@@ -1403,7 +1403,7 @@
 
 .contractNameCardStyle {
     text-align: left;
-    font: normal normal bold 16px/24px proxima-nova;
+    font: normal normal bold $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -1465,7 +1465,7 @@
 }
 
 .summaryTextStyle {
-    font: normal normal bold 15px/20px proxima-nova;
+    font: normal normal bold $navbartext proxima-nova;
     color: #858c93;
 }
 
@@ -1633,7 +1633,7 @@
 }
 
 .yellowBigNumber {
-    color: #fec106 !important;
+    color: $statusyellow !important;
 }
 
 .redBigNumber {

@@ -66,7 +66,7 @@ const ApexPieChart = ({ pieData }) => {
         curve: 'smooth',
         width: 0
       },
-      colors: ["#1DD174", "#FFD950", "#F46044", '#0e5197', '#AE3CEA', '#4AB8FC', '#0B1542'],
+      colors: ["#1DD174", "#FFD950", "#F46044", '#06617A', '#AE3CEA', '#4AB8FC', '#0B1542'],
       dataLabels: {
         enabled: false,
       },

@@ -57,7 +57,7 @@ const EditableTable = ({ additionalActivityData, getAdditionalActivityData, serv
     const switchTheme = createTheme({
         palette: {
             primary: {
-                main: '#0e5197',
+                main: '#06617A',
             },
         },
     });

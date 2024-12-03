@@ -479,24 +479,24 @@ body::-webkit-scrollbar {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #00C07F;
-    color: #00C07F;
+    background-color: $statusgreen;
+    color: $statusgreen;
 }
 
 .yellowDotStyle {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FEC106;
-    color: #FEC106;
+    background-color: $statusyellow;
+    color: $statusyellow;
 }
 
 .redDotStyle {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #FF6562;
-    color: #FF6562;
+    background-color: $statusred;
+    color: $statusred;
 }
 
 .greyDotStyle {
@@ -584,7 +584,7 @@ body::-webkit-scrollbar {
 
 .staffPragraphStyle {
     text-align: left;
-    font: normal normal normal 16px/24px proxima-nova;
+    font: normal normal normal $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -611,7 +611,7 @@ body::-webkit-scrollbar {
 
 .textStyle {
     text-align: left;
-    font: normal normal normal 16px/24px proxima-nova;
+    font: normal normal normal $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -709,14 +709,14 @@ body::-webkit-scrollbar {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
 }
 
 .leftCardHeadingNameStyle {
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -791,15 +791,15 @@ body::-webkit-scrollbar {
 }
 
 .green {
-    color: #00c07f;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #fec106;
+    color: $statusyellow;
 }
 
 .orange {
-    color: orange;
+    color: $statusorange;
 }
 
 .screenBackground {
@@ -832,7 +832,7 @@ body::-webkit-scrollbar {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
 }
 
 .displayInRow {
@@ -1012,7 +1012,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: uppercase;
@@ -1022,7 +1022,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     opacity: 1;
@@ -1062,7 +1062,7 @@ body::-webkit-scrollbar {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -1091,7 +1091,7 @@ body::-webkit-scrollbar {
 
 .rejectionHeadingTextStyle {
     text-align: left;
-    font: normal normal bold 16px/24px proxima-nova;
+    font: normal normal bold $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -1125,7 +1125,7 @@ body::-webkit-scrollbar {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: uppercase;
@@ -1193,7 +1193,7 @@ body::-webkit-scrollbar {
 
 .contractId {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: uppercase;
@@ -1268,7 +1268,7 @@ body::-webkit-scrollbar {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: capitalize;
@@ -1412,7 +1412,7 @@ body::-webkit-scrollbar {
 
 .cardTextBoldStyle {
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -1429,7 +1429,7 @@ body::-webkit-scrollbar {
 }
 
 .switchFontStyle {
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     color: #52575d;
 }
 
@@ -1438,13 +1438,13 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #ff6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .newContractCrossStyle {
-    color: linear-gradient($primarycolor, #ff6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     cursor: pointer;
     margin-top: -10px;
     margin-right: -20px;
@@ -1513,7 +1513,7 @@ select {
 
 .contractCards:hover {
     background: linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1542,7 +1542,7 @@ select {
 
 .selectedContractCard {
     background: linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -2129,7 +2129,7 @@ select {
 
 .plusOneText {
     text-align: left;
-    font: normal normal medium 16px/20px proxima-nova;
+    font: normal normal medium $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #aeb2b7;
 }
@@ -2517,7 +2517,7 @@ input[type="file"] {
 }
 
 .purpleTitle {
-    font: normal 15px/13px proxima-nova;
+    font: normal $usernametext proxima-nova;
     color: $primarycolor;
     font-size: 15px;
     text-align: left;
@@ -2678,13 +2678,13 @@ input[type="file"] {
 }
 
 .orangeChip {
-    background: orange 0% 0% no-repeat padding-box;
+    background: $statusorange 0% 0% no-repeat padding-box;
     color: orangered;
 }
 
 .yellowChip {
     background: lemonchiffon 0% 0% no-repeat padding-box;
-    color: orange;
+    color: $statusorange;
 }
 
 .blueChip {
@@ -2860,7 +2860,7 @@ input[type="file"] {
 }
 
 .yellowBigNumber {
-    color: #fec106 !important;
+    color: $statusyellow !important;
 }
 
 .redBigNumber {
@@ -2878,13 +2878,13 @@ input[type="file"] {
 }
 
 .yellowSmallNumber {
-    color: #fec106;
+    color: $statusyellow;
     background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
     color: #fff;
-    background-color: #fec106;
+    background-color: $statusyellow;
 }
 
 .redSmallNumber {
@@ -3017,7 +3017,7 @@ input[type="number"] {
 
 .validationHeaderText {
     text-align: left;
-    font: normal normal normal 16px/20px proxima-nova;
+    font: normal normal normal $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #18191b;
     text-transform: uppercase;
@@ -3039,14 +3039,14 @@ input[type="number"] {
 
 .validationTopicText {
     text-align: left;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #94979a;
 }
 
 .statusText {
     text-align: left;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #000000;
 }
@@ -3184,7 +3184,7 @@ input[type="number"] {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 14px/15px proxima-nova;
+    font: normal normal bold $tableheadtext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: uppercase;
@@ -3219,7 +3219,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: uppercase;
@@ -3227,7 +3227,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle1 {
-    font: normal normal normal 16px/20px proxima-nova;
+    font: normal normal normal $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     text-transform: capitalize;
@@ -3236,7 +3236,7 @@ input[type="number"] {
 
 .tableDataFontStyle2 {
     text-align: left;
-    font: normal normal 600 16px/24px proxima-nova;
+    font: normal normal 600 $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -3611,7 +3611,7 @@ input[type="number"] {
 }
 
 .headingForStaffs {
-    font: normal normal bolder 15px/20px proxima-nova !important;
+    font: normal normal bolder $navbartext proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
     color: #2C2C2C;
@@ -3630,7 +3630,7 @@ input[type="number"] {
     box-shadow: 0px 10px 20px #130D4B1F;
     border-radius: 20px;
     text-align: left;
-    font: normal normal bold 16px/20px proxima-nova;
+    font: normal normal bold $tabledatatext1 proxima-nova;
     letter-spacing: 0px;
     color: #F5F9FD;
     text-transform: uppercase;

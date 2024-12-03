@@ -35,11 +35,11 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     console.log(profilePicData, "pic");
   };
   return (
-    <div className={`${style.applicationUserCard} ${style.profileGrid}`}>
+    <div className={`${style.applicationUserCard} ${style.profileGrid} ${style.rowSpaceBetween}`}>
       {basicForm?.applicant?.name?.firstName !== undefined && (
         <>
           {profilePic !== "" ? (
-            <div>
+            <div >
               <img
                 src={profilePic}
                 alt="Profile Pic"
@@ -47,14 +47,14 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
               />
             </div>
           ) : (
-            <div>
+            <div >
               <img
                 src={DefaultUserAvatar}
                 alt="Profile Pic"
                 className={style.profilePic}
               />
             </div>
-            // <div className={style.profileImage}>
+            // <div >
             //     <div className={`${style.photoText} ${style.verticalAlignCenter}`}>Photo</div>
             // </div>
           )}

@@ -158,7 +158,7 @@ const FAQ = ({ getSelectedHelp }) => {
                                             <Checkbox large className={style.marginTop7} />
                                             <p className={style.tableDataFontStyle}><strong>Question 1Hjhslj; Kljd;Ljok;Lm ?</strong></p>
                                         </div>
-                                        <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#0e5197' size={20} />
+                                        <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#06617A' size={20} />
                                     </div>
                                 </div>
                                 {isSelected && selectedRow === '1' && (
@@ -195,7 +195,7 @@ const FAQ = ({ getSelectedHelp }) => {
                                             <Checkbox large className={style.marginTop7} />
                                             <p className={style.tableDataFontStyle}><strong>Question B ??</strong></p>
                                         </div>
-                                        <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#0e5197' size={20} />
+                                        <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#06617A' size={20} />
                                     </div>
                                 </div>
                                 {isSelected && selectedRow === '2' && (
@@ -278,8 +278,8 @@ const FAQ = ({ getSelectedHelp }) => {
                     </div>
                     {/* </div> */}
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - CAPSmart</p>
-                        <p className={style.poweredBy}>© CAPSmart</p>
+                        <p className={style.poweredBy}>Powered by - HapiCare</p>
+                        <p className={style.poweredBy}>© HapiCare</p>
                     </div>
                     {newFAQPostDialog && <NewFAQPost getNewFAQPostDialog={getNewFAQPostDialog} />}
                 </div>
@@ -385,7 +385,7 @@ const FAQ = ({ getSelectedHelp }) => {
                                             <Checkbox large className={style.marginTop7} />
                                             <p className={style.tableDataFontStyle}><strong>Question 1Hjhslj; Kljd;Ljok;Lm ?</strong></p>
                                         </div>
-                                        <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#0e5197' size={20} />
+                                        <Icon icon={isSelected && selectedRow === '1' ? "chevron-up" : "chevron-down"} color='#06617A' size={20} />
                                     </div>
                                 </div>
                                 {isSelected && selectedRow === '1' && (
@@ -422,7 +422,7 @@ const FAQ = ({ getSelectedHelp }) => {
                                             <Checkbox large className={style.marginTop7} />
                                             <p className={style.tableDataFontStyle}><strong>Question B ??</strong></p>
                                         </div>
-                                        <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#0e5197' size={20} />
+                                        <Icon icon={isSelected && selectedRow === '2' ? "chevron-up" : "chevron-down"} color='#06617A' size={20} />
                                     </div>
                                 </div>
                                 {isSelected && selectedRow === '2' && (
@@ -464,8 +464,8 @@ const FAQ = ({ getSelectedHelp }) => {
                         </div>
                     </div>
                     <div className={style.spaceBetween}>
-                        <p className={style.poweredBy}>Powered by - CAPSmart</p>
-                        <p className={style.poweredBy}>© CAPSmart</p>
+                        <p className={style.poweredBy}>Powered by - HapiCare</p>
+                        <p className={style.poweredBy}>© HapiCare</p>
                     </div>
                     {requestFAQPostDialog && <RequestFAQPost getRequestFAQPostDialog={getRequestFAQPostDialog} />}
                 </div>

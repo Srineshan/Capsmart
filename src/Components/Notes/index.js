@@ -40,7 +40,7 @@ const Notes = () => {
     const theme = createTheme({
       palette: {
         primary: {
-          main: "#0e5197",
+          main: "#06617A",
         },
       },
     });
