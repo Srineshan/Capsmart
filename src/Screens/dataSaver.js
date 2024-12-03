@@ -6,31 +6,34 @@ import jwt from "jwt-decode";
 
 export const TenantID = GetEntityDetails();
 
-const accessToken = Auth();
 const roles = GetRoles();
 
 export const isSuperAdminAccess = roles?.includes('Super Sys Admin') || roles?.includes('Distributor Admin') ? true : false;
 let cookie = new Cookie();
 let tenantId = cookie.get("entityId");
-let authorization = cookie.get("authorization");
-const headers = {
-    "Content-Type": "application/json",
-    "X-tenantID": TenantID,
-    "X-Authorization": `Bearer ${accessToken}`,
-    "Authorization": `Bearer ${authorization}`,
-};
+
+const getHeaders = () => {
+    let accessToken = cookie.get('user');
+    let authorization = cookie.get("authorization");
+    return {
+        "Content-Type": "application/json",
+        "X-tenantID": TenantID,
+        "X-Authorization": `Bearer ${accessToken}`,
+        "Authorization": `Bearer ${authorization}`,
+    };
+}
 
 export const GET = (url) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "GET",
-        headers: headers,
+        headers: getHeaders(),
     });
 };
 
 export const PUT = (url, data) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "PUT",
-        headers: headers,
+        headers: getHeaders(),
         data,
     });
 };
@@ -38,7 +41,7 @@ export const PUT = (url, data) => {
 export const POST = (url, data) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "POST",
-        headers: headers,
+        headers: getHeaders(),
         data,
     });
 };
@@ -46,7 +49,7 @@ export const POST = (url, data) => {
 export const DELETE = (url, data) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "DELETE",
-        headers: headers,
+        headers: getHeaders(),
         data,
     });
 };

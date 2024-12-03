@@ -19,7 +19,7 @@ import {
 import { SuccessToaster, ErrorToaster } from "./utils/toaster";
 import axios from "axios";
 import jwt from "jwt-decode";
-import { isSessionTokenExpired, useSession, getSessionToken, refresh, useDescope } from '@descope/react-sdk';
+import { isSessionTokenExpired, useSession, getSessionToken, useDescope } from '@descope/react-sdk';
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 import LoginDialog from "./Components/LoginDialog";
@@ -284,7 +284,7 @@ const ApplicationSetup = React.lazy(() =>
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
-  const { refreshSession, setSession, logout } = useDescope();
+  const { refreshSession, setSession, logout, refresh } = useDescope();
   const sessionToken = getSessionToken();
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
@@ -298,7 +298,7 @@ const App = ({ props }) => {
   let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
-  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie)
+  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
@@ -592,12 +592,12 @@ const App = ({ props }) => {
 
   const refreshToken = async () => {
     try {
-      const { sessionToken, refreshToken } = await refreshSession();
-      setSession(sessionToken); // Update the session with the new token
-      cookie.set('authorization', sessionToken, {
+      const { data } = refresh();
+      setSession(data?.sessionJwt); // Update the session with the new token
+      cookie.set('authorization', data?.sessionJwt, {
         path: '/',
       });
-      console.log('Token refreshed successfully!');
+      console.log('Token refreshed successfully!', data?.sessionJwt);
     } catch (error) {
       console.error('Failed to refresh token:', error);
       cookie.remove("user", { path: "/" });
@@ -617,7 +617,7 @@ const App = ({ props }) => {
     console.log(timeToExpiry, currentTime, 'exp', sessionToken)
     setTimeout(() => {
       refreshToken();
-    }, (timeToExpiry - 60) * 1000);
+    }, (timeToExpiry - 540) * 1000);
   };
 
   const setUserDetails = async () => {

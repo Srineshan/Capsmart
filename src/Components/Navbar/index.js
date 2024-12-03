@@ -241,6 +241,7 @@ const Navbar = () => {
     var cookies = new Cookies();
     cookies.remove("user", { path: "/" });
     cookies.remove("entityId", { path: "/" });
+    cookies.remove("authorization", { path: "/" });
     logout()
     navigate('/')
   }
