@@ -1698,7 +1698,7 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: userRole?.includes("Staff Manager") ? "View" : "Review & Recommend",
+      data: userRole?.includes("Staff Manager") ? "View" : "Review to Recommend",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
