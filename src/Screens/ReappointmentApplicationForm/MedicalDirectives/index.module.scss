@@ -399,7 +399,7 @@
 }
 
 .iconBackgroundColorYellow {
-    background-color: #FEC106;
+    background-color: $statusyellow;
     border-radius: 50%;
     height: 25px;
     width: 25px;
@@ -413,7 +413,7 @@
 }
 
 .iconBackgroundColorRed {
-    background-color: #FF6562;
+    background-color: $statusred;
     border-radius: 50%;
     height: 25px;
     width: 25px;

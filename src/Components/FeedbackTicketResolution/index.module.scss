@@ -34,19 +34,19 @@
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
 
 .printStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 5px;
     margin-top: -5px;
     margin-right: -30px !important;
@@ -110,7 +110,7 @@
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -470,7 +470,7 @@
 
 .miniHeadingTitles {
     text-align: left;
-    font: normal normal 600 13px/17px proxima-nova;
+    font: normal normal 600 $tabledatatext proxima-nova;
     letter-spacing: 0px;
     text-transform: capitalize;
 }
@@ -511,11 +511,11 @@
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .orange {
-    color: #ED784A;
+    color: $statusorange;
 }
 
 .userProfileStyle {

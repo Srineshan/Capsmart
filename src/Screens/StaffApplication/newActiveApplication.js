@@ -557,7 +557,7 @@ const NewActiveApplication = ({
             <a href={fileFields?.[i]?.fileURL} target="_blank">
               <Tooltip title={"Preview"} arrow>
                 <ArticleOutlinedIcon
-                  sx={{ color: "#0e5197", fontSize: 35 }}
+                  sx={{ color: "#06617A", fontSize: 35 }}
                   onClick={() => {
                     setSelectedFileURL(fileFields?.[i]?.fileURL);
                   }}

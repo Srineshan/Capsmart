@@ -462,20 +462,20 @@ const TrackYourContracts = () => {
                     value: format(new Date(timesheetData?.submissionStausLog?.status === "PENDING" ? timesheetData?.submissionStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.submissionStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.submissionStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.submissionStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.submissionStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.submissionStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.submissionStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 reviewAndApprovalStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? {
                     value: format(new Date(timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? timesheetData?.reviewApprovalStausLog?.dueDate : timesheetData?.reviewApprovalStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.reviewApprovalStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.reviewApprovalStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.reviewApprovalStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 reviewAndApprovalApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.reviewApprovalStausLog !== null ? timesheetData?.reviewApprovalStausLog?.daysToApprove : []),
                 paymentProcessingStatusAndDate: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? {
                     value: format(new Date(timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? timesheetData?.paymentProcessingStausLog?.dueDate : timesheetData?.submissionStausLog?.date), 'MMM dd, yyyy'),
                     status: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? `Pending Approval by ${format(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), 'MMM dd, yyyy')}`
                         : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? `Past Due by ${differenceInCalendarDays(new Date(timesheetData?.paymentProcessingStausLog?.dueDate), new Date())} days` : '',
-                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FEC106" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
+                    icon: <SquareIcon className={` ${style.cursorPointer}`} sx={{ color: timesheetData?.paymentProcessingStausLog?.status === "PENDING" ? "#FFCA27" : timesheetData?.paymentProcessingStausLog?.status === "PAST_DUE " ? "#F94848" : "#14B15A", fontSize: 14 }} />
                 } : []),
                 paymentProcessingApprovalDays: data?.timesheetsWithLogs?.map(timesheetData => timesheetData?.paymentProcessingStausLog !== null ? timesheetData?.paymentProcessingStausLog?.daysToApprove : ['']),
                 timesheetContractName: data?.timesheetsWithLogs?.map(timesheetData => data?.contract?.contractName?.contractName),
@@ -596,8 +596,8 @@ const TrackYourContracts = () => {
                                                 ))}
                                             </Select>
                                         </FormControl>
-                                        {/* <PrintOutlinedIcon sx={{ color: '#0e5197' }} />
-                                    <DownloadIcon sx={{ color: '#0e5197' }} /> */}
+                                        {/* <PrintOutlinedIcon sx={{ color: '#06617A' }} />
+                                    <DownloadIcon sx={{ color: '#06617A' }} /> */}
                                     </div>
                                 </div>
                                 <div className={`${style.trackTableBackgroudcard} ${style.marginTop20}`}>
@@ -652,7 +652,7 @@ const TrackYourContracts = () => {
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`TIMESHEET SUBMITTED PROCESSING STATUS BY SERVICE PROVIDER`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {/* {timesheetIntervals?.length !== 0 && (
                                     <>
@@ -780,7 +780,7 @@ const TrackYourContracts = () => {
                             <div>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`PAYMENT PROCESSING STATUS BY SERVICE PROVIDER`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' ? (
                                     <FormControl sx={{ width: isExpanded ? 'calc(80vw - 80px)' : 'calc(100vw - 160px)', marginTop: '20px' }}>
@@ -898,7 +898,7 @@ const TrackYourContracts = () => {
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={style.trackServiceProviderName}>{`STATUS OF ACTIVITIES/ SERVICES BY SERVICE PROVIDER FOR ${format(new Date(), 'MMMM yyyy')}`}</div>
-                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#0e5197" }} onClick={handlePrint} />
+                                    <PrintOutlinedIcon className={`${style.headerPrintIcon} ${style.cursorPointer}`} style={{ color: "#06617A" }} onClick={handlePrint} />
                                 </div>
                                 {selectedContractedServiceProvider !== '' && (
                                     <div className={`${style.trackPeriodCard} ${style.marginTop20} ${style.spaceBetween} ${style.padding20}`}>

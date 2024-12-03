@@ -62,8 +62,8 @@ const NewFAQPost = ({getNewFAQPostDialog}) => {
                     <div className={style.displayInRow}>
                             <Icon icon="link" color="
                         " size={18} className={style.marginRight20} />
-                        <Icon icon="media" color="#0e5197" size={18} className={style.marginRight20} />
-                        <Icon icon="paperclip" color="#0e5197" size={18} className={style.marginRight20} />
+                        <Icon icon="media" color="#06617A" size={18} className={style.marginRight20} />
+                        <Icon icon="paperclip" color="#06617A" size={18} className={style.marginRight20} />
                     </div>
                 </div>
             </div>

@@ -23,7 +23,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [applicantType, setApplicantType] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
-  
+
   // Replace sessionStorage with state
   const [checkedIds, setCheckedIds] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -249,110 +249,110 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         closeClick={handleCloseClick}
       />
       <div className={`${style.margin20} ${style.screenPadding}`}>
-<div className={style.bigCardStyle1}>
-            <div className={`${style.numberOfContractorsGrid} ${style.filterPadding}`}>
-              <div>
-                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                  <div className={`${style.filterType}`}>
-                    Department
-                  </div>
-                </div>
-                <div className={style.marginTop10}>
-
-
-                  <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={departmentList?.map(data => data?.id)}
-                    labelList={departmentList?.map(data => data?.departmentName?.name)}
-                    disabledList={departmentList?.map(data => false)}
-                    // label={'Department / Division or Specialty'}
-                    required={false}
-                  />
-
+        <div className={style.bigCardStyle1}>
+          <div className={`${style.numberOfContractorsGrid} ${style.filterPadding}`}>
+            <div>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                <div className={`${style.filterType}`}>
+                  Department
                 </div>
               </div>
-              <div>
-                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                  <div className={`${style.filterType}`}>
-                    Privilege Category
-                  </div>
-
-                </div>
-                <div className={style.marginTop10}>
+              <div className={style.marginTop10}>
 
 
-                  <CommonSelectField
-                    value={selectedPrivilegeCategory}
-                    onChange={(e) => setSelectedPrivilegeCategory(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={privilegeCategories?.map(data => data?.id)}
-                    labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
-                    disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
-                    required={false}
-                  />
+                <CommonSelectField
+                  value={selectedDepartment}
+                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                  className={style.fullWidth}
+                  firstOptionLabel={'All'}
+                  firstOptionValue={''}
+                  valueList={departmentList?.map(data => data?.id)}
+                  labelList={departmentList?.map(data => data?.departmentName?.name)}
+                  disabledList={departmentList?.map(data => false)}
+                  // label={'Department / Division or Specialty'}
+                  required={false}
+                />
 
-                </div>
               </div>
-              <div>
-                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                  <div className={`${style.filterType}`}>
-                    Staff Type
-                  </div>
-                </div>
-                <div className={style.marginTop10}>
-
-
-                  <CommonSelectField
-                    value={selectedApplicantType}
-                    onChange={(e) => setSelectedApplicantType(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={applicantType?.map(data => data?.id)}
-                    labelList={applicantType?.map(data => data?.applicantType)}
-                    disabledList={applicantType?.map(data => false)}
-                    required={false}
-                  />
-
-                </div>
-              </div>
-              <div>
-                <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
-                  <div className={`${style.filterType}`}>
-                    reappointment status
-                  </div>
-                </div>
-                <div className={style.marginTop10}>
-
-
-                  <CommonSelectField
-                    value={selectedReappointmentStatus}
-                    onChange={(e) => setSelectedReappointmentStatus(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={["NOT_SENT", "SENT"]}
-                    labelList={['Not Sent', 'Sent']}
-                    disabledList={false}
-                    required={false}
-                  />
-
-                </div>
-              </div>
-
             </div>
+            <div>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                <div className={`${style.filterType}`}>
+                  Privilege Category
+                </div>
+
+              </div>
+              <div className={style.marginTop10}>
+
+
+                <CommonSelectField
+                  value={selectedPrivilegeCategory}
+                  onChange={(e) => setSelectedPrivilegeCategory(e.target.value)}
+                  className={style.fullWidth}
+                  firstOptionLabel={'All'}
+                  firstOptionValue={''}
+                  valueList={privilegeCategories?.map(data => data?.id)}
+                  labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
+                  disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
+                  required={false}
+                />
+
+              </div>
+            </div>
+            <div>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                <div className={`${style.filterType}`}>
+                  Staff Type
+                </div>
+              </div>
+              <div className={style.marginTop10}>
+
+
+                <CommonSelectField
+                  value={selectedApplicantType}
+                  onChange={(e) => setSelectedApplicantType(e.target.value)}
+                  className={style.fullWidth}
+                  firstOptionLabel={'All'}
+                  firstOptionValue={''}
+                  valueList={applicantType?.map(data => data?.id)}
+                  labelList={applicantType?.map(data => data?.applicantType)}
+                  disabledList={applicantType?.map(data => false)}
+                  required={false}
+                />
+
+              </div>
+            </div>
+            <div>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+                <div className={`${style.filterType}`}>
+                  reappointment status
+                </div>
+              </div>
+              <div className={style.marginTop10}>
+
+
+                <CommonSelectField
+                  value={selectedReappointmentStatus}
+                  onChange={(e) => setSelectedReappointmentStatus(e.target.value)}
+                  className={style.fullWidth}
+                  firstOptionLabel={'All'}
+                  firstOptionValue={''}
+                  valueList={["NOT_SENT", "SENT"]}
+                  labelList={['Not Sent', 'Sent']}
+                  disabledList={false}
+                  required={false}
+                />
+
+              </div>
+            </div>
+
           </div>
+        </div>
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
-              <CircularProgress sx={{ color: "#0e5197" }} />
+              <CircularProgress sx={{ color: "#06617A" }} />
             </div>
           ) : (
             <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>

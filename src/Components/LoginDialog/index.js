@@ -207,7 +207,7 @@ const LoginDialog = ({ getIsOpen, days }) => {
           </div> */}
           <div className={style.spaceBetween}>
             <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
-            <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
+            <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
           </div>
           <div className={style.welcomeText}>Welcome!</div>
           <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
@@ -345,9 +345,9 @@ const LoginDialog = ({ getIsOpen, days }) => {
     //           <div className={style.createYourAccountSectionPadding}>
     //             <div className={style.heading}>Create Your Account</div>
     //             <div className={style.createAccountHelpText}>
-    //               CHM uses CAPSmart for to processing new staff member
+    //               CHM uses CAPManager for to processing new staff member
     //               applications and reappointments. you can Register as a user
-    //               with CAPSmart and avail its benefits
+    //               with CAPManager and avail its benefits
     //             </div>
     //             <div className={style.marginTop}>
     //               <div className={style.extentionLableStyle}>

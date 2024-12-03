@@ -901,7 +901,7 @@ const AddonClinicFields = ({
                     <>
                       <div className={`${style.additionalDetails} ${data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? style.additionalDetailsSelected : ''} ${style.cursorPointer} ${index !== 0 ? style.marginTop10 : ''}`} onClick={() => additionalDetailSelectionChange(details)}>
                         <div className={style.alignCenter}>
-                          <TaskAltIcon sx={{ color: data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? '#0e5197' : '#E4E4E4' }} />
+                          <TaskAltIcon sx={{ color: data?.activityResponse?.dataMap?.additionalDetails?.includes(details) ? '#06617A' : '#E4E4E4' }} />
                         </div>
                         <div className={`${style.additionalDetailsTextStyle} ${style.verticalAlignCenter}`}>{details}</div>
                       </div>
@@ -1442,7 +1442,7 @@ const AddonClinicFields = ({
                       <TaskAltIcon
                         sx={{
                           color: newServices?.additionalDetails?.includes(data)
-                            ? "#0e5197"
+                            ? "#06617A"
                             : "#E4E4E4",
                         }}
                       />

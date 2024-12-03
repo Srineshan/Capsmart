@@ -12,7 +12,7 @@ const CommonCheckBox = ({ onChange, label, className, onFocus, value, disabled, 
             <FormControlLabel control={<Checkbox value={value} checked={checked ? true : false} onChange={onChange} disabled={contractStatus === "ACTIVE" ? true : disabled} key={key}
                 sx={{
                     '&.Mui-checked': {
-                        color: "#0e5197",
+                        color: "#06617A",
                     },
                     '&.Mui-disabled': {
                         color: 'rgba(0, 0, 0, 0.26)',

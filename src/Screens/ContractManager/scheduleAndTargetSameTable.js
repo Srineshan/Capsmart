@@ -43,7 +43,7 @@ const ScheduleAndTargetSameTable = () => {
                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>15</p>
                 <p className={`${style.tableDataFontStyle} ${style.verticalAlignCenter} ${style.flexCenter}`}>8</p>
                 <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
-                    <EditIcon style={{ color: "#0e5197" }} />
+                    <EditIcon style={{ color: "#06617A" }} />
                 </div>
                 <div className={`${style.verticalAlignCenter} ${style.flexCenter} ${style.cursorPointer}`}>
                     <CloseIcon style={{ color: "#FF6562" }} />

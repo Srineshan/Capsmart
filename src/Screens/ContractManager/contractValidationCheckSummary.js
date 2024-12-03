@@ -47,7 +47,7 @@ const ContractValidationCheckSummary = ({ getContractValidationDialog, contract 
                     <p className={style.extensionStyle}>NEW CONTRACT VALIDATION CHECK SUMMARY</p>
                     <div className={style.displayInRow}>
                         <div className={`${style.iconPadding} ${style.cursorPointer}`} onClick={() => handlePrint()}>
-                            <PrintOutlinedIcon style={{ color: "#0e5197" }} />
+                            <PrintOutlinedIcon style={{ color: "#06617A" }} />
                         </div>
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getContractValidationDialog(false)} />
                     </div>

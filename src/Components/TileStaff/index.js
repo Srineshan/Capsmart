@@ -132,7 +132,7 @@ const TileStaff = ({
               <span
                 className={`${style.verticalAlignCenter}  ${style.alignRight} `}
               >
-                {(smallTextSelected === smallText3 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#0e5197', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                {(smallTextSelected === smallText3 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
                 <Tooltip title={`Click here to apply ${smallText3} filter`} arrow
                   slotProps={{
                     popper: {
@@ -163,7 +163,7 @@ const TileStaff = ({
             )}
             {smallNum1 !== "" && (
               <span className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`} >
-                {(smallTextSelected === smallText1 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#0e5197', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                {(smallTextSelected === smallText1 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
                 <Tooltip title={`Click here to apply ${smallText1} filter`} arrow
                   slotProps={{
                     popper: {
@@ -196,7 +196,7 @@ const TileStaff = ({
               <span
                 className={`${style.verticalAlignCenter} ${style.marginTop5} ${style.alignRight}`}
               >
-                {(smallTextSelected === smallText2 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#0e5197', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
+                {(smallTextSelected === smallText2 && selectedApplicant === currentTile) && (<ClearIcon sx={{ fontSize: 13, color: '#06617A', marginRight: '10px' }} onClick={() => setSmallTextSelected('')} />)}
                 <Tooltip title={`Click here to apply ${smallText2} filter`} arrow
                   slotProps={{
                     popper: {

@@ -44,7 +44,7 @@ const TileApplication = ({
 
   return (
     <div
-      className={`${style.applicationCardStyle} ${style.alignCenter}  ${isSelected ? style.selectedApplicantBackground : ''} ${isDisabled ? style.disabled : ''}`}
+      className={`${style.applicationCardStyle} ${style.alignCenter}  ${isSelected ? style.selectedApplicantBackground1 : ''} ${isDisabled ? style.disabled : ''}`}
       onClick={handleClick}
     >
       {topText !== "" && <p className={style.next30Style}>{topText}</p>}

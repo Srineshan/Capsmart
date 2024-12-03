@@ -106,9 +106,9 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                     <div className={style.displayInRow}>
                         {/* <img src={Info} className={`${style.infoStyle} ${style.marginTop5}`} /> */}
                         {/* <div className={`${style.displayInRow} ${style.marginLeft20}`}>
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
-                            <Icon icon="star" size={20} color="#FEC106" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
+                            <Icon icon="star" size={20} color="#FFCA27" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                             <Icon icon="star" size={20} color="#D3D3D3" className={style.marginLeft} />
                         </div> */}
@@ -288,7 +288,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
             {/* <Dialog isOpen={isLoading} onClose={() => setShowReportRefreshingDialog(false)} className={`${style.reportSavedDialog} ${style.dialogPaddingBottom}`} canOutsideClickClose={false}>
                 <div className={`${Classes.DIALOG_BODY} ${style.deleteEcecutedContractDialogBackground}`}>
                     <div className={style.justifyCenter}>
-                        <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{ color: "#0e5197" }} className={style.reportIconStyle} />
+                        <CachedOutlinedIcon sx={{ fontSize: 60 }} style={{ color: "#06617A" }} className={style.reportIconStyle} />
                     </div>
                     <div className={style.reportSavedStyle}>Refreshing Report</div>
                 </div>

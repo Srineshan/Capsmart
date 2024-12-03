@@ -99,7 +99,7 @@ body {
 
 .welcomeDescriptionStyle {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     width: 70%;
@@ -108,7 +108,7 @@ body {
 }
 
 .switchFontStyle {
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     color: #2C2C2C;
 }
 
@@ -135,7 +135,7 @@ body {
 
 .loginToStyle {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -149,7 +149,7 @@ body {
 
 .otpHeading {
     text-align: center;
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #707070;
 }
@@ -167,7 +167,7 @@ body {
 
 .regHeading {
     text-align: left;
-    font: normal normal 600 15px/20px proxima-nova;
+    font: normal normal 600 $navbartext proxima-nova;
     letter-spacing: 0px;
 }
 
@@ -347,13 +347,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin: 25px;
     cursor: pointer;
 }
 
 .crossStyleWelcomePage {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -624,7 +624,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -891,7 +891,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -900,7 +900,7 @@ body {
 }
 
 .tableHeaderFontStyleActiveCustomer {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -988,7 +988,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -998,7 +998,7 @@ body {
 }
 
 .tableDataFontStyleActiveCustomers {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1061,7 +1061,7 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -1102,7 +1102,7 @@ body {
 }
 
 .alertCrossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -1167,7 +1167,7 @@ body {
 .failedTesxtColor {
     font: normal normal 600 14px/20px proxima-nova;
     letter-spacing: 0px;
-    color: #FF6562;
+    color: $statusred;
 }
 
 .resetStyle {
@@ -1407,7 +1407,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -1524,15 +1524,15 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .blue {
@@ -1772,7 +1772,7 @@ body {
 }
 
 .tableHeaderFontStyleToDo {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1784,7 +1784,7 @@ body {
 }
 
 .multipleContractorTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1796,7 +1796,7 @@ body {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1806,7 +1806,7 @@ body {
 }
 
 .tableDataFontStyleToDo {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1818,7 +1818,7 @@ body {
 }
 
 .tableDataFontStyleAlerts {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1829,7 +1829,7 @@ body {
 }
 
 .multipleDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -1840,7 +1840,7 @@ body {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -1854,7 +1854,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 8px;
 }
 
@@ -1862,7 +1862,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 8px;
 }
 
@@ -1871,7 +1871,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 8px;
 }
 
@@ -2033,7 +2033,7 @@ body {
 
 .userNameStyle {
     text-align: left;
-    font: normal normal 600 15px/13px proxima-nova;
+    font: normal normal 600 $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     height: 40px;
@@ -2069,7 +2069,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -2093,7 +2093,7 @@ body {
 }
 
 .crossStyle2 {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -2222,27 +2222,27 @@ body {
 }
 
 .redBorderField {
-    border: 1px solid #FF6562 !important;
+    border: 1px solid $statusred !important;
 }
 
 .greenBorderField {
-    border: 1px solid #00C07F !important;
+    border: 1px solid $statusgreen !important;
 }
 
 .activePasswordProgressLength1 {
-    background-color: #FF6562 !important;
+    background-color: $statusred !important;
 }
 
 .activePasswordProgressLength2 {
-    background-color: #FEC106 !important;
+    background-color: $statusyellow !important;
 }
 
 .activePasswordProgressLength3 {
-    background-color: #ED784A !important;
+    background-color: $statusorange !important;
 }
 
 .activePasswordProgressLength4 {
-    background-color: #00C07F !important;
+    background-color: $statusgreen !important;
 }
 
 .subscriptionRow {
@@ -2382,13 +2382,13 @@ input[type="file"] {
 }
 
 .yellowSmallNumber {
-    color: #FEC106;
+    color: $statusyellow;
     background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
     color: #fff;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .greenSmallNumber {
@@ -2416,7 +2416,7 @@ input[type="file"] {
 }
 
 .yellowBigNumber {
-    color: #FEC106 !important;
+    color: $statusyellow !important;
 }
 
 .redBigNumber {
@@ -2425,7 +2425,7 @@ input[type="file"] {
 
 
 .purpleSmallNumber {
-    color: #0e5197;
+    color: #06617A;
     background-color: $secondarycolor;
 }
 

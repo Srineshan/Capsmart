@@ -184,7 +184,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
       >
         <div>
           <div className={style.alignCenter}>
-            <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
+            <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {`Your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title} has been declined.`}
@@ -258,7 +258,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           </div> */}
             <div className={style.spaceBetween}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
-              <img src={'https://capsmart-dev.s3.ca-central-1.amazonaws.com/capsmart+logo-01.png'} alt="CAPSmart Logo" className={`${style.CAPSmartLogo}`} />
+              <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
             <br />
             <div className={style.reappointmentGrid}>
@@ -268,7 +268,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               <div>
                 <div className={style.welcomeText}>Your Reappointment Application</div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  {title} has automated its credentialing & privileging business functions with CAPSmart, an AI solution for end to end credentialing and privileging activities.
+                  {title} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
                   Processing of your reappointment application will now be a less burdensome activity.

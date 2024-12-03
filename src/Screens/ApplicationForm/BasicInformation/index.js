@@ -345,7 +345,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                                     <div className={style.siteDisplaySurgeryTextStyle}>Cardiothoracic Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
-                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
+                                <DeleteOutlineIcon sx={{ color: '#06617A', cursor: 'pointer' }} />
                             </div>
                              <div className={`${style.siteDisplayCard} ${style.siteDisplayGrid} ${style.marginTop}`}>
                                 <div>
@@ -353,7 +353,7 @@ const BasicInformation = ({ basicForm, setBasicForm, applicationId, getPreApplic
                                     <div className={style.siteDisplaySurgeryTextStyle}>General Surgery</div>
                                     <div className={`${style.siteDisplaySiteTextStyle} ${style.marginTop10}`}>Cambridge Memorial Hospital </div>
                                 </div>
-                                <DeleteOutlineIcon sx={{ color: '#0e5197', cursor: 'pointer' }} />
+                                <DeleteOutlineIcon sx={{ color: '#06617A', cursor: 'pointer' }} />
                             </div> 
                         </div>
                     </div>

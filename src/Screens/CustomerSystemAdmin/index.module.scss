@@ -188,7 +188,7 @@
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
@@ -199,7 +199,7 @@
 }
 
 .proofBorder {
-    border: 1px solid #0e5197;
+    border: 1px solid #06617A;
     border-radius: 8px;
     opacity: 1;
     overflow: scroll;
@@ -218,7 +218,7 @@
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -255,13 +255,13 @@
 }
 
 .yellowSmallNumber {
-    color: #FEC106;
+    color: $statusyellow;
     background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
     color: #fff;
-    background-color: #FEC106;
+    background-color: $statusyellow;
 }
 
 .greenSmallNumber {

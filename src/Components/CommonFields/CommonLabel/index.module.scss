@@ -1,8 +1,10 @@
+@import "../../../index.scss";
+
 .lableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
     text-transform: capitalize;
     opacity: 1;
     margin-top: 5px;

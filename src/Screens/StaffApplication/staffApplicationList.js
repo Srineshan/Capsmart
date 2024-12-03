@@ -18,6 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
 import TableTwo from "../../Components/TableDesignTwo";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import PublicIcon from "@mui/icons-material/Public";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import style from "./index.module.scss";
@@ -221,7 +222,7 @@ const StaffApplicationList = ({
     false,
   ];
 
-  const departmentHeadColSortValues =  [
+  const departmentHeadColSortValues = [
     false,
     true,
     true,
@@ -233,7 +234,7 @@ const StaffApplicationList = ({
     false,
     true,
     false
-  ] 
+  ]
   const applicationColSortValues = applicationType === "NEW" ? [
     false,
     true,
@@ -246,7 +247,7 @@ const StaffApplicationList = ({
     false,
     true,
     false
-  ] :  [
+  ] : [
     false,
     true,
     true,
@@ -335,7 +336,7 @@ const StaffApplicationList = ({
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
-    const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
+  const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false)
@@ -1067,7 +1068,7 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
-  } 
+  }
 
   const getApplicationValues = applicationType === "NEW" ? () => {
     dot = [];
@@ -1373,8 +1374,8 @@ const StaffApplicationList = ({
       },
       { type: "action", value: action },
     ];
-  } : () =>{
-   applicantName = [];
+  } : () => {
+    applicantName = [];
     applicantId = [];
     applicantType = [];
     ccapproval = [];
@@ -1918,7 +1919,7 @@ const StaffApplicationList = ({
         ? departmentHeadColSortValues
         : selectedTab === "level-3"
           ? applicationColSortValues
-          : selectedTab === "level-4" 
+          : selectedTab === "level-4"
             ? macColSortValues
             : selectedTab === "level-5"
               ? bodColSortValues
@@ -1926,9 +1927,9 @@ const StaffApplicationList = ({
                 ? applicantColSortValues
                 : selectedTab === "rejected"
                   ? rejectedColSortValues
-                    // :[];
+                  // :[];
 
-                    // : approvedColSortValues;
+                  // : approvedColSortValues;
                   : applicantColSortValues;
   let tableDataValues =
     selectedTab === "level-1"
@@ -1939,58 +1940,58 @@ const StaffApplicationList = ({
           ? getApplicationValues()
           : selectedTab === "level-4"
             ? getMacValues()
-              : selectedTab === "level-5"
-                ? getBodValues()
-                : selectedTab === "clarificationsRequired"
-                  ? getApplicantValues()
-                  : selectedTab === "rejected"
-                    ? getRejectedValues()
-                    // :[];
+            : selectedTab === "level-5"
+              ? getBodValues()
+              : selectedTab === "clarificationsRequired"
+                ? getApplicantValues()
+                : selectedTab === "rejected"
+                  ? getRejectedValues()
+                  // :[];
 
-                    // : getApprovedValues();
-                    : getApplicantValues();
+                  // : getApprovedValues();
+                  : getApplicantValues();
   let actions =
     selectedTab === "level-1"
       ? applicantActionsData
-      : selectedTab === "level-2" 
+      : selectedTab === "level-2"
         ? departmentHeadActionsData
-        : selectedTab === "level-3" 
+        : selectedTab === "level-3"
           ? applicationActionsData
-              : selectedTab === "level-4" 
-                ? macActionsData
-                : selectedTab === "level-5"
-                  ? bodActionsData
-                    : selectedTab === "clarificationsRequired"
-                      ? clarificationActionsData
-                      : selectedTab === "rejected"
-                        ? rejectedActionsData
-                        // :[];
+          : selectedTab === "level-4"
+            ? macActionsData
+            : selectedTab === "level-5"
+              ? bodActionsData
+              : selectedTab === "clarificationsRequired"
+                ? clarificationActionsData
+                : selectedTab === "rejected"
+                  ? rejectedActionsData
+                  // :[];
 
-                        : approvedActionsData;
+                  : approvedActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1"
       ? style.applicantStaffGrid
       : selectedTab === "level-2"
         ? style.departmentHeadStaffGrid
-          : selectedTab === "level-3" && applicationType === "NEW"
-            ? style.applicationStaffGrid
-            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT"
-              ? style.applicationStaffReappointGrid
-              : selectedTab === "level-4" && applicationType === "NEW"
-                ? style.macStaffGrid
-                : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
-                  ? style.macStaffReappointGrid
-                  : selectedTab === "level-5"
-                    ? style.bodStaffGrid
-                    : selectedTab === "clarificationsRequired"
-                      ? style.applicantStaffGrid
-                      : selectedTab === "rejected"
-                        ? style.rejectedStaffGrid
-                        // :[];
+        : selectedTab === "level-3" && applicationType === "NEW"
+          ? style.applicationStaffGrid
+          : selectedTab === "level-3" && applicationType === "REAPPOINTMENT"
+            ? style.applicationStaffReappointGrid
+            : selectedTab === "level-4" && applicationType === "NEW"
+              ? style.macStaffGrid
+              : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                ? style.macStaffReappointGrid
+                : selectedTab === "level-5"
+                  ? style.bodStaffGrid
+                  : selectedTab === "clarificationsRequired"
+                    ? style.applicantStaffGrid
+                    : selectedTab === "rejected"
+                      ? style.rejectedStaffGrid
+                      // :[];
 
-                        // : style.approvedStaffGrid;
-                        : style.applicantStaffGrid;
+                      // : style.approvedStaffGrid;
+                      : style.applicantStaffGrid;
 
   return (
     <div className={style.margin20}>
@@ -2004,15 +2005,7 @@ const StaffApplicationList = ({
                 >
                   <div
                     className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                    onClick={() =>
-                      applicationType === "NEW"
-                        ? navigate("/createStaffMemberApplication")
-                        : navigate("/createStaffReapplication")
-                    }
                   >
-                    {applicationType === "REAPPOINTMENT" ? "TRIGGER NEW REAPPOINTMENTS" : "CREATE NEW APPLICATION"}
-                  </div>
-                  <div className={`${style.displayInRow} ${style.marginLeft20} `}>
                     <AddCircleOutlineIcon
                       sx={{ fontSize: 20, color: "white" }}
                       onClick={() =>
@@ -2021,6 +2014,18 @@ const StaffApplicationList = ({
                           : navigate("/createStaffReapplication")
                       }
                     />
+                  </div>
+                  <div
+                    className={`${style.displayInRow} ${style.marginLeft20} `}
+                    onClick={() =>
+                      applicationType === "NEW"
+                        ? navigate("/createStaffMemberApplication")
+                        : navigate("/createStaffReapplication")
+                    }
+                  >
+                    {applicationType === "REAPPOINTMENT"
+                      ? "Trigger New Reappointment"
+                      : "Create New Application"}
                   </div>
                 </div>
               ) : null}
@@ -2043,12 +2048,12 @@ const StaffApplicationList = ({
                     <div className={`${style.marginLeft10} `}>
                       {!showCardCompletion ? (
                         <AddIcon
-                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                           onClick={() => setShowCardCompletion(!showCardCompletion)}
                         />
                       ) : (
                         <RemoveIcon
-                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                           onClick={() => setShowCardCompletion(!showCardCompletion)}
                         />
                       )}
@@ -2097,7 +2102,7 @@ const StaffApplicationList = ({
                                 completed={100 - status?.remainingCompletionPercentage}
                                 isLabelVisible={false}
                                 height="5px"
-                                bgColor="#0e5197"
+                                bgColor="#06617A"
                                 baseBgColor="#E9E9F0"
                                 className={style.marginLeft20}
                               />
@@ -2136,12 +2141,12 @@ const StaffApplicationList = ({
                     <div className={`${style.marginLeft10} `}>
                       {!showCardDetails ? (
                         <AddIcon
-                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                           onClick={() => setShowCardDetails(!showCardDetails)}
                         />
                       ) : (
                         <RemoveIcon
-                          sx={{ fontSize: 20, color: "#0e5197", cursor: "pointer" }}
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                           onClick={() => setShowCardDetails(!showCardDetails)}
                         />
                       )}
@@ -2214,7 +2219,7 @@ const StaffApplicationList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -2225,7 +2230,7 @@ const StaffApplicationList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                   onClick={handlePrintClick}
                 />
@@ -2238,7 +2243,7 @@ const StaffApplicationList = ({
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -2270,13 +2275,18 @@ const StaffApplicationList = ({
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by
-          </p>
-          <img src={CapSmartTransparent} alt="footer" className={`${style.footerIconStyle} ${style.marginLeft10}`} />
+          </p> */}
+          <img
+            src={HapiCare}
+            alt="footer"
+            className={`${style.footerIconStyle} ${style.marginLeft10}`}
+          />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
+
 
       {showApplicationRejectionDialog && (
         <ApplicationRejection

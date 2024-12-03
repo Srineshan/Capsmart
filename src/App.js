@@ -283,7 +283,7 @@ const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
-  const [title, setTitle] = useState("CAPSmart");
+  const [title, setTitle] = useState("CAPManager");
   const [entityId, setEntityId] = useState("");
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [entityDetails, setEntityDetails] = useState();

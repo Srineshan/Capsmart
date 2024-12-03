@@ -20,7 +20,7 @@
     background: transparent linear-gradient(180deg, #D3D0F6 0%, #EEECFB 11%, #FCFCFE 22%, #FFFFFF 100%) 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 50px #52575D4D;
     border-radius: 20px;
-    padding: 20px 40px;
+    padding: 20px 5px;
     margin: -20px -40px 0 -40px;
 }
 
@@ -87,9 +87,9 @@
 
 .descriptionStyle {
     text-align: center;
-    font: normal normal normal 16px/26px proxima-nova;
+    font: normal normal normal $labelvaluetext proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
     text-transform: capitalize;
 }
 
@@ -97,7 +97,7 @@
     text-align: left;
     font: normal normal medium 20px/36px proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
     text-transform: capitalize;
 }
 
@@ -219,7 +219,7 @@
     text-align: center;
     font: normal normal bold 22px/39px proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
 }
 
 .createAccountHelpText {
@@ -238,7 +238,7 @@
     text-align: center;
     font: normal normal bold 32px/52px proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
 }
 
 .featureTextHighlight {
@@ -248,7 +248,7 @@
 .withOrWithoutText {
     text-align: center;
     font: normal normal normal 18px/32px proxima-nova;
-    color: #2C2C2C;
+    color: $textgrey;
 }
 
 .withoutOpacity {
@@ -286,12 +286,12 @@
     text-align: left;
     font: normal normal bold 26px/30px proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
 }
 
 .advantageDescription {
     text-align: left;
-    font: normal normal medium 16px/24px proxima-nova;
+    font: normal normal medium $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: $textgrey;
 }
