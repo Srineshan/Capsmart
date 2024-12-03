@@ -42,8 +42,7 @@ const StaffApplicationList = ({
   getActiveApplicationView,
   getActiveApplicationTask,
   getNotesCommentBox,
-  getTitleCounts,
-  setSelectedTab
+  getTitleCounts
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -68,7 +67,7 @@ const StaffApplicationList = ({
   const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('ASCENDING');
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -95,14 +94,14 @@ const StaffApplicationList = ({
   const departmentHeadHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
-    "DOCS",
+    "Docs",
     "CRs",
     "Notes",
-    "Task list Status",
+    "Task list",
     "Last Updated",
-    "Action"
+    ""
   ];
 
   const applicationHeaderValues = applicationType === "NEW" ? [
@@ -549,7 +548,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue]);
+  }, [selectedTab, sortField, sortValue,page,totalCount]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -569,15 +568,22 @@ const StaffApplicationList = ({
     setShowCardDetails((prev) => !prev);
   };
 
+  const getSelectedPage = (value) => {
+    setPage(value);
+}
+
+
   const getWorkflowUserData = async () => {
     // const applicationCreationType = selectedTab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
     try {
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
-        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=20`
+        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${10}&offset=${page - 1}`
       );
       console.log("Application data", response?.data.applications);
       setTableData(response?.data?.applications);
+      setTotalCount(response?.data?.numberOfElements);
+      console.log("Application data length", response?.data?.numberOfElements);
       return response?.data.applications || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -844,11 +850,11 @@ const StaffApplicationList = ({
       // ]);
       notesHoverText.push(notesHoverTextArray);
 
-      if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      } else if (data?.tasks?.completedCount === 0) {
+      if (data?.tasks?.completedCount === 0) {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
-      } else {
+      } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      }  else {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
@@ -873,7 +879,7 @@ const StaffApplicationList = ({
       // { type: "text", value: department },
       {
         type: "iconWithCount",
-        value: docs,
+        // value: docs,
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
@@ -1668,7 +1674,7 @@ const StaffApplicationList = ({
     {
       data: "View & Verify",
       requiredValue: "boolean",
-      onClick: onClickViewAndVerifyFunction,
+      onClick: onClickViewAndVerifyLevelFunction,
     },
     // {
     //   data: "Send for Dept Head Review",
@@ -1692,18 +1698,18 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: userRole?.includes("Staff Manager") ? "View" : "View & Verify",
+      data: userRole?.includes("Staff Manager") ? "View" : "Review & Recommend",
       requiredValue: "boolean",
-      onClick: onClickViewAndVerifyFunction,
+      onClick: onClickViewAndVerifyLevelFunction,
     },
-    {
-      data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
-      requiredValue: "boolean",
-      onClick: onClickProcessingTaskFunction,
-      hideForRoles: "Staff Manager",
-      showForRoles: "Chief Of Staff",
-      showForRoles2: "Department Head",
-    },
+    // {
+    //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
+    //   requiredValue: "boolean",
+    //   onClick: onClickProcessingTaskFunction,
+    //   hideForRoles: "Staff Manager",
+    //   showForRoles: "Chief Of Staff",
+    //   showForRoles2: "Department Head",
+    // },
     // {
     //   data: "Send for Cred Comm Review",
     //   requiredValue: "boolean",
@@ -2252,6 +2258,9 @@ const StaffApplicationList = ({
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
                   />
                 </div>
               </div>

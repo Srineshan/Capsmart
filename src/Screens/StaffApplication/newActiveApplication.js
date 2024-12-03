@@ -798,7 +798,7 @@ const NewActiveApplication = ({
           role = "Staff Manager";
           isDelegate = false;
       } else if (userRole?.includes("Chief Of Staff")) {
-        role = "Chief Of Staff";
+        role = "Staff Manager";
       }
      } else if (selectedTab === 'level-2') {
       if (userRole?.includes("Department Head")) {
@@ -816,7 +816,12 @@ const NewActiveApplication = ({
         isDelegate = false;
       }
     } else if (selectedTab === 'level-4') {
-      role = "Advisory Committee";
+      if (userRole?.includes("Advisory Committee")) {
+        role = "Advisory Committee";
+        isDelegate = false;
+      } else if (userRole?.includes("Chief Of Staff")) {
+        role = "Advisory Committee";
+      }
     } else if (selectedTab === 'level-5') {
       role = "Board";
     }
@@ -3507,16 +3512,19 @@ const NewActiveApplication = ({
                                     </div>
                                   </div>
                                   <div
-                                    // className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                                    className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                                    style={{ opacity: isApproved ? 1 : 0.5 }}
+                                    className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                    // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                                    // style={{ opacity: isApproved ? 1 : 0.5 }}
                                   >
                                     <div
                                       className={`${style.buttonTextStyle} ${style.alignCenter}`}
                                       // onClick={() => {
-                                      //   onClickApproveMoveFunction();
+                                      //   onClickApprovalDeptFunction();
                                       // }}
-                                      onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                                      // onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                                      onClick={() => {
+                                        onClickApproveMoveFunction();
+                                      }}
                                     >
                                       Verified, Send to Dept. Chief
                                     </div>
@@ -7334,7 +7342,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                {(userRole?.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && (
+                {(userRole?.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")  ? (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7347,22 +7355,99 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                     <div
-                      // className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      style={{ opacity: isApproved ? 1 : 0.5 }}
+                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      // style={{ opacity: isApproved ? 1 : 0.5 }}
                     >
                       <div
                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
                         // onClick={() => {
-                        //   onClickApproveMoveFunction();
+                        //   onClickApprovalDeptFunction();
                         // }}
-                        onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                        onClick={() => {
+                          onClickApproveMoveFunction();
+                        }}
+                        
                       >
                         Verified, Send to Dept. Chief
                       </div>
                     </div>
                   </div>
+                ) : ("")}
+                   {(applicationType === "NEW" && (selectedTab === "level-1" ||selectedTab === "level-2"||selectedTab === "level-3") ) ? (
+                  <>
+                  <div className={`${style.twoColumnGrid}`}>
+                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        onClick={() => {
+                          onClose();
+                        }}
+                      >
+                        SAVE IN PROGRESS
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      // style={{ opacity: isApproved ? 1 : 0.5 }}
+                    >
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                        // onClick={() => {
+                        //   onClickApprovalDeptFunction();
+                        // }}
+                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                      >
+                        Reject
+                      </div>
+                    </div>
+                  </div>
+                  </>
+                ) : ("")}
+
+              {(applicationType === "NEW" && selectedTab === "level-1" ) ? (
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={onClickApproveMoveFunction}
+                  >
+                    VERIFY & SEND FOR DEPARTMENT HEAD
+                  </div>
+                </div>
+                ) : ("")}
+
+              {(applicationType === "NEW" && selectedTab === "level-2" ) ? (
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div
+                    className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                  onClick={onClickApproveMoveFunction}
+                  >
+                    VERIFY & SEND FOR CRED. COMM.
+                  </div>
+                </div>
+                ) : ("")}
+
+                {(applicationType === "NEW" && selectedTab === "level-3") ? (
+                  <div 
+                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${userRole?.includes("Chief Of Staff") ? style.disabledButton : ""}`}
+                    style={{ opacity: userRole?.includes("Chief Of Staff") ? 0.5 : 1 }}
+                    onClick={() => {
+                      if (!userRole?.includes("Chief Of Staff")) {
+                        // Call your approve move function here
+                        onClickApproveMoveFunction();
+                      }
+                    }}
+                  >
+                    <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                      APPROVE APPLICANT
+                    </div>
+                  </div>
+                ) : (
+                  ""
                 )}
+                
                 <div className={`${style.marginBottom20}`}>
 
                   {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
@@ -7560,7 +7645,7 @@ const NewActiveApplication = ({
                     </div>
                   </>) : ("")}
           
-                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
                        Pending MAC Recommendation
@@ -7568,7 +7653,7 @@ const NewActiveApplication = ({
                     </div>
                   </>) : ( " ")}
 
-                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (<>
+                  {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Board') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
                         Pending BOD Recommendation
@@ -7580,7 +7665,7 @@ const NewActiveApplication = ({
                     <>
                       {selectedTab === "level-3" && (
                         <>
-                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                               <div
                                 className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -7600,12 +7685,12 @@ const NewActiveApplication = ({
                                 RECOMMEND
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <div
                                 className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              // onClick={onClickApprovalFunction}
+                                onClick={onClickApproveMoveFunction}
                               >
                                 OVERRIDE FOR TEMPORARY PRIVILEGES
                               </div>
@@ -7658,7 +7743,7 @@ const NewActiveApplication = ({
                       )}
                       {(selectedTab === "level-2") && (
                         <>
-                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div
                               className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
@@ -7685,7 +7770,7 @@ const NewActiveApplication = ({
                                 RECOMMEND
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <div
@@ -7701,7 +7786,7 @@ const NewActiveApplication = ({
                     </>
                   )}
 
-                  {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW") || (userRole?.includes('Department Head') && selectedTab === 'level-3' && applicationType === "NEW")) && (
+                  {/* {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW")) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -7730,7 +7815,7 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {applicationType === "NEW" ? (
                     ((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') ||
                       (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") ||
@@ -7786,9 +7871,9 @@ const NewActiveApplication = ({
 
                 </div>
                 <>
-                  {selectedTab !== "level-4" && selectedTab !== "level-5" && (
+                  {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
                     <>
-                      {/* <div className={style.cardLeftStyle}>
+                      <div className={style.cardLeftStyle}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -7826,8 +7911,8 @@ const NewActiveApplication = ({
                   </div>
                 </div>
               </div>
-            </div> */}
-                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+            </div>
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
               <div className={`${style.displayInRow}${style.marginTop20}`}>
                 <div
                   className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -7891,7 +7976,7 @@ const NewActiveApplication = ({
               </div>
            
               <div className={style.marginBottom20}></div>
-            </div> */}
+            </div>
                       {applicationType === "NEW" && (
                         <>
                           <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
@@ -8286,11 +8371,15 @@ const NewActiveApplication = ({
                                       > */}
                       <div
                         className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
+                        style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                        onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                       >
                         <div
                           className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
                           //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                          onClick={onClickApproveMoveFunction}
+                          // onClick={onClickApproveMoveFunction}
+                          // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                         >
                           BOD APPROVED
                         </div>
