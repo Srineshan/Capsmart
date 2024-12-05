@@ -674,9 +674,9 @@ const App = ({ props }) => {
         if (response?.data?.id) {
           cookie.set("entityId", response?.data?.id, { path: "/" });
           setEntityId(response?.data?.id);
-          if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
-            login(response?.data?.id);
-          }
+          // if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
+          login(response?.data?.id);
+          // }
         }
       })
       .catch((error) => {
