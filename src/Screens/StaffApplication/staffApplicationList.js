@@ -9,6 +9,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import HapiCare from "./../../images/PoweredHapiCare.png";
+import SearchIcon from "./../../images/search.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -2277,11 +2278,9 @@ const StaffApplicationList = ({
                   userRole?.includes("Board"))
               ) ? (
                 <div
-                  className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                  className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
-                  <div
-                    className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                  >
+                  <div className={`${style.displayInRow} ${style.alignCenter}`}>
                     <AddCircleOutlineIcon
                       sx={{ fontSize: 20, color: "white" }}
                       onClick={() =>
@@ -2290,18 +2289,18 @@ const StaffApplicationList = ({
                           : navigate("/createStaffReapplication")
                       }
                     />
-                  </div>
-                  <div
-                    className={`${style.displayInRow} ${style.marginLeft20} `}
-                    onClick={() =>
-                      applicationType === "NEW"
-                        ? navigate("/createStaffMemberApplication")
-                        : navigate("/createStaffReapplication")
-                    }
-                  >
-                    {applicationType === "REAPPOINTMENT"
-                      ? "Trigger New Reappointment"
-                      : "Create New Application"}
+                    <div
+                      className={`${style.displayInRow} ${style.alignCenter}`}
+                      onClick={() =>
+                        applicationType === "NEW"
+                          ? navigate("/createStaffMemberApplication")
+                          : navigate("/createStaffReapplication")
+                      }
+                    >
+                      {applicationType === "REAPPOINTMENT"
+                        ? "Trigger Reappointment"
+                        : "Create New Application"}
+                    </div>
                   </div>
                 </div>
               ) : null}
@@ -2321,7 +2320,8 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
+                      Sent for Completion (
+                      {sentCompletion?.totalApplicationsSent || 0})
                       {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
@@ -2456,7 +2456,8 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Applicants Rejected / Declined ({applicationRejected?.totalRejections})
+                      Applicants Rejected / Declined (
+                      {applicationRejected?.totalRejections})
                       {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
                       >
@@ -2518,7 +2519,7 @@ const StaffApplicationList = ({
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`${userRole} > STAFF APPLICATIONS`}
+            {`STAFF APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles

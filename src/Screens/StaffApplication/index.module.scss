@@ -2611,9 +2611,9 @@ input[type="file"] {
 .addStyle {
   background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
-  border-radius: 8px;
+  border-radius: 4px;
   height: 33px;
-  min-width: 35px;
+  min-width: 45px;
 }
 
 .addSmallStyle {
@@ -3653,10 +3653,10 @@ input[type="number"] {
 }
 
 .headingForStaffs {
-  font: normal normal bolder $navbartext proxima-nova !important;
+  font: normal normal 500 15px proxima-nova !important;
   letter-spacing: 0px;
   text-align: left;
-  color: #2C2C2C;
+  color: #9AAFB5;
   text-transform: uppercase;
   opacity: 1;
 
@@ -4723,4 +4723,33 @@ input[type="number"] {
 .marginBothText{
   margin-top: 5px;
   margin-left: 10px;
+}
+
+.searchContainer {
+  position: relative;
+  width: 254px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #FFF;
+  border-radius: 8px;
+  padding: 0 15px;
+  background-color: #FFF; /* Optional */
+  box-sizing: border-box;
+}
+
+.searchIcon {
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  // margin-right: 10px;
+}
+
+.searchInput {
+  flex: 1; /* Take remaining space */
+  border: none;
+  font-size: 16px;
+  outline: none;
+  padding: 0;
+  background: transparent; /* Match container's background */
 }
