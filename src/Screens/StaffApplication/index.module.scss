@@ -666,9 +666,9 @@ body::-webkit-scrollbar {
 
 .leftCardHeadingNameStyle {
   text-align: left;
-  font: normal normal bold $tabledatatext1 proxima-nova;
+  font: normal normal 400 16px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $primarycolor;
   opacity: 1;
 }
 
@@ -1401,9 +1401,9 @@ body::-webkit-scrollbar {
 
 .cardTextBoldStyle {
   text-align: left;
-  font: normal normal bold $tabledatatext1 proxima-nova;
+  font: normal normal 600 $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -1434,7 +1434,7 @@ body::-webkit-scrollbar {
 
 .emailTextBoldStyle {
   text-align: center;
-  font: normal normal bold 17px/20px proxima-nova;
+  font: normal normal 400 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -2751,25 +2751,28 @@ input[type="file"] {
   padding: 20px;
 }
 
-.photoCardStyle {
-  width: 93px;
-  height: 89px;
-  transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
-  /* UI Properties */
-  text-align: left;
-  font: normal normal bold 34px/58px proxima-nova;
-  letter-spacing: 0px;
-  color: $primarycolor;
-  opacity: 0.1;
-}
+// .photoCardStyle {
+//   width: 93px;
+//   height: 89px;
+//   transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
+//   /* UI Properties */
+//   text-align: left;
+//   // font: normal normal bold 34px/58px proxima-nova;
+//   // letter-spacing: 0px;
+//   // color: $primarycolor;
+//   opacity: 0.1;
+// }
 
 .photoBorderStyle {
-  width: 108px;
-  height: 108px;
-  /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
-  border-radius: 10px;
-  opacity: 0.1;
+  width: 93px;
+  height: 89px;
+}
+
+.profileImage {
+  width: 93px;
+  height: 89px;
+  object-fit: cover; 
+  border-radius: 4px; 
 }
 
 .selectedAdministrativeCardStyle {

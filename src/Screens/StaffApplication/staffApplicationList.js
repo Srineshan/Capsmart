@@ -2321,12 +2321,12 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Sent for Completion{" "}
-                      <span
+                      Sent for Completion ({sentCompletion?.totalApplicationsSent || 0})
+                      {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
                         {sentCompletion?.totalApplicationsSent || 0}
-                      </span>
+                      </span> */}
                     </div>
                     <div className={`${style.marginLeft10} `}>
                       {!showCardCompletion ? (
@@ -2456,12 +2456,12 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Rejected / Declined{" "}
-                      <span
+                      Applicants Rejected / Declined ({applicationRejected?.totalRejections})
+                      {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
                       >
                         {applicationRejected?.totalRejections}
-                      </span>
+                      </span> */}
                     </div>
                     <div className={`${style.marginLeft10} `}>
                       {!showCardDetails ? (

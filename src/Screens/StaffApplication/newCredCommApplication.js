@@ -16,6 +16,7 @@ import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import UserLogo from "../../images/defaultUserLogo.jpg";
 import DataStatusIcon from './../../images/dqStatus.png';
 import DocumentIcon from '../../images/document.png';
 import EditBlue from "../../images/editBlue.png";
@@ -844,11 +845,15 @@ const NewCredCommApplication = ({
             <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
               <div className={`${style.spaceBetween}`}>
                 <div className={`${style.displayInRow}`} >
-                  <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                    <div className={`${style.photoCardStyle}`}>
-                      <span>Photo</span>
-                    </div>
-                  </div>
+                <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                        
+                          <img 
+                            src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo} 
+                            alt="Profile Picture" 
+                            className={style.profileImage} 
+                          />
+                        
+                      </div>
                   <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                     <div className={`${style.marginTop10}`}>
                       <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>{form?.basicDetails?.applicant?.name?.firstName || ''} {form?.basicDetails?.applicant?.name?.middleName || ''} {form?.basicDetails?.applicant?.name?.lastName || ''}</span>
