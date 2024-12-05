@@ -9,7 +9,6 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import CapSmartTransparent from "./../../images/capSmartTransparent.png";
-import HapiCare from "./../../images/PoweredHapiCare.png";
 import SearchIcon from "./../../images/search.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
