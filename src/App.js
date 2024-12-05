@@ -28,6 +28,8 @@ import Speciality from "./Screens/ReferenceList/speciality/Speciality";
 import AcknowledgementReview from "./Screens/ApplicationForm/AcknowledgementReview";
 import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
 import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
+import PaymentList from "./Screens/ReferenceList/paymentList/paymentList";
+import SettingList from "./Screens/ReferenceList/setting/settingList";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -927,6 +929,14 @@ const App = ({ props }) => {
               <Route
                 path="/referenceList/generalConfigurationForCustomers"
                 element={<GeneralConfigurationForCustomers />}
+              />
+              <Route
+                path="/referenceList/paymentList"
+                element={<PaymentList />}
+              />
+               <Route
+                path="/referenceList/settingList"
+                element={<SettingList />}
               />
               <Route path="/entitySitePortal" element={<Home />} />
               <Route path="/thankyou" element={<Thankyou />} />

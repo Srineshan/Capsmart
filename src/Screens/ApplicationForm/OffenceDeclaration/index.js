@@ -50,7 +50,11 @@ const OffenceDeclaration = ({ acknowledgementForm, dateFormat, name, basicForm, 
         }
     }, [dateFormat])
 
-    console.log(tableData)
+    useEffect(() => {
+        if (!isChecked) {
+            setTableData(initialData); // Reset table data to initial state when unchecked
+        }
+    }, [isChecked]);
 
     useEffect(() => {
         if (basicForm && !formSchema) {
