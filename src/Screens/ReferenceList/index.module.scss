@@ -3868,6 +3868,7 @@ input:checked+.slider:before {
 }
 
 .entityLabelStyle {
+  text-align: left;
   font-size: 14px;
   margin-bottom: 8px;
 }
@@ -3878,4 +3879,113 @@ input:checked+.slider:before {
 
 .inputField {
   width: 100% !important;
+  margin-bottom: 15px; /* Add gap between select and button */
+}
+
+.commonCell {
+  border: 1px solid #ccc;
+  text-align: center; // or any alignment you prefer
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+// .customTable {
+//   border: 2px solid #7165e3;
+//   width: 100%;
+// }
+
+.customTable th,
+.customTable td {
+  border: 1px solid #7165e3;
+  padding: 0; // Remove padding
+}
+
+.radioGroup {
+  display: flex;
+  justify-content: center;
+}
+.rowGap {
+  margin-bottom: 16px; // Add gap between rows
+}
+
+.verticalStack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Add spacing between each dropdown */
+}
+
+.flexRow {
+  display: flex;
+  width: 100%;
+  gap: 1px; /* Adjust space between dropdown and input */
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionButtonContainer {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  margin-top: 10px;
+}
+
+.responseMessage {
+  margin-top: 10px;
+  font-size: 14px;
+  color: green; /* Adjust according to success/failure color */
+}
+
+.submitButton {
+  background-color: #06617A;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+}
+
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.marginTop35 {
+  margin-top: 35px;
+}
+
+.marginTop55 {
+  margin-top: 55px;
+}
+
+.feeContainer {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc; /* Optional border styling */
+  border-radius: 4px; /* Optional border radius */
+  padding: 4px; /* Padding for alignment */
+}
+
+.currencyLabel {
+  margin-right: 8px; /* Space between currency and input */
+  font-weight: bold;
+  color: #555; /* Optional text color */
+}
+
+.feeInput {
+  flex: 1; /* Input takes the remaining width */
+  border: none;
+  outline: none;
+  font-size: 1rem;
 }
