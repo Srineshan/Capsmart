@@ -20,7 +20,6 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
 import TableTwo from "../../Components/TableDesignTwo";
-import HapiCare from "./../../images/PoweredHapiCare.png";
 import PublicIcon from "@mui/icons-material/Public";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import style from "./index.module.scss";
