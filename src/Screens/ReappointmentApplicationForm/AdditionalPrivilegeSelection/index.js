@@ -770,7 +770,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                 className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
                             >
-                                NO
+                                No
                             </div>
                         </div>
                     ) : (

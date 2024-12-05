@@ -1392,7 +1392,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                       onClick={() => setIsPrivilegeCategoryChanging(true)}
                     >
-                      NO
+                      No
                     </div>
                   </div>
                 ) : (
@@ -1463,7 +1463,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                           onClick={() => setIsPrivilegeSetChanging(true)}
                         >
-                          NO
+                          No
                         </div>
                       </div>
                     ) : (

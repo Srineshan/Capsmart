@@ -362,9 +362,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />)
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,display:"flex",justifyContent:"center" }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,display:"flex",justifyContent:"center" }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,marginLeft:13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,marginLeft:13 }} />), 'isShowHoverText': false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,display:"flex",justifyContent:"center" }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,display:"flex",justifyContent:"center" }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,marginLeft:20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,marginLeft:20 }} />), 'isShowHoverText': false });
                 } else {
                     temp.push({
                         "type": "text",
@@ -552,8 +552,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
-                                        Required and Recommended documents & forms for this
-                                        Application
+                                    List of Documents to Complete this Application
                                     </div>
                                     {isCollapsableCard ? (
                                         <div onClick={() => setIsCollapsableCard(false)}>
@@ -659,7 +658,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     "File Uploaded",
                                     "",
                                     "Document Type",
-                                    "Requirement",
+                                    "",
                                     "Verified",
                                     "Valid",
                                     "",
@@ -684,8 +683,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                                 <>
                             <div
-                                className={`${style.setupCompleteCard} ${style.setupCompleteGrid} ${style.cursorPointer} ${style.marginTop}`}
-                                onClick={() => setIsShowESignDialog(true)}
+                                className={`${style.setupCompleteCard} ${style.setupCompleteGrid}  ${style.marginTop}`}
+                                
                             >
                                 <div></div>
                                 <div
@@ -698,7 +697,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         eSignature Available on File
                                     </div>
                                 </div>
-                                <div className={style.editOrUpdateESign}>Edit / Update</div>
+                                <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>Edit / Update</div>
                             </div>
                             <div className={`${style.marginTop} ${style.gridContainer}`}>
                                 <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100}/></div>
