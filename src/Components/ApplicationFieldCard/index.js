@@ -2869,7 +2869,7 @@ const ApplicationFieldCard = ({
                           setYesOrNoDemographic("Yes");
                         }}
                       >
-                        Yes
+                        YES
                       </div>
                       <div
                         className={`${

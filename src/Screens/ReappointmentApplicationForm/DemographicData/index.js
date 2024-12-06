@@ -623,13 +623,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
                                         onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
-                                        Yes
+                                        YES
                                     </div>
                                     <div
                                         className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
-                                        No
+                                        NO
                                     </div>
                                 </div>
                             </>

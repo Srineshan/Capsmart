@@ -165,7 +165,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <WelcomeCard title={'To the best of your knowledge and understanding, provide a response for the disclosures required'}
+                    <WelcomeCard title={'To the best of your knowledge and understanding,provide a response for the disclosures required'}
                         description={'Any information you provide will be kept strictly confidential.If you answer "Yes" to any of the disclosures, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (

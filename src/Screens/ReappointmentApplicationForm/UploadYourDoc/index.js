@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                               Requirements
+                                              
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -722,17 +722,15 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         }`}
                                 >
                                     <p className={style.uploadTextStyle}>
-                                        {"Confirm Your Electronic Signature"}
+                                        {"Confirm Your eSignature"}
                                     </p>
 
                                     <p className={style.uploadDescriptionText}>
                                         {
-                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting."
+                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting.Set up your electronic signature"
                                         }
                                     </p>
-                                    <p className={style.uploadDescriptionText}>
-                                        {"Click here to setup your electronic signature for use."}
-                                    </p>
+                                    
                                 </div>
                             </div>
                         )}

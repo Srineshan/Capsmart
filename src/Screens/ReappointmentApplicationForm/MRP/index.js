@@ -171,7 +171,7 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <div className={`${style.applicationCardStyle}`}>
                         <div className={style.cardTitle}>
-                            Do you wish to be MRP for your patients in the Nursery?
+                            Do you wish to be the Most Responsible Physician (MRP) for your patients in the Nursery?
                         </div>
                         {yesOrNo === '' ? (
                             <div

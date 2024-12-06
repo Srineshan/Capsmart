@@ -236,7 +236,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <WelcomeCard title={'As approved by the Professional Staff, the CME requirement is 40 hours of college approved education hours.'}
+                    <WelcomeCard title={'For Professional Staff, the CME requirement is 40 hours of college approved education hours.'}
                         description={'Please include a print out of your continuing education transcripts or certificates for the past 12 months, including any peer review / evaluations you have had.'} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'education' in formSchema?.properties && (
