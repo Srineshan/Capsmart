@@ -1424,7 +1424,7 @@ body::-webkit-scrollbar {
 }
 
 .greyDotTextStyle {
-  text-align: left;
+  text-align: center;
   font: normal normal normal 13px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
@@ -3149,7 +3149,12 @@ input[type="number"] {
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
+}
+.twoColumnGrid1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 200px;
 }
 
 .fourColumnGrid {

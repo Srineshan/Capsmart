@@ -521,7 +521,7 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyLevelFunction = (data) => {
     getActiveApplicationView(true);
-    getNotesCommentBox(true);
+    // getNotesCommentBox(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -2869,7 +2869,7 @@ const StaffApplicationList = ({
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`STAFF APPLICATIONS`}
+            {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles

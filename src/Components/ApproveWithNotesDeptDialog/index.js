@@ -45,7 +45,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
     const isApproveEnabled = 
     userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
-    selectedApplicantType !== '' &&
     userSelectRole !== '';
 
   // useEffect(() => {
@@ -399,7 +398,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             </div>
             <div
             className={`${style.reviewButtonStyle} ${style.cursorPointer} ${style.marginLeft}`}
-            onClick={handleApplicationApprove}
+            onClick={onClickApproveMoveFunction}
             style={{ 
               pointerEvents: isApproveEnabled ? 'auto' : 'none', 
               opacity: isApproveEnabled ? 1 : 0.5 

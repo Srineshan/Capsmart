@@ -413,11 +413,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" , "}</span>
+                  : ""}{" "}
+                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}</span>
                 <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>

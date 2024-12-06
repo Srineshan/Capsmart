@@ -24,7 +24,7 @@
 //   useEffect(() => {
 //     sessionStorage.setItem("fromSummary", false);
 //     getApplication();
-//     getLog();;
+//     getLog();
 //   }, [applicationType]);
 
 //   const getApplication = async () => {
@@ -203,13 +203,13 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
-    getLog();;
+    getLog();
   }, [applicationType]);
 
-  const getApplication = async () => {
-    const { data: basicForm } = await GET(`application-management-service/application/${id}`);
-    setFormDetails(basicForm);
-  };
+const getApplication = async () => {
+  const { data: basicForm } = await GET(`application-management-service/application/${id}`);
+  setFormDetails(basicForm);
+};
 
   const getApplicationEntity = async () => {
     const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
@@ -245,13 +245,27 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   
 
-  if ((applicationType === "NEW")) {
+  // if ((applicationType === "NEW")) {
+  //   return null;
+  // }
+
+  if ((userRole?.includes('Department Head') && selectedTab === "level-3")) {
     return null;
   }
 
-  if ((selectedTab === "level-1")) {
-    return null;
-  }
+  // if ((selectedTab === "level-1")) {
+  //   return null;
+  // }
+
+  // if (applicationType === "NEW") {
+  //   return null;
+  // } else if (userRole?.includes('Department Head') && selectedTab === "level-3") {
+  //   return null;
+  // } else if (selectedTab === "level-1") {
+  //   return null;
+  // }else if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+  //   return null;
+  // }
 
   return (
   
@@ -294,11 +308,13 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
               <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}> {formDetails?.basicDetails?.applicant?.name?.firstName
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{","}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" , "}</span>
+                  : ""}{" "}
+                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}</span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
@@ -398,7 +414,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-              <div className={style.reviewButton}>CONTINUE</div>
+              {userRole?.includes("Department Head") ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
             </div>
           </div>
         </div>
