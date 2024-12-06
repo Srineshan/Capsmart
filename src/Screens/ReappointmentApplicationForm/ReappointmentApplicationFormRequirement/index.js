@@ -133,7 +133,7 @@ const ReappointmentApplicationFormRequirement = () => {
                             <div>
                                 <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your reappointment application.'} description={''} />
                                 <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                    <div className={style.titleTextStyle}> List of Documents Required to Complete this Application</div>
+                                    <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
                                     {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div> */}

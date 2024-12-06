@@ -1386,13 +1386,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       className={`${style.reappointmentButtonOutlined}`}
                       onClick={() => setIsEdit(false)}
                     >
-                      Yes
+                      YES
                     </div>
                     <div
                       className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                       onClick={() => setIsPrivilegeCategoryChanging(true)}
                     >
-                      No
+                      NO
                     </div>
                   </div>
                 ) : (
@@ -1413,7 +1413,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             className={`${style.reappointmentButtonEdit}`}
                             onClick={() => setIsEdit(true)}
                           >
-                            Edit
+                            EDIT
                           </div>
                         </div>
                       </>
@@ -1433,7 +1433,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             className={`${style.reappointmentButtonEdit}`}
                             onClick={() => setIsEdit(true)}
                           >
-                            Edit
+                            EDIT
                           </div>
                         </div>
                       </>
@@ -1447,7 +1447,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 {!isPrivilegeSetChanging && (
                   <>
                     <div className={`${style.cardTitle} ${style.marginTop}`}>
-                      Would you like to keep the privilege set you have?
+                      Would you like to keep the privilege set(s) you have?
                     </div>
                     {isEditPrivilege ? (
                       <div
@@ -1457,13 +1457,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           className={`${style.reappointmentButtonOutlined}`}
                           onClick={() => setIsEditPrivilege(false)}
                         >
-                          Yes
+                          YES
                         </div>
                         <div
                           className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                           onClick={() => setIsPrivilegeSetChanging(true)}
                         >
-                          No
+                          NO
                         </div>
                       </div>
                     ) : (
@@ -1485,7 +1485,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 className={`${style.reappointmentButtonEdit}`}
                                 onClick={() => setIsEdit(true)}
                               >
-                                Edit
+                                EDIT
                               </div>
                             </div>
                           </>
@@ -1506,7 +1506,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 className={`${style.reappointmentButtonEdit}`}
                                 onClick={() => setIsEdit(true)}
                               >
-                                Edit
+                                EDIT
                               </div>
                             </div>
                           </>
@@ -1715,7 +1715,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         granted set of privileges.
                       </div>
                       <div
-                        className={`${style.marginTop} ${style.privilegeWarningText}`}
+                        className={`${style.privilegeWarningText}`}
                       >
                         You will need to request the set of privileges you would
                         like to have for the category you are changing to

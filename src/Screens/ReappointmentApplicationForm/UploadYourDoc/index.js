@@ -552,7 +552,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
-                                    List of Documents to Complete this Application
+                                    To optimize your time for completing this application upload or provide the following documents.
                                     </div>
                                     {isCollapsableCard ? (
                                         <div onClick={() => setIsCollapsableCard(false)}>
@@ -573,12 +573,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                                Document Type
+                                                Documents you will require
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                               
+                                               Requirements
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -636,7 +636,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <CommonDropZone
                                 title={"Upload Your Documents"}
                                 description={
-                                    "Upload your files or drag & drop from your file cabinet (Computer / Online Drive)"
+                                    "Upload your files or drag & drop from your document cabinet"
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
@@ -644,7 +644,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <CommonDropZone
                                 title={"Upload A Photo"}
                                 description={
-                                    "Take a picture of the document with your camera and Upload or Upload from your photo gallery."
+                                    "Click a picture with your Camera or Upload from Gallery."
                                 }
                                 changeHandler={changeHandler}
                                 files={files}

@@ -11,6 +11,7 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import WelcomeCard from '../../../Components/WelcomeCard';
 import CryptoJS from 'crypto-js';
 import WhiteSign from "./../../../images/whiteSign.png";
 import BlueSign from "./../../../images/blueSign.png";
@@ -348,7 +349,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
+                <WelcomeCard title={'There are Medical Directives approved for use at the Cambridge Memorial Hospital'}
+                        description={'Please ensure all of your Medical directives that require your review are attested to prior to submission of your application'} />
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {!showMedicalDirectives ? (
                             <>
                                 <div className={`${style.cardTitle} ${style.marginTop}`}>Medical Directives Review</div>
