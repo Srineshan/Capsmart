@@ -552,7 +552,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
-                                    To optimize your time for completing this application upload or provide the following documents.
+                                        To optimize your time for completing this application upload or provide the following documents.
                                     </div>
                                     {isCollapsableCard ? (
                                         <div onClick={() => setIsCollapsableCard(false)}>
@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                               Requirements
+                                                Requirements
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -709,17 +709,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     }}>{eSignTypeContent}</div>
                                 </div>
                                 <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>Edit / Update</div>
-                            
-                            <div className={`${style.marginTop} ${style.gridContainer}`}>
-                                <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100}/></div>
-                                <div><strong>{eSignTitle}</strong></div>
-                                <div><strong>{eSignInitial}</strong></div>
-                                <div style={{
-                                    fontFamily: eSignTypeContentStyle,
-                                    fontSize: "24px",
-                                }}>{eSignTypeContent}</div>
-                            </div>
-                            </div>
+
+                                <div className={`${style.marginTop} ${style.gridContainer}`}>
+                                    <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100} /></div>
+                                    <div><strong>{eSignTitle}</strong></div>
+                                    <div><strong>{eSignInitial}</strong></div>
+                                    <div style={{
+                                        fontFamily: eSignTypeContentStyle,
+                                        fontSize: "24px",
+                                    }}>{eSignTypeContent}</div>
+                                </div>
                             </>
                         ) : (
                             <div

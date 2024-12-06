@@ -80,7 +80,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     const fetchDepartmentStaffs = async () => {
       try {
         const departmentId = basicForm?.basicDetailReferences?.department?.id;
-        const applicantTypeId=basicForm?.basicDetailReferences?.applicantType?.id;
+        const applicantTypeId = basicForm?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
@@ -89,7 +89,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         const filteredStaffs = response.data.staffs.filter(
           (staff) => staff.applicant.id !== currentApplicantId
         );
-        
+
         const options = filteredStaffs.map((staff) => ({
           value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
           label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
@@ -130,13 +130,13 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
   }, [basicForm]);
 
-useEffect(() => {
-  setWhoCovers(""); 
-}, [specificProviderGroup]);
+  useEffect(() => {
+    setWhoCovers("");
+  }, [specificProviderGroup]);
 
-useEffect(() => {
-  setWhoCoversObstetrics(""); 
-}, [obstetricsSpecificProviderGroup]);
+  useEffect(() => {
+    setWhoCoversObstetrics("");
+  }, [obstetricsSpecificProviderGroup]);
 
   const getIsValidationDialogOpen = (value) => {
     setShowValidationDialog(value);
@@ -179,14 +179,14 @@ useEffect(() => {
 
       const providerField = form?.schema?.properties?.coverageDetails?.properties?.providerType;
       console.log(providerField);
-      
-      const providerLabel=providerField.label;
-       setProviderLabels(providerLabel);
+
+      const providerLabel = providerField.label;
+      setProviderLabels(providerLabel);
 
       if (providerField?.enum) {
         const enumValues = providerField.enum
         console.log(enumValues);
-        
+
         setProviderOptions(enumValues);
       }
     }
@@ -316,65 +316,65 @@ useEffect(() => {
                 {`Who covers your hospital patients when you are not available?*`}
               </div>
               <div className={style.rowContainer}>
-              <div className={style.fieldWrapper}>
-              <CommonSelectField
-                value={specificProviderGroup}
-                onChange={(e) => setSpecificProviderGroup(e.target.value)}
-                className={style.fullWidth}
-                firstOptionLabel={providerLabels}
-                firstOptionValue=""
-                valueList={providerOptions}
-                labelList={providerOptions}
-                disabledList={[]}
-                label={providerLabels}
-                disabledSelect={false}
-                required={true}
-                error={false}
-                warning={false}
-              />
-             </div>
-              {specificProviderGroup === "Individual" && (
                 <div className={style.fieldWrapper}>
                   <CommonSelectField
-                    value={whoCovers}
-                    onChange={(e) => setWhoCovers(e.target.value)}
+                    value={specificProviderGroup}
+                    onChange={(e) => setSpecificProviderGroup(e.target.value)}
                     className={style.fullWidth}
-                    valueList={applicantOptions.map((option) => option.value)}
-                    labelList={applicantOptions.map((option) => option.label)}
+                    firstOptionLabel={providerLabels}
+                    firstOptionValue=""
+                    valueList={providerOptions}
+                    labelList={providerOptions}
                     disabledList={[]}
+                    label={providerLabels}
                     disabledSelect={false}
-                    error={!whoCovers}
-                    label={"Select Who covers in Individual Provider"}
                     required={true}
-                    warning={warningFields
-                      ?.map((data) => data?.label)
-                      ?.includes(
-                        `Who covers your hospital patients when you are not available?`
-                      )}
+                    error={false}
+                    warning={false}
                   />
                 </div>
-              )}
+                {specificProviderGroup === "Individual" && (
+                  <div className={style.fieldWrapper}>
+                    <CommonSelectField
+                      value={whoCovers}
+                      onChange={(e) => setWhoCovers(e.target.value)}
+                      className={style.fullWidth}
+                      valueList={applicantOptions.map((option) => option.value)}
+                      labelList={applicantOptions.map((option) => option.label)}
+                      disabledList={[]}
+                      disabledSelect={false}
+                      error={!whoCovers}
+                      label={"Select Who covers in Individual Provider"}
+                      required={true}
+                      warning={warningFields
+                        ?.map((data) => data?.label)
+                        ?.includes(
+                          `Who covers your hospital patients when you are not available?`
+                        )}
+                    />
+                  </div>
+                )}
 
-              {specificProviderGroup === "Group" && (
-                <div className={style.fieldWrapper}>
-                <CommonTextField
-                  value={whoCovers}
-                  className={`${style.fullWidth}`}
-                  onChange={(e) => setWhoCovers(e.target.value)}
-                  placeholder={"Enter Here"}
-                  label={
-                    "Who covers in Group provider"
-                  }
-                  required={true}
-                  warning={warningFields
-                    ?.map((data) => data?.label)
-                    ?.includes(
-                      `Who covers your hospital patients when you are not available?`
-                    )}
-                   normalLabel={true}
-                />
-                </div>
-              )}
+                {specificProviderGroup === "Group" && (
+                  <div className={style.fieldWrapper}>
+                    <CommonTextField
+                      value={whoCovers}
+                      className={`${style.fullWidth}`}
+                      onChange={(e) => setWhoCovers(e.target.value)}
+                      placeholder={"Enter Here"}
+                      label={
+                        "Who covers in Group provider"
+                      }
+                      required={true}
+                      warning={warningFields
+                        ?.map((data) => data?.label)
+                        ?.includes(
+                          `Who covers your hospital patients when you are not available?`
+                        )}
+                      normalLabel={true}
+                    />
+                  </div>
+                )}
               </div>
             </div>
             {basicForm?.basicDetails?.departmentSpecialty?.department ===
@@ -386,20 +386,20 @@ useEffect(() => {
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                   </div>
                   <CommonSelectField
-                value={obstetricsSpecificProviderGroup}
-                onChange={(e) => setObstetricsSpecificProviderGroup(e.target.value)}
-                className={style.fullWidth}
-                firstOptionLabel={providerLabels}
-                firstOptionValue=""
-                valueList={providerOptions}
-                labelList={providerOptions}
-                disabledList={[]}
-                label={providerLabels}
-                disabledSelect={false}
-                required={true}
-                error={false}
-                warning={false}
-              />
+                    value={obstetricsSpecificProviderGroup}
+                    onChange={(e) => setObstetricsSpecificProviderGroup(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={providerLabels}
+                    firstOptionValue=""
+                    valueList={providerOptions}
+                    labelList={providerOptions}
+                    disabledList={[]}
+                    label={providerLabels}
+                    disabledSelect={false}
+                    required={true}
+                    error={false}
+                    warning={false}
+                  />
 
                   {obstetricsSpecificProviderGroup === "Individual" && (
                     <div>
