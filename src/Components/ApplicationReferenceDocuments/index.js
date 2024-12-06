@@ -42,11 +42,11 @@ const ApplicationReferenceDocuments = () => {
 
   const tableData = basicForm?.forms?.[formIndex]?.data?.table;
 
-  
-  
+
+
   return (
     <div className={style.referenceDocumentParentCard}>
-      <div className={style.referenceDocumentTitle}>Your ReAppointment Documents</div>
+      <div className={style.referenceDocumentTitle}>Your Reappointment Documents</div>
       {tableData?.length > 0 ? (
         tableData.map((document, index) => {
           console.log(document); // Log the document object for debugging
@@ -56,8 +56,8 @@ const ApplicationReferenceDocuments = () => {
             document?.fileType === "application/pdf"
               ? PDFDocs
               : document?.fileType.startsWith("image/")
-              ? imgDocs
-              : null;
+                ? imgDocs
+                : null;
 
           return (
             <div

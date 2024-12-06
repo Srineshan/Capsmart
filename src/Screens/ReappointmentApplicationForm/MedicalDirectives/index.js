@@ -185,12 +185,6 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
     }
 
-    // const getSkipClicked = (value) => {
-    //     if (value) {
-    //         handleSubmitApplicationReq("skipped")
-    //     }
-    // }
-
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -224,6 +218,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         return obj;
     };
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            // handleSubmitApplicationReq("skipped")
+            navigate(navigateURL);
+        }
+    }
 
     const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
@@ -444,17 +444,20 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div> 
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog  ? style.hiddenStickyContainer: ""}`}>
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

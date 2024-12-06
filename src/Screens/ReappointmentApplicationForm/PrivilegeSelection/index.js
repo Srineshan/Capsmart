@@ -2410,7 +2410,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 />
               </div>
             )}
-          <div className={style.threeColForButton}>
+          {/* <div className={style.threeColForButton}>
             <div
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => navigate(-1)}
@@ -2432,7 +2432,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             >
               CONTINUE
             </div>
-          </div>
+          </div> */}
         </div>
         <div>
           <ApplicationAssistanceCard
