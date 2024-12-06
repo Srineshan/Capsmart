@@ -9,6 +9,8 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
 import CapSmartTransparent from "./../../images/capSmartTransparent.png";
+import SearchIcon from "./../../images/search.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -18,7 +20,6 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
 import TableTwo from "../../Components/TableDesignTwo";
-import HapiCare from "./../../images/PoweredHapiCare.png";
 import PublicIcon from "@mui/icons-material/Public";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import style from "./index.module.scss";
@@ -664,7 +665,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue,page,totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -686,7 +687,7 @@ const StaffApplicationList = ({
 
   const getSelectedPage = (value) => {
     setPage(value);
-}
+  }
 
 
   const getWorkflowUserData = async () => {
@@ -974,7 +975,7 @@ const StaffApplicationList = ({
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
       } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      }  else {
+      } else {
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
@@ -2684,11 +2685,9 @@ const StaffApplicationList = ({
             <>
               {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
-                  className={`${style.addStyle}  ${style.applicationButton} ${style.spaceBetween} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                  className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
-                  <div
-                    className={`${style.displayInRow} ${style.marginLeftRight10} `}
-                  >
+                  <div className={`${style.displayInRow} ${style.alignCenter}`}>
                     <AddCircleOutlineIcon
                       sx={{ fontSize: 20, color: "white" }}
                       onClick={() =>
@@ -2697,18 +2696,18 @@ const StaffApplicationList = ({
                           : navigate("/createStaffReapplication")
                       }
                     />
-                  </div>
-                  <div
-                    className={`${style.displayInRow} ${style.marginLeft20} `}
-                    onClick={() =>
-                      applicationType === "NEW"
-                        ? navigate("/createStaffMemberApplication")
-                        : navigate("/createStaffReapplication")
-                    }
-                  >
-                    {applicationType === "REAPPOINTMENT"
-                      ? "Trigger New Reappointment"
-                      : "Create New Application"}
+                    <div
+                      className={`${style.displayInRow} ${style.alignCenter}`}
+                      onClick={() =>
+                        applicationType === "NEW"
+                          ? navigate("/createStaffMemberApplication")
+                          : navigate("/createStaffReapplication")
+                      }
+                    >
+                      {applicationType === "REAPPOINTMENT"
+                        ? "Trigger Reappointment"
+                        : "Create New Application"}
+                    </div>
                   </div>
                 </div>
               ) : null}
@@ -2721,12 +2720,13 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Sent for Completion{" "}
-                      <span
+                      Sent for Completion (
+                      {sentCompletion?.totalApplicationsSent || 0})
+                      {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
                         {sentCompletion?.totalApplicationsSent || 0}
-                      </span>
+                      </span> */}
                     </div>
                     <div className={`${style.marginLeft10} `}>
                       {!showCardCompletion ? (
@@ -2815,11 +2815,11 @@ const StaffApplicationList = ({
                   <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                     <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
                       Rejected / Declined{" "}
-                      <span
-                        className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
-                      >
-                        {applicationRejected?.totalRejections}
-                      </span>
+                      {/*<span
+      className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
+    >
+      {applicationRejected?.totalRejections}
+    </span> */}
                     </div>
                     <div className={`${style.marginLeft10} `}>
                       {!showCardDetails ? (
@@ -2835,39 +2835,41 @@ const StaffApplicationList = ({
                       )}
                     </div>
                   </div>
-                  {showCardDetails && (
-                    <>
-                      <div
-                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                        onClick={() => {
-                          handleClick();
-                        }}
-                      >
-                        {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                        Approved But Declined ({applicationRejected?.applicationsRejected})
-                      </div>
-                      <div
-                        className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                        onClick={() => {
-                          setShowApplicationApprovedDeclineDialog(true);
-                        }}
-                      >
-                        Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
-                        {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
-                      </div>
-                    </>
-                  )}
-                </div>
+                  {
+                    showCardDetails && (
+                      <>
+                        <div
+                          className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                          onClick={() => {
+                            handleClick();
+                          }}
+                        >
+                          {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                          Approved But Declined ({applicationRejected?.applicationsRejected})
+                        </div>
+                        <div
+                          className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                          onClick={() => {
+                            setShowApplicationApprovedDeclineDialog(true);
+                          }}
+                        >
+                          Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                          {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                        </div>
+                      </>
+                    )
+                  }
+                </div >
               ) : null}
             </>
-          </SideBar>
+          </SideBar >
 
-        </div>
+        </div >
         <div>
           <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
-            {`${userRole} > STAFF APPLICATIONS`}
+            {`STAFF APPLICATIONS`}
           </div>
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles
@@ -2958,7 +2960,7 @@ const StaffApplicationList = ({
             )}
           </div>
         </div>
-      </div>
+      </div >
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
           {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
@@ -2974,26 +2976,32 @@ const StaffApplicationList = ({
       </div>
 
 
-      {showApplicationRejectionDialog && (
-        <ApplicationRejection
-          getApplicationRejectionDialog={getApplicationRejectionDialog}
-          rejectionListData={rejectionListData}
-          // rejectedCount={applicationRejected?.appointmentRequestsDenied}
-          declineCount={applicationRejected?.applicationsRejected}
-        />
-      )}
-      {showApplicationApprovedDeclineDialog && (
-        <ApplicationApprovedDeclined
-          getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
-          declineListData={declineListData}
-          // declineCount={applicationRejected?.applicationsRejected}
-          rejectedCount={applicationRejected?.appointmentRequestsDenied}
-        />
-      )}
-      {showCheckListDialog && (
-        <CheckListDialog getCheckListDialog={getCheckListDialog} />
-      )}
-    </div>
+      {
+        showApplicationRejectionDialog && (
+          <ApplicationRejection
+            getApplicationRejectionDialog={getApplicationRejectionDialog}
+            rejectionListData={rejectionListData}
+            // rejectedCount={applicationRejected?.appointmentRequestsDenied}
+            declineCount={applicationRejected?.applicationsRejected}
+          />
+        )
+      }
+      {
+        showApplicationApprovedDeclineDialog && (
+          <ApplicationApprovedDeclined
+            getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
+            declineListData={declineListData}
+            // declineCount={applicationRejected?.applicationsRejected}
+            rejectedCount={applicationRejected?.appointmentRequestsDenied}
+          />
+        )
+      }
+      {
+        showCheckListDialog && (
+          <CheckListDialog getCheckListDialog={getCheckListDialog} />
+        )
+      }
+    </div >
   );
 };
 

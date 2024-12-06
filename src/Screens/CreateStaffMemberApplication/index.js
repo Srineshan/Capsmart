@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { GET, POST, PUT } from "../dataSaver";
@@ -185,16 +185,22 @@ const CreateStaffMemberApplication = () => {
     return regex.test(email);
   };
 
+  const refsMap = useRef({});
   const getMissingFields = () => {
     setIsLoading(true);
 
     let missingKeys = [];
     let keyValuePair = [];
+
     metadata?.map((data, index) => {
+      if (!refsMap.current[data]) {
+        refsMap.current[data] = React.createRef(); // Create and store refs dynamically
+      }
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
         label: labels[index],
+        ref: refsMap.current[data], // Associate ref with field
       });
     });
     keyValuePair?.map((data) => {
@@ -235,16 +241,17 @@ const CreateStaffMemberApplication = () => {
       // Handle cellPhone -> mobileNumber transformation
       if (data.key === "basicDetails.applicant.cellPhone" && data.value) {
         setBasicForm((prevForm) => ({
-            ...prevForm,
-            basicDetails: {
-                ...prevForm.basicDetails,
-                applicant: {
-                    ...prevForm.basicDetails.applicant,
-                    mobileNumber: data.value || prevForm.basicDetails.applicant.mobileNumber,
-                },
+          ...prevForm,
+          basicDetails: {
+            ...prevForm.basicDetails,
+            applicant: {
+              ...prevForm.basicDetails.applicant,
+              mobileNumber:
+                data.value || prevForm.basicDetails.applicant.mobileNumber,
             },
+          },
         }));
-    }    
+      }
     });
 
     if (
@@ -264,6 +271,11 @@ const CreateStaffMemberApplication = () => {
       missingKeys = temp;
     }
     if (missingKeys?.length !== 0) {
+      // Focus the first missing field
+    const firstMissingField = missingKeys[0];
+    if (firstMissingField?.ref?.current) {
+      firstMissingField.ref.current.focus();
+    }
       setShowValidationDialog(true);
     } else {
       handleSubmitApplicationReq();
@@ -419,6 +431,7 @@ const CreateStaffMemberApplication = () => {
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  refsMap={refsMap.current}
                 />
               )}
               {form !== undefined &&
@@ -434,6 +447,7 @@ const CreateStaffMemberApplication = () => {
                     getAllLabels={getAllLabels}
                     warningFields={warningFields}
                     formSchema={formSchemaWholeObject}
+                    refsMap={refsMap.current}
                   />
                 )}
               {form !== undefined &&

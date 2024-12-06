@@ -20,6 +20,7 @@ import BlueSign from "./../../images/blueSign.png";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import DataStatusIcon from "./../../images/dqStatus.png";
+import UserLogo from "../../images/defaultUserLogo.jpg";
 import DocumentIcon from "../../images/document.png";
 import EditBlue from "../../images/editBlue.png";
 import CryptoJS from "crypto-js";
@@ -2708,11 +2709,15 @@ console.log(daysDifference);
                     <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                       <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                            <div className={style.photoCardStyle}>
-                              <span>Photo</span>
-                            </div>
-                          </div>
+                        <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          
+                            <img 
+                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo} 
+                              alt="Profile Picture" 
+                              className={style.profileImage} 
+                            />
+                          
+                        </div>
                           <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
@@ -4799,11 +4804,15 @@ console.log(daysDifference);
                   <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                     <div className={style.spaceBetween}>
                       <div className={style.displayInRow}>
-                        <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                          <div className={style.photoCardStyle}>
-                            <span>Photo</span>
-                          </div>
-                        </div>
+                      <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                        
+                          <img 
+                            src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo} 
+                            alt="Profile Picture" 
+                            className={style.profileImage} 
+                          />
+                        
+                      </div>
                         <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                           <div className={style.marginTop10}>
                             <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
@@ -8416,7 +8425,8 @@ console.log(daysDifference);
                   <div className={style.marginBottom20}></div>
                   <>
                     <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
-                      <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>REJECT</div>
+                      <div className={`${style.buttonTextStyle} ${style.alignCenter}`} 
+                      onClick={() => {onClose();}}>REJECT</div>
                     </div>
                     <div
                       className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
@@ -8618,8 +8628,7 @@ console.log(daysDifference);
                     >
                       <div
                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-
-                      >
+                          onClick={() => {onClose();}}>
                         REJECT
                       </div>
                     </div>

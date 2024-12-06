@@ -221,12 +221,19 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 23% 5% 32% 14% 8% 5% 2%;
+    grid-template-columns: 3% 23% 1% 32% 16% 10% 6% 2%;
     gap: 1%;
 }
 
 .fullWidth {
     width: 100%;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    align-items: center; 
+    gap: 16px; 
 }
 
 .collapsableCardText {

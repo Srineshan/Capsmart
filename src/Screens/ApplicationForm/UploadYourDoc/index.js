@@ -305,9 +305,33 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
             />)
           });
         } else if (data === "valid") {
-          temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+          temp.push({
+            type: "icon",
+            icon: array?.map(innerData => (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                {innerData[data] ? (
+                  <CheckCircleRoundedIcon style={{ fontSize: 20, color: "#25BF6A" }} />
+                ) : (
+                  <WarningAmberRoundedIcon style={{ fontSize: 20, color: "#FF6562" }} />
+                )}
+              </div>
+            )),
+            isShowHoverText: false,
+          });
         } else if (data === "verified") {
-          temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+          temp.push({
+            type: "icon",
+            icon: array?.map(innerData => (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                {innerData[data] ? (
+                  <CheckCircleRoundedIcon style={{ fontSize: 20, color: "#25BF6A" }} />
+                ) : (
+                  <WarningAmberRoundedIcon style={{ fontSize: 20, color: "#FF6562" }} />
+                )}
+              </div>
+            )),
+            isShowHoverText: false,
+          });
         } else {
           temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
         }
