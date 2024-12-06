@@ -36,8 +36,10 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [whoCoversObstetrics, setWhoCoversObstetrics] = useState("");
   const [showJourneyDialog, setShowJourneyDialog] = useState(false);
   const [specificProviderGroup, setSpecificProviderGroup] = useState("");
+  const [providerOptions, setProviderOptions] = useState([]);
   const [obstetricsSpecificProviderGroup, setObstetricsSpecificProviderGroup] = useState("");
   const [applicantOptions, setApplicantOptions] = useState([]);
+  const [providerLabels, setProviderLabels] = useState("");
   const [obstetricsapplicantOptions, setObstetricsApplicantOptions] = useState(
     []
   );
@@ -80,10 +82,17 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       try {
         const departmentId = basicForm?.basicDetailReferences?.department?.id;
         const applicantTypeId=basicForm?.basicDetailReferences?.applicantType?.id;
+        const currentApplicantId = basicForm?.applicant?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
-        const options = response.data.map((staff) => ({
+        console.log(response.data);
+
+        const filteredStaffs = response.data.staffs.filter(
+          (staff) => staff.applicant.id !== currentApplicantId
+        );
+        
+        const options = filteredStaffs.map((staff) => ({
           value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
           label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
         }));
@@ -123,6 +132,14 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
   }, [basicForm]);
 
+useEffect(() => {
+  setWhoCovers(""); 
+}, [specificProviderGroup]);
+
+useEffect(() => {
+  setWhoCoversObstetrics(""); 
+}, [obstetricsSpecificProviderGroup]);
+
   const getIsValidationDialogOpen = (value) => {
     setShowValidationDialog(value);
   };
@@ -161,6 +178,19 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       setFormSchema(form?.schema || {});
       setFormSchemaWholeObject(form || {});
       console.log(form);
+
+      const providerField = form?.schema?.properties?.coverageDetails?.properties?.providerType;
+      console.log(providerField);
+      
+      const providerLabel=providerField.label;
+       setProviderLabels(providerLabel);
+
+      if (providerField?.enum) {
+        const enumValues = providerField.enum
+        console.log(enumValues);
+        
+        setProviderOptions(enumValues);
+      }
     }
   };
 
@@ -287,50 +317,55 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
               <div className={`${style.lableStyle}`}>
                 {`Who covers your hospital patients when you are not available?*`}
               </div>
+              <div className={style.rowContainer}>
+              <div className={style.fieldWrapper}>
               <CommonSelectField
                 value={specificProviderGroup}
                 onChange={(e) => setSpecificProviderGroup(e.target.value)}
                 className={style.fullWidth}
-                firstOptionLabel="Select a Provider Type"
+                firstOptionLabel={providerLabels}
                 firstOptionValue=""
-                valueList={["specific","group"]}
-                labelList={["Specific Provider","Group Provider"]}
+                valueList={providerOptions}
+                labelList={providerOptions}
                 disabledList={[]}
-                label={"Select a Provider Type"}
+                label={providerLabels}
                 disabledSelect={false}
                 required={true}
                 error={false}
                 warning={false}
               />
-
-              {specificProviderGroup === "specific" && (
-                <div>
+             </div>
+              {specificProviderGroup === "Individual" && (
+                <div className={style.fieldWrapper}>
                   <CommonSelectField
                     value={whoCovers}
                     onChange={(e) => setWhoCovers(e.target.value)}
-                    firstOptionLabel="Select who covers in Specific Provider"
-                    firstOptionValue=""
                     className={style.fullWidth}
                     valueList={applicantOptions.map((option) => option.value)}
                     labelList={applicantOptions.map((option) => option.label)}
                     disabledList={[]}
                     disabledSelect={false}
                     error={!whoCovers}
-                    label={"Select Who covers in Specific Provider"}
+                    label={"Select Who covers in Individual Provider"}
                     required={true}
-                    warning={!whoCovers}
+                    warning={warningFields
+                      ?.map((data) => data?.label)
+                      ?.includes(
+                        `Who covers your hospital patients when you are not available?`
+                      )}
                   />
                 </div>
               )}
 
-              {specificProviderGroup === "group" && (
+              {specificProviderGroup === "Group" && (
+                <div className={style.fieldWrapper}>
                 <CommonTextField
                   value={whoCovers}
-                  className={style.fullWidth}
+                  className={`${style.fullWidth}`}
                   onChange={(e) => setWhoCovers(e.target.value)}
                   placeholder={"Enter Here"}
                   label={
-                    "Who covers your hospital patients when you are not available?"
+                    "Who covers in Group provider"
                   }
                   required={true}
                   warning={warningFields
@@ -338,8 +373,11 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                     ?.includes(
                       `Who covers your hospital patients when you are not available?`
                     )}
+                   normalLabel={true}
                 />
+                </div>
               )}
+              </div>
             </div>
             {basicForm?.basicDetails?.departmentSpecialty?.department ===
               "Women & Children" &&
@@ -353,19 +391,19 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                 value={obstetricsSpecificProviderGroup}
                 onChange={(e) => setObstetricsSpecificProviderGroup(e.target.value)}
                 className={style.fullWidth}
-                firstOptionLabel="Select a Provider Type"
+                firstOptionLabel={providerLabels}
                 firstOptionValue=""
-                valueList={["specific", "group"]}
-                labelList={["Specific Provider", "Group Provider"]}
+                valueList={providerOptions}
+                labelList={providerOptions}
                 disabledList={[]}
+                label={providerLabels}
                 disabledSelect={false}
-                label={"Select a Provider Type"}
                 required={true}
                 error={false}
                 warning={false}
               />
 
-                  {obstetricsSpecificProviderGroup === "specific" && (
+                  {obstetricsSpecificProviderGroup === "Individual" && (
                     <div>
                       <CommonSelectField
                        value={whoCoversObstetrics}
@@ -385,7 +423,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                   )}
 
-                  {obstetricsSpecificProviderGroup === "group" && (
+                  {obstetricsSpecificProviderGroup === "Group" && (
                     <TextArea
                       value={whoCoversObstetrics}
                       className={`${style.fullWidth} ${style.marginTop10}`}
