@@ -4728,28 +4728,87 @@ input[type="number"] {
 .searchContainer {
   position: relative;
   width: 254px;
-  height: 55px;
+  height: 50px;
   display: flex;
   align-items: center;
   border: 1px solid #FFF;
-  border-radius: 8px;
-  padding: 0 15px;
-  background-color: #FFF; /* Optional */
+  border-radius: 15px;
+  background-color: #FFF; 
   box-sizing: border-box;
+  overflow: hidden; 
 }
 
 .searchIcon {
   font-size: 20px;
   color: #888;
   cursor: pointer;
-  // margin-right: 10px;
+  margin: 0; 
 }
 
 .searchInput {
-  flex: 1; /* Take remaining space */
+  flex: 1; 
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   outline: none;
-  padding: 0;
-  background: transparent; /* Match container's background */
+  padding: 0 5px; 
+  background: transparent; 
+}
+
+.todoContainer {
+  background-color: white; 
+  border-radius: 15px; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  padding: 10px;
+  width: 254px;
+  height: 85px;
+  display: flex;
+  flex-direction: column; 
+  margin: 0 auto; 
+  font-family: 'Proxima Nova', Arial, sans-serif;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center; 
+  gap: 0; 
+  padding: 0; 
+  margin: 0; 
+}
+
+.topLeft {
+  font: normal normal normal 14px 'Proxima Nova';
+  font-weight: bold;
+  color: #06617A;
+}
+
+/* Commented as it’s not needed */
+// .topRight { 
+// }
+
+.centerLeft {
+  font: normal normal normal 16px 'Proxima Nova';
+  font-weight: bold;
+}
+
+.middleRight {
+  font: normal normal normal 12px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.bottomLeft {
+  font: normal normal normal 14px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.bottomRight {
+  font: normal normal normal 12px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.alignCenter1 {
+  // display: flex;
+  // align-items: center;
+  justify-content: center;
+  height: 100%;
 }

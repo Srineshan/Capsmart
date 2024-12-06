@@ -722,6 +722,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
+                    <div className={`${style.stickyContainer}`}>
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
                         SAVE IN PROGRESS
                     </div>
@@ -762,6 +763,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             CONTINUE
                         </div> */}
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />
