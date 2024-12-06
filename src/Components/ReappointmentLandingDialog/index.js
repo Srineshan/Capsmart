@@ -313,7 +313,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                             <Radio
                               sx={{
                                 color: "#B3B8BD",
-                                "&.Mui-checked": { color: "#1C8F00" },
+                                "&.Mui-checked": { color: "#25BF6A" },
                               }}
                               size="large"
                             />

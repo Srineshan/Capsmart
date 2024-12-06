@@ -63,17 +63,16 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         basicForm?.forms?.filter((data) => data?.formCategory === "Form")
           ?.length ===
           formIndex + 1
-          ? `/reappointmentApplicationForm/${applicationId}/Form/ApplicantAcknowledgement`
-          : `/reappointmentApplicationForm/${applicationId}/${
-              basicForm?.forms[formIndex + 1]?.formCategory
-            }/${basicForm?.forms[formIndex + 1]?.schemaCategory}`
+          ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`ApplicantAcknowledgement`)}`
+          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
+          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
       );
     }
   }, [basicForm, formIndex]);
 
   useEffect(() => {
     setFormIndex(
-      basicForm?.forms?.findIndex((data) => data?.schemaCategory === step)
+      basicForm?.forms?.findIndex((data) => data?.schemaCategory === atob(step))
     );
   }, [basicForm, step]);
 
@@ -82,7 +81,6 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       try {
         const departmentId = basicForm?.basicDetailReferences?.department?.id;
         const applicantTypeId=basicForm?.basicDetailReferences?.applicantType?.id;
-        const currentApplicantId = basicForm?.applicant?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
@@ -109,9 +107,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   useEffect(() => {
     if (
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-        "Women & Children" &&
+      "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-        "Obstetrics & Gynecology"
+      "Obstetrics & Gynecology"
     ) {
       const fetchObstetricsStaffs = async () => {
         try {
@@ -210,9 +208,9 @@ useEffect(() => {
     if (
       whoCoversObstetrics === "" &&
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-        "Women & Children" &&
+      "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-        "Obstetrics & Gynecology"
+      "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
         label:
@@ -382,7 +380,7 @@ useEffect(() => {
             {basicForm?.basicDetails?.departmentSpecialty?.department ===
               "Women & Children" &&
               basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-                "Obstetrics & Gynecology" && (
+              "Obstetrics & Gynecology" && (
                 <div className={style.marginTop}>
                   <div className={`${style.lableStyle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
@@ -406,19 +404,19 @@ useEffect(() => {
                   {obstetricsSpecificProviderGroup === "Individual" && (
                     <div>
                       <CommonSelectField
-                       value={whoCoversObstetrics}
-                       onChange={(e) => setWhoCoversObstetrics(e.target.value)}
-                       firstOptionLabel="Select who covers in Specific Provider"
-                       firstOptionValue=""
-                       className={style.fullWidth}
-                       valueList={obstetricsapplicantOptions.map((option) => option.value)}
-                       labelList={obstetricsapplicantOptions.map((option) => option.label)}
-                       disabledList={[]}
-                       disabledSelect={false}
-                       error={!whoCoversObstetrics}
-                       label={"Select Who covers in Specific Provider"}
-                       required={true}
-                       warning={!whoCoversObstetrics}
+                        value={whoCoversObstetrics}
+                        onChange={(e) => setWhoCoversObstetrics(e.target.value)}
+                        firstOptionLabel="Select who covers in Specific Provider"
+                        firstOptionValue=""
+                        className={style.fullWidth}
+                        valueList={obstetricsapplicantOptions.map((option) => option.value)}
+                        labelList={obstetricsapplicantOptions.map((option) => option.label)}
+                        disabledList={[]}
+                        disabledSelect={false}
+                        error={!whoCoversObstetrics}
+                        label={"Select Who covers in Specific Provider"}
+                        required={true}
+                        warning={!whoCoversObstetrics}
                       />
                     </div>
                   )}
