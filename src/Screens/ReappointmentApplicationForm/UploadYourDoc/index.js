@@ -708,18 +708,6 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         fontSize: "24px",
                                     }}>{eSignTypeContent}</div>
                                 </div>
-                                <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>Edit / Update</div>
-                            
-                            <div className={`${style.marginTop} ${style.gridContainer}`}>
-                                <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100}/></div>
-                                <div><strong>{eSignTitle}</strong></div>
-                                <div><strong>{eSignInitial}</strong></div>
-                                <div style={{
-                                    fontFamily: eSignTypeContentStyle,
-                                    fontSize: "24px",
-                                }}>{eSignTypeContent}</div>
-                            </div>
-                            </div>
                             </>
                         ) : (
                             <div
