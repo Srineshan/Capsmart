@@ -709,7 +709,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
             </div> */}
             <div className={`${style.privilegeCard} ${style.marginTop}`}>
                 <div>
-                    <div className={style.privilegeHeading}><strong>ADDITIONAL PRIVILEGE REQUESTED</strong></div>
+                    <div className={style.privilegeHeading}><strong>ADDITIONAL PRIVILEGES REQUESTED</strong></div>
                     <div className={style.twoCol}>
                         <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
                             <div className={style.privilegeHeading}>Department / Division or specialty</div>
@@ -775,50 +775,50 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         </div>
                     ) : (
                         <>
-                        {isUpdateClicked ? (
-                         <>
-                         <div
-                           className={`${style.markedAsText} ${style.marginTop}`}
-                         >
-                           <strong>
-                             Marked as{" "}
-                             <span className={style.yesText}>Yes</span>
-                           </strong>{" "}
-                         </div>
-                         <div
-                           className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                         >
-                           <div
-                             className={`${style.reappointmentButtonEdit}`}
-                             onClick={() => setIsEdit(true)}
-                           >
-                             Edit
-                           </div>
-                         </div>
-                       </>
-                        ) : (
-                            <>
-                            <div
-                              className={`${style.markedAsText} ${style.marginTop}`}
-                            >
-                              <strong>
-                                Marked as{" "}
-                                <span className={style.noText}>No</span>
-                              </strong>{" "}
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                              <div
-                                className={`${style.reappointmentButtonEdit}`}
-                                onClick={() => setIsEdit(true)}
-                              >
-                                Edit
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </>
+                            {isUpdateClicked ? (
+                                <>
+                                    <div
+                                        className={`${style.markedAsText} ${style.marginTop}`}
+                                    >
+                                        <strong>
+                                            Marked as{" "}
+                                            <span className={style.yesText}>Yes</span>
+                                        </strong>{" "}
+                                    </div>
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonEdit}`}
+                                            onClick={() => setIsEdit(true)}
+                                        >
+                                            Edit
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div
+                                        className={`${style.markedAsText} ${style.marginTop}`}
+                                    >
+                                        <strong>
+                                            Marked as{" "}
+                                            <span className={style.noText}>No</span>
+                                        </strong>{" "}
+                                    </div>
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonEdit}`}
+                                            onClick={() => setIsEdit(true)}
+                                        >
+                                            Edit
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </>
                     )}
                 </>
             )}
@@ -883,10 +883,12 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.stickyContainer}`}>
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

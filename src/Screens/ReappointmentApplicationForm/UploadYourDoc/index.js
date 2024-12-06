@@ -548,11 +548,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     stepPath={`forms[${formIndex}].data`}
                                 />
                             )}
-                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                        <div className={`${style.addMoreBorder}`}>
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
-                                    To optimize your time for completing this application upload or provide the following documents.
+                                        To optimize your time for completing this application upload or provide the following documents.
                                     </div>
                                     {isCollapsableCard ? (
                                         <div onClick={() => setIsCollapsableCard(false)}>
@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                              
+                                                {/* Requirements */}
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -669,7 +669,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 actions={actions}
                                 // scrollStyle={style.contractScrollStyle}
                                 tableSortValues={[]}
-                                heading={"There are no Record for you to manage"}
+                                heading={"You have not yet uploaded any documents."}
                                 onClickFunction={() => { }}
                             />
                         )}
@@ -736,9 +736,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
@@ -748,6 +748,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                       || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer: ""}`}>
                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
                         SAVE IN PROGRESS
                     </div>
@@ -788,6 +790,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             CONTINUE
                         </div> */}
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

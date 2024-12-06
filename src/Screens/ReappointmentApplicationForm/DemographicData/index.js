@@ -226,9 +226,16 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
         setUpdateFrom('')
+    }
+
+    const getSkipClicked1 = (value) => {
+        if (value) {
+            // handleSubmitApplicationReq("skipped")
+            navigate(navigateURL);
+        }
     }
 
     const getContactSkipClicked = (value, data, skip) => {
@@ -636,9 +643,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div> 
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
@@ -655,6 +663,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             SKIP FOR NOW
                         </div> */}
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer: ""}`}>
                     <div
                         className={`${style.saveInProgress} ${style.marginTop}`}
                         onClick={() => getIsSaveInProgressOpen(true)}
@@ -676,6 +685,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             CONTINUE
                         </div> */}
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

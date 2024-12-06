@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { InputGroup, Icon, Intent, Dialog, Classes } from "@blueprintjs/core";
 import FileImg from "./../../images/fileImg.png";
@@ -42,7 +43,7 @@ import ESignature from "../../Components/ESignature";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CommonDateField from "../../Components/CommonFields/CommonDateField";
-import { add, format, isValid, parse, sub } from 'date-fns';
+import { add, format, isValid, parse, sub ,differenceInDays} from 'date-fns';
 import TextField from "@mui/material/TextField";
 import CommonDropZone from '../../Components/CommonFields/CommonDropZone';
 import DescriptionIcon from '@mui/icons-material/Description';
@@ -950,6 +951,31 @@ const NewActiveApplication = ({
     // getPreApplication();
   }
 
+  const getUserRole = (selectedTab) => {
+    switch (selectedTab) {
+      case "level-1":
+        return "Staff Manager";
+      case "level-2":
+        return "Dept Head";
+      case "level-3":
+        if (userRole?.includes("Credentialing Committee")) {
+          return "Cred Comm";
+        }
+        if (userRole?.includes("Chief Of Staff")) {
+          return "Chief Of Staff";
+        }
+        return "Cred Comm";
+      case "level-4":
+        return "MAC";
+      case "level-5":
+        return "BOD";
+      default:
+        return "";
+    }
+  };
+
+  const userRoleTab = getUserRole(selectedTab);
+
   const getContractId = (value) => {
     setContractId(value);
   };
@@ -1175,6 +1201,29 @@ const NewActiveApplication = ({
   const relevantForm = form?.forms?.filter(schema => schema?.schemaCategory !== "UploadYourDoc");
 
   console.log("relevantForm" + JSON.stringify(relevantForm))
+
+  const lastSubmittedLog = form?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  const reappointmentDate = form?.createdDate;
+  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const finishTime = new Date("05/01/2020");
+
+  // const submissionDate = finishTime ? new Date(finishTime) : null;
+  const submissionDate = lastSubmittedDate ? new Date(lastSubmittedDate) : null;
+
+// Get the current date
+const currentDatenow = new Date();
+
+let daysDifference;
+if (submissionDate) {
+  // Calculate the difference in days
+  daysDifference = differenceInDays(currentDatenow, submissionDate);
+} else {
+  daysDifference = "-";
+}
+
+console.log(daysDifference); 
 
   // Check if logDetails.logs is an array before calling forEach
   // if (logDetails?.logs && Array.isArray(logDetails?.logs)) {
@@ -2615,17 +2664,21 @@ const NewActiveApplication = ({
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
-        title={`${form?.creationType === "NEW" ? "New" : "Reappointment"} ${form?.basicDetails?.applicant?.applicantType !== undefined
-          ? form?.basicDetails?.applicant?.applicantType
-          : "{Applicant Type}"
-          } Application For ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${
+          form?.basicDetails?.applicant?.name?.firstName !== undefined
             ? form?.basicDetails?.applicant?.name?.firstName
             : "{First Name}"
-          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+        } ${
+          form?.basicDetails?.applicant?.name?.lastName !== undefined
             ? form?.basicDetails?.applicant?.name?.lastName
             : "{Last Name}"
-          }`}
-        close={true} closeClick={onClose}
+        }, ${
+          form?.basicDetails?.applicant?.applicantType !== undefined
+            ? form?.basicDetails?.applicant?.applicantType
+            : "{Applicant Type}"
+        }`}
+        close={true}
+        closeClick={onClose}
       />
 
       <div className={style.welcomeBorder}></div>
@@ -2634,8 +2687,10 @@ const NewActiveApplication = ({
         <div
           className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}
         >
-          {`CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ""
-            } ${form?.basicDetails?.applicant?.name?.lastName || ""}`}
+         {applicationType === "NEW" ? 
+        `CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ""} ${form?.basicDetails?.applicant?.name?.lastName || ""}` 
+        : `${userRoleTab} DASHBOARD > REAPPOINTMENT APPLICATIONS >>  ${form?.basicDetails?.applicant?.name?.firstName || ""} ${form?.basicDetails?.applicant?.name?.lastName || ""}`}
+          
           {/* <img
             src={CrossPink}
             alt="cross"
@@ -2650,7 +2705,8 @@ const NewActiveApplication = ({
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
               <>
                 <div>
-                  <div className={style.grid5and1}>
+                  {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
+                    <div className={style.grid5and2}>
                     <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                       <div className={style.spaceBetween}>
                         <div className={style.displayInRow}>
@@ -2669,14 +2725,18 @@ const NewActiveApplication = ({
                                 {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
                               </span>
                               <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
-                                {form?.displayId || ""}
+                                {/* {form?.displayId || ""} */}
+                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                               </span>
                             </div>
-                            <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
+                            </div> */}
+                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.basicDetailReferences?.department?.name || ""} {","} {form?.basicDetailReferences?.specialty || "-"}
                             </div>
                             <div className={style.spaceBetween}>
-                              <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
+                              <span className={`${style.emailTextBoldStyle} ${style.marginTop30}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </span>
                               <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
@@ -2687,12 +2747,110 @@ const NewActiveApplication = ({
                         </div>
                         <div className={`${style.displayInRow} ${style.marginRight20}`}>
                           <div className={style.displayInCol}>
-                            <div className={style.marginTop15}>
+                            <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                               <span className={style.rightAlignTextStyle}>
-                                Days To Complete:
+                                Reappointment Start Date:
                               </span>
                               <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                15
+                                {/* {form?.createdDate} */}
+                                {reappointmentStartDate}
+                              </span>
+                            </div>
+                            <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                              Application Submitted:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                              {formattedSubmissionDate}
+                              </span>
+                            </div>
+                            <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                              Days Since Submission:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                              {daysDifference} Days
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                      <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                      <div className={style.greyDotTextStyle}>
+                       Application Payment Status
+                      </div>
+                      <div>payment ID</div>
+                    </div>
+                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                      <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                      <div className={style.greyDotTextStyle}>
+                        Overall Verification & Acceptance Status
+                      </div>
+                    </div>
+                  </div>
+                  ) : (
+                    <div className={style.grid5and1}>
+                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                      <div className={style.spaceBetween}>
+                        <div className={style.displayInRow}>
+                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                            <div className={style.photoCardStyle}>
+                              <span>Photo</span>
+                            </div>
+                          </div>
+                          <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                            <div className={style.marginTop10}>
+                              <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                              </span>
+                              <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                                {/* {form?.displayId || ""} */}
+                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                              </span>
+                            </div>
+                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
+                            </div> */}
+                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.basicDetailReferences?.department?.name || ""} {","} {form?.basicDetailReferences?.specialty || "-"}
+                            </div>
+                            <div className={style.spaceBetween}>
+                              <span className={`${style.emailTextBoldStyle} ${style.marginTop30}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </span>
+                              <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                          <div className={style.displayInCol}>
+                            <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                                Reappointment Start Date:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                {/* {form?.createdDate} */}
+                                {reappointmentStartDate}
+                              </span>
+                            </div>
+                            <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                              Application Submitted:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                              {formattedSubmissionDate}
+                              </span>
+                            </div>
+                            <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                              Days Since Submission:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                              {daysDifference} Days
                               </span>
                             </div>
                           </div>
@@ -2702,10 +2860,12 @@ const NewActiveApplication = ({
                     <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                       <div className={`${statusStyle} ${style.marginCenter}`}></div>
                       <div className={style.greyDotTextStyle}>
-                        Overall Verification & Acceptance Status
+                        Overall Review Status
                       </div>
                     </div>
                   </div>
+                  )}
+                  
                   <>
                     {((userRole?.includes('Staff Manager') && selectedTab === "level-1") || (userRole?.includes('Chief Of Staff') && selectedTab === "level-1")) ? (
                       <div
@@ -3504,38 +3664,89 @@ const NewActiveApplication = ({
                                 </div>
                               ))}
                             {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
+                              // <div className={`${style.margin20}`}>
+                              //   <div className={`${style.twoColumnGrid}`}>
+                              //     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                              //       <div
+                              //         className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              //         onClick={() => {
+                              //           onClose();
+                              //         }}
+                              //       >
+                              //         SAVE IN PROGRESS
+                              //       </div>
+                              //     </div>
+                              //     <div
+                              //       className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                              //       // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                              //       // style={{ opacity: isApproved ? 1 : 0.5 }}
+                              //     >
+                              //       <div
+                              //         className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              //         // onClick={() => {
+                              //         //   onClickApprovalDeptFunction();
+                              //         // }}
+                              //         // onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                              //         onClick={() => {
+                              //           onClickApproveMoveFunction();
+                              //         }}
+                              //       >
+                              //         Verified, Send to Dept. Chief
+                              //       </div>
+                              //     </div>
+                              //   </div>
+                              // </div>
                               <div className={`${style.margin20}`}>
-                                <div className={`${style.twoColumnGrid}`}>
-                                  <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                                    <div
-                                      className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                      onClick={() => {
-                                        onClose();
-                                      }}
-                                    >
-                                      SAVE IN PROGRESS
+                                  <div className={`${style.fourColumnGrid}`}>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={() => {
+                                          onClose();
+                                        }}
+                                      >
+                                        SAVE IN PROGRESS
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div
-                                    className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                                    // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                                    // style={{ opacity: isApproved ? 1 : 0.5 }}
-                                  >
                                     <div
-                                      className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                      // onClick={() => {
-                                      //   onClickApprovalDeptFunction();
-                                      // }}
-                                      // onClick={isApproved ? onClickApproveMoveFunction : undefined}
-                                      onClick={() => {
-                                        onClickApproveMoveFunction();
-                                      }}
+                                      className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                                     >
-                                      Verified, Send to Dept. Chief
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        // onClick={() => {
+                                        //   setShowApplicationDeclineDialog(true);
+                                        // }}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
+                                      >
+                                        REJECT
+                                      </div>
+                                    </div>
+                                    {/* </div> */}
+                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        // onClick={onClickApproveFunction}
+                                        onClick={() => {
+                                          ""
+                                        }}
+                                      >
+                                       SEND LATER
+                                      </div>
+                                    </div>
+                                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        onClick={onClickApprovalDeptFunction}
+                                        // onClick={onClickApproveMoveFunction}
+                                      >
+                                        Verified, Send to Dept. Chief
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
                             ) : ("")}
                           </div>
                           {applicationType === "NEW" ? (
@@ -4302,7 +4513,7 @@ const NewActiveApplication = ({
                                         </>
                                       )}
                                     </div>))}
-                              {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
+                              {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4349,6 +4560,82 @@ const NewActiveApplication = ({
                                         onClick={onClickApprovalwithoutnotesFunction}
                                       >
                                         RECOMMEND
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (" ")}
+                              {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
+                                <div className={`${style.margin20}`}>
+                                  <div className={`${style.twoColumnGrid1}`}>
+                                    <div
+                                      className={`${style.buttonCardStyle2} ${style.cursorPointer}`}
+                                    >
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        // onClick={() => {
+                                        //   setShowApplicationDeclineDialog(true);
+                                        // }}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
+                                      >
+                                        NOT RECOMMENDED BY MAC
+                                      </div>
+                                    </div>
+                                    {/* </div> */}
+                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                    <div
+                                     className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                                     style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                                     onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                                    >
+                                      <div
+                                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        // onClick={onClickApproveFunction}
+                                        // onClick={() => {
+                                        //   onClickApprovalFunction();
+                                        // }}
+                                      >
+                                        RECOMMENDED BY MAC
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (" ")}
+                               {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
+                                <div className={`${style.margin20}`}>
+                                  <div className={`${style.twoColumnGrid1}`}>
+                                    <div
+                                      className={`${style.buttonCardStyle2} ${style.cursorPointer}`}
+                                    >
+                                      <div
+                                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                        // onClick={() => {
+                                        //   setShowApplicationDeclineDialog(true);
+                                        // }}
+                                        onClick={() => {
+                                          setShowApplicationDeclineDialog(true);
+                                        }}
+                                      >
+                                        REJECTED BY BOD
+                                      </div>
+                                    </div>
+                                    {/* </div> */}
+                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                    <div
+                                     className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                                     style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                                     onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                                    >
+                                      <div
+                                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                        // onClick={onClickApproveFunction}
+                                        // onClick={() => {
+                                        //   onClickApprovalFunction();
+                                        // }}
+                                      >
+                                        APPROVED BY BOD
                                       </div>
                                     </div>
                                   </div>
@@ -7352,6 +7639,38 @@ const NewActiveApplication = ({
                   </div>
                 )} */}
                 {(userRole?.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")  ? (
+                  // <div className={`${style.twoColumnGrid}`}>
+                  //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                  //     <div
+                  //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                  //       onClick={() => {
+                  //         onClose();
+                  //       }}
+                  //     >
+                  //       SAVE IN PROGRESS
+                  //     </div>
+                  //   </div>
+                  //   <div
+                  //     className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                  //     // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                  //     // style={{ opacity: isApproved ? 1 : 0.5 }}
+                  //   >
+                  //     <div
+                  //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                  //       // onClick={() => {
+                  //       //   onClickApprovalDeptFunction();
+                  //       // }}
+                  //       // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                  //       onClick={() => {
+                  //         onClickApproveMoveFunction();
+                  //       }}
+                        
+                  //     >
+                  //       Verified, Send to Dept. Chief
+                  //     </div>
+                  //   </div>
+                  // </div>
+                  <>
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7365,24 +7684,42 @@ const NewActiveApplication = ({
                     </div>
                     <div
                       className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      // style={{ opacity: isApproved ? 1 : 0.5 }}
                     >
                       <div
                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
                         // onClick={() => {
-                        //   onClickApprovalDeptFunction();
+                        //   setShowApplicationDeclineDialog(true);
                         // }}
-                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                         onClick={() => {
-                          onClickApproveMoveFunction();
+                          setShowApplicationDeclineDialog(true);
                         }}
-                        
+                      >
+                        REJECT
+                      </div>
+                    </div>
+                  </div>
+                  <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                        // onClick={onClickApproveFunction}
+                        onClick={() => {
+                          ""
+                        }}
+                      >
+                        SEND LATER
+                      </div>
+                    </div>
+                    <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                      <div
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={onClickApprovalDeptFunction}
                       >
                         Verified, Send to Dept. Chief
                       </div>
                     </div>
                   </div>
+                </>
                 ) : ("")}
                    {(applicationType === "NEW" && (selectedTab === "level-1" ||selectedTab === "level-2"||selectedTab === "level-3") ) ? (
                   <>
@@ -7417,7 +7754,7 @@ const NewActiveApplication = ({
                 ) : ("")}
 
               {(applicationType === "NEW" && selectedTab === "level-1" ) ? (
-                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                   onClick={onClickApproveMoveFunction}
@@ -7428,7 +7765,7 @@ const NewActiveApplication = ({
                 ) : ("")}
 
               {(applicationType === "NEW" && selectedTab === "level-2" ) ? (
-                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
                   <div
                     className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                   onClick={onClickApproveMoveFunction}
@@ -7440,7 +7777,7 @@ const NewActiveApplication = ({
 
                 {(applicationType === "NEW" && selectedTab === "level-3") ? (
                   <div 
-                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${userRole?.includes("Chief Of Staff") ? style.disabledButton : ""}`}
+                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${userRole?.includes("Chief Of Staff") ? style.disabledButton : ""}`}
                     style={{ opacity: userRole?.includes("Chief Of Staff") ? 0.5 : 1 }}
                     onClick={() => {
                       if (!userRole?.includes("Chief Of Staff")) {
@@ -7585,7 +7922,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
+                  {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7626,9 +7963,9 @@ const NewActiveApplication = ({
                             RECOMMENDED WITH COMMENTS
                           </div>
                         </div>
-                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                           <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                             onClick={onClickApprovalwithoutnotesFunction}
                           >
                             RECOMMEND
@@ -7637,7 +7974,6 @@ const NewActiveApplication = ({
                       </div>
                     </>
                   ) : (" ")}
-
                   {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
@@ -7669,7 +8005,147 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   </>) : ( " ")}
+                  {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
+                      <>
+                        <div className={`${style.cardLeftStyle2}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
+                              <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
+                            </div>
+                            <CommonDateField
+                              className={style.dateWidth}
+                              onChange={(date) => handleDateChange(date, 'MAC')}
+                              open={calendarStart}
+                              onOpen={() => setCalendarStart(true)}
+                              onClose={() => setCalendarStart(false)}
+                              minDate={sub(new Date(), { years: 3 })}
+                              maxDate={new Date()}
+                              value={selectedDateForMac}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  inputProps={{
+                                    ...params.inputProps,
+                                    placeholder: 'Enter MAC Meeting Date To Continue',
+                                  }}
+                                  variant="outlined"
+                                  margin="normal"
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          </div>
+                          {taskCount > 0 ? (
+                            <>
+                              <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                <WarningIcon className={style.warning} />
+                                <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                              </div>
 
+                            </>
+                          ) : (
+                            <>
+                              <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                <TaskAltIcon className={style.correcticon} />
+                                <div className={`${style.marginLeft10} ${style.alignItem}`}>Checklist Items Pending Completion</div>
+                              </div>
+                            </>
+                          )}
+                          <div className={style.marginBottom20}></div>
+                          <>
+                            <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`} 
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}>NOT RECOMMENDED BY MAC</div>
+                            </div>
+                            <div
+                              className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                              style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                            >
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                              RECOMMENDED BY MAC
+                              </div>
+                            </div>
+                          </>
+                        </div>
+                      </>
+                    ) :(" ")
+                    }
+                     {(userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
+                      <>
+                        <div className={`${style.cardLeftStyle2}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              BOD Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'BOD')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+
+                            minDate={sub(new Date(), { years: 3 })}
+                            maxDate={new Date()}
+                            value={selectedDateForBod}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter BOD Approval Date To Continue',
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                          {taskCount > 0 ? (
+                            <>
+                              <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                <WarningIcon className={style.warning} />
+                                <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                              </div>
+
+                            </>
+                          ) : (
+                            <>
+                              <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                                <TaskAltIcon className={style.correcticon} />
+                                <div className={`${style.marginLeft10} ${style.alignItem}`}>Checklist Items Pending Completion</div>
+                              </div>
+                            </>
+                          )}
+                          <div className={style.marginBottom20}></div>
+                          <>
+                            <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`} 
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}>REJECTED BY BOD</div>
+                            </div>
+                            <div
+                              className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                              style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                            >
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                              APPROVED MY BOD
+                              </div>
+                            </div>
+                          </>
+                        </div>
+                      </>
+                    ) :(" ")
+                    }
                   {userRole?.includes('Chief Of Staff') && (
                     <>
                       {selectedTab === "level-3" && (
@@ -8129,6 +8605,114 @@ const NewActiveApplication = ({
                       )}
                     </>
                   )}
+                  {applicationType === "REAPPOINTMENT" ? (
+                    <>
+                        <div className={style.cardLeftStyle}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div
+                              className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                            >
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                  Notes
+                                </span>
+                                <div
+                                  className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                >
+                                  <img
+                                    src={EditBlue}
+                                    alt="EditBlue"
+                                    className={style.colorFileStyle}
+                                  />
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <div
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                >
+                                  <AddIcon
+                                    sx={{
+                                      fontSize: 20,
+                                      color: "#94979A",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                                  <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div
+                              className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                            >
+                              <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                RFCs & Doc Clarification
+                              </span>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <div
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
+                                >
+                                {expandStates.section1 ? (
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    ) : (
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    )}
+                                </div>
+                              </div>
+                            </div>
+                            {expandStates.section1 && (
+                              <>
+                              <div  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                              <div>Proof of Qualifications</div>
+                              <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                              </div>
+                              <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
+                                <div className={`${style.gridGap3}`}>
+                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                  <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
+                                  <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                </div>
+                              </div>
+                            </>
+                              )}
+                          </div>
+                      
+                          <div className={style.marginBottom20}></div>
+                        </div>
+                    </>
+                  ) : (" ")}
                 </>
               </>
             ) : null
@@ -8202,7 +8786,7 @@ const NewActiveApplication = ({
                     <div
                       className={`${style.spaceBetween} ${style.marginLeftRight20}`}
                     >
-                      <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                      <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop10}`}>
                         BOD Approval Date
                       </span>
                     </div>

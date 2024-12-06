@@ -105,6 +105,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formIndex, setFormIndex] = useState();
   const [navigateURL, setNavigateURL] = useState();
   const [showPrivileges, setShowPrivileges] = useState(false);
+  const [showPrivilegesForSign, setShowPrivilegesForSign] = useState(true);
   const [showCurrentPrivileges, setShowCurrentPrivileges] = useState(false);
   const [isEdit, setIsEdit] = useState(true);
   const [isEditPrivilege, setIsEditPrivilege] = useState(true);
@@ -1208,6 +1209,376 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
   };
 
+  const getFieldsForSign = () => {
+    if (selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) {
+      console.log(
+        selectedPrivilegeForDisplay,
+        selectedAdditionalPrivilegeForDisplay,
+        "entered",
+        selectedPrivilege,
+        staffPrivilege?.filter((data) => data?.id === selectedPrivilege),
+        staffPrivilege,
+        selectedPrivilegesForDisplayMultiple
+      );
+      return (
+        <>
+          <div className={style.marginTop}>
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege
+              ?.filter((data) => data?.id === selectedPrivilege)
+              ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
+              ? staffPrivilege
+                ?.filter((data) => data?.id === selectedPrivilege)
+                ?.map((data) => data?.privilegeSetTitle)[0]
+                ?.toUpperCase()
+              : ""
+              }`}</div>
+
+            {selectedPrivilegeForDisplay?.map((data) =>
+              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                (categories, index) => (
+                  <div>
+                    <div className={style.categoryGrid}>
+                      <div className={style.itemLeft}>
+                        <strong>
+                          {categories?.category === null
+                            ? ""
+                            : categories?.category}
+                        </strong>
+                      </div>
+                    </div>
+                    <>
+                      {categories?.privileges?.map((privileges) => (
+                        <div className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privileges?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>
+                            {privileges?.title || ""}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  </div>
+                )
+              )
+            )}
+            {selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+              ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
+              selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+                ?.privilegesByCategories?.[0]?.privileges?.length !==
+              undefined && (
+                <div className={style.twoCol}>
+                  <div onClick={() => handleSign("Core", "Basic")}>
+                    <ESignature
+                      userName={
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.name
+                          : ""
+                      }
+                      encData={
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.esign
+                          : ""
+                      }
+                      showData={
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined
+                          ? true
+                          : false
+                      }
+                      showDatais={true}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <div className={style.displayInRow}>
+                      <div className={style.dateTitle}>Date: </div>
+                      <div className={`${style.date} ${style.marginLeft}`}>
+                        {selectedPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.signedDate
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+          </div>
+
+          {selectedPrivilegeForDisplay[0]?.privilegeDetails
+            ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+            ?.length !== 0 &&
+            selectedPrivilegeForDisplay[0]?.privilegeDetails
+              ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+              ?.length !== undefined && (
+              <div className={style.padding}>
+                <div className={style.cardDescription}>
+                  {
+                    "The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below."
+                  }
+                </div>
+
+                {selectedPrivilegeForDisplay?.map((data, index) =>
+                  data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map(
+                    (categories, categoriesIndex) => (
+                      <div key={`${index}${categoriesIndex}`}>
+                        <div className={style.categoryGrid}></div>
+                        <>
+                          {categories?.privileges?.map(
+                            (privileges, privilegesIndex) => (
+                              <div
+                                className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ""
+                                  }`}
+                                key={`${index}${privilegesIndex}`}
+                              >
+                                <div className={style.itemLeft}>
+                                  <strong>
+                                    {privileges?.privilegeId || ""}
+                                  </strong>
+                                </div>
+                                <div className={style.itemLeft}>
+                                  {privileges?.title || ""}
+                                </div>
+                                <div className={style.floatRight}>
+                                  <CommonRadio
+                                    value={privileges?.response || ""}
+                                    onChange={(e) =>
+                                      handleRestrictedSelection(
+                                        index,
+                                        categoriesIndex,
+                                        privilegesIndex,
+                                        e.target.value,
+                                        "response"
+                                      )
+                                    }
+                                    radioValue={["NO", "YES"]}
+                                    label={["No", "Yes"]}
+                                  />
+                                </div>
+                                {privileges?.response === "YES" &&
+                                  (privileges?.isevidenceRequired ||
+                                    privileges?.isevidenceRequired ===
+                                    undefined) && (
+                                    <>
+                                      <div className={style.marginTop}>
+                                        <CKEditor
+                                          editor={ClassicEditor}
+                                          data={privileges?.notes?.notes || ""}
+                                          onChange={(event, editor) => {
+                                            const data = editor.getData();
+                                            handleRestrictedSelection(
+                                              index,
+                                              categoriesIndex,
+                                              privilegesIndex,
+                                              data,
+                                              "notes"
+                                            );
+                                          }}
+                                          onReady={(editor) => {
+                                            editor.editing.view.change(
+                                              (writer) => {
+                                                writer.setStyle(
+                                                  "height",
+                                                  "150px",
+                                                  editor.editing.view.document.getRoot()
+                                                );
+                                              }
+                                            );
+                                          }}
+                                          config={{
+                                            placeholder:
+                                              "Insert any privilege competency and qualification information...",
+                                          }}
+                                        />
+                                      </div>
+
+                                      <div className={style.marginTop10}>
+                                        <div
+                                          className={`${style.uploadButton}`}
+                                        >
+                                          <div className={style.uploadGrid}>
+                                            {privileges?.file !== undefined &&
+                                              privileges?.file !== null ? (
+                                              <img
+                                                src={VerifiedImage}
+                                                alt=""
+                                                className={`${style.imgIcon} `}
+                                              />
+                                            ) : (
+                                              <img
+                                                src={ToBeVerifiedImage}
+                                                alt=""
+                                                className={style.imgIcon}
+                                              />
+                                            )}
+                                            <div
+                                              className={`${style.uploadText} ${style.verticalAlignCenter}`}
+                                            >
+                                              Upload any supporting documents
+                                              for evidence of qualification and
+                                              competence
+                                            </div>
+                                            <div>
+                                              <label
+                                                for={`file-upload-dynamic-basic${privilegesIndex}`}
+                                                className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                                              >
+                                                Click to upload
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <input
+                                          id={`file-upload-dynamic-basic${privilegesIndex}`}
+                                          type="file"
+                                          accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                          onChange={(e) => {
+                                            handleRestrictedFileSelection(
+                                              index,
+                                              categoriesIndex,
+                                              privilegesIndex,
+                                              e.target.files[0],
+                                              "file"
+                                            );
+                                          }}
+                                        />
+                                      </div>
+                                      {privileges?.file !== null &&
+                                        privileges?.file?.fileName !==
+                                        undefined && (
+                                          <div
+                                            className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                                          >
+                                            <div className={style.displayInRow}>
+                                              <div
+                                                onClick={() => {
+                                                  window.open(
+                                                    privileges?.file?.fileURL,
+                                                    "_blank"
+                                                  );
+                                                }}
+                                              >
+                                                {privileges?.file?.fileType ===
+                                                  "application/pdf" ? (
+                                                  <img
+                                                    src={PdfDoc}
+                                                    alt=""
+                                                    className={
+                                                      style.docTypeImgStyle
+                                                    }
+                                                  />
+                                                ) : privileges?.file?.fileType?.startsWith(
+                                                  "image/"
+                                                ) ? (
+                                                  <img
+                                                    src={ImgDoc}
+                                                    alt=""
+                                                    className={
+                                                      style.docTypeImgStyle
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <TextSnippetOutlinedIcon
+                                                    style={{
+                                                      fontSize: 20,
+                                                      color: `${data?.subStatus}`,
+                                                    }}
+                                                  />
+                                                )}
+                                              </div>
+                                              <div className={style.marginLeft}>
+                                                {privileges?.file?.fileName}
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <img
+                                                src={DeleteIcon}
+                                                alt=""
+                                                className={
+                                                  style.docTypeImgStyle
+                                                }
+                                                onClick={() => {
+                                                  handleRestrictedSelection(
+                                                    index,
+                                                    categoriesIndex,
+                                                    privilegesIndex,
+                                                    null,
+                                                    "removeFile"
+                                                  );
+                                                }}
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+                                      <br />
+                                    </>
+                                  )}
+                              </div>
+                            )
+                          )}
+                        </>
+                      </div>
+                    )
+                  )
+                )}
+                <div className={style.twoCol}>
+                  <div
+                    onClick={() => {
+                      handleSign("Restricted", "Basic");
+                    }}
+                  >
+                    <ESignature
+                      userName={
+                        selectedPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.name
+                          : ""
+                      }
+                      encData={
+                        selectedPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.esign
+                          : ""
+                      }
+                      showData={
+                        selectedPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign !== undefined
+                          ? true
+                          : false
+                      }
+                      showDatais={true}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <div className={style.displayInRow}>
+                      <div className={style.dateTitle}>Date: </div>
+                      <div className={`${style.date} ${style.marginLeft}`}>
+                        {selectedPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.signedDate
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+        </>
+      );
+    }
+  };
+
   const handleSelectedPrivilegesForDisplayMultiple = (data) => {
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
@@ -1284,7 +1655,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div
                       className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
-                      <div className={style.privilegeHeading}>
+                      <div className={style.privilegeHeadingReappointment}>
                         Change for Reappointment
                       </div>
                       <div className={style.privilegeHeading}>
@@ -1347,7 +1718,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       <div
                         className={`${style.privilegeContentCard} ${style.marginTop10}`}
                       >
-                        <div className={`${style.privilegeHeading}`}>
+                        <div className={`${style.privilegeHeadingReappointment}`}>
                           Change for Reappointment
                         </div>
                         {basicForm?.privileges?.obligatedPrivileges?.map(
@@ -1366,10 +1737,41 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       </div>
                     )}
                 </div>
+                <div className={`${style.privilegeHeading} ${style.marginTop}`}>
+                  <strong>Privileges at Other Hospitals</strong>
+                </div>
+                <div className={style.twoCol}>
+                  <div
+                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                  >
+                    <div className={style.privilegeHeading}>Current</div>
+                    <div className={style.privilegeHeading}>
+                      <strong>
+                        {(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.name !== null)
+                          ? basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.name
+                          : 'None'}
+                      </strong>
+                    </div>
+                  </div>
+                  {(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.name !== null) && (
+                    <div
+                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                    >
+                      <div className={style.privilegeHeadingReappointment}>
+                        Change for Reappointment
+                      </div>
+                      <div className={style.privilegeHeading}>
+                        <strong>
+                          {basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.name}
+                        </strong>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className={`${style.cardTitle} ${style.marginTop}`}>
-              Do you to want to keep your current privilege category?
+              Do you want to keep your current Privilege Category?
             </div>
             {!isPrivilegeCategoryChanging && (
               <>
@@ -1408,7 +1810,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             className={`${style.reappointmentButtonEdit}`}
                             onClick={() => setIsEdit(true)}
                           >
-                            EDIT
+                            VIEW TO MODIFY
                           </div>
                         </div>
                       </>
@@ -1428,7 +1830,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                             className={`${style.reappointmentButtonEdit}`}
                             onClick={() => setIsEdit(true)}
                           >
-                            EDIT
+                            VIEW TO MODIFY
                           </div>
                         </div>
                       </>
@@ -1442,7 +1844,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 {!isPrivilegeSetChanging && (
                   <>
                     <div className={`${style.cardTitle} ${style.marginTop}`}>
-                      Would you like to keep the privilege set(s) you have?
+                      Would you like to keep the Privilege Set(s) you have?
                     </div>
                     {isEditPrivilege ? (
                       <div
@@ -1480,7 +1882,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 className={`${style.reappointmentButtonEdit}`}
                                 onClick={() => setIsEdit(true)}
                               >
-                                EDIT
+                                VIEW TO MODIFY
                               </div>
                             </div>
                           </>
@@ -1501,7 +1903,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 className={`${style.reappointmentButtonEdit}`}
                                 onClick={() => setIsEdit(true)}
                               >
-                                EDIT
+                                VIEW TO MODIFY
                               </div>
                             </div>
                           </>
@@ -2008,7 +2410,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 />
               </div>
             )}
-          <div className={style.threeColForButton}>
+          {/* <div className={style.threeColForButton}>
             <div
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => navigate(-1)}
@@ -2030,7 +2432,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             >
               CONTINUE
             </div>
-          </div>
+          </div> */}
         </div>
         <div>
           <ApplicationAssistanceCard
@@ -2186,6 +2588,102 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           </div>
         </div>
       </Dialog>
+      {/* <Dialog
+        isOpen={showPrivilegesForSign}
+        onClose={() => setShowPrivilegesForSign(false)}
+        className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div>
+          <div className={Classes.DIALOG_BODY}>
+            <div className={style.spaceBetween}>
+              <div className={style.heading}>Sign Off On Your Current Privileges For Your Reappointment Period</div>
+              <div className={style.displayInRow}>
+                <img
+                  src={CrossPink}
+                  alt="cross"
+                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                  onClick={() => {
+                    setShowPrivilegesForSign(false);
+                  }}
+                />
+              </div>
+            </div>
+            <div>{getFieldsForSign()}</div>
+            <div
+              className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
+            >
+              <div
+                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length !== undefined)) &&
+                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.corePrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined))
+                  ? ""
+                  : style.disabledButton
+                  }`}
+                onClick={
+                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                    0 ||
+                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)) &&
+                    ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
+                    ? () => {
+                      setShowPrivileges(false);
+                      handleSelectedPrivilegesForDisplayMultiple(
+                        selectedPrivilegeForDisplay[0]
+                      );
+                    }
+                    : () => { }
+                }
+              >
+                CONTINUE
+              </div>
+            </div>
+          </div>
+        </div>
+      </Dialog> */}
       {showPaymentDialog && (
         <PaymentDialog
           getIsOpen={getIsShowPaymentDialog}

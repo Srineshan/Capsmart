@@ -179,8 +179,10 @@ const ReappointmentApplicationFormRequirement = () => {
                                 <div className={style.marginTop10}>
                                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                                 </div>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
+                                <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer: ""}`}>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -73,6 +73,8 @@ const ActiveStaffList = ({
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -96,11 +98,16 @@ const ActiveStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab]);
+  }, [selectedTab,sortField, sortValue,page,totalCount]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
+
+  const getSelectedPage = (value) => {
+    setPage(value);
+}
+
 
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
@@ -121,10 +128,11 @@ const ActiveStaffList = ({
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
-        `application-management-service/staff?type=${selectedTab}&status=ACTIVE`
+        `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${10}&offset=${page - 1}`
       );
-      console.log("Application data", response?.data);
-      setTableData(response?.data);
+      console.log("Application data", response?.data?.staffs);
+      setTableData(response?.data?.staffs);
+      setTotalCount(response?.data?.numberOfElements);
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -1009,6 +1017,9 @@ const ActiveStaffList = ({
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
                   />
                 </div>
               </div>
