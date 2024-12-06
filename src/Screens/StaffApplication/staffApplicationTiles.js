@@ -125,17 +125,41 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   //   level: `level-${key}`,
   // }));
 
-  const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
-    label: currentRoleIndex === index
-      ? (applicationType === "NEW"
-        ? "Applicants to Verify"
-        : (applicationType === "REAPPOINTMENT"
-          ? "Reappointments to Process"
-          : value.tabDisplayName))
-      : value.tabDisplayName,
-    count: counts[`level-${key}`],
-    level: `level-${key}`,
-  }));
+  // const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => ({
+  //   label: currentRoleIndex === index
+  //     ? (applicationType === "NEW"
+  //       ? "Applicants to Verify"
+  //       : (applicationType === "REAPPOINTMENT"
+  //         ? "Reappointments to Process"
+  //         : value.tabDisplayName))
+  //     : value.tabDisplayName,
+  //   count: counts[`level-${key}`],
+  //   level: `level-${key}`,
+  // }));
+
+  const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
+    let label;
+  
+    if (currentRoleIndex === index) {
+      if (applicationType === "NEW") {
+        label = "Applicants to Verify";
+      } else if ((applicationType === "REAPPOINTMENT" && userRole?.includes("Credentialing Committee"))) {
+        label = "Reappointments to Review";
+      } else if (applicationType === "REAPPOINTMENT") {
+        label = "Reappointments to Process";
+      } else {
+        label = value.tabDisplayName;
+      }
+    }  else {
+      label = value.tabDisplayName;
+    }
+  
+    return {
+      label: label,
+      count: counts[`level-${key}`],
+      level: `level-${key}`,
+    };
+  });
 
 
   const handleTabClick = (tab) => {

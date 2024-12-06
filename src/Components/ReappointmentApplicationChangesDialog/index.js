@@ -176,7 +176,7 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET,TenantID } from "../../Screens/dataSaver";
+import { GET ,TenantID } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
@@ -203,6 +203,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
+    getApplicationEntity();
     getLog();;
   }, [applicationType]);
 
@@ -215,7 +216,6 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
     const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
     setEntity(basicFormEntity);
   };
-
 
   const getLog = async () => {
     const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
@@ -238,18 +238,16 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
     setApplicationCreationType(value);
   }
 
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
-    return null;
-  }
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
+  //   return null;
+  // }
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  
+  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 
   if ((applicationType === "NEW")) {
-    return null;
-  }
-
-  if ((selectedTab === "level-1")) {
     return null;
   }
 
@@ -268,7 +266,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              Staff Reappointment for Review & Approval
+             Reappointment Application Data & Document Verification
             </div>
             <div className={style.displayInRow}>
               <img
@@ -307,7 +305,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                 </div>
               </div>
               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
-              <div className={style.marginTop10}>
+              <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                   <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
@@ -318,8 +316,8 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
                   </div>
                 {/* </div>
-              </div>
-              <div className={style.marginTop5}>
+              </div> */}
+              {/* <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
                   <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
@@ -329,7 +327,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
                   </div> */}
-                    {
+                  {
                     entity?.multiSiteEntity && (
                         <div className={`${style.twoColumnGridInner}`}>
                         <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
@@ -344,8 +342,8 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
               <div className={style.marginTop5}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>OHIP Billing Number:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.specialtyBilling || "-"}</span>
+                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
@@ -367,23 +365,22 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
               <>
               <div className={style.marginTop}>
                 <div className={style.commentsNotesHeadingFontStyle}>
-                  Staff Manager Comments & Notes
+                 Reappointment Application has updates and changes that require verification:
                 </div>
-                <hr color="grey" size="2"></hr>
+                {/* <div className={style.commentsNotesHeadingFontStyle}>
+                Reappointment Application has been submitted with all required documents for processing.
+                </div> */}
                 <div>
-                  <div className={style.commentsNotesFontStyle}>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.
-                  {/* {log.notes} */}
-                  </div>
-                </div>
+                    {formDetails?.formSchemas?.map((item, index) => (
+                        <div key={item?.id} className={`${style.commentsNotesFontStyle} ${style.marginTop10}`}>
+                        <div className={`${style.twoColumnGridInner1}`}>
+                        <div className={style.numberStyle}>{index + 1}.</div> 
+                        <div>{item?.title} </div>
+                        </div>
+                        </div>
+                    ))}
+                    </div>
               </div>
-              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-              Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
-              </div>
-              {userRole?.includes("Department Head") && 
-              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-              Assigned Credentials Committee: Name
-              </div>}
               </>
              {/* ))} */}
             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
@@ -398,7 +395,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-              <div className={style.reviewButton}>CONTINUE</div>
+              <div className={style.reviewButton}>START VERIFICATION</div>
             </div>
           </div>
         </div>

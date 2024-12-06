@@ -12,6 +12,8 @@ import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
 import { format ,sub} from 'date-fns';
 import TextField from "@mui/material/TextField";
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateFormat }) => {
   let cookie = new Cookie();
@@ -19,6 +21,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
+  const [userSelectRole, setUserSelectRole] = useState([]);
+  const [selectedRoleCred, setSelectedRoleCred] = useState('');
   const [userRoleComments, setUserRoleComments] = useState('');
   const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false, isChecked3: false });
   // const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -34,7 +38,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
   const [name, setName] = useState('')
    const [applicantType, setApplicantType] = useState([]);
     const [selectedApplicantType, setSelectedApplicantType] = useState('');
-    const [selectedApplicantTypeRole, setSelectedApplicantTypeRole] = useState('');
+    // const [userSelectRole, setSelectedApplicantTypeRole] = useState('');
     const [calendarStart, setCalendarStart] = useState(false);
     const [selectedDateForDept, setSelectedDateForDept] = useState(null);
 
@@ -42,7 +46,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
     userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
     selectedApplicantType !== '' &&
-    selectedApplicantTypeRole !== '';
+    userSelectRole !== '';
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -57,6 +61,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
   
   useEffect(() => {
     getApplicantType();
+    getApplicationUserRole();
 }, [])
 
 
@@ -109,6 +114,15 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
     setName(`${userData?.name?.firstName} ${userData?.name?.lastName}`);
   }
 
+  const getApplicationUserRole = async () => {
+    try {
+      const { data: basicFormRole } = await GET(`user/role?role=Credentialing Committee`);
+      setUserSelectRole(basicFormRole);
+    } catch (error) {
+      console.error('Error fetching application:', error);
+    }
+  };
+
   const getApplication = async () => {
     try {
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
@@ -156,7 +170,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
         notes: userRoleComments,
         date: selectedDateForDept,
         priority: selectedApplicantType,
-        credRole: selectedApplicantTypeRole
+        credRole: userSelectRole
 
 
       };
@@ -179,7 +193,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateForma
       notes: userRoleComments,
       date: selectedDateForDept,
       priority: selectedApplicantType,
-      credRole: selectedApplicantTypeRole
+      credRole: userSelectRole
 
 
     };
@@ -258,12 +272,34 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
             Provide notes, if any, for the Department Head regarding this application
             </div>
-              <CommonTextField
+              {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
                 value={userRoleComments}
                 onChange={(e) => setUserRoleComments(e.target.value)}
                 placeholder="Enter comments and notes here"
+              /> */}
+              <div className={`${style.marginTop10}`}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={userRoleComments}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setUserRoleComments(data);
+                }}
+                config={{
+                  placeholder: "Enter comments / notes",
+                }}
+                onReady={(editor) => {
+                  editor.editing.view.change((writer) => {
+                    writer.setStyle(
+                      "height",
+                      "150px",
+                      editor.editing.view.document.getRoot()
+                    );
+                  });
+                }}
               />
+            </div>
               <div className={`${style.twoColumnGrid}`}>
               <div>
              <div className={`${style.marginTop10}`}>
@@ -298,7 +334,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             <div>
              <div className={`${style.marginTop10}`}>
             <div className={`${style.filterType}`}>
-            Review Priority
+                Assign a Credentialing Committee Member to Review & Approve
             </div>
             {/* <CommonSelectField
                 value={selectedApplicantType}
@@ -316,71 +352,47 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             </div>
             <div className={`${style.twoColumnGrid}`}>
               <div>
-                                <CommonDateField
-                              className={style.dateWidth}
-                              onChange={(date) => handleDateChange(date, 'MAC')}
-                              open={calendarStart}
-                              onOpen={() => setCalendarStart(true)}
-                              onClose={() => setCalendarStart(false)}
-                              minDate={sub(new Date(), { years: 3 })}
-                              maxDate={new Date()}
-                              value={selectedDateForDept}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    placeholder: 'Start Date',
-                                  }}
-                                  variant="outlined"
-                                  margin="normal"
-                                  fullWidth
-                                />
-                              )}
-                            />
-              </div>
-              <div>
-                  {/* <CommonSelectField
-                value={selectedApplicantType}
-                onChange={(e) => setSelectedApplicantType(e.target.value)}
-                className={style.fullWidth}
-                // firstOptionLabel={''}
-                // firstOptionValue={''}
-                valueList={applicantType?.map(data => data?.id)}
-                labelList={applicantType?.map(data => data?.applicantType)}
-                disabledList={applicantType?.map(data => false)}
-                required={false}
-            /> */}
-
-                  <CommonSelectField
-                    value={selectedApplicantType}
-                    onChange={(e) => setSelectedApplicantType(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={''}
-                    firstOptionValue={''}
-                    valueList={["HIGH", "NO"]}
-                    labelList={['High Priority', 'No Priority']}
-                    disabledList={false}
-                    required={false}
+                <CommonDateField
+                className={style.dateWidth}
+                onChange={(date) => handleDateChange(date, 'MAC')}
+                open={calendarStart}
+                onOpen={() => setCalendarStart(true)}
+                onClose={() => setCalendarStart(false)}
+                minDate={sub(new Date(), { years: 3 })}
+                maxDate={new Date()}
+                value={selectedDateForDept}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    inputProps={{
+                      ...params.inputProps,
+                      placeholder: 'Start Date',
+                    }}
+                    variant="outlined"
+                    margin="normal"
+                    fullWidth
                   />
-              </div>
+                )}
+              />
               </div>
               <div>
-                <div className={`${style.commentsNotesHeadingFontStyle}`}>
-                Assign a Credentialing Committee Member to Review & Approve
-                </div>
               <CommonSelectField
-                    value={selectedApplicantTypeRole}
-                    onChange={(e) => setSelectedApplicantTypeRole(e.target.value)}
+                    value={selectedRoleCred}
+                    onChange={(e) => setSelectedRoleCred(e.target.value)}
                     className={style.fullWidth}
                     firstOptionLabel={''}
                     firstOptionValue={''}
-                    valueList={["HIGH", "NO"]}
-                    labelList={['High Priority', 'No Priority']}
+                    // valueList={["HIGH", "NO"]}
+                    // labelList={['High Priority', 'No Priority']}
+                    valueList={userSelectRole?.map(data => data?.id)}
+                    labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                     disabledList={false}
                     required={false}
                   />
               </div>
+      
+              </div>
+             
             <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
             <div  onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
