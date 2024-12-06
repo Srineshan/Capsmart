@@ -548,7 +548,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     stepPath={`forms[${formIndex}].data`}
                                 />
                             )}
-                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                        <div className={`${style.addMoreBorder}`}>
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                                Requirements
+                                                {/* Requirements */}
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -669,7 +669,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 actions={actions}
                                 // scrollStyle={style.contractScrollStyle}
                                 tableSortValues={[]}
-                                heading={"There are no Record for you to manage"}
+                                heading={"You have not yet uploaded any documents."}
                                 onClickFunction={() => { }}
                             />
                         )}
