@@ -37,7 +37,8 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [showJourneyDialog, setShowJourneyDialog] = useState(false);
   const [specificProviderGroup, setSpecificProviderGroup] = useState("");
   const [providerOptions, setProviderOptions] = useState([]);
-  const [obstetricsSpecificProviderGroup, setObstetricsSpecificProviderGroup] = useState("");
+  const [obstetricsSpecificProviderGroup, setObstetricsSpecificProviderGroup] =
+    useState("");
   const [applicantOptions, setApplicantOptions] = useState([]);
   const [providerLabels, setProviderLabels] = useState("");
   const [obstetricsapplicantOptions, setObstetricsApplicantOptions] = useState(
@@ -63,9 +64,12 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
         basicForm?.forms?.filter((data) => data?.formCategory === "Form")
           ?.length ===
           formIndex + 1
-          ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`ApplicantAcknowledgement`)}`
-          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
-          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
+          ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(
+              `ApplicantAcknowledgement`
+            )}`
+          : `/reappointmentApplicationForm/${applicationId}/${
+              basicForm?.forms[formIndex + 1]?.formCategory
+            }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
       );
     }
   }, [basicForm, formIndex]);
@@ -81,7 +85,8 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       try {
         const currentApplicantId = basicForm?.applicant?.id;
         const departmentId = basicForm?.basicDetailReferences?.department?.id;
-        const applicantTypeId = basicForm?.basicDetailReferences?.applicantType?.id;
+        const applicantTypeId =
+          basicForm?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
           `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
         );
@@ -96,7 +101,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
         }));
         setApplicantOptions(options);
-        console.log(options)
+        console.log(options);
       } catch (error) {
         console.error("Error fetching department staffs:", error);
       }
@@ -108,9 +113,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   useEffect(() => {
     if (
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-      "Women & Children" &&
+        "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-      "Obstetrics & Gynecology"
+        "Obstetrics & Gynecology"
     ) {
       const fetchObstetricsStaffs = async () => {
         try {
@@ -178,14 +183,15 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
       setFormSchemaWholeObject(form || {});
       console.log(form);
 
-      const providerField = form?.schema?.properties?.coverageDetails?.properties?.providerType;
+      const providerField =
+        form?.schema?.properties?.coverageDetails?.properties?.providerType;
       console.log(providerField);
 
       const providerLabel = providerField.label;
       setProviderLabels(providerLabel);
 
       if (providerField?.enum) {
-        const enumValues = providerField.enum
+        const enumValues = providerField.enum;
         console.log(enumValues);
 
         setProviderOptions(enumValues);
@@ -209,9 +215,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     if (
       whoCoversObstetrics === "" &&
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-      "Women & Children" &&
+        "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-      "Obstetrics & Gynecology"
+        "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
         label:
@@ -363,9 +369,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                       className={`${style.fullWidth}`}
                       onChange={(e) => setWhoCovers(e.target.value)}
                       placeholder={"Enter Here"}
-                      label={
-                        "Who covers in Group provider"
-                      }
+                      label={"Who covers in Group provider"}
                       required={true}
                       warning={warningFields
                         ?.map((data) => data?.label)
@@ -381,14 +385,16 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             {basicForm?.basicDetails?.departmentSpecialty?.department ===
               "Women & Children" &&
               basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-              "Obstetrics & Gynecology" && (
+                "Obstetrics & Gynecology" && (
                 <div className={style.marginTop}>
                   <div className={`${style.lableStyle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                   </div>
                   <CommonSelectField
                     value={obstetricsSpecificProviderGroup}
-                    onChange={(e) => setObstetricsSpecificProviderGroup(e.target.value)}
+                    onChange={(e) =>
+                      setObstetricsSpecificProviderGroup(e.target.value)
+                    }
                     className={style.fullWidth}
                     firstOptionLabel={providerLabels}
                     firstOptionValue=""
@@ -410,8 +416,12 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                         firstOptionLabel="Select who covers in Specific Provider"
                         firstOptionValue=""
                         className={style.fullWidth}
-                        valueList={obstetricsapplicantOptions.map((option) => option.value)}
-                        labelList={obstetricsapplicantOptions.map((option) => option.label)}
+                        valueList={obstetricsapplicantOptions.map(
+                          (option) => option.value
+                        )}
+                        labelList={obstetricsapplicantOptions.map(
+                          (option) => option.label
+                        )}
                         disabledList={[]}
                         disabledSelect={false}
                         error={!whoCoversObstetrics}
@@ -434,7 +444,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
                 </div>
               )}
           </div>
-          <div className={style.threeColForButton}>
+          {/* <div className={style.threeColForButton}>
             <div
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => navigate(-1)}
@@ -453,7 +463,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             >
               CONTINUE
             </div>
-          </div>
+          </div> */}
         </div>
         <div>
           <ApplicationAssistanceCard
@@ -463,24 +473,32 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             email={"{Email}"}
           />
           <div
-            className={`${style.saveInProgress} ${style.marginTop}`}
-            onClick={() => getIsSaveInProgressOpen(true)}
+            className={`${style.stickyContainer} ${
+              isSaveInProgressOpen || showValidationDialog || showJourneyDialog
+                ? style.hiddenStickyContainer
+                : ""
+            }`}
           >
-            SAVE IN PROGRESS
-          </div>
-          <div className={style.twoColForButton}>
             <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => navigate(-1)}
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => getIsSaveInProgressOpen(true)}
             >
-              BACK
+              SAVE IN PROGRESS
             </div>
-            {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-            <div
-              className={`${style.continue} ${style.marginTop10}`}
-              onClick={() => getMissingFields()}
-            >
-              CONTINUE
+            <div className={style.twoColForButton}>
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => navigate(-1)}
+              >
+                BACK
+              </div>
+              {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+              <div
+                className={`${style.continue} ${style.marginTop10}`}
+                onClick={() => getMissingFields()}
+              >
+                CONTINUE
+              </div>
             </div>
           </div>
           <div className={style.marginTop}>
