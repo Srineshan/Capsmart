@@ -107,7 +107,8 @@ const ReappointmentApplicationFormRequirement = () => {
         //         console.log(error)
         //         ErrorToaster("Unexpected Error Updating Application");
         //     });
-        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${basicForm?.forms[0]?.schemaCategory}`)
+        console.log(basicForm?.forms[0]?.schemaCategory, atob(basicForm?.forms[0]?.schemaCategory))
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
     }
 
     // const calculateRemainingDays = (createdDate, totalDays) => {
@@ -133,13 +134,13 @@ const ReappointmentApplicationFormRequirement = () => {
                             <div>
                                 <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your reappointment application.'} description={''} />
                                 <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                    <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
+                                    <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
                                     {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div> */}
                                     <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
                                         <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
                                         <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                     </div>
                                     {basicForm?.documentsRequired?.map((data, index) => (

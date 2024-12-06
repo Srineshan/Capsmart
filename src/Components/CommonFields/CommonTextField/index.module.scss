@@ -31,3 +31,13 @@
 .errorColor {
     background: $statusred 0% 0% no-repeat padding-box;
 }
+
+.normalLabel {
+    text-align: left;
+    font: normal normal 15px/17px proxima-nova; 
+    letter-spacing: 0px;
+    color: $textgrey; 
+    opacity: 1;
+    margin-top: 5px;
+  }
+  

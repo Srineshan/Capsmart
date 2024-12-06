@@ -48,12 +48,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate : '');
             setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo : '');
             setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
 
@@ -193,7 +193,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                     className={`${style.reappointmentButtonOutlined}`}
                                     onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
-                                    Yes
+                                    YES
                                 </div>
                                 <div
                                     className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
@@ -212,7 +212,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                         className={`${style.reappointmentButtonEdit}`}
                                         onClick={() => setYesOrNoLMS('')}
                                     >
-                                        Edit
+                                        EDIT
                                     </div>
                                 </div>
                             </>
@@ -230,7 +230,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                     className={`${style.reappointmentButtonOutlined}`}
                                     onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
-                                    Yes
+                                    YES
                                 </div>
                                 <div
                                     className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
@@ -249,7 +249,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                         className={`${style.reappointmentButtonEdit}`}
                                         onClick={() => setYesOrNoSuboxone('')}
                                     >
-                                        Edit
+                                        EDIT
                                     </div>
                                 </div>
                             </>
@@ -268,7 +268,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                         className={`${style.reappointmentButtonOutlined}`}
                                         onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
                                     >
-                                        Yes
+                                        YES
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
@@ -287,7 +287,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setYesOrNoMRP('')}
                                         >
-                                            Edit
+                                            EDIT
                                         </div>
                                     </div>
                                 </>

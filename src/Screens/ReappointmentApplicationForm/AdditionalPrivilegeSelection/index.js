@@ -68,6 +68,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
     const [privilegeCategories, setPrivilegeCategories] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState('');
+    const [isUpdateClicked, setIsUpdateClicked] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const navigate = useNavigate()
     const [formIndex, setFormIndex] = useState();
@@ -751,7 +752,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
             </div>
             <div className={`${style.cardTitle} ${style.marginTop}`}>
-                Do you want to update / change / request your additional privileges?
+                Do you want to update / change or request your additional privileges?
             </div>
             {!isPrivilegeCategoryChanging && (
                 <>
@@ -769,23 +770,55 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                 className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
                             >
-                                NO
+                                No
                             </div>
                         </div>
                     ) : (
                         <>
-                            <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as  <span className={style.noText}>No</span></strong> </div>
+                        {isUpdateClicked ? (
+                         <>
+                         <div
+                           className={`${style.markedAsText} ${style.marginTop}`}
+                         >
+                           <strong>
+                             Marked as{" "}
+                             <span className={style.yesText}>Yes</span>
+                           </strong>{" "}
+                         </div>
+                         <div
+                           className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                         >
+                           <div
+                             className={`${style.reappointmentButtonEdit}`}
+                             onClick={() => setIsEdit(true)}
+                           >
+                             Edit
+                           </div>
+                         </div>
+                       </>
+                        ) : (
+                            <>
                             <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                              className={`${style.markedAsText} ${style.marginTop}`}
                             >
-                                <div
-                                    className={`${style.reappointmentButtonEdit}`}
-                                    onClick={() => setIsEdit(true)}
-                                >
-                                    Edit
-                                </div>
+                              <strong>
+                                Marked as{" "}
+                                <span className={style.noText}>No</span>
+                              </strong>{" "}
                             </div>
-                        </>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                            >
+                              <div
+                                className={`${style.reappointmentButtonEdit}`}
+                                onClick={() => setIsEdit(true)}
+                              >
+                                Edit
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </>
                     )}
                 </>
             )}

@@ -24,6 +24,12 @@
     text-transform: capitalize;
 }
 
+.docTypeImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+}
+
 .marginTop {
     margin-top: 20px;
 }
@@ -64,6 +70,7 @@
     color: $textgrey;
     text-transform: capitalize;
     margin-left: 5px;
+    cursor: pointer;
 }
 
 .checkBackground {

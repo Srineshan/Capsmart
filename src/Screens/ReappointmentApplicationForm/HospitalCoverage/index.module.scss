@@ -212,6 +212,17 @@
     width: 100%;
 }
 
+
+.rowContainer {
+    display: flex;
+    align-items: center; 
+    gap: 16px; 
+  }
+  
+  .fieldWrapper {
+    flex: 1; 
+    min-width: 200px; /* Optional: Set a minimum width to avoid shrinking too much */
+  }
 .lableStyle {
     text-align: left;
     font: normal normal 500 15px/17px proxima-nova;

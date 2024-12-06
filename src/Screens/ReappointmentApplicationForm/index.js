@@ -66,7 +66,8 @@ const ReappointmentApplicationForm = () => {
     }
 
     const StepDisplay = () => {
-        switch (step) {
+        console.log(atob(step), 'btoastring', step)
+        switch (atob(step)) {
             case 'DemographicData':
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':

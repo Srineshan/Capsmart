@@ -13,7 +13,7 @@ import CryptoJS from 'crypto-js';
 import { format ,sub} from 'date-fns';
 import TextField from "@mui/material/TextField";
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
+const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateFormat }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -34,13 +34,15 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
   const [name, setName] = useState('')
    const [applicantType, setApplicantType] = useState([]);
     const [selectedApplicantType, setSelectedApplicantType] = useState('');
+    const [selectedApplicantTypeRole, setSelectedApplicantTypeRole] = useState('');
     const [calendarStart, setCalendarStart] = useState(false);
     const [selectedDateForDept, setSelectedDateForDept] = useState(null);
 
     const isApproveEnabled = 
     userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
-    selectedApplicantType !== '';
+    selectedApplicantType !== '' &&
+    selectedApplicantTypeRole !== '';
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -137,23 +139,59 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat }) => {
  
   // };
 
+  const onClose = () => {
+    getActiveApplicationView(false);
+    getIsOpen(false);
+  };
+
+  const onClickApproveMoveFunction = () => {
+    handleApplicationApprove(true);
+    getApplicationMoveToNext(true);
+  }
+
   const handleApplicationApprove = async () => {
     try {
       const payload = {
-        role: Array.isArray(userRole) ? userRole[0] : userRole,
+        // role: Array.isArray(userRole) ? userRole[0] : userRole,
         notes: userRoleComments,
+        date: selectedDateForDept,
+        priority: selectedApplicantType,
+        credRole: selectedApplicantTypeRole
+
+
       };
 
       await PUT(
-        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=true`,
+        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=false`,
         payload
       );
       
       await getApplication();
-      getIsOpen(false);
+      onClose();
     } catch (error) {
       console.error('Error approving application:', error);
     }
+  };
+
+  const getApplicationMoveToNext = async () => {
+    const payload = {
+      // role: Array.isArray(userRole) ? userRole[0] : userRole,
+      notes: userRoleComments,
+      date: selectedDateForDept,
+      priority: selectedApplicantType,
+      credRole: selectedApplicantTypeRole
+
+
+    };
+
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=false`, payload)
+      .then(response => {
+        console.log('successfull');
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleDateChange = (date, field) => {
@@ -185,9 +223,9 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   const formatLabel = (template, values) =>
     template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
 
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
-    return null;
-  }
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
+  //   return null;
+  // }
 
   return (
   
@@ -218,7 +256,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Provide notes, if any, for the Department Head
+            Provide notes, if any, for the Department Head regarding this application
             </div>
               <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -302,7 +340,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                             />
               </div>
               <div>
-                  <CommonSelectField
+                  {/* <CommonSelectField
                 value={selectedApplicantType}
                 onChange={(e) => setSelectedApplicantType(e.target.value)}
                 className={style.fullWidth}
@@ -312,10 +350,38 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 labelList={applicantType?.map(data => data?.applicantType)}
                 disabledList={applicantType?.map(data => false)}
                 required={false}
-            />
+            /> */}
+
+                  <CommonSelectField
+                    value={selectedApplicantType}
+                    onChange={(e) => setSelectedApplicantType(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={''}
+                    firstOptionValue={''}
+                    valueList={["HIGH", "NO"]}
+                    labelList={['High Priority', 'No Priority']}
+                    disabledList={false}
+                    required={false}
+                  />
               </div>
               </div>
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`}>
+              <div>
+                <div className={`${style.commentsNotesHeadingFontStyle}`}>
+                Assign a Credentialing Committee Member to Review & Approve
+                </div>
+              <CommonSelectField
+                    value={selectedApplicantTypeRole}
+                    onChange={(e) => setSelectedApplicantTypeRole(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={''}
+                    firstOptionValue={''}
+                    valueList={["HIGH", "NO"]}
+                    labelList={['High Priority', 'No Priority']}
+                    disabledList={false}
+                    required={false}
+                  />
+              </div>
+            <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
             <div  onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>

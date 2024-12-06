@@ -4,7 +4,7 @@
   text-align: left;
   font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: #06617A;
   text-transform: capitalize;
   opacity: 1;
 
@@ -59,6 +59,10 @@
 .displayInRow {
   display: flex;
   flex-direction: row;
+}
+
+.displayInRowCenter {
+  align-items: center;
 }
 
 
@@ -348,7 +352,7 @@
 }
 
 .declineBorderStyle {
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
@@ -361,11 +365,10 @@
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal medium 14px/22px proxima-nova;
+  font: normal normal bold 16px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
-  text-transform: capitalize;
-  opacity: 0.5;
+  color: #454747;
+  opacity: 1;
 }
 
 .marginLeft20 {
@@ -388,7 +391,7 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 28% 21%;
+  grid-template-columns: 40% 30%;
   grid-gap: 20px;
   justify-items: start;
 }
@@ -398,6 +401,15 @@
   font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.rejectionTextStyle1 {
+  text-align: left;
+  font: normal normal medium 20px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #171A1A;
   text-transform: capitalize;
   opacity: 1;
 }

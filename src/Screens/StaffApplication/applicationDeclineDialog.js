@@ -231,25 +231,30 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       return isChecked.isChecked
   };
 
-  const getUserRole = (selectedTab, applicationType) => {
-    if (applicationType === "REAPPOINTMENT") {
-      switch (selectedTab) {
-        case "level-1":
-          return "Staff Manager";
-        case "level-2":
+  const getUserRole = (selectedTab) => {
+    switch (selectedTab) {
+      case "level-1":
+        return "Staff Manager";
+      case "level-2":
+        return "Department Head";
+      case "level-3":
+        if (userRole?.includes("Credentialing Committee")) {
           return "Credentialing Committee";
-        case "level-3":
-          return "Advisory Committee";
-        case "level-4":
-          return "Board";
-        default:
-          return "";
-      }
+        }
+        if (userRole === "Chief Of Staff") {
+          return "Chief Of Staff";
+        }
+        return "Credentialing Committee";
+      case "level-4":
+        return "Advisory Committee";
+      case "level-5":
+        return "Board";
+      default:
+        return "";
     }
-    return "";
   };
 
-  const userRoleTab = getUserRole(selectedTab, applicationType);
+  const userRoleTab = getUserRole(selectedTab);
 
   return (
     <div>
@@ -307,7 +312,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 {/* </div>
               </div> */}
             </div>
-            <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>Comments </div>
+            <div className={`${style.marginTop20} ${style.commentsNotesHeadingFontStyle}`}>Comments* </div>
               <div className={`${style.rejectionBorderStyle} ${style.marginTop10}`}>
                 {/* <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                   <textarea

@@ -35,12 +35,12 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
 
@@ -165,8 +165,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <WelcomeCard title={'To the best of your knowledge, provide an update regarding the disclosures required'}
-                        description={'Any information you provide will be kept strictly confidential. If you answer "Yes" to any of the disclosures below, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
+                    <WelcomeCard title={'To the best of your knowledge and understanding, provide a response for the disclosures required'}
+                        description={'Any information you provide will be kept strictly confidential.If you answer "Yes" to any of the disclosures, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'conductDisclosure1' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure1} gridStyle={style.conductGrid} baseKey={'conductDisclosure1'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />

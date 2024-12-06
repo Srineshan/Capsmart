@@ -20,6 +20,7 @@ const CommonTextField = ({
   required,
   warning,
   inputRef,
+  normalLabel,
 }) => {
   const warningCheck =
     type === "number"
@@ -37,7 +38,7 @@ const CommonTextField = ({
 
   return (
     <div>
-      <div className={`${style.lableStyle}`}>
+      <div className={`${normalLabel ? style.normalLabel : style.lableStyle}`}>
         {label}
         {required && "*"}
       </div>

@@ -45,6 +45,7 @@
     "moment-timezone": "^0.5.40",
     "mui-rte": "^2.0.1",
     "papaparse": "^5.3.2",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^2.16.105",
     "process": "^0.11.10",
     "react": "^18.1.0",
@@ -81,7 +82,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "NODE_OPTIONS='--max-old-space-size=4096' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
