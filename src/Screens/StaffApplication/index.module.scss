@@ -872,7 +872,13 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 2% 13% 13% 19% 6% 5% 5% 10% 14% 6%;
+  grid-template-columns: 2% 13% 13% 19% 6% 5% 6% 10% 14% 6%;
+  grid-gap: 1%;
+}
+
+.applicantStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 2% 13% 12% 13% 5% 4% 6% 8% 13% 12% 3%;
   grid-gap: 1%;
 }
 
@@ -884,7 +890,7 @@ body::-webkit-scrollbar {
 
 .departmentHeadStaffGrid {
   display: grid;
-  grid-template-columns: 2% 16% 8% 19% 6% 6% 6% 10% 14% 6%;
+  grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   grid-gap: 1%;
 }
 
@@ -897,7 +903,7 @@ body::-webkit-scrollbar {
 
 .applicationStaffReappointGrid {
   display: grid;
-  grid-template-columns: 2% 20% 15% 20% 6% 5% 15% 11%;
+  grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   grid-gap: 1%;
 }
 
@@ -909,13 +915,19 @@ body::-webkit-scrollbar {
 
 .macStaffReappointGrid {
   display: grid;
-  grid-template-columns: 14% 13% 15% 15% 15% 15% 13%;
+  grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   grid-gap: 1%;
 }
 
 .bodStaffGrid {
   display: grid;
   grid-template-columns: 13% 13% 18% 18% 10% 16% 7%;
+  grid-gap: 1%;
+}
+
+.bodStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   grid-gap: 1%;
 }
 
@@ -1073,20 +1085,23 @@ body::-webkit-scrollbar {
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold $tabledatatext2 proxima-nova;
+  font: normal normal bold 16px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
 }
 
+.displayInRowCenter {
+  align-items: center;
+}
+
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal medium 14px/22px proxima-nova;
+  font: normal normal bold 16px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
-  text-transform: capitalize;
-  opacity: 0.5;
+  color: #454747;
+  opacity: 1;
 }
 
 .rejectionTextStyle {
@@ -1099,7 +1114,7 @@ body::-webkit-scrollbar {
 }
 
 .declineBorderStyle {
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
@@ -1409,7 +1424,7 @@ body::-webkit-scrollbar {
 }
 
 .greyDotTextStyle {
-  text-align: left;
+  text-align: center;
   font: normal normal normal 13px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
@@ -2350,6 +2365,11 @@ select {
   grid-gap: 1%;
 }
 
+.grid5and2 {
+  display: grid;
+  grid-template-columns: 7fr 2fr 2fr;
+  grid-gap: 5px;
+}
 .grid5and1 {
   display: grid;
   grid-template-columns: 7fr 2fr;
@@ -2365,6 +2385,13 @@ select {
 .twoColumnGridInner {
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+  justify-items: start;
+}
+
+.twoColumnGridInner1 {
+  display: grid;
+  grid-template-columns: 56% 38%;
   grid-gap: 20px;
   justify-items: start;
 }
@@ -3122,7 +3149,12 @@ input[type="number"] {
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
+}
+.twoColumnGrid1 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 200px;
 }
 
 .fourColumnGrid {
@@ -4214,13 +4246,12 @@ input[type="number"] {
 }
 
 .bigButtonStyle1 {
-  height: 50px;
+  height: 70px;
   /* UI Properties */
   background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
-  margin-top: 20px;
 }
 
 .statusCard {
@@ -4713,9 +4744,9 @@ input[type="number"] {
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal 600 22px/27px Proxima Nova;
+  font: normal normal medium 16px/24px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: #737575;
   text-transform: capitalize;
   opacity: 1;
 }

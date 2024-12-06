@@ -7,6 +7,7 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import ValidationDialog from '../../Components/validationDialog';
 import TaskStatusDialog from '../../Components/TaskStatusDialog';
 import NotesCommentDialog from '../../Components/NotesCommentDialog';
+import ReappointmentApplicationChangesDialog from '../../Components/ReappointmentApplicationChangesDialog';
 import ApprovalWithNotesDialog from '../../Components/ApprovalWithNotesDialog';
 import ApprovalWithoutNotesDialog from '../../Components/ApprovalWithoutNotesDialog';
 import ApprovalWithNotesDeptDialog from '../../Components/ApproveWithNotesDeptDialog';
@@ -19,6 +20,7 @@ const StaffApplication = () => {
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
     // const [activeApplicationTaskReappoint, setActiveApplicationTaskReappoint] = useState(false);
     const [notesCommentsBox, setNotesCommentBox] = useState(false);
+    const [reappointmentChangesCommentsBox, setReappointmentChangesCommentsBox] = useState(false);
     const [approvalnotesCommentsBox, setApprovalNotesCommentBox] = useState(false);
     const [approvalwithoutnotesCommentsBox, setApprovalwithoutNotesCommentBox] = useState(false);
     const [approvalnotesCommentsBoxDept, setApprovalNotesCommentBoxDept] = useState(false);
@@ -43,6 +45,10 @@ const StaffApplication = () => {
 
     const getNotesCommentBox = (value) => {
         setNotesCommentBox(value);
+    }
+
+    const getReappointmentChangesCommentBox = (value) => {
+        setReappointmentChangesCommentsBox(value);
     }
 
     const getApprovalNotesCommentBox = (value) => {
@@ -78,6 +84,7 @@ const StaffApplication = () => {
                       getActiveApplicationTask={getActiveApplicationTask}
                       getCredCommApplicationView={getCredCommApplicationView}
                       getNotesCommentBox={getNotesCommentBox}
+                      getReappointmentChangesCommentBox={getReappointmentChangesCommentBox}
                       getApprovalNotesCommentBox={getApprovalNotesCommentBox}
                       getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox}
                       getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept}
@@ -88,9 +95,12 @@ const StaffApplication = () => {
            {activeApplicationTask && (
                 <TaskStatusDialog getIsOpen={getActiveApplicationTask}/>
             )}
-              {/* {notesCommentsBox && (
-                <NotesCommentDialog getIsOpen={getNotesCommentBox}/>
-            )} */}
+              {notesCommentsBox && (
+                <NotesCommentDialog getIsOpen={getNotesCommentBox} selectedTab={selectedTab}/>
+            )}
+            {reappointmentChangesCommentsBox && (
+                <ReappointmentApplicationChangesDialog getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab}/>
+            )}
               {approvalnotesCommentsBox && (
                 <ApprovalWithNotesDialog getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab}/>
             )}

@@ -23,6 +23,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [applicantType, setApplicantType] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Replace sessionStorage with state
   const [checkedIds, setCheckedIds] = useState([]);
@@ -39,7 +41,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       setIsDataLoaded(true); // Mark data as loaded
     });
     setCheckedIds([]);
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue,page,totalCount]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -115,13 +117,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       }
 
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&limit=${10}&offset=${page - 1}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
-      const filteredData = response?.data?.filter(item => item?.type !== 'PROVISIONAL' && item?.reappointed !== true) || [];
+      const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL' && item?.reappointed !== true) || [];
 
       setTableData(filteredData);
+      setTotalCount(response?.data?.numberOfElements);
       return filteredData;
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -170,6 +173,10 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     );
     setApplicantType(applicant);
   }
+
+  const getSelectedPage = (value) => {
+    setPage(value);
+}
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === "ASCENDING") {
@@ -366,6 +373,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 heading={"There are no Record for you to manage"}
                 getHandleSort={getHandleSort}
                 sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                getSelectedPage={getSelectedPage}
+                totalCount={totalCount}
+                page={page}
                 // Pass checkedIds as a prop
                 checkedIds={checkedIds}
                 // Optional: pass the checkbox click handler if TableTwo needs it

@@ -30,7 +30,7 @@
 
 .twoColumnGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
   align-items: center;
 }
@@ -51,7 +51,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 50% !important;
+  width: 70% !important;
 }
 
 .dialogBody {

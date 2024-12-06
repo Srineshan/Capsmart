@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT , TenantID} from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -35,6 +35,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const [entity, setEntity] = useState([]);
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -88,6 +89,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     setUserRole(userData?.roles?.map((data) => data?.roleName));
     setName(`${userData?.name?.firstName} ${userData?.name?.lastName}`);
   }
+
+  const getApplicationEntity = async () => {
+    const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
+    setEntity(basicFormEntity);
+  };
 
   const getApplication = async () => {
     try {
@@ -207,7 +213,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       notes: isDelegate ? notes : "",
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES`, temp)
       .then(response => {
         console.log('success');
         onClose();
@@ -345,9 +351,14 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   };
 
   const userRoleTab = getUserRole(selectedTab);
-  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
-  //   return null;
-  // }
+  const lastModifiedDate = formDetails?.lastModifiedDate;
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+    return null;
+  }
 
   return (
 
@@ -363,7 +374,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              {userRoleTab} Review & Approval
+              {/* {userRoleTab} Review & Approval */}
+              Staff Recommended for Reappointment
             </div>
             <div className={style.displayInRow}>
               <img
@@ -377,7 +389,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             </div>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
-            <div className={`${style.cardStyle} ${style.marginTop10}`}>
+            {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.namefontstyle} ${style.marginTop10}`}>
                   {formDetails?.basicDetails?.applicant?.name?.firstName
@@ -391,18 +403,80 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 </div>
                 <div className={`${style.displayIdFontStyle} ${style.marginBoth}`}>({`${formDetails?.displayId}` || "-"})</div>
               </div>
-              {/* <div className={`${style.grid}`}>
-                <div> */}
+             
                   <div className={`${style.marginBothText}`}>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span></div>
                   <div className={`${style.marginBothText}`}>Division Or Specialty:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span></div>
-                {/* </div>
-                <div> */}
+                
                   <div className={`${style.marginBothText} ${style.marginBottom}`}>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
+              
+            </div> */}
+            <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
+                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                  : ""}{" "}
+                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}</span>
+                <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+                </div>
+                <div>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
+                </div>
+              </div>
+              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
+              <div className={style.marginTop10}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                  </div>
                 {/* </div>
-              </div> */}
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                  </div>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>Only If Multisite</span>
+                  </div> */}
+                  {
+                    entity?.multiSiteEntity && (
+                        <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>
+                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                        </span>
+                        </div>
+                    )
+                    }
+                {/* </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Comments
+            Enter your Notes / Comments (Optional)
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
@@ -419,7 +493,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   setUserRoleComments(data);
                 }}
                 config={{
-                  placeholder: "Enter comments and notes here",
+                  placeholder: "Enter comments / notes ",
                 }}
                 onReady={(editor) => {
                   editor.editing.view.change((writer) => {
@@ -443,12 +517,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             )}
             {/* {userRole.includes('Credentialing Committee') && ( */}
               <>
-                <CommonCheckBox
+                {/* <CommonCheckBox
                   className={`${style.marginTop}`}
                   label={formatLabel("The undersigned medical staff committee hereby approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
                   checked={isChecked.isChecked2}
                   onChange={handleCheckboxChange('isChecked2')}
-                />
+                /> */}
                 {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
                 {/* <CommonCheckBox
                 className={`${style.marginTop10}`}
@@ -460,7 +534,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             {/* )} */}
             {/* <ESignature/> */}
             {/* {formDetails?.esignatureRequired && ( */}
-            <div className={style.twoCol}>
+            {/* <div className={style.twoCol}>
               <div
                 onClick={!checkRequirements() ? () => { } : onClicksignFunction}
                 className={!checkRequirements() ? style.disabled : style.signatureContainer}
@@ -482,25 +556,26 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* )}  */}
-            <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
-              <div onClick={() => getIsOpen(false)}>
+            {/* <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}> */}
+            <div className={`${style.marginTop} ${style.alignCenter} ${style.cursorPointer}`}>
+              {/* <div onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
-              </div>
-              {/* <div 
-                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`} 
-                onClick= {handleApplicationApprove}
-              >
-                <div className={style.reviewButton}>APPROVE</div>
               </div> */}
-              <div
+              <div 
+                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`} 
+                onClick= {onClickApproveMoveFunction}
+              >
+                <div className={style.reviewButton}>RECOMMEND STAFF</div>
+              </div>
+              {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
                 onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
                 <div className={style.reviewButton}>SUBMIT</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

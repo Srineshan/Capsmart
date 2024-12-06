@@ -439,7 +439,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
+                        <div className={` ${style.verticalAlignCenter}`} key={index}>
                             {data === 'CHECKBOX' ? (
                                 <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
                             ) : data === 'POD Icon' ? (
@@ -606,7 +606,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     onMouseLeave={() => handleCloseIconWithCount()}
                                                     aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
                                                     aria-haspopup="true">
-                                                    <Typography className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`}  >
+                                                    <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
                                                         <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
