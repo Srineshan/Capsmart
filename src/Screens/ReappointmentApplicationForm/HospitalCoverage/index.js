@@ -79,6 +79,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   useEffect(() => {
     const fetchDepartmentStaffs = async () => {
       try {
+        const currentApplicantId = basicForm?.applicant?.id;
         const departmentId = basicForm?.basicDetailReferences?.department?.id;
         const applicantTypeId = basicForm?.basicDetailReferences?.applicantType?.id;
         const response = await GET(
