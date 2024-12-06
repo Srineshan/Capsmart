@@ -170,16 +170,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           ?.length ===
           formIndex + 1
           ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck`
-          : `/reappointmentApplicationForm/${applicationId}/${
-              basicForm?.forms[formIndex + 1]?.formCategory
-            }/${basicForm?.forms[formIndex + 1]?.schemaCategory}`
+          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
+          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
       );
     }
   }, [basicForm, formIndex]);
 
   useEffect(() => {
     setFormIndex(
-      basicForm?.forms?.findIndex((data) => data?.schemaCategory === step)
+      basicForm?.forms?.findIndex((data) => data?.schemaCategory === atob(step))
     );
   }, [basicForm, step]);
 
@@ -217,10 +216,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const getStaffPrivilege = async () => {
     if (applicationData) {
       const { data: privilege } = await GET(
-        `entity-service/staffPrivilege?department=${
-          selectedDepartment !== ""
-            ? selectedDepartment
-            : applicationData?.basicDetailReferences?.department?.id
+        `entity-service/staffPrivilege?department=${selectedDepartment !== ""
+          ? selectedDepartment
+          : applicationData?.basicDetailReferences?.department?.id
         }`
       );
       setStaffPrivilege(privilege);
@@ -275,10 +273,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       formData.append("documents", file);
       try {
         const response = await POST(
-          `application-management-service/application/${applicationId}/files?isLLMRequired=${
-            formSchemaWholeObject?.requiredDocuments?.length !== 0
-              ? true
-              : false
+          `application-management-service/application/${applicationId}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
+            ? true
+            : false
           }&schemaId=${formSchemaWholeObject?.id}`,
           formData
         );
@@ -302,10 +299,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 requirement:
                   response?.data?.classification !== null
                     ? basicForm?.documentsRequired?.filter(
-                        (data) =>
-                          data?.document?.name ===
-                          response?.data?.classification
-                      )?.[0]?.required
+                      (data) =>
+                        data?.document?.name ===
+                        response?.data?.classification
+                    )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
@@ -438,7 +435,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     if (
       isPrivilegeSetChanging &&
       basicForm?.basicDetails?.credentialingPrivilegeCategory
-        ?.credentialingCategory === "Courtesy with Admitting"
+        ?.credentialingCategory === "Courtesy Staff with Admitting Privileges"
     ) {
       let data = basicForm;
       data.basicDetails.existingCredentialingPrivilegeCategory = {
@@ -716,7 +713,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           type === "Restricted" &&
           (temp[index].privilegeDetails.restrictedPrivileges.esign === null ||
             temp[index].privilegeDetails.restrictedPrivileges.esign ===
-              undefined)
+            undefined)
         ) {
           temp[index].privilegeDetails.restrictedPrivileges.esign = {
             esign: CryptoJS.AES.encrypt(
@@ -855,16 +852,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${
-              staffPrivilege
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege
+              ?.filter((data) => data?.id === selectedPrivilege)
+              ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
+              ? staffPrivilege
                 ?.filter((data) => data?.id === selectedPrivilege)
-                ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
-                ? staffPrivilege
-                    ?.filter((data) => data?.id === selectedPrivilege)
-                    ?.map((data) => data?.privilegeSetTitle)[0]
-                    ?.toUpperCase()
-                : ""
-            }`}</div>
+                ?.map((data) => data?.privilegeSetTitle)[0]
+                ?.toUpperCase()
+              : ""
+              }`}</div>
 
             {selectedPrivilegeForDisplay?.map((data) =>
               data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
@@ -899,7 +895,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
               ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
               selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
                 ?.privilegesByCategories?.[0]?.privileges?.length !==
-                undefined && (
+              undefined && (
                 <div className={style.twoCol}>
                   <div onClick={() => handleSign("Core", "Basic")}>
                     <ESignature
@@ -907,21 +903,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.corePrivileges?.esign?.name
+                            ?.corePrivileges?.esign?.name
                           : ""
                       }
                       encData={
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                              ?.corePrivileges?.esign?.esign
+                            ?.corePrivileges?.esign?.esign
                           : ""
                       }
                       showData={
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null &&
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                          ?.corePrivileges?.esign !== undefined
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined
                           ? true
                           : false
                       }
@@ -935,7 +931,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         {selectedPrivilegeForDisplay[0]?.privilegeDetails
                           ?.corePrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.corePrivileges?.esign?.signedDate
+                            ?.corePrivileges?.esign?.signedDate
                           : ""}
                       </div>
                     </div>
@@ -966,9 +962,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           {categories?.privileges?.map(
                             (privileges, privilegesIndex) => (
                               <div
-                                className={`${style.restrictedPrivilegeGrid} ${
-                                  privilegesIndex === 0 ? style.marginTop : ""
-                                }`}
+                                className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ""
+                                  }`}
                                 key={`${index}${privilegesIndex}`}
                               >
                                 <div className={style.itemLeft}>
@@ -998,7 +993,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 {privileges?.response === "YES" &&
                                   (privileges?.isevidenceRequired ||
                                     privileges?.isevidenceRequired ===
-                                      undefined) && (
+                                    undefined) && (
                                     <>
                                       <div className={style.marginTop}>
                                         <CKEditor
@@ -1038,7 +1033,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         >
                                           <div className={style.uploadGrid}>
                                             {privileges?.file !== undefined &&
-                                            privileges?.file !== null ? (
+                                              privileges?.file !== null ? (
                                               <img
                                                 src={VerifiedImage}
                                                 alt=""
@@ -1085,7 +1080,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                       </div>
                                       {privileges?.file !== null &&
                                         privileges?.file?.fileName !==
-                                          undefined && (
+                                        undefined && (
                                           <div
                                             className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                           >
@@ -1099,7 +1094,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 }}
                                               >
                                                 {privileges?.file?.fileType ===
-                                                "application/pdf" ? (
+                                                  "application/pdf" ? (
                                                   <img
                                                     src={PdfDoc}
                                                     alt=""
@@ -1108,8 +1103,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                     }
                                                   />
                                                 ) : privileges?.file?.fileType?.startsWith(
-                                                    "image/"
-                                                  ) ? (
+                                                  "image/"
+                                                ) ? (
                                                   <img
                                                     src={ImgDoc}
                                                     alt=""
@@ -1172,21 +1167,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         selectedPrivilegeForDisplay[0]?.privilegeDetails
                           ?.restrictedPrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign?.name
+                            ?.restrictedPrivileges?.esign?.name
                           : ""
                       }
                       encData={
                         selectedPrivilegeForDisplay[0]?.privilegeDetails
                           ?.restrictedPrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign?.esign
+                            ?.restrictedPrivileges?.esign?.esign
                           : ""
                       }
                       showData={
                         selectedPrivilegeForDisplay[0]?.privilegeDetails
                           ?.restrictedPrivileges?.esign !== null &&
-                        selectedPrivilegeForDisplay[0]?.privilegeDetails
-                          ?.restrictedPrivileges?.esign !== undefined
+                          selectedPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign !== undefined
                           ? true
                           : false
                       }
@@ -1200,7 +1195,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         {selectedPrivilegeForDisplay[0]?.privilegeDetails
                           ?.restrictedPrivileges?.esign !== null
                           ? selectedPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign?.signedDate
+                            ?.restrictedPrivileges?.esign?.signedDate
                           : ""}
                       </div>
                     </div>
@@ -1276,12 +1271,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={style.privilegeHeading}>
                       <strong>
                         {basicForm?.basicDetails?.priorPrivilegeCategory !==
-                        null
+                          null
                           ? basicForm?.basicDetails?.priorPrivilegeCategory
-                              ?.name
+                            ?.name
                           : basicForm?.basicDetails
-                              ?.credentialingPrivilegeCategory
-                              ?.credentialingCategory}
+                            ?.credentialingPrivilegeCategory
+                            ?.credentialingCategory}
                       </strong>
                     </div>
                   </div>
@@ -1313,7 +1308,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                   >
                     <div className={`${style.privilegeHeading}`}>Current</div>
                     {basicForm?.privileges?.priorObligatedPrivileges?.length ===
-                    0 ? (
+                      0 ? (
                       <>
                         {basicForm?.privileges?.obligatedPrivileges?.map(
                           (data) => (
@@ -1349,27 +1344,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                   </div>
                   {basicForm?.privileges?.priorObligatedPrivileges?.length !==
                     0 && (
-                    <div
-                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                    >
-                      <div className={`${style.privilegeHeading}`}>
-                        Change for Reappointment
+                      <div
+                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                      >
+                        <div className={`${style.privilegeHeading}`}>
+                          Change for Reappointment
+                        </div>
+                        {basicForm?.privileges?.obligatedPrivileges?.map(
+                          (data) => (
+                            <div
+                              className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                setShowCurrentPrivileges(true);
+                                handleChange(data?.id);
+                              }}
+                            >
+                              {data?.privilegeSetTitle}
+                            </div>
+                          )
+                        )}
                       </div>
-                      {basicForm?.privileges?.obligatedPrivileges?.map(
-                        (data) => (
-                          <div
-                            className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                            onClick={() => {
-                              setShowCurrentPrivileges(true);
-                              handleChange(data?.id);
-                            }}
-                          >
-                            {data?.privilegeSetTitle}
-                          </div>
-                        )
-                      )}
-                    </div>
-                  )}
+                    )}
                 </div>
               </div>
             </div>
@@ -1522,7 +1517,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       to?
                     </div>
                     {basicForm?.basicDetails?.credentialingPrivilegeCategory
-                      ?.credentialingCategory === "Courtesy with Admitting" ? (
+                      ?.credentialingCategory === "Courtesy Staff with Admitting Privileges" ? (
                       <div
                         className={`${style.privilegeCard} ${style.marginTop10}`}
                       >
@@ -1544,22 +1539,20 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                         >
                           <div
-                            className={`${style.reappointmentButton} ${
-                              style.marginLeft
-                            } ${
-                              selectedPrivilegesForCourtesy !== ""
+                            className={`${style.reappointmentButton} ${style.marginLeft
+                              } ${selectedPrivilegesForCourtesy !== ""
                                 ? ""
                                 : style.disabledButton
-                            }`}
+                              }`}
                             onClick={
                               selectedPrivilegesForCourtesy === ""
-                                ? () => {}
+                                ? () => { }
                                 : () => {
-                                    setIsPrivilegeSetChanging(false);
-                                    handleSubmit();
-                                    setIsEditPrivilege(false);
-                                    setIsUpdateClicked(true);
-                                  }
+                                  setIsPrivilegeSetChanging(false);
+                                  handleSubmit();
+                                  setIsEditPrivilege(false);
+                                  setIsUpdateClicked(true);
+                                }
                             }
                           >
                             UPDATE
@@ -1688,15 +1681,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                   valueList={privilegeCategories?.map((data) => data?.id)}
                   labelList={privilegeCategories?.map((data) =>
                     data?.category ===
-                    basicForm?.basicDetails?.credentialingPrivilegeCategory
-                      ?.credentialingCategory
+                      basicForm?.basicDetails?.credentialingPrivilegeCategory
+                        ?.credentialingCategory
                       ? `${data?.category} (Current Privilege Category)`
                       : data?.category
                   )}
                   disabledList={privilegeCategories?.map((data) =>
                     data?.category ===
-                    basicForm?.basicDetails?.credentialingPrivilegeCategory
-                      ?.credentialingCategory
+                      basicForm?.basicDetails?.credentialingPrivilegeCategory
+                        ?.credentialingCategory
                       ? true
                       : false
                   )}
@@ -1715,7 +1708,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         granted set of privileges.
                       </div>
                       <div
-                        className={`${style.marginTop} ${style.privilegeWarningText}`}
+                        className={`${style.marginTop10} ${style.privilegeWarningText}`}
                       >
                         You will need to request the set of privileges you would
                         like to have for the category you are changing to
@@ -1737,7 +1730,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     {privilegeCategories?.filter(
                       (data) => data?.id === selectedPrivilegeCategory
-                    )[0]?.category !== "Courtesy with Admitting" ? (
+                    )[0]?.category !== "Courtesy Staff with Admitting Privileges" ? (
                       <>
                         {staffPrivilege?.map((data, index) => (
                           <>
@@ -1815,161 +1808,159 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )}
                 {privilegeCategories?.filter(
                   (data) => data?.id === selectedPrivilegeCategory
-                )[0]?.category === "Courtesy with Admitting" && (
-                  <>
-                    <div className={`${style.twoCol} ${style.marginTop}`}>
-                      <div>
-                        <div className={`${style.cardTitle}`}>
-                          Do you maintain privileges at any other hospital(s)?*
-                        </div>
-                        <div className={style.leftAlign}>
-                          <ThemeProvider theme={theme}>
-                            <FormControl>
-                              <RadioGroup
-                                row
-                                className={style.leftAlign}
-                                value={doYouHavePrivilegeAtAnyOtherHospital}
-                                onChange={(e) =>
-                                  setDoYouHavePrivilegeAtAnyOtherHospital(
-                                    e.target.value
-                                  )
-                                }
-                                sx={{ color: "#2C2C2C" }}
-                              >
-                                <FormControlLabel
-                                  value={"No"}
-                                  control={
-                                    <Radio
-                                      sx={{
-                                        color: "#B3B8BD",
-                                        "&.Mui-checked": { color: "#FF5555" },
-                                      }}
-                                      size="medium"
-                                    />
-                                  }
-                                  label={"No"}
-                                  componentsProps={{
-                                    typography: { variant: "subtitle1" },
-                                  }}
-                                />
-                                <FormControlLabel
-                                  value={"Yes"}
-                                  control={
-                                    <Radio
-                                      sx={{
-                                        color: "#B3B8BD",
-                                        "&.Mui-checked": { color: "#1C8F00" },
-                                      }}
-                                      size="medium"
-                                    />
-                                  }
-                                  label={"Yes"}
-                                  componentsProps={{
-                                    typography: { variant: "subtitle1" },
-                                  }}
-                                />
-                              </RadioGroup>
-                            </FormControl>
-                          </ThemeProvider>
-                        </div>
-                      </div>
-                      <div>
-                        {doYouHavePrivilegeAtAnyOtherHospital === "No" && (
-                          <div className={`${style.privilegeWarningPart}`}>
-                            <div className={style.privilegeWarningText}>
-                              You cannot hold courtesy privileges at {title}{" "}
-                              without having active privileges at another
-                              hospital.
-                            </div>
+                )[0]?.category === "Courtesy Staff with Admitting Privileges" && (
+                    <>
+                      <div className={`${style.twoCol} ${style.marginTop}`}>
+                        <div>
+                          <div className={`${style.cardTitle}`}>
+                            Do you maintain privileges at any other hospital(s)?*
                           </div>
-                        )}
+                          <div className={style.leftAlign}>
+                            <ThemeProvider theme={theme}>
+                              <FormControl>
+                                <RadioGroup
+                                  row
+                                  className={style.leftAlign}
+                                  value={doYouHavePrivilegeAtAnyOtherHospital}
+                                  onChange={(e) =>
+                                    setDoYouHavePrivilegeAtAnyOtherHospital(
+                                      e.target.value
+                                    )
+                                  }
+                                  sx={{ color: "#2C2C2C" }}
+                                >
+                                  <FormControlLabel
+                                    value={"No"}
+                                    control={
+                                      <Radio
+                                        sx={{
+                                          color: "#B3B8BD",
+                                          "&.Mui-checked": { color: "#FF5555" },
+                                        }}
+                                        size="medium"
+                                      />
+                                    }
+                                    label={"No"}
+                                    componentsProps={{
+                                      typography: { variant: "subtitle1" },
+                                    }}
+                                  />
+                                  <FormControlLabel
+                                    value={"Yes"}
+                                    control={
+                                      <Radio
+                                        sx={{
+                                          color: "#B3B8BD",
+                                          "&.Mui-checked": { color: "#1C8F00" },
+                                        }}
+                                        size="medium"
+                                      />
+                                    }
+                                    label={"Yes"}
+                                    componentsProps={{
+                                      typography: { variant: "subtitle1" },
+                                    }}
+                                  />
+                                </RadioGroup>
+                              </FormControl>
+                            </ThemeProvider>
+                          </div>
+                        </div>
+                        <div>
+                          {doYouHavePrivilegeAtAnyOtherHospital === "No" && (
+                            <div className={`${style.privilegeWarningPart}`}>
+                              <div className={style.privilegeWarningText}>
+                                You cannot hold courtesy privileges at {title}{" "}
+                                without having privileges at another
+                                hospital.
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    {doYouHavePrivilegeAtAnyOtherHospital === "Yes" && (
-                      <>
-                        <div className={style.marginTop}>
-                          <CommonTextField
-                            value={prevHospitalName}
-                            className={style.fullWidth}
-                            onChange={(e) =>
-                              setPrevHospitalName(e.target.value)
-                            }
-                            maxLength={50}
-                            placeholder={"Enter Hospital Name"}
-                            label={"Name of the other hospital"}
-                            required={true}
-                          />
-                        </div>
-                        <div className={style.marginTop}>
-                          <CommonSelectField
-                            value={selectedPrivilegeCategoryAtPrevHospital}
-                            onChange={(e) =>
-                              setSelectedPrivilegeCategoryAtPrevHospital(
-                                e.target.value
-                              )
-                            }
-                            className={style.fullWidth}
-                            valueList={privilegeCategories
-                              ?.filter(
-                                (data) =>
-                                  ![
-                                    "Courtesy with Admitting",
-                                    "Courtesy without Admitting",
-                                  ]?.includes(data?.category)
-                              )
-                              ?.map((data) => data?.id)}
-                            labelList={privilegeCategories
-                              ?.filter(
-                                (data) =>
-                                  ![
-                                    "Courtesy with Admitting",
-                                    "Courtesy without Admitting",
-                                  ]?.includes(data?.category)
-                              )
-                              ?.map((data) => data?.category)}
-                            disabledList={privilegeCategories
-                              ?.filter(
-                                (data) =>
-                                  ![
-                                    "Courtesy with Admitting",
-                                    "Courtesy without Admitting",
-                                  ]?.includes(data?.category)
-                              )
-                              ?.map((data) => false)}
-                            label={
-                              "Privilege Category you have at the other hospital"
-                            }
-                            required={false}
-                          />
-                        </div>
-                      </>
-                    )}
-                  </>
-                )}
+                      {doYouHavePrivilegeAtAnyOtherHospital === "Yes" && (
+                        <>
+                          <div className={style.marginTop}>
+                            <CommonTextField
+                              value={prevHospitalName}
+                              className={style.fullWidth}
+                              onChange={(e) =>
+                                setPrevHospitalName(e.target.value)
+                              }
+                              maxLength={50}
+                              placeholder={"Enter Hospital Name"}
+                              label={"Name of the other hospital"}
+                              required={true}
+                            />
+                          </div>
+                          <div className={style.marginTop}>
+                            <CommonSelectField
+                              value={selectedPrivilegeCategoryAtPrevHospital}
+                              onChange={(e) =>
+                                setSelectedPrivilegeCategoryAtPrevHospital(
+                                  e.target.value
+                                )
+                              }
+                              className={style.fullWidth}
+                              valueList={privilegeCategories
+                                ?.filter(
+                                  (data) =>
+                                    ![
+                                      "Courtesy Staff with Admitting Privileges",
+                                      "Courtesy Staff without Admitting Privileges",
+                                    ]?.includes(data?.category)
+                                )
+                                ?.map((data) => data?.id)}
+                              labelList={privilegeCategories
+                                ?.filter(
+                                  (data) =>
+                                    ![
+                                      "Courtesy Staff with Admitting Privileges",
+                                      "Courtesy Staff without Admitting Privileges",
+                                    ]?.includes(data?.category)
+                                )
+                                ?.map((data) => data?.category)}
+                              disabledList={privilegeCategories
+                                ?.filter(
+                                  (data) =>
+                                    ![
+                                      "Courtesy Staff with Admitting Privileges",
+                                      "Courtesy Staff without Admitting Privileges",
+                                    ]?.includes(data?.category)
+                                )
+                                ?.map((data) => false)}
+                              label={
+                                "Privilege Category you have at the other hospital"
+                              }
+                              required={false}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </>
+                  )}
                 {privilegeCategories?.filter(
                   (data) => data?.id === selectedPrivilegeCategory
-                )[0]?.category === "Courtesy with Admitting" ? (
+                )[0]?.category === "Courtesy Staff with Admitting Privileges" ? (
                   <div
                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                   >
                     <div
-                      className={`${style.reappointmentButton} ${
-                        style.marginLeft
-                      } ${
-                        selectedPrivilegeCategoryAtPrevHospital !== "" &&
-                        prevHospitalName !== ""
+                      className={`${style.reappointmentButton} ${style.marginLeft
+                        } ${selectedPrivilegeCategoryAtPrevHospital !== "" &&
+                          prevHospitalName !== ""
                           ? ""
                           : style.disabledButton
-                      }`}
+                        }`}
                       onClick={
                         selectedPrivilegeCategoryAtPrevHospital !== "" &&
-                        prevHospitalName !== ""
+                          prevHospitalName !== ""
                           ? () => {
-                              setIsPrivilegeCategoryChanging(false);
-                              handleSubmit();
-                              setIsEdit(false);
-                            }
-                          : () => {}
+                            setIsPrivilegeCategoryChanging(false);
+                            handleSubmit();
+                            setIsEdit(false);
+                          }
+                          : () => { }
                       }
                     >
                       UPDATE
@@ -2007,16 +1998,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             )}
           </div>
           {basicForm?.basicDetails?.credentialingPrivilegeCategory
-            ?.credentialingCategory !== "Courtesy with Admitting" && (
-            <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-              <AdditionalPrivilegeSelection
-                basicForm={basicForm}
-                setBasicForm={setBasicForm}
-                applicationId={applicationId}
-                getPreApplication={getPreApplication}
-              />
-            </div>
-          )}
+            ?.credentialingCategory !== "Courtesy Staff with Admitting Privileges" && (
+              <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                <AdditionalPrivilegeSelection
+                  basicForm={basicForm}
+                  setBasicForm={setBasicForm}
+                  applicationId={applicationId}
+                  getPreApplication={getPreApplication}
+                />
+              </div>
+            )}
           <div className={style.threeColForButton}>
             <div
               className={`${style.continue} ${style.marginTop}`}
@@ -2100,20 +2091,19 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
               <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${
-                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== null &&
+                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                      0 ||
-                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined)) &&
+                      ?.privileges?.length !== undefined)) &&
                   ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.corePrivileges?.esign !== null &&
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails
@@ -2126,9 +2116,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                         ?.corePrivileges?.privilegesByCategories?.[0]
                         ?.privileges?.length !== undefined))
-                    ? ""
-                    : style.disabledButton
-                }`}
+                  ? ""
+                  : style.disabledButton
+                  }`}
                 onClick={
                   ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
@@ -2136,32 +2126,32 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       ?.restrictedPrivileges?.esign !== undefined) ||
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                      0 ||
+                    0 ||
                     (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.[0]
                       ?.privileges?.length === 0 &&
                       selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                         ?.restrictedPrivileges?.privilegesByCategories?.[0]
                         ?.privileges?.length !== undefined)) &&
-                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.corePrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                      ?.length === 0 &&
+                    ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
                       selectedPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined))
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
                     ? () => {
-                        setShowPrivileges(false);
-                        handleSelectedPrivilegesForDisplayMultiple(
-                          selectedPrivilegeForDisplay[0]
-                        );
-                      }
-                    : () => {}
+                      setShowPrivileges(false);
+                      handleSelectedPrivilegesForDisplayMultiple(
+                        selectedPrivilegeForDisplay[0]
+                      );
+                    }
+                    : () => { }
                 }
               >
                 CONTINUE

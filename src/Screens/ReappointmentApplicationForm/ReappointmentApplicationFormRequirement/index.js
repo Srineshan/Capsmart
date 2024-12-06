@@ -107,7 +107,8 @@ const ReappointmentApplicationFormRequirement = () => {
         //         console.log(error)
         //         ErrorToaster("Unexpected Error Updating Application");
         //     });
-        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${basicForm?.forms[0]?.schemaCategory}`)
+        console.log(basicForm?.forms[0]?.schemaCategory, atob(basicForm?.forms[0]?.schemaCategory))
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
     }
 
     // const calculateRemainingDays = (createdDate, totalDays) => {

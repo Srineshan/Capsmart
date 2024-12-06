@@ -76,12 +76,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     useEffect(() => {
@@ -362,18 +362,18 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />)
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,marginLeft:13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,marginLeft:13 }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`,marginLeft:20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`,marginLeft:20 }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
                 } else {
                     temp.push({
                         "type": "text",
-                        "value": array?.map(innerData => 
+                        "value": array?.map(innerData =>
                             innerData[data] && (
-                                <span 
-                                    onClick={() => { 
-                                        setShowFileDisplayDialog(true); 
-                                        setselectedFile(innerData); 
+                                <span
+                                    onClick={() => {
+                                        setShowFileDisplayDialog(true);
+                                        setselectedFile(innerData);
                                     }}
                                 >
                                     {innerData[data]}
@@ -552,7 +552,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
-                                    List of Documents to Complete this Application
+                                        List of Documents to Complete this Application
                                     </div>
                                     {isCollapsableCard ? (
                                         <div onClick={() => setIsCollapsableCard(false)}>
@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
                                             >
-                                               
+
                                             </div>
                                             <div
                                                 className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
@@ -681,33 +681,33 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />
                         {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
-                                <>
-                            <div
-                                className={`${style.setupCompleteCard} ${style.setupCompleteGrid}  ${style.marginTop}`}
-                                
-                            >
-                                <div></div>
+                            <>
                                 <div
-                                    className={`${style.displayInRow} ${style.justifyCenter}`}
+                                    className={`${style.setupCompleteCard} ${style.setupCompleteGrid}  ${style.marginTop}`}
+
                                 >
-                                    <DoneIcon sx={{ color: "#06617A", fontSize: 25 }} />
+                                    <div></div>
                                     <div
-                                        className={`${style.setupCompletedText} ${style.marginLeft10}`}
+                                        className={`${style.displayInRow} ${style.justifyCenter}`}
                                     >
-                                        eSignature Available on File
+                                        <DoneIcon sx={{ color: "#06617A", fontSize: 25 }} />
+                                        <div
+                                            className={`${style.setupCompletedText} ${style.marginLeft10}`}
+                                        >
+                                            eSignature Available on File
+                                        </div>
                                     </div>
+                                    <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>Edit / Update</div>
                                 </div>
-                                <div className={`${style.editOrUpdateESign} ${style.cursorPointer}`} onClick={() => setIsShowESignDialog(true)}>Edit / Update</div>
-                            </div>
-                            <div className={`${style.marginTop} ${style.gridContainer}`}>
-                                <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100}/></div>
-                                <div><strong>{eSignTitle}</strong></div>
-                                <div><strong>{eSignInitial}</strong></div>
-                                <div style={{
-                                    fontFamily: eSignTypeContentStyle,
-                                    fontSize: "24px",
-                                }}>{eSignTypeContent}</div>
-                            </div>
+                                <div className={`${style.marginTop} ${style.gridContainer}`}>
+                                    <div ><img src={eSignImg?.fileURL} alt="" height={30} width={100} /></div>
+                                    <div><strong>{eSignTitle}</strong></div>
+                                    <div><strong>{eSignInitial}</strong></div>
+                                    <div style={{
+                                        fontFamily: eSignTypeContentStyle,
+                                        fontSize: "24px",
+                                    }}>{eSignTypeContent}</div>
+                                </div>
                             </>
                         ) : (
                             <div

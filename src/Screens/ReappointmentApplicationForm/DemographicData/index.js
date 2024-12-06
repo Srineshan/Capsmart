@@ -50,7 +50,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -62,7 +62,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     const getIsOpen = (value) => {
@@ -508,64 +508,64 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
                                     <div >
                                         <div className={`${style.applicationCardStyle} `}>
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress1}
-                                                gridStyle={style.homeMailingAddressGrid}
-                                                baseKey={"contactAddress1"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
-                                                formSchema={formSchemaWholeObject}
-                                            />
+                                            <div className={` ${style.marginTop}`}>
+                                                {/* {showDemographicInfo && ( */}
+                                                <ApplicationFieldCard
+                                                    object={formSchema?.properties?.contactAddress1}
+                                                    gridStyle={style.homeMailingAddressGrid}
+                                                    baseKey={"contactAddress1"}
+                                                    basicForm={basicForm}
+                                                    setBasicForm={setBasicForm}
+                                                    stepPath={`forms[${formIndex}].data`}
+                                                    isEdited={isContactInfoEdited}
+                                                    setIsEdited={setIsContactInfoEdited}
+                                                    getAllPath={getAllPath}
+                                                    getAllLabels={getAllLabelsContactAddress}
+                                                    getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                    warningFields={warningFields}
+                                                    formSchema={formSchemaWholeObject}
+                                                />
 
-                                        </div>
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress2}
-                                                gridStyle={style.mailingAddressGrid}
-                                                baseKey={"contactAddress2"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
-                                                formSchema={formSchemaWholeObject}
-                                            />
+                                            </div>
+                                            <div className={` ${style.marginTop}`}>
+                                                {/* {showDemographicInfo && ( */}
+                                                <ApplicationFieldCard
+                                                    object={formSchema?.properties?.contactAddress2}
+                                                    gridStyle={style.mailingAddressGrid}
+                                                    baseKey={"contactAddress2"}
+                                                    basicForm={basicForm}
+                                                    setBasicForm={setBasicForm}
+                                                    stepPath={`forms[${formIndex}].data`}
+                                                    isEdited={isContactInfoEdited}
+                                                    setIsEdited={setIsContactInfoEdited}
+                                                    getAllPath={getAllPath}
+                                                    getAllLabels={getAllLabelsContactAddress}
+                                                    getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                    warningFields={warningFields}
+                                                    formSchema={formSchemaWholeObject}
+                                                />
 
-                                        </div>
+                                            </div>
                                         </div>
                                         <div className={`${style.applicationCardStyle} ${style.marginTop} `}>
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress3}
-                                                gridStyle={style.businessMailingAddressGrid}
-                                                baseKey={"contactAddress3"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
-                                                formSchema={formSchemaWholeObject}
-                                            />
-                                        </div>
+                                            <div className={` ${style.marginTop}`}>
+                                                {/* {showDemographicInfo && ( */}
+                                                <ApplicationFieldCard
+                                                    object={formSchema?.properties?.contactAddress3}
+                                                    gridStyle={style.businessMailingAddressGrid}
+                                                    baseKey={"contactAddress3"}
+                                                    basicForm={basicForm}
+                                                    setBasicForm={setBasicForm}
+                                                    stepPath={`forms[${formIndex}].data`}
+                                                    isEdited={isContactInfoEdited}
+                                                    setIsEdited={setIsContactInfoEdited}
+                                                    getAllPath={getAllPath}
+                                                    getAllLabels={getAllLabelsContactAddress}
+                                                    getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                    warningFields={warningFields}
+                                                    formSchema={formSchemaWholeObject}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -629,7 +629,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
-                                        NO
+                                        No
                                     </div>
                                 </div>
                             </>
