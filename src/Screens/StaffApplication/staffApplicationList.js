@@ -34,7 +34,8 @@ import CheckListDialog from "./checkListDialog";
 import CircleIcon from '@mui/icons-material/Circle';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 
 const StaffApplicationList = ({
   isLoading,
@@ -177,7 +178,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    <Checkbox
+    <CommonCheckBox
       size="medium"
       checked={checkedIds.length === tableData.length}
       onChange={handleSelectAllClick}
@@ -203,7 +204,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-      <Checkbox
+      <CommonCheckBox
         size="medium"
         checked={checkedIds.length === tableData.length}
         onChange={handleSelectAllClick}
@@ -1751,7 +1752,7 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       checkbox.push(
-        <Checkbox
+        <CommonCheckBox
           checked={checkedIds.includes(data.id)}
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"
@@ -1943,7 +1944,7 @@ const StaffApplicationList = ({
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
       checkbox.push(
-        <Checkbox
+        <CommonCheckBox
           checked={checkedIds.includes(data.id)}
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"

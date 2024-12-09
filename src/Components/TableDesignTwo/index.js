@@ -20,6 +20,7 @@ import { GET } from "../../Screens/dataSaver";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -97,7 +98,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_TYPE: 'Applicant Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
-        APPLICANT_ID: 'Applicant ID'
+        APPLICANT_ID: 'Applicant ID',
+        REAPPOINTMENT_STATUS: 'Reappointment'
     }
 
     const availableSortValueEnum = {
@@ -106,7 +108,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Applicant Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
-        'Applicant ID': 'APPLICANT_ID'
+        'Applicant ID': 'APPLICANT_ID',
+        'Reappointment':'REAPPOINTMENT_STATUS'
     }
 
     // useEffect(() => {
@@ -477,7 +480,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                     )
                                         : tableData?.type === "checkbox" ? (
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                <Checkbox
+                                                <CommonCheckBox
                                                     checked={checkedIds?.includes(data.id)}
                                                     onChange={() => handleCheckboxClick(data.id)}
                                                     color="primary"

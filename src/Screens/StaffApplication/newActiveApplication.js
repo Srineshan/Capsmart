@@ -73,6 +73,7 @@ const NewActiveApplication = ({
   getApprovalNotesCommentBoxDept,
   getActiveApplicationTask,
   getEmailDialogBox,
+  emailDialogBox
 
 
 }) => {
@@ -3663,39 +3664,8 @@ console.log(daysDifference);
                                   )}
                                 </div>
                               ))}
-                            {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
-                              // <div className={`${style.margin20}`}>
-                              //   <div className={`${style.twoColumnGrid}`}>
-                              //     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                              //       <div
-                              //         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              //         onClick={() => {
-                              //           onClose();
-                              //         }}
-                              //       >
-                              //         SAVE IN PROGRESS
-                              //       </div>
-                              //     </div>
-                              //     <div
-                              //       className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                              //       // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                              //       // style={{ opacity: isApproved ? 1 : 0.5 }}
-                              //     >
-                              //       <div
-                              //         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              //         // onClick={() => {
-                              //         //   onClickApprovalDeptFunction();
-                              //         // }}
-                              //         // onClick={isApproved ? onClickApproveMoveFunction : undefined}
-                              //         onClick={() => {
-                              //           onClickApproveMoveFunction();
-                              //         }}
-                              //       >
-                              //         Verified, Send to Dept. Chief
-                              //       </div>
-                              //     </div>
-                              //   </div>
-                              // </div>
+                            {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
+                              
                               <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -3713,9 +3683,7 @@ console.log(daysDifference);
                                     >
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        // onClick={() => {
-                                        //   setShowApplicationDeclineDialog(true);
-                                        // }}
+                                       
                                         onClick={() => {
                                           setShowApplicationDeclineDialog(true);
                                         }}
@@ -3723,8 +3691,7 @@ console.log(daysDifference);
                                         REJECT
                                       </div>
                                     </div>
-                                    {/* </div> */}
-                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                  
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -3747,7 +3714,7 @@ console.log(daysDifference);
                                     </div>
                                   </div>
                                 </div>
-                            ) : ("")}
+                            ) : ("")} */}
                           </div>
                           {applicationType === "NEW" ? (
                             <div>
@@ -4513,7 +4480,7 @@ console.log(daysDifference);
                                         </>
                                       )}
                                     </div>))}
-                              {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
+                              {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -4531,9 +4498,7 @@ console.log(daysDifference);
                                     >
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        // onClick={() => {
-                                        //   setShowApplicationDeclineDialog(true);
-                                        // }}
+                                      
                                         onClick={() => {
                                           setShowApplicationDeclineDialog(true);
                                         }}
@@ -4541,8 +4506,6 @@ console.log(daysDifference);
                                         NOT RECOMMENDED
                                       </div>
                                     </div>
-                                    {/* </div> */}
-                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -4564,8 +4527,8 @@ console.log(daysDifference);
                                     </div>
                                   </div>
                                 </div>
-                              ) : (" ")}
-                              {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
+                              ) : (" ")} */}
+                              {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.twoColumnGrid1}`}>
                                     <div
@@ -4573,9 +4536,7 @@ console.log(daysDifference);
                                     >
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        // onClick={() => {
-                                        //   setShowApplicationDeclineDialog(true);
-                                        // }}
+                                        
                                         onClick={() => {
                                           setShowApplicationDeclineDialog(true);
                                         }}
@@ -4583,27 +4544,23 @@ console.log(daysDifference);
                                         NOT RECOMMENDED BY MAC
                                       </div>
                                     </div>
-                                    {/* </div> */}
-                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                   
                                     <div
                                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                                      style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                                     onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                                     onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
                                     >
                                       <div
                                         className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        // onClick={onClickApproveFunction}
-                                        // onClick={() => {
-                                        //   onClickApprovalFunction();
-                                        // }}
+                                       
                                       >
                                         RECOMMENDED BY MAC
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              ) : (" ")}
-                               {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
+                              ) : (" ")} */}
+                               {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.twoColumnGrid1}`}>
                                     <div
@@ -4611,9 +4568,7 @@ console.log(daysDifference);
                                     >
                                       <div
                                         className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                        // onClick={() => {
-                                        //   setShowApplicationDeclineDialog(true);
-                                        // }}
+                                        
                                         onClick={() => {
                                           setShowApplicationDeclineDialog(true);
                                         }}
@@ -4621,26 +4576,22 @@ console.log(daysDifference);
                                         REJECTED BY BOD
                                       </div>
                                     </div>
-                                    {/* </div> */}
-                                    {/* <div className={${style.twoColumnGrid} ${style.marginTop20}}> */}
+                                   
                                     <div
                                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                                      style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                                     onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                                     onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
                                     >
                                       <div
                                         className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                        // onClick={onClickApproveFunction}
-                                        // onClick={() => {
-                                        //   onClickApprovalFunction();
-                                        // }}
+                                        
                                       >
                                         APPROVED BY BOD
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              ) : (" ")}
+                              ) : (" ")} */}
                                 {/* {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
@@ -7670,7 +7621,7 @@ console.log(daysDifference);
                   //     </div>
                   //   </div>
                   // </div>
-                  <>
+                  <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7719,7 +7670,7 @@ console.log(daysDifference);
                       </div>
                     </div>
                   </div>
-                </>
+                </div>
                 ) : ("")}
                    {(applicationType === "NEW" && (selectedTab === "level-1" ||selectedTab === "level-2"||selectedTab === "level-3") ) ? (
                   <>
@@ -7794,7 +7745,7 @@ console.log(daysDifference);
                   ""
                 )}
                 
-                <div className={`${style.marginBottom20}`}>
+                {/* <div className={`${style.marginBottom20}`}> */}
 
                   {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
@@ -7923,7 +7874,7 @@ console.log(daysDifference);
                   )} */}
 
                   {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
-                    <>
+                    <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div
@@ -7951,7 +7902,7 @@ console.log(daysDifference);
                           </div>
                         </div>
                       </div>
-                      <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                      <div className={`${style.marginTop20}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div
                             className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -7963,7 +7914,7 @@ console.log(daysDifference);
                             RECOMMENDED WITH COMMENTS
                           </div>
                         </div>
-                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
                           <div
                             className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                             onClick={onClickApprovalwithoutnotesFunction}
@@ -7972,11 +7923,11 @@ console.log(daysDifference);
                           </div>
                         </div>
                       </div>
-                    </>
+                    </div>
                   ) : (" ")}
                   {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                     <div>
-                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Dept. Head. Recommendation                    
                       </div>
                     </div>
@@ -7984,7 +7935,7 @@ console.log(daysDifference);
 
                   {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
-                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation                    
                       </div>
                     </div>
@@ -7992,7 +7943,7 @@ console.log(daysDifference);
           
                   {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
-                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                        Pending MAC Recommendation
                       </div>
                     </div>
@@ -8000,13 +7951,13 @@ console.log(daysDifference);
 
                   {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Board') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
-                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30}`}>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending BOD Recommendation
                       </div>
                     </div>
                   </>) : ( " ")}
                   {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
-                      <>
+                      <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                         <div className={`${style.cardLeftStyle2}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
@@ -8052,7 +8003,7 @@ console.log(daysDifference);
                             </>
                           )}
                           <div className={style.marginBottom20}></div>
-                          <>
+                          <div>
                             <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
                               <div className={`${style.buttonTextStyle} ${style.alignCenter}`} 
                               onClick={() => {
@@ -8062,19 +8013,19 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                              onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               RECOMMENDED BY MAC
                               </div>
                             </div>
-                          </>
+                          </div>
                         </div>
-                      </>
+                      </div>
                     ) :(" ")
                     }
                      {(userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
-                      <>
+                      <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                         <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
                           <div
@@ -8135,7 +8086,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                              onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED MY BOD
@@ -8143,7 +8094,7 @@ console.log(daysDifference);
                             </div>
                           </>
                         </div>
-                      </>
+                      </div>
                     ) :(" ")
                     }
                   {userRole?.includes('Chief Of Staff') && (
@@ -8354,7 +8305,7 @@ console.log(daysDifference);
                   ACCEPT APPLICATION
                 </div> */}
 
-                </div>
+                {/* </div> */}
                 <>
                   {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
                     <>
@@ -8607,7 +8558,84 @@ console.log(daysDifference);
                   )}
                   {applicationType === "REAPPOINTMENT" ? (
                     <>
-                        <div className={style.cardLeftStyle}>
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                            <div className={`${style.displayInRow}${style.marginTop20}`}>
+                              <div
+                                className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                              >
+                                <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                                Verification & Review History
+                                </span>
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                >
+                                  <div
+                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                                  >
+                                    {expandStates.section2 ? (
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    ) : (
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              {expandStates.section2 && (
+                                <>
+                                  {logDetails?.logs?.map((log, index) => (
+                                    <div className={`${style.marginBottom20}`}>
+                                      <div className={`${style.gridGap}`}>
+                                        <div>
+                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                            <div>
+                                              <div className={`${style.sideHeadingFontStyle}`}>{`${log?.role}`}</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+
+                                  {form?.references?.reference?.map((reference, index) => (
+                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                      <div className={`${style.gridGap}`}>
+                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                        <div>
+                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                            <div>
+                                              <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                              <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                                            </div>
+                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                                          </div>
+                                          <CommonDivider />
+                                        </div>
+                                      </div>
+                                      <div className={`${style.gridGap1}`}>
+                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                        <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                                        <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </>
+                              )}
+                            </div>
+                            <div className={style.marginBottom20}></div>
+                          </div>
+                        <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -8615,7 +8643,7 @@ console.log(daysDifference);
                               <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                               >
-                                <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                   Notes
                                 </span>
                                 <div
@@ -8651,7 +8679,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                             >
-                              <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                              <span className={`${style.tableHeaderHeadingTextStyle1}`}>
                                 RFCs & Doc Clarification
                               </span>
                               <div
