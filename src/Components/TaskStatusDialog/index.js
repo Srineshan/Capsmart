@@ -126,7 +126,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#857AEF",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                   onClick={handlePrintClick}
                 />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT , TenantID} from "../../Screens/dataSaver";
+import { GET, PUT ,POST, TenantID} from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -12,8 +12,11 @@ import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import Dropzone from "react-dropzone";
+import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import DescriptionIcon from '@mui/icons-material/Description';
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -36,6 +39,16 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const [entity, setEntity] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  };
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -48,6 +61,51 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     handleSignatureClick();
   };
 
+  const changeHandler = async (event) => {
+    setIsLoading(true);
+    const filesArray = Array.from(event);
+    setFiles(filesArray);
+    console.log(event, 'Test');
+
+
+    const formData = new FormData();
+    let fileNameArray = [];
+    filesArray?.forEach(file => {
+      fileNameArray.push({ "fileName": file?.name });
+      formData.append('documents', file);
+    });
+
+
+
+
+    formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    }));
+
+    fileNameArray.forEach(file => {
+      console.log("File name:", file.fileName);
+    });
+
+    console.log("file?.name" + JSON.stringify(fileNameArray));
+    console.log(fileNameArray)
+    console.log(event?.name);
+
+    try {
+      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+      SuccessToaster('File Uploaded Successfully');
+      console.log(response?.data?.fileName);
+
+
+
+      setIsLoading(false);
+      return response?.data;
+    } catch (error) {
+      ErrorToaster('File Upload Failed');
+      console.error(error);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
   const setTodayDate = () => {
     const today = new Date();
@@ -419,8 +477,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                   : ""}{" "}
-                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}</span>
-                <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "}</span>
+                <div className={`${style.rejectionTextStyle}`}>{" "}{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
@@ -506,6 +564,46 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 }}
               />
             </div>
+            <div className={`${style.marginTop} ${style.cursorPointer}`}>
+
+                    <>
+
+                      <Dropzone
+                        style={dropzoneStyle}
+                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                        accept={{
+                          'image/jpeg': [],
+                          'image/png': [],
+                          'image/jpg': [],
+                          'application/pdf': []
+                        }}
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <section>
+                            <div {...getRootProps()}>
+                              <input {...getInputProps()} />
+                              <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                  Upload any supporting documents
+                                </p>
+                              </div>
+                            </div>
+                          </section>
+                        )}
+                      </Dropzone>
+                    </>
+
+                  </div>
+                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
+                    <DescriptionIcon className={`${style.docsIcon}`} />
+                    {files.length > 0 ? (
+                      files.map((file, index) => (
+                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                      ))
+                    ) : (
+                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                    )}
+                  </div>
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
               <CommonCheckBox
@@ -585,4 +683,4 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default ApprovalWithoutNotesDialog;

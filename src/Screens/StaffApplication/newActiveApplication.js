@@ -73,7 +73,12 @@ const NewActiveApplication = ({
   getApprovalNotesCommentBoxDept,
   getActiveApplicationTask,
   getEmailDialogBox,
-  emailDialogBox
+  emailDialogBox,
+  approvalnotesCommentsBoxDept,
+  approvalwithoutnotesCommentsBox,
+  approvalnotesCommentsBox,
+  reappointmentChangesCommentsBox,
+  notesCommentsBox
 
 
 }) => {
@@ -132,6 +137,8 @@ const NewActiveApplication = ({
     section1: false,
     section2: false,
     section3: false,
+    section4: false,
+    section5: false
   });
   const [expandAcknowledgement, setExpandAcknowledgement] = useState({
     status: false,
@@ -199,6 +206,8 @@ const NewActiveApplication = ({
     borderStyle: "dashed",
     borderRadius: 5,
   };
+
+  
   useEffect(() => {
     getPreApplication();
     // getPreApplicationTask();
@@ -1208,6 +1217,27 @@ const NewActiveApplication = ({
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  // const approvalDate = logDetails?.approvedDate;
+  // const approvalDateLog = logDetails?.logs?.map((log,index) => log.approvedDate);
+  // console.log("approvalDate" + approvalDateLog);
+  
+  // const approvalFromDate = approvalDateLog ? format(new Date(approvalDateLog), "MMM dd, yyyy") : "-";
+//   const approvalDateLog = logDetails?.logs?.map((log, index) => log.approvedDate);
+
+// const approvalFromDate = approvalDateLog && approvalDateLog[0] 
+//   ? format(new Date(approvalDateLog[0]), "MMM dd, yyyy") 
+//   : "-";
+const approvalFromDate = logDetails?.logs?.map((log) => {
+  try {
+    // Safely format each log's approved date
+    return log.approvedDate 
+      ? format(new Date(log.approvedDate), "MMM dd, yyyy") 
+      : "-";
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "-";
+  }
+});
   const finishTime = new Date("05/01/2020");
 
   // const submissionDate = finishTime ? new Date(finishTime) : null;
@@ -7621,7 +7651,7 @@ console.log(daysDifference);
                   //     </div>
                   //   </div>
                   // </div>
-                  <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox ||approvalnotesCommentsBox|| approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -7874,7 +7904,7 @@ console.log(daysDifference);
                   )} */}
 
                   {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
-                    <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox ||approvalnotesCommentsBox|| approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div
@@ -8558,84 +8588,130 @@ console.log(daysDifference);
                   )}
                   {applicationType === "REAPPOINTMENT" ? (
                     <>
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                            <div className={`${style.displayInRow}${style.marginTop20}`}>
-                              <div
-                                className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                              >
-                                <span className={`${style.tableHeaderHeadingTextStyle1}`}>
-                                Verification & Review History
-                                </span>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
-                                  >
-                                    {expandStates.section2 ? (
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    ) : (
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              {expandStates.section2 && (
-                                <>
-                                  {logDetails?.logs?.map((log, index) => (
-                                    <div className={`${style.marginBottom20}`}>
-                                      <div className={`${style.gridGap}`}>
-                                        <div>
-                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                            <div>
-                                              <div className={`${style.sideHeadingFontStyle}`}>{`${log?.role}`}</div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
-
-                                  {form?.references?.reference?.map((reference, index) => (
-                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                      <div className={`${style.gridGap}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div>
-                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                            <div>
-                                              <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                              <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
-                                            </div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
-                                          </div>
-                                          <CommonDivider />
-                                        </div>
-                                      </div>
-                                      <div className={`${style.gridGap1}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
-                                        <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </>
+                    {selectedTab === "level-4" || selectedTab === "level-5" ? (
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>    
+                        <div className={`${style.displayInRow}${style.marginTop20}`}>
+                        <div
+                          className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                        >
+                          <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                          Verification & Review History
+                          </span>
+                          <div
+                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                          >
+                            <div
+                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section4")}
+                            >
+                              {expandStates.section4 ? (
+                                <RemoveIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              ) : (
+                                <AddIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
                               )}
                             </div>
-                            <div className={style.marginBottom20}></div>
                           </div>
-                        <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                        </div>
+                        {expandStates.section4 && (
+                          <>
+                        {logDetails?.logs
+                          ?.filter((log) => 
+                            log?.workflowStatus !== "SUBMITTED" &&
+                            log?.approvalType === null && log?.approvalType === ""
+                          )
+                          .map((log, index) => (
+                            <div key={index}>
+                              <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                Staff Manager Verification
+                              </div>
+                              <div 
+                                className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${
+                                  log?.role === 'Staff Manager' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
+                                }`}
+                              >
+                                {log?.role || "-"}
+                              </div>
+                              <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} 
+                              </div>
+                            </div>
+                          ))}
+                          </>
+                        )}
+                      </div>
+                        <div className={style.marginBottom20}></div>
+                        </div>
+                        ): (" ")}
+                        <div className={`${style.cardLeftStyle}`}>    
+                        <div className={`${style.displayInRow}${style.marginTop20}`}>
+                        <div
+                          className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                        >
+                          <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                          Notes
+                          </span>
+                          <div
+                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                          >
+                            <div
+                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
+                            >
+                              {expandStates.section5 ? (
+                                <RemoveIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              ) : (
+                                <AddIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        {expandStates.section5 && (
+                          <>
+                            {logDetails?.logs
+                                ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
+                            .map((log, index) => (
+                              <div key={index}>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                Staff Manager Comments / Notes
+                                </div>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
+                                {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                                Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                                </div> */}
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                                {log.notes || "-" }
+                                </div>
+                              </div>
+                            ))}
+
+                          </>
+                        )}
+                      </div>
+                        <div className={style.marginBottom20}></div>
+                        </div>
+                        {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -8649,31 +8725,36 @@ console.log(daysDifference);
                                 <div
                                   className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
                                 >
-                                  <img
-                                    src={EditBlue}
-                                    alt="EditBlue"
-                                    className={style.colorFileStyle}
-                                  />
                                 </div>
                               </div>
                               <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                               >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                >
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </div>
+                                 <div
+                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
+                            >
+                              {expandStates.section5 ? (
+                                <RemoveIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              ) : (
+                                <AddIcon
+                                  sx={{
+                                    fontSize: 20,
+                                    color: "#94979A",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              )}
+                            </div>
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                                   <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
@@ -8740,6 +8821,61 @@ console.log(daysDifference);
                           <div className={style.marginBottom20}></div>
                         </div>
                     </>
+                  ) : (" ")}
+
+                    {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT")  ? (
+                      // <div className={`${style.fixedBottom}`}>
+                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox ||approvalnotesCommentsBox|| approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.twoColumnGrid}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
+                        </div>
+                        <div
+                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                        >
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            // onClick={() => {
+                            //   setShowApplicationDeclineDialog(true);
+                            // }}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}
+                          >
+                            NOT RECOMMENDED
+                          </div>
+                        </div>
+                      </div>
+                      <div className={`${style.marginTop20}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                            // onClick={onClickApproveFunction}
+                            onClick={() => {
+                              onClickApprovalFunction();
+                            }}
+                          >
+                            RECOMMENDED WITH COMMENTS
+                          </div>
+                        </div>
+                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                          <div
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            onClick={onClickApprovalwithoutnotesFunction}
+                          >
+                            RECOMMEND
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    // </div>
                   ) : (" ")}
                 </>
               </>
