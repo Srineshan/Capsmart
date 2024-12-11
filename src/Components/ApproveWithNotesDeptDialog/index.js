@@ -15,7 +15,7 @@ import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const ApprovalWithNotesDialog = ({ getIsOpen,getActiveApplicationView, dateFormat }) => {
+const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -392,7 +392,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
       
               </div>
              
-            <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
+            <div className={`${style.marginTop}  ${style.reviewButtonContainer} ${style.cursorPointer}`}>
             <div  onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>
@@ -415,4 +415,4 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default ApprovalWithNotesDeptDialog;

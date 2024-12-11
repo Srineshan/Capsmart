@@ -12,6 +12,9 @@ import ApprovalWithNotesDialog from '../../Components/ApprovalWithNotesDialog';
 import ApprovalWithoutNotesDialog from '../../Components/ApprovalWithoutNotesDialog';
 import ApprovalWithNotesDeptDialog from '../../Components/ApproveWithNotesDeptDialog';
 import EmailDialog from '../../Components/EmailDialog';
+import NotesDialog from "../../Components/NotesDialog";
+import IdleTimer from '../../Components/IdleTimer';
+import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 
 const StaffApplication = () => {
     const [selectedTab, setSelectedTab] = useState('level-1');
@@ -25,6 +28,9 @@ const StaffApplication = () => {
     const [approvalwithoutnotesCommentsBox, setApprovalwithoutNotesCommentBox] = useState(false);
     const [approvalnotesCommentsBoxDept, setApprovalNotesCommentBoxDept] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);
+    const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
+    const [showTimerDialog, setShowTimerDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const getSelectedTab = (value) => {
@@ -42,6 +48,19 @@ const StaffApplication = () => {
     const getActiveApplicationTask = (value) => {
         setActiveApplicationTask(value);
     }
+
+    const getNotesDialog = (value) => {
+        setShowNotesDialog(value);
+    };
+
+    const getDeptTrackerDialog = (value) => {
+        setShowDeptTrackerDialog(value);
+    };
+
+    const getTimerDialog = (value) => {
+        setShowTimerDialog(value);
+    };
+    
 
     const getNotesCommentBox = (value) => {
         setNotesCommentBox(value);
@@ -70,7 +89,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} />
+                <NewActiveApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox}/>
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -89,6 +108,15 @@ const StaffApplication = () => {
                       getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox}
                       getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept}
                       getEmailDialogBox={getEmailDialogBox}
+                      emailDialogBox={emailDialogBox}
+                      approvalnotesCommentsBox={approvalnotesCommentsBox}
+                      approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox}
+                      approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
+                      notesCommentsBox={notesCommentsBox}
+                      reappointmentChangesCommentsBox={reappointmentChangesCommentsBox}
+                      showTimerDialog={showTimerDialog}
+                      getNotesDialog={getNotesDialog}
+                      getDeptTrackerDialog={getDeptTrackerDialog}
                   />
               </Fragment>
           )}
@@ -112,6 +140,15 @@ const StaffApplication = () => {
             )}
             {emailDialogBox && (
                 <EmailDialog getIsOpen={getEmailDialogBox}/>
+            )}
+            {showNotesDialog && (
+                <NotesDialog getIsOpen={getNotesDialog} getActiveApplicationView={getActiveApplicationView} />
+            )}
+            {showDeptTrackerDialog && (
+                <DepartmentTrackerDialog getIsOpen={getDeptTrackerDialog} />
+            )}
+            {showTimerDialog && (
+                <IdleTimer getIsOpen={getTimerDialog} />
             )}
         </>
       )

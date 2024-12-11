@@ -82,6 +82,8 @@
 
 // export default StaffApplicationTopTiles;
 
+// wWORKING CODE 11/12
+
 
 import React, { useState, useEffect } from 'react';
 import TopTileApplication from '../../Components/TopTileApplication';
@@ -178,3 +180,124 @@ const StaffApplicationTopTiles = () => {
 };
 
 export default StaffApplicationTopTiles;
+
+
+// import React, { useState, useEffect } from 'react';
+// import TopTileApplication from '../../Components/TopTileApplication';
+// import style from './index.module.scss';
+// import { GET } from './../../Screens/dataSaver';
+
+// const StaffApplicationTopTiles = () => {
+//   const [selectedTab, setSelectedTab] = useState('NewApplicants');
+//   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [newCounts, setNewCounts] = useState({});
+//   const [reappointmentCounts, setReappointmentCounts] = useState({});
+//   const [locumCounts, setLocumCounts] = useState({});
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getTitleCounts = async (type) => {
+//     try {
+//       setIsLoading(true);
+//       const response = await GET(
+//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
+//       );
+      
+//       if (response?.data) {
+//         if (type === 'NEW') {
+//           setNewCounts(response.data);
+//         } else if (type === 'REAPPOINTMENT') {
+//           setReappointmentCounts(response.data);
+//         } else if (type === 'LOCUM') {
+//           setLocumCounts(response.data);
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error fetching counts:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Initialize from session storage
+//   useEffect(() => {
+//     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+//     if (storedApplicationType) {
+//       setApplicationCreationType(storedApplicationType);
+//       if (storedApplicationType === 'NEW') {
+//         setSelectedTab('NewApplicants');
+//       } else if (storedApplicationType === 'REAPPOINTMENT') {
+//         setSelectedTab('StaffReappointments');
+//       } else if (storedApplicationType === 'LOCUM') {
+//         setSelectedTab('LocumRenewals');
+//       }
+//     } else {
+//       sessionStorage.setItem('applicationCreationType', 'NEW');
+//     }
+//   }, []);
+
+//   // Fetch counts on mount and when application type changes
+//   useEffect(() => {
+//     const fetchCounts = async () => {
+//       await Promise.all([
+//         getTitleCounts('NEW'),
+//         getTitleCounts('REAPPOINTMENT'),
+//         getTitleCounts('LOCUM')
+//       ]);
+//     };
+
+//     fetchCounts();
+//   }, []);
+
+//   const sumCounts = (countsObj) => {
+//     if (!countsObj) return 0;
+    
+//     return Object.entries(countsObj)
+//       .filter(([key]) => key.startsWith('level-'))
+//       .reduce((sum, [_, value]) => sum + (value || 0), 0);
+//   };
+
+//   const getSelectedTab = (tab) => {
+//     let newType;
+//     if (tab === 'NewApplicants') {
+//       newType = 'NEW';
+//     } else if (tab === 'StaffReappointments') {
+//       newType = 'REAPPOINTMENT';
+//     } else if (tab === 'LocumRenewals') {
+//       newType = 'LOCUM';
+//     }
+//     setSelectedTab(tab);
+//     setApplicationCreationType(newType);
+//     sessionStorage.setItem('applicationCreationType', newType);
+//   };
+
+//   return (
+//     <div className={style.tabs}>
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(newCounts)}
+//         tileLabel="New Applicants" 
+//         currentTile="NewApplicants"
+//         isLoading={isLoading}
+//       />
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(reappointmentCounts)}
+//         tileLabel="Staff Reappointments" 
+//         currentTile="StaffReappointments"
+//         isLoading={isLoading}
+//       />
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(locumCounts)}
+//         tileLabel="Locum Renewals" 
+//         currentTile="LocumRenewals"
+//         isLoading={isLoading}
+//       />
+//     </div>
+//   );
+// };
+
+// export default StaffApplicationTopTiles;

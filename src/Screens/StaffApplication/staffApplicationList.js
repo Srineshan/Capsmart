@@ -34,7 +34,9 @@ import CheckListDialog from "./checkListDialog";
 import CircleIcon from '@mui/icons-material/Circle';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import Checkbox from '@mui/material/Checkbox';
+// import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 const StaffApplicationList = ({
   isLoading,
@@ -45,8 +47,11 @@ const StaffApplicationList = ({
   getActiveApplicationView,
   getActiveApplicationTask,
   getNotesCommentBox,
+  getNotesDialog,
   getReappointmentChangesCommentBox,
-  getTitleCounts
+  getTitleCounts,
+  showNotesDialog,
+  getDeptTrackerDialog
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -58,6 +63,7 @@ const StaffApplicationList = ({
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showCardAppointment, setShowCardAppointment] = useState(false);
   const [showCardCompletion, setShowCardCompletion] = useState(false);
+  const [showDepartmentCardStatus, setShowDepartmentCardStatus] = useState(false);
 
   const [applicationRejected, setApplicationRejected] = useState({
     totalRejections: 0,
@@ -72,6 +78,7 @@ const StaffApplicationList = ({
   const [sortValue, setSortValue] = useState('ASCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalCountDept, setTotalCountDept] = useState(0);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -177,7 +184,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    <Checkbox
+    <CommonCheckBox
       size="medium"
       checked={checkedIds.length === tableData.length}
       onChange={handleSelectAllClick}
@@ -203,7 +210,7 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-      <Checkbox
+      <CommonCheckBox
         size="medium"
         checked={checkedIds.length === tableData.length}
         onChange={handleSelectAllClick}
@@ -514,6 +521,16 @@ const StaffApplicationList = ({
     setShowCheckListDialog(value);
   };
 
+  const onClickNotesDialog = (data) => {
+    getNotesDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickDepttrackerDialog = () => {
+    getDeptTrackerDialog(true);
+    // sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", data?.id);
@@ -521,7 +538,7 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyLevelFunction = (data) => {
     getActiveApplicationView(true);
-    // getNotesCommentBox(true);
+    getNotesCommentBox(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -664,8 +681,16 @@ const StaffApplicationList = ({
   }, []);
 
   useEffect(() => {
+    getActiveUserData()
+  }, [ sortField, sortValue,page,totalCountDept]);
+
+  useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount,showNotesDialog]);
+
+  useEffect(() => {
+    getWorkflowUserData(showNotesDialog);
+  }, [showNotesDialog]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -688,6 +713,22 @@ const StaffApplicationList = ({
   const getSelectedPage = (value) => {
     setPage(value);
   }
+
+  const getActiveUserData = async () => {
+    try {
+      
+      const response = await GET(
+        `application-management-service/application?sortBy=${sortValue}&sortByField=${sortField}&limit=${10}&offset=${page - 1}`
+      );
+
+      setTableData(response?.data?.applications);
+      setTotalCountDept(response?.data?.numberOfElements);
+      return response?.data?.applications;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
 
 
   const getWorkflowUserData = async () => {
@@ -771,6 +812,22 @@ const StaffApplicationList = ({
       .then((response) => {
         setSentCompletion(response?.data || null);
         setShowCardCompletion(
+          response?.data?.applicationsStatus?.length > 0 ? true : false
+        );
+        console.log("sentCompletion", response?.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching request appointment count:", error);
+      });
+  };
+
+  const getDepartmentCount = async () => {
+    await GET(
+      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType}`
+    )
+      .then((response) => {
+        setSentCompletion(response?.data || null);
+        setShowDepartmentCardStatus(
           response?.data?.applicationsStatus?.length > 0 ? true : false
         );
         console.log("sentCompletion", response?.data);
@@ -959,7 +1016,7 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
@@ -1132,12 +1189,15 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["No Notes"];
+      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["No Notes"];
+      const notesHoverTextArray = notesDetails.length > 0 
+      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -1298,12 +1358,15 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 
+      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -1555,12 +1618,15 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 
+      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
@@ -1751,7 +1817,7 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       checkbox.push(
-        <Checkbox
+        <CommonCheckBox
           checked={checkedIds.includes(data.id)}
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"
@@ -1784,12 +1850,15 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 
+      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -1943,7 +2012,7 @@ const StaffApplicationList = ({
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
       checkbox.push(
-        <Checkbox
+        <CommonCheckBox
           checked={checkedIds.includes(data.id)}
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"
@@ -1973,7 +2042,10 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesDetails = data?.notes || [];
-      const notesHoverTextArray = notesDetails.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
+      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
+      const notesHoverTextArray = notesDetails.length > 0 
+      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -2151,7 +2223,7 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "-");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notes.length || "0");
+      notes.push( "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
@@ -2281,7 +2353,7 @@ const StaffApplicationList = ({
     {
       data: "Create Note",
       requiredValue: "boolean",
-      onClick: "",
+      onClick: onClickNotesDialog,
     },
     {
       data: "Go to Task List",
@@ -2409,7 +2481,7 @@ const StaffApplicationList = ({
     //   onClick: onClickMoveToNextFunction,
     // },
     { data: userRole?.includes("Staff Manager") || userRole?.includes("Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Create Note", requiredValue: "boolean", onClick: "" , hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog , hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
@@ -2467,7 +2539,7 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ]:[
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    { data: "Create Note", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
       data: "Request For Clarification",
@@ -2503,7 +2575,7 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    { data: "Create Note", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
       data: "Request For Clarification",
@@ -2807,6 +2879,63 @@ const StaffApplicationList = ({
                   )}
                 </div>
               ) : null}
+              <div
+                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                >
+                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
+                    <div
+                      className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                    >
+                      Reappointments Status Tracker (
+                      {totalCountDept || 0})
+                      {/* <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                      >
+                        {sentCompletion?.totalApplicationsSent || 0}
+                      </span> */}
+                    </div>
+                    <div className={`${style.marginLeft10} `}>
+                      {!showDepartmentCardStatus ? (
+                        <AddIcon
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                          onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
+                        />
+                      ) : (
+                        <RemoveIcon
+                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                          onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {showDepartmentCardStatus && (
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                        <div className={`${style.displayInCol} ${style.marginTop}`}  onClick={() =>
+                       onClickDepttrackerDialog()
+                      }>
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween} >
+                                <div className={style.DepartmentHeadingTextStyle}>
+                                  Department(
+                                    {totalCountDept || 0})
+                                </div>
+                                <KeyboardArrowRightIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  )}
+                </div>
 
               {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div

@@ -7,6 +7,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
 import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { SuccessToaster } from '../../utils/toaster';
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
@@ -76,7 +77,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   console.log("Idscheckedsssssssssss" + checkedIds)
 
   const headerValues = [
-    <Checkbox
+    <CommonCheckBox
       size="medium"
       checked={checkedIds.length === tableData.length}
       onChange={handleSelectAllClick}
@@ -87,7 +88,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Department",
     "Reappointment"
   ];
-  const colSortValues = [false, true, false, false, false, false, false];
+  const colSortValues = [false, true, false, false, false, true];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -99,6 +100,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       const queryParams = new URLSearchParams({
         status: 'ACTIVE'
       });
+
+      const types = ['PERMANENT', 'LOCUM'];
+      types.forEach(type => queryParams.append('type', type));
 
       if (selectedDepartment) {
         queryParams.append('departmentId', selectedDepartment);
@@ -117,15 +121,15 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       }
 
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&limit=${10}&offset=${page - 1}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${10}&offset=${page - 1}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
-      const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL' && item?.reappointed !== true) || [];
+      // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
 
-      setTableData(filteredData);
+      setTableData(response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
-      return filteredData;
+      return response?.data?.staffs;
     } catch (error) {
       console.error("Error fetching applications:", error);
       return [];
@@ -202,7 +206,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     tableData?.forEach((data) => {
       // Checkbox with individual checked state
       checkbox.push(
-        <Checkbox
+        <CommonCheckBox
           checked={checkedIds.includes(data.id)}
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"
@@ -370,7 +374,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 gridStyle={style.permanentStaffGrid}
                 scrollStyle={style.contractScrollStyle}
                 tableSortValues={colSortValues}
-                heading={"There are no Record for you to manage"}
+                heading={"There are no record to display"}
                 getHandleSort={getHandleSort}
                 sortValue={{ sortBy: sortValue, sortByField: sortField }}
                 getSelectedPage={getSelectedPage}

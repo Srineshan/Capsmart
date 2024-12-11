@@ -34,7 +34,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 80% !important;
+  width: 40% !important;
 }
 
 .dialogBody {
@@ -50,17 +50,19 @@
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+//   padding: 20px 40px 0px 40px;
+  padding: 20px;
   border-radius: 20px !important;
 }
 
-.alignCenter{
-  align-items: center;
-}
 
 .displayInRow {
   display: flex;
   flex-direction: row;
+}
+
+.alignCenter{
+    align-items: center;
 }
 
 
@@ -259,19 +261,20 @@
 .templateHeader {
   display: grid;
   justify-content: space-between;
-  grid-template-columns: 70% 20% 5%;
+  grid-template-columns: 90% 5%;
   align-items: center;
   margin-bottom: 20px;
 }
 
 .templateHeadertext {
-  color: var(--unnamed-color-06617a);
-  text-align: left;
-  font: normal normal bold 24px Proxima Nova;
-  letter-spacing: 0px;
-  color: #06617A;
-  opacity: 1;
+    color: var(--unnamed-color-06617a);
+    text-align: left;
+    font: normal normal bold 24px Proxima Nova;
+    letter-spacing: 0px;
+    color: #06617A;
+    opacity: 1;
 }
+
 
 .templateIcon {
   text-align: center;
@@ -291,20 +294,19 @@
 }
 
 .changeTemplateButton {
-  background: var(--unnamed-color-06617a) 0% 0% no-repeat padding-box;
-  background: #06617A 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
+  background: #7165E3 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 11px #7165E3;
   border-radius: 8px;
   opacity: 1;
-  padding: 5px;
+  padding: 10px 20px;
+  border: none;
 }
 
 .templateButtonText {
-  text-align: center;
-  font: normal normal bold 20px/30px Proxima Nova;
+  text-align: left;
+  font: normal normal medium 20px/26px Proxima Nova;
   letter-spacing: 0px;
-  color: #F5F8F8;
-  text-transform: uppercase;
+  color: #FFFFFF;
   opacity: 1;
 }
 
@@ -343,57 +345,13 @@
 }
 
 .recipient {
-  background: var(--unnamed-color-06617a) 0% 0% no-repeat padding-box;
-  background: #06617A 0% 0% no-repeat padding-box;
+  display: inline-block;
+  background: #7165E3 0% 0% no-repeat padding-box;
   border-radius: 4px;
-  opacity: 0.1;
-}
-
-.recipientText{
-  text-align: left;
-  font: normal normal medium 20px/26px Proxima Nova;
-  letter-spacing: 0px;
-  color: #52575D;
-  opacity: 0.1;
-}
-
-.emailInputContainer {
-  display: flex;
-  align-items: center;
-  border: 1px solid #dcdcdc; /* Light gray border */
-  border-radius: 4px; /* Rounded corners */
-  padding: 5px 10px; /* Padding around the content */
-  // margin-bottom: 10px; /* Space between email input containers */
-}
-
-.emailInput {
-  border: none; /* Remove default border */
-  outline: none; /* Remove outline on focus */
-  font-size: 14px; /* Font size */
-  padding: 5px; /* Padding inside the input */
-  flex: 1; /* Take up remaining space */
-}
-
-.closeButton {
-  background-color: #e0e0e0; /* Light gray background for the button */
-  border: none; /* Remove default border */
-  border-radius: 50%; /* Rounded button */
-  width: 20px; /* Width of the button */
-  height: 20px; /* Height of the button */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer; /* Pointer cursor on hover */
-  margin-left: 10px; /* Space between the input and button */
-}
-
-.closeButton:hover {
-  background-color: #ccc; /* Darker gray on hover */
-}
-
-.closeButton::before {
-  // content: '✕'; /* X character */
-  font-size: 14px; /* Font size for the X */
+  padding: 4px 8px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  opacity: 90%;
 }
 
 .borderBoxType {
@@ -475,7 +433,14 @@
 
 .actionButtons {
   display: flex;
-  justify-content: space-between;
+  margin: auto;
+  justify-content: center;
+
+}
+
+.marginBottom{
+    // margin-bottom: 10px;
+    line-height: 2;
 }
 
 .resetButton,
