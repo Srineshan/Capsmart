@@ -8,37 +8,22 @@
     margin-top: 10px;
 }
 
-.marginLeft {
-    margin-left: 20px;
-}
-
-.marginRight {
-    margin-right: 10px;
-}
-
 .applicationScreenGrid {
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
 }
 
-.cursorPointer {
-    cursor: pointer !important;
-}
-
 .stickyContainer {
-    position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 20px;
-    z-index: 10;
-    padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    // transition: opacity 0.3s ease, filter 0.3s ease;
 }
 
 .hiddenStickyContainer {
-    opacity: 0;
-    pointer-events: none;
+    opacity: 0; 
+    pointer-events: none; 
     // filter: blur(5px); 
     // box-shadow: 0 0 10px 5px #06617A;
 }
@@ -139,7 +124,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 70%, #E9E9F0 75%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 65%, #E9E9F0 70%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .siteDisplayCard {
@@ -216,7 +201,7 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 3% 3% 16% 21% 16% 15% 15% 3%;
+    grid-template-columns: 3% 3% 30% 23% 16% 15% 3%;
     gap: 1%;
 }
 
@@ -290,184 +275,4 @@
     display: flex;
     align-items: center;
     height: 100%;
-}
-
-.justifyCenter {
-    display: flex;
-    justify-content: center;
-}
-
-.completedCard {
-    background: #26C6004D 0% 0% no-repeat padding-box;
-    box-shadow: 0px 4px 8px #1D243729;
-    border: 0.4000000059604645px solid #26C600;
-    border-radius: 8px;
-    padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
-    color: #1C8F00;
-    text-align: left;
-}
-
-.pendingCard {
-    background: #FFFFFF03 0% 0% no-repeat padding-box;
-    box-shadow: 0px 4px 8px #1D243729;
-    border: 0.4000000059604645px solid #1D243729;
-    border-radius: 8px;
-    padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
-    color: #1D2437;
-    text-align: left;
-}
-
-.reviewInProgressCard {
-    background: #FFFCF5 0% 0% no-repeat padding-box;
-    box-shadow: 0px 4px 8px #1D243729;
-    border: 0.4000000059604645px solid #FFAA00;
-    border-radius: 8px;
-    padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
-    color: #1D2437;
-    text-align: left;
-}
-
-.pastDueCard {
-    background: #FFF8F8 0% 0% no-repeat padding-box;
-    box-shadow: 0px 4px 8px #1D243729;
-    border: 0.4000000059604645px solid #FF5555;
-    border-radius: 8px;
-    padding: 20px;
-    font: normal normal bold 23px/26px proxima-nova;
-    color: #1D2437;
-    text-align: left;
-}
-
-.iconBackgroundCompleted {
-    background-color: #1C8F00;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-}
-
-.iconBackgroundPending {
-    background-color: #1D243780;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-}
-
-.iconBackgroundReviewInProgress {
-    background-color: #FFAA00;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-}
-
-.iconBackgroundPastDue {
-    background-color: #FF5555;
-    border-radius: 50%;
-    height: 28px;
-    width: 28px;
-}
-
-.medicalDirectivesText {
-    text-align: left;
-    font: normal normal bold 23px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-}
-
-.attestButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border-radius: 8px;
-    text-align: center;
-    font: normal normal bold 14px/30px proxima-nova;
-    letter-spacing: 0px;
-    color: #FFFFFF;
-    text-transform: uppercase;
-    padding: 5px;
-    cursor: pointer;
-    width: 160px;
-}
-
-.whiteSignIcon {
-    height: 20px;
-    width: 20px;
-    object-fit: contain;
-}
-
-.gridStyle {
-    display: grid;
-    grid-template-columns: 3% 53% 10% 10% 15% 3%;
-    gap: 1%;
-}
-
-.blueSignImgStyle {
-    height: 30px;
-    width: auto;
-    object-fit: contain;
-}
-
-.iconBackgroundColor {
-    background-color: #2C2C2C;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-}
-
-.iconBackgroundColorYellow {
-    background-color: $statusyellow;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-}
-
-.iconBackgroundColorGreen {
-    background-color: #25BF6A;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-}
-
-.iconBackgroundColorRed {
-    background-color: $statusred;
-    border-radius: 50%;
-    height: 25px;
-    width: 25px;
-}
-
-.titleTextStyle {
-    text-align: left;
-    font: normal normal medium 18px/30px proxima-nova;
-    letter-spacing: 0px;
-    color: $primarycolor;
-}
-
-.description {
-    text-align: left;
-    font: normal normal 600 20px/20px proxima-nova;
-    letter-spacing: 0px;
-    color: #1D2437;
-    opacity: 0.7;
-}
-
-.disabledButton {
-    cursor: not-allowed;
-    opacity: 0.4;
-}
-
-.checkGrid {
-    display: grid;
-    grid-template-columns: 60px 1fr;
-}
-
-.leftAlign {
-    text-align: left;
-}
-
-.cardTitle {
-    text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
 }
