@@ -321,3 +321,40 @@
     cursor: not-allowed;
     opacity: 0.4;
 }
+
+.uploadButton {
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $secondarycolor;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+.uploadText {
+    text-align: left !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.uploadTextButton {
+    display: inline-block !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #2C2C2C;
+    border: 1px solid #2C2C2C;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center !important;
+    cursor: pointer;
+}
+
+.imgIcon {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 3% 80% 15%;
+    gap: 1%;
+}
