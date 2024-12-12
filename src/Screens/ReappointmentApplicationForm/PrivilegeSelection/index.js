@@ -139,6 +139,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("");
   const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
   const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false)
+  const [indexForSign, setIndexForSign] = useState(0);
   const theme = createTheme({
     palette: {
       error: {
@@ -2766,7 +2767,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             {/* )} */}
             {/* {privilegeChangeYesOrNo !== '' && ( */}
             <>
-              {privilegeChangeYesOrNo !== '' && (
+              {(privilegeChangeYesOrNo !== '' && privilegeChangeYesOrNo !== 'Yes') && (
                 <>
                   <div className={`${style.cardTitle} ${style.marginTop}`}>
                     Do you want to keep your current Privilege Set(s)?
@@ -2999,7 +3000,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
               )}
             </>
             {/* )} */}
-            {(privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '') && (
+            {(privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== 'Yes') && (
               <>
                 <div className={`${style.cardTitle} ${style.marginTop}`}>
                   Do you want to update / change or request your additional privileges?
@@ -3130,7 +3131,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )}
               </>
             )}
-            {(privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '') && (
+            {(privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== 'Yes') && (
               <>
                 {/* {(!isPrivilegeSetChanging && !isPrivilegeCategoryChanging) && ( */}
                 <>
@@ -3612,81 +3613,86 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                   className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                   onClick={() => {
                     setShowPrivilegesForSign(false);
+                    setIndexForSign(0);
                   }}
                 />
               </div>
             </div>
-            {basicForm?.privileges?.obligatedPrivileges?.map((data, index) => (
-              <div key={index}>{getFieldsForSign(data?.id, index, data)}</div>
-            ))}
+            {/* {basicForm?.privileges?.obligatedPrivileges?.map((data, index) => ( */}
+            <div>{getFieldsForSign(selectedPrivilegeForDisplay?.[indexForSign]?.id, indexForSign, selectedPrivilegeForDisplay?.[indexForSign])}</div>
+            {/* ))} */}
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
               <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                   ?.restrictedPrivileges?.esign !== null &&
-                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== undefined) ||
-                  selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                     ?.restrictedPrivileges?.privilegesByCategories?.length ===
                   0 ||
-                  (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                     ?.restrictedPrivileges?.privilegesByCategories?.[0]
                     ?.privileges?.length === 0 &&
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.[0]
                       ?.privileges?.length !== undefined)) &&
-                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                     ?.corePrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.corePrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
                       ?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                         ?.corePrivileges?.privilegesByCategories?.[0]
                         ?.privileges?.length !== undefined))
                   ? ""
                   : style.disabledButton
                   }`}
                 onClick={
-                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.restrictedPrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.length ===
                     0 ||
-                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.restrictedPrivileges?.privilegesByCategories?.[0]
                       ?.privileges?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                         ?.restrictedPrivileges?.privilegesByCategories?.[0]
                         ?.privileges?.length !== undefined)) &&
-                    ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                       ?.corePrivileges?.esign !== null &&
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                         ?.corePrivileges?.esign !== undefined) ||
-                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                         ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                         ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
                         ?.length === 0 &&
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
                           ?.corePrivileges?.privilegesByCategories?.[0]
                           ?.privileges?.length !== undefined))
-                    ? () => {
+                    ? selectedPrivilegeForDisplay?.length === indexForSign + 1 ? () => {
                       setShowPrivilegesForSign(false);
-                      handleSelectedPrivilegesForDisplayMultiple(
-                        selectedPrivilegeForDisplay[0]
-                      );
+                      // handleSelectedPrivilegesForDisplayMultiple(
+                      //   selectedPrivilegeForDisplay[indexForSign]
+                      // );
+                      handleSubmit();
+                      setIndexForSign(0)
+                    } : () => {
+                      setIndexForSign(indexForSign + 1)
                     }
                     : () => { }
                 }
               >
-                CONTINUE
+                {selectedPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
               </div>
             </div>
           </div>

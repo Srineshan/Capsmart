@@ -33,10 +33,13 @@
 }
 
 .stickyContainer {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    // transition: opacity 0.3s ease, filter 0.3s ease;
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {
@@ -209,4 +212,112 @@
     font: normal normal bold 16px/24px proxima-nova;
     letter-spacing: 0px;
     color: $textgrey;
+}
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 40px 0px 40px;
+    border-radius: 20px !important;
+}
+
+.eSignDialog {
+    height: 75%;
+    width: 75% !important;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.heading {
+    text-align: left;
+    font: normal normal bold 20px/28px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
+}
+
+.displayInRowRev {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.reappointmentButton {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    min-width: 120px !important;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+    text-align: center;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    // text-transform: capitalize;
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.itemLeft {
+    padding: 10px;
+    /* Inner padding for each line */
+    text-align: left;
+}
+
+.privilegeCodeGrid {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 10px;
+}
+
+
+.restrictedPrivilegeGrid {
+    display: grid;
+    grid-template-columns: 5% 78% 15%;
+    gap: 1%;
+}
+
+.restrictedPrivilegeGrid> :nth-child(4) {
+    grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(5) {
+    grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(6) {
+    grid-column: 1 / -1;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.disabledButton {
+    cursor: not-allowed;
+    opacity: 0.4;
 }
