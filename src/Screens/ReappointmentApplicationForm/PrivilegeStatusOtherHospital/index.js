@@ -10,14 +10,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-import { format } from 'date-fns';
-import JourneyStep8 from './../../../images/journeyStep8.png';
+
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
-import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
-const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
+
+const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -30,22 +29,18 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
-    const [yesOrNo, setYesOrNo] = useState('');
-    const [updatedDate, setUpdatedDate] = useState('');
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setYesOrNo(basicForm?.forms?.[formIndex]?.data?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.yesOrNo : '');
-            setUpdatedDate(basicForm?.forms?.[formIndex]?.data?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.updatedDate : '');
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
 
@@ -71,12 +66,12 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
         setLabels(tempLabels);
     }
 
-    const getIsShowReappointmentJourneyDialog = (value) => {
-        setShowJourneyDialog(value);
-    }
-
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
+    }
+
+    const getIsShowReappointmentJourneyDialog = (value) => {
+        setShowJourneyDialog(value);
     }
 
     const getFormSchema = async () => {
@@ -96,60 +91,61 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
 
     const getMissingFields = () => {
-        // let missingKeys = [];
-        // let keyValuePair = [];
-        // metadata?.map((data, index) => {
-        //     keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        // })
-        // keyValuePair?.map(data => {
-        //     if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-        //         missingKeys.push(data)
-        //     }
-        // })
-        // if (missingKeys?.length !== 0) {
-        //     setShowValidationDialog(true)
-        // } else {
-        handleSubmitApplicationReq()
-        // }
-        // setWarningFields(missingKeys)
-        // console.log(keyValuePair, 'Metadata', missingKeys)
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+       
+        if (missingKeys?.length !== 0) {
+            setShowValidationDialog(true)
+        } else {
+            handleSubmitApplicationReq()
+        }
+        setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata', missingKeys)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        // if (isEdited) {
-        let temp = {
-            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: { yesOrNo: yesOrNo, updatedDate: updatedDate },
-            unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: data === "skipped" ? false : true
+        if (isEdited) {
+            let temp = {
+                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+                data: basicForm?.forms?.[formIndex]?.data,
+                unFilledFields: warningFields?.map(data => data?.label),
+                acknowledged: data === "skipped" ? false : true
+            }
+            await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+                .then(response => {
+                    console.log(response)
+                    setBasicForm(response?.data)
+                    SuccessToaster("Application Updated Successfully");
+                    getPreApplication();
+                    if (sessionStorage.getItem('fromSummary') === "true") {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
+
+                    }
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ErrorToaster("Unexpected Error Updating Application");
+                });
+        } else {
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            }
+            else {
+                navigate(navigateURL)
+
+            }
         }
-        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-            .then(response => {
-                console.log(response)
-                setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
-                getPreApplication();
-                if (sessionStorage.getItem('fromSummary') === "true") {
-                    navigate(-1);
-                }
-                else {
-                    navigate(navigateURL)
-
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-                ErrorToaster("Unexpected Error Updating Application");
-            });
-        // } else {
-        //     if (sessionStorage.getItem('fromSummary') === "true") {
-        //         navigate(-1);
-        //     }
-        //     else {
-        //         navigate(navigateURL)
-
-        //     }
-        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -169,43 +165,19 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={`${style.applicationCardStyle}`}>
-                        <div className={style.cardTitle}>
-                            Do you wish to be the Most Responsible Physician (MRP) for your patients in the Nursery?
-                        </div>
-                        {yesOrNo === '' ? (
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                                <div
-                                    className={`${style.reappointmentButtonOutlined}`}
-                                    onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                >
-                                    Yes
-                                </div>
-                                <div
-                                    className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                    onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
-                                >
-                                    NO
-                                </div>
-                            </div>
-                        ) : (
-                            <>
-                                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNo === 'Yes' ? style.yesText : style.noText}>{yesOrNo}</span></strong> on {format(new Date(), "MMM dd, yyyy")}</div>
-                                <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                                >
-                                    <div
-                                        className={`${style.reappointmentButtonEdit}`}
-                                        onClick={() => setYesOrNo('')}
-                                    >
-                                        Edit
-                                    </div>
-                                </div>
-                            </>
+                <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                        description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        {formSchema !== undefined && 'disclosures' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.criminalHistoryGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                     </div>
+                     <div className={style.threeColForButton}> 
+                     {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  */}
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> */}
+                     </div> 
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -230,11 +202,9 @@ const MRP = ({ basicForm, setBasicForm, getPreApplication }) => {
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )}
-            {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`You're Almost At The Finish Line. Keep Going!`} img={JourneyStep8} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
-            )}
+           
         </div>
     )
 }
 
-export default MRP;
+export default PrivilegeStatusHospital;
