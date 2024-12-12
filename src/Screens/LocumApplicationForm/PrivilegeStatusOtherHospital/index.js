@@ -10,13 +10,13 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-import JourneyStep3 from './../../../images/journeyStep3.png';
+
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
-import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 
-const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
+
+const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
     const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
     const [metadata, setMetadata] = useState([]);
@@ -90,7 +90,6 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         }
     }
 
-
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -102,6 +101,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                 missingKeys.push(data)
             }
         })
+
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -165,21 +165,18 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <WelcomeCard title={'To the best of your knowledge and understanding, provide a response for the disclosures required'}
-                        description={'Any information you provide will be kept strictly confidential.If you answer "Yes" to any of the disclosures, it does not necessarily mean that you will be denied privileges. As required, please provide explanations and any supporting documents.'} />
+                    <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                        description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'disclosures' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.conductGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+                            <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.criminalHistoryGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
-                        {/* {formSchema !== undefined && 'conductDisclosure2' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.conductDisclosure2} gridStyle={style.conductGrid} baseKey={'conductDisclosure2'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
-                        )} */}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        {/*  <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> */}
+                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  */}
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
@@ -205,11 +202,9 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )}
-            {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
-            )}
+
         </div>
     )
 }
 
-export default ProfessionalConduct;
+export default PrivilegeStatusHospital;

@@ -106,15 +106,15 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
     const getMissingFields = () => {
         let missingKeys = [];
-        if (yesOrNoLMS === '') {
-            missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
-        }
+        // if (yesOrNoLMS === '') {
+        //     missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
+        // }
         if (yesOrNoSuboxone === '') {
             missingKeys.push({ label: 'Do you prescribe Suboxone?' })
         }
-        if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
-            missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
-        }
+        // if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
+        //     missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
+        // }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -182,7 +182,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                    <div className={`${style.applicationCardStyle}`}>
+                    {/* <div className={`${style.applicationCardStyle}`}>
                         <div className={style.cardTitle}>
                             {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
                         </div>
@@ -218,7 +218,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                 </div>
                             </>
                         )}
-                    </div>
+                    </div> */}
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         <div className={style.cardTitle}>
                             {formSchema?.properties?.doYouPrescribeSuboxone?.label}
@@ -256,7 +256,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             </>
                         )}
                     </div>
-                    {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
+                    {/* {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
                         <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                             <div className={style.cardTitle}>
                                 {formSchema?.properties?.wishToBeMRP?.label}
@@ -294,7 +294,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                 </>
                             )}
                         </div>
-                    )}
+                    )} */}
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
@@ -309,7 +309,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${(yesOrNoSuboxone !== '') ? '' : style.disabledButton}`} onClick={yesOrNoSuboxone !== '' ? () => getMissingFields() : () => { }}>CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

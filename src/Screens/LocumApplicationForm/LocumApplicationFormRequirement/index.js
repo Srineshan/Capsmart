@@ -771,7 +771,7 @@ const LocumApplicationFormRequirement = () => {
                                     </div>
                                 </div>
                                 <div className={style.marginTop}>
-                                    <WelcomeCard title={'<p><strong>Before you get started having the documents listed below will expedite the completion of your Locum Extension Application.</strong></p><p><strong>You will be required to Sign Off on your Privileges that are listed for your new Locum Term.</strong></p>'} description={''} />
+                                    <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your Locum Extension Application.You will be required to Sign Off on your Privileges that are listed for your new Locum Term.'} description={''} />
                                 </div>
                                 <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                     <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
@@ -812,8 +812,8 @@ const LocumApplicationFormRequirement = () => {
                         </div> */}
                             </div>
                             <div>
-                                {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
-                                <div>
+                                <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} />
+                                <div className={style.marginTop10}>
                                     <DaysToComplete days={basicForm?.expiryDate !== null ? differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd'))) : 0} />
                                 </div>
                                 <div className={style.marginTop10}>

@@ -11,7 +11,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
 
-const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
+const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
@@ -66,18 +66,18 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             </div>
                                             {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
                                                 <>
-                                                    <div className={style.spaceBetween}>
+                                                    {/* <div className={style.spaceBetween}>
                                                         <div className={`${style.completedItemsText} ${style.marginLeft}`}>LMS</div>
                                                         <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
-                                                    </div>
+                                                    </div> */}
                                                     <div className={style.spaceBetween}>
                                                         <div className={`${style.completedItemsText} ${style.marginLeft}`}>Prescribe Suboxone</div>
                                                         <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
                                                     </div>
-                                                    <div className={style.spaceBetween}>
+                                                    {/* <div className={style.spaceBetween}>
                                                         <div className={`${style.completedItemsText} ${style.marginLeft}`}>MRP</div>
                                                         <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
-                                                    </div>
+                                                    </div> */}
                                                 </>
                                             )}
                                         </>
@@ -114,4 +114,4 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     )
 }
 
-export default ReappointmentJourneyDialog;
+export default LocumJourneyDialog;
