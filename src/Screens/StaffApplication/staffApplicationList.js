@@ -680,9 +680,9 @@ const StaffApplicationList = ({
     getRejectionCounts();
   }, []);
 
-  useEffect(() => {
-    getActiveUserData()
-  }, [ sortField, sortValue,page,totalCountDept]);
+  // useEffect(() => {
+  //   getActiveUserData()
+  // }, [ sortField, sortValue,page,totalCountDept]);
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
@@ -2879,6 +2879,7 @@ const StaffApplicationList = ({
                   )}
                 </div>
               ) : null}
+              {(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee"))) ? (
               <div
                   className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >
@@ -2886,8 +2887,9 @@ const StaffApplicationList = ({
                     <div
                       className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
                     >
-                      Reappointments Status Tracker (
-                      {totalCountDept || 0})
+                      Reappointments Status Tracker 
+                      {/* (
+                      {totalCountDept || 0}) */}
                       {/* <span
                         className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                       >
@@ -2925,8 +2927,9 @@ const StaffApplicationList = ({
                             <div className={style.progressbarStyle}>
                               <div className={style.spaceBetween} >
                                 <div className={style.DepartmentHeadingTextStyle}>
-                                  Department(
-                                    {totalCountDept || 0})
+                                  All Department
+                                  {/* (
+                                    {totalCountDept || 0}) */}
                                 </div>
                                 <KeyboardArrowRightIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} />
                               </div>
@@ -2936,14 +2939,14 @@ const StaffApplicationList = ({
                     </div>
                   )}
                 </div>
-
+              ) : null}
               {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
                   className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >
                   <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                     <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                      Rejected / Declined{" "}
+                      Rejected / Declined{" "}({applicationRejected?.totalRejections})
                       {/*<span
       className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
     >

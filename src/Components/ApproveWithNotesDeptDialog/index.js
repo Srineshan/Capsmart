@@ -10,12 +10,12 @@ import CommonDateField from "../CommonFields/CommonDateField";
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
-import { format ,sub} from 'date-fns';
+import { format ,sub,add} from 'date-fns';
 import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat }) => {
+const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat,selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -45,7 +45,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     const isApproveEnabled = 
     userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
-    userSelectRole !== '';
+    selectedRoleCred !== '';
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -160,22 +160,20 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const onClickApproveMoveFunction = () => {
     handleApplicationApprove(true);
     getApplicationMoveToNext(true);
+    handleApplicationApproveDate(true);
   }
 
-  const handleApplicationApprove = async () => {
+  const handleApplicationApproveDate= async () => {
     try {
-      const payload = {
-        // role: Array.isArray(userRole) ? userRole[0] : userRole,
-        notes: userRoleComments,
-        date: selectedDateForDept,
-        priority: selectedApplicantType,
-        credRole: userSelectRole
+      // const payload = {
+      //   upcomingCredCommitteeMeetingDate: selectedDateForDept,
+      // };
 
-
-      };
+      const temp = formDetails
+      const payload = temp?.upcomingCredCommitteeMeetingDate
 
       await PUT(
-        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=false`,
+        `application-management-service/application/${id}`,
         payload
       );
       
@@ -186,15 +184,83 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     }
   };
 
+  const handleApplicationApprove = async () => {
+            let title;
+            if (selectedTab === 'level-2') {
+            if (userRole?.includes("Department Head")) {
+              title = "Dept. Head / Chief Review";
+            } else {
+              title = "Dept. Head / Chief Review";
+            }
+            }else if (selectedTab === 'level-3') {
+            if (userRole?.includes("Credentialing Committee")) {
+              title = "Credentialing Committee Review";
+            } else if (userRole?.includes("chief of staff")) {
+              title = "Chief Of Staff Review";
+            }
+          } else if (selectedTab === 'level-4') {
+            title = "MAC Review";
+          } else if (selectedTab === 'level-5') {
+            title = "BOD Approval";
+          } else if (selectedTab === 'level-1') {
+            title = "Staff Manager Verification";
+          }
+
+        const payload = {
+          notes: userRoleComments,
+          title: title,
+          approvedDate: new Date().toISOString(),
+          userDetail:{
+            id: selectedRoleCred,
+            role: "Credentialing Committee"
+          } 
+        };
+  
+      await PUT(
+        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=false&approvalType=VERIFIED_AND_ACCEPTED`,
+        payload
+      ) 
+      .then(response => {
+        console.log('successfull');
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   const getApplicationMoveToNext = async () => {
+
+   let title;
+       if (selectedTab === 'level-2') {
+        if (userRole?.includes("Department Head")) {
+          title = "Dept. Head / Chief Review";
+        } else {
+          title = "Dept. Head / Chief Review";
+        }
+       }else if (selectedTab === 'level-3') {
+        if (userRole?.includes("Credentialing Committee")) {
+          title = "Credentialing Committee Review";
+        } else if (userRole?.includes("chief of staff")) {
+          title = "Chief Of Staff Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        title = "Staff Manager Verification";
+      }
+
+
     const payload = {
-      // role: Array.isArray(userRole) ? userRole[0] : userRole,
       notes: userRoleComments,
-      date: selectedDateForDept,
-      priority: selectedApplicantType,
-      credRole: userSelectRole
-
-
+      title: title,
+      approvedDate: new Date().toISOString(),
+      userDetail:{
+        id: selectedRoleCred,
+        role: "Credentialing Committee"
+      } 
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=false`, payload)
@@ -358,7 +424,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 onOpen={() => setCalendarStart(true)}
                 onClose={() => setCalendarStart(false)}
                 minDate={sub(new Date(), { years: 3 })}
-                maxDate={new Date()}
+                maxDate={add(new Date(), { years: 3 })}
                 value={selectedDateForDept}
                 renderInput={(params) => (
                   <TextField

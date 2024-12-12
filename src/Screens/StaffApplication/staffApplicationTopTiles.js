@@ -190,24 +190,25 @@ export default StaffApplicationTopTiles;
 // const StaffApplicationTopTiles = () => {
 //   const [selectedTab, setSelectedTab] = useState('NewApplicants');
 //   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [locumType, setLocumType] = useState(false);
 //   const [newCounts, setNewCounts] = useState({});
 //   const [reappointmentCounts, setReappointmentCounts] = useState({});
 //   const [locumCounts, setLocumCounts] = useState({});
 //   const [isLoading, setIsLoading] = useState(true);
 
-//   const getTitleCounts = async (type) => {
+//   const getTitleCounts = async (type, level) => {
 //     try {
 //       setIsLoading(true);
 //       const response = await GET(
-//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
+//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&isLocum=${level}`
 //       );
       
 //       if (response?.data) {
-//         if (type === 'NEW') {
+//         if (type === 'NEW' && !level) {
 //           setNewCounts(response.data);
-//         } else if (type === 'REAPPOINTMENT') {
+//         } else if (type === 'REAPPOINTMENT' && !level) {
 //           setReappointmentCounts(response.data);
-//         } else if (type === 'LOCUM') {
+//         } else if (level === true) {
 //           setLocumCounts(response.data);
 //         }
 //       }
@@ -221,17 +222,20 @@ export default StaffApplicationTopTiles;
 //   // Initialize from session storage
 //   useEffect(() => {
 //     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+//     const storedLocumType = sessionStorage.getItem('isLocum');
 //     if (storedApplicationType) {
 //       setApplicationCreationType(storedApplicationType);
-//       if (storedApplicationType === 'NEW') {
-//         setSelectedTab('NewApplicants');
-//       } else if (storedApplicationType === 'REAPPOINTMENT') {
-//         setSelectedTab('StaffReappointments');
-//       } else if (storedApplicationType === 'LOCUM') {
-//         setSelectedTab('LocumRenewals');
-//       }
+//       setSelectedTab(storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments');
 //     } else {
 //       sessionStorage.setItem('applicationCreationType', 'NEW');
+//     }
+//     if (storedLocumType) {
+//       setLocumType(storedLocumType === 'true');
+//       if (storedLocumType === 'true') {
+//         setSelectedTab('LocumRenewals');
+//       } 
+//     } else {
+//       sessionStorage.setItem('isLocum', 'false');
 //     }
 //   }, []);
 
@@ -239,9 +243,9 @@ export default StaffApplicationTopTiles;
 //   useEffect(() => {
 //     const fetchCounts = async () => {
 //       await Promise.all([
-//         getTitleCounts('NEW'),
-//         getTitleCounts('REAPPOINTMENT'),
-//         getTitleCounts('LOCUM')
+//         getTitleCounts('NEW', false),
+//         getTitleCounts('REAPPOINTMENT', false),
+//         getTitleCounts('REAPPOINTMENT', true),
 //       ]);
 //     };
 
@@ -258,16 +262,20 @@ export default StaffApplicationTopTiles;
 
 //   const getSelectedTab = (tab) => {
 //     let newType;
+//     let locumlevel = false;
 //     if (tab === 'NewApplicants') {
 //       newType = 'NEW';
 //     } else if (tab === 'StaffReappointments') {
 //       newType = 'REAPPOINTMENT';
 //     } else if (tab === 'LocumRenewals') {
-//       newType = 'LOCUM';
+//       newType = 'REAPPOINTMENT';
+//       locumlevel = true;
 //     }
 //     setSelectedTab(tab);
 //     setApplicationCreationType(newType);
+//     setLocumType(locumlevel);
 //     sessionStorage.setItem('applicationCreationType', newType);
+//     sessionStorage.setItem('isLocum', locumlevel);
 //   };
 
 //   return (
@@ -301,3 +309,4 @@ export default StaffApplicationTopTiles;
 // };
 
 // export default StaffApplicationTopTiles;
+
