@@ -50,7 +50,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -630,13 +630,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
                                         onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
-                                        Yes
+                                        YES
                                     </div>
                                     <div
                                         className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
-                                        No
+                                        NO
                                     </div>
                                 </div>
                             </>

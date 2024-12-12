@@ -36,6 +36,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ValidationDialog from "../validationDialog";
 import FileDisplayDialog from "../fileDisplayDialog";
+import PriorDataDialog from "../PriorDataDialog"
+
 
 const TEXTFIELDLEN50 = 50;
 
@@ -52,6 +54,8 @@ const ApplicationFieldCard = ({
   isBasicPath,
   stepPath,
   formId,
+  formIndex,
+  priorData,
   getIsSubmitClicked,
   applicationId,
   tableGrid,
@@ -85,6 +89,7 @@ const ApplicationFieldCard = ({
   // const [isAddMore, setIsAddMore] = useState(
   //     addMoreOpenBydefault ? true : false
   // );
+  const [showPriorDataDialog, setShowPriorDataDialog] = useState(false);
   const [isCollapsableCard, setIsCollapsableCard] = useState(true);
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
   const [selectedFile, setselectedFile] = useState(false);
@@ -884,7 +889,9 @@ const ApplicationFieldCard = ({
   const getIsShowFileDialog = (value) => {
     setShowFileDisplayDialog(value);
   };
-
+  const getIsShowPriorDataDialog = (value) => {
+    setShowPriorDataDialog(value);
+  };
   const getSkipClicked = (value) => {
     if (value) {
       console.log("skip clicked", baseKey);
@@ -1618,6 +1625,69 @@ const ApplicationFieldCard = ({
             );
           }
         case "datepicker":
+
+        const shouldSetMinDateToToday = (() => {
+          const validation = object?.customValidations?.find((validation) => {
+              const validationDate1 = validation.parameters.date1;
+              const fieldPath = `${baseKey}.${fieldKey}`;
+              return (
+                  validation.condition === "Date1GreaterThanCurrentDate" &&
+                  (validationDate1 === fieldPath || validationDate1 === fieldKey) // Match with or without prefix
+              );
+          });
+  
+          console.log(
+              "Validation for Date1GreaterThanCurrentDate:",
+              validation,
+              "Expected:",
+              `${baseKey}.${fieldKey}`
+          );
+  
+          return !!validation; // Return true if validation exists
+      })();
+  
+      // Check if Date2 is greater than Date1
+      const minDateForDate2 = (() => {
+          const validation = object?.customValidations?.find((validation) =>
+              validation.condition === "Date2GreaterThanDate1" &&
+              validation.parameters.date2 === `${baseKey}.${fieldKey}`
+          );
+          if (validation) {
+              const date1Path = `${basicpath}.${baseKey}.${validation.parameters.date1.split('.').pop()}`;
+              const date1Value = getValueByPath(basicForm, date1Path);
+  
+              if (isValidDateString(date1Value)) {
+                  return new Date(date1Value);
+              }
+          }
+          return null;
+      })();
+  
+      // Check if the birthday should be less than today
+      const shouldSetMaxDateForBirthday = object?.customValidations?.some(
+          (validation) =>
+              validation.condition === "Date1LessThanCurrentDate" &&
+              `${baseKey}.${fieldKey}` === validation.parameters.date1
+      );
+  
+      // Final minDate logic
+      const minDate = (() => {
+          if (shouldSetMinDateToToday) {
+              return new Date(); // Today's date for Date1GreaterThanCurrentDate
+          }
+          if (minDateForDate2) {
+              return minDateForDate2; // Date2 > Date1 logic
+          }
+          return null; // Default
+      })();
+  
+      const maxDate = shouldSetMaxDateForBirthday ? new Date() : null;
+  
+     
+      console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
+      console.log("minDateForDate2:", minDateForDate2);
+      console.log("Final minDate:", minDate);
+  
           console.log(
             getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
             "datecheck",
@@ -1686,6 +1756,8 @@ const ApplicationFieldCard = ({
                     baseKey
                   )
                 }
+                minDate={minDate} 
+                maxDate={maxDate}
                 InputProps={{
                   style: {
                     fontSize: 14,
@@ -1804,6 +1876,17 @@ const ApplicationFieldCard = ({
             </div>
           );
         case "disclosureRadioButton":
+          //if (fieldData.priorDataComparisonNeeded === true){
+            const priorData = getValueByPath(basicForm, `forms[${formIndex}].priorData.${baseKey}.${fieldKey}`);
+            console.log(priorData);
+            const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+            console.log(currentValue);
+            const isConflict = priorData !== undefined && currentValue !== priorData;
+            console.log("Disclosure Conflict",isConflict,fieldKey) 
+            if(isConflict && !showPriorDataDialog)  {
+              setShowPriorDataDialog(true)
+            }
+            // }
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2869,7 +2952,7 @@ const ApplicationFieldCard = ({
                           setYesOrNoDemographic("Yes");
                         }}
                       >
-                        Yes
+                        YES
                       </div>
                       <div
                         className={`${
@@ -2922,6 +3005,12 @@ const ApplicationFieldCard = ({
             file={selectedFile}
           />
         )}
+        {
+          showPriorDataDialog && (
+          <PriorDataDialog getIsOpen={getIsShowPriorDataDialog}
+          priorData={priorData}/>
+          )
+        }
       </div>
     </>
   );

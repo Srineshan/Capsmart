@@ -1,0 +1,104 @@
+@import '../../index.scss';
+
+.dialog {
+    width: 600px;
+    border-radius: 10px;
+}
+
+.dialogBackground {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.heading {
+    font-size: 18px;
+    font-weight: bold;
+    color: $primarycolor;
+}
+
+.crossStyle {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.description {
+    font-size: 14px;
+    color: #2C2C2C;
+    margin: 10px 0;
+}
+
+.notesSection, .explanationSection {
+    margin-top: 15px;
+}
+
+.noteHeading {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.copyButton {
+    background-color: $primarycolor;
+    color: white;
+}
+
+.saveButtonContainer {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.saveButton {
+    padding: 10px 15px;
+    background-color: $primarycolor;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

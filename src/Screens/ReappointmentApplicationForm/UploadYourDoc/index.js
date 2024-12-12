@@ -76,7 +76,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -722,17 +722,15 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         }`}
                                 >
                                     <p className={style.uploadTextStyle}>
-                                        {"Confirm Your Electronic Signature"}
+                                        {"Confirm Your eSignature"}
                                     </p>
 
                                     <p className={style.uploadDescriptionText}>
                                         {
-                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting."
+                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting.Set up your electronic signature"
                                         }
                                     </p>
-                                    <p className={style.uploadDescriptionText}>
-                                        {"Click here to setup your electronic signature for use."}
-                                    </p>
+                                    
                                 </div>
                             </div>
                         )}
