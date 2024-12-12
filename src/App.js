@@ -257,12 +257,16 @@ const Thankyou = React.lazy(() =>
 );
 const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
 const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
+const LocumApplicationForm = React.lazy(() => import("./Screens/LocumApplicationForm"));
 const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
 );
 const ReappointmentApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
+);
+const LocumApplicationFormRequirement = React.lazy(() =>
+  import("./Screens/LocumApplicationForm/LocumApplicationFormRequirement")
 );
 const ApplicationRequest = React.lazy(() =>
   import("./Screens/ApplicationRequest")
@@ -291,7 +295,7 @@ const App = ({ props }) => {
   const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
   const loggedInUser = currentUser();
-     
+
   // const navigate = useNavigate();
 
   useEffect(() => {
@@ -934,7 +938,7 @@ const App = ({ props }) => {
                 path="/referenceList/paymentList"
                 element={<PaymentList />}
               />
-               <Route
+              <Route
                 path="/referenceList/settingList"
                 element={<SettingList />}
               />
@@ -962,12 +966,20 @@ const App = ({ props }) => {
                 element={<MedicalDirectivesAttest />}
               />
               <Route
+                path="/locumApplicationForm/:applicationId/:section/:step"
+                element={<LocumApplicationForm />}
+              />
+              <Route
                 path="/applicationForm/:applicationId"
                 element={<ApplicationFormRequirement />}
               />
               <Route
                 path="/reappointmentApplicationForm/:applicationId"
                 element={<ReappointmentApplicationFormRequirement />}
+              />
+              <Route
+                path="/locumApplicationForm/:applicationId"
+                element={<LocumApplicationFormRequirement />}
               />
               <Route
                 path="/applicationRequest"

@@ -1,7 +1,7 @@
 @import "../../../index.scss";
 
 .marginTop {
-    margin-top: 20px;
+    margin-top: 20px !important;
 }
 
 .marginLeft {
@@ -23,15 +23,18 @@
 }
 
 .stickyContainer {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    // transition: opacity 0.3s ease, filter 0.3s ease;
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {
-    opacity: 0; 
-    pointer-events: none; 
+    opacity: 0;
+    pointer-events: none;
     // filter: blur(5px); 
     // box-shadow: 0 0 10px 5px #06617A;
 }
@@ -431,6 +434,48 @@
     z-index: 99999 !important;
 }
 
+.privilegeCardWithBorder {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border: 0.4000000059604645px solid #5087D9;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 99999 !important;
+}
+
+.privilegeCategoryChips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: normal normal normal $labelvaluetext proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+}
+
+.privilegeCategoryChipsSelected {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border: 1px solid $primarycolor;
+    color: $secondarycolor;
+}
+
+.chipsContainer {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 10px;
+}
+
+.hospitalPrivilegeSetGrid {
+    display: grid;
+    grid-template-columns: 20% 73% 5%;
+    gap: 1%;
+}
+
+.primaryColor {
+    color: $primarycolor !important;
+}
+
 .privilegeContentCard {
     background: #1D24370A 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 8px #040B2014;
@@ -485,6 +530,7 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    text-align: center;
 }
 
 .reappointmentButtonOutlined {

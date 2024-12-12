@@ -139,6 +139,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const handleApplicationApprove = async () => {
     let role;
+    let title;
     let notes = userRoleComments;
     let isDelegate = true;
 
@@ -147,30 +148,41 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
+    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES`, temp)
       .then(response => {
         console.log('success');
         onClose();
@@ -238,6 +250,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplicationMoveToNext = async () => {
     let role;
+    let title;
     let notes = userRoleComments;
     let isDelegate = true;
 
@@ -246,28 +259,40 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
+
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
       .then(response => {
