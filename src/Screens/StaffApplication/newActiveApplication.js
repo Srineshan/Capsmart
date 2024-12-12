@@ -801,53 +801,53 @@ const NewActiveApplication = ({
 
   const handleApplicationAccept = async () => {
     let role;
-    let notes = "";
+    let title;
+    let notes =  "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-1') {
-      if (userRole?.includes("Staff Manager")) {
-          role = "Staff Manager";
-          isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
-        role = "Staff Manager";
-      }
-     } else if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2') {
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
+      } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
-      if (userRole?.includes("Advisory Committee")) {
-        role = "Advisory Committee";
-        isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
-        role = "Advisory Committee";
-      }
+      role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes ,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
 
 
     // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
     // const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=APPROVED`, temp)
       .then(response => {
         console.log('success')
         onClose()
@@ -911,43 +911,47 @@ const NewActiveApplication = ({
 
   const getApplicationMoveToNext = async () => {
     let role;
-    let notes = "";
+    let title;
+    let notes =  "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-1') {
-      if (userRole?.includes("Staff Manager")) {
-          role = "Staff Manager";
-          isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
-        role = "Chief Of Staff";
-        isDelegate = false;
-      }
-     } else if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2') {
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
+      } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes ,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
 
     await PUT(`application-management-service/application/${applicationId}/workflow/move?isDelegate=${isDelegate}`, temp)
@@ -8000,7 +8004,7 @@ console.log(daysDifference);
                               onOpen={() => setCalendarStart(true)}
                               onClose={() => setCalendarStart(false)}
                               minDate={sub(new Date(), { years: 3 })}
-                              maxDate={new Date()}
+                              maxDate={add(new Date(), { years: 3 })}
                               value={selectedDateForMac}
                               renderInput={(params) => (
                                 <TextField
@@ -8043,7 +8047,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               RECOMMENDED BY MAC
@@ -8073,7 +8077,7 @@ console.log(daysDifference);
                             onClose={() => setCalendarStart(false)}
 
                             minDate={sub(new Date(), { years: 3 })}
-                            maxDate={new Date()}
+                            maxDate={add(new Date(), { years: 3 })}
                             value={selectedDateForBod}
                             renderInput={(params) => (
                               <TextField
@@ -8116,7 +8120,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickEmailDialogFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED MY BOD
@@ -8589,7 +8593,7 @@ console.log(daysDifference);
                   {applicationType === "REAPPOINTMENT" ? (
                     <>
                     {selectedTab === "level-4" || selectedTab === "level-5" ? (
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>    
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.marginBottom20}`}>    
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                         <div
                           className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -8627,20 +8631,20 @@ console.log(daysDifference);
                           <>
                         {logDetails?.logs
                           ?.filter((log) => 
-                            log?.workflowStatus !== "SUBMITTED" &&
-                            log?.approvalType === null && log?.approvalType === ""
+                            log?.workflowStatus !== "SUBMITTED" 
+                          && !(log?.approvalType === null || log?.approvalType === "")
                           )
                           .map((log, index) => (
                             <div key={index}>
                               <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                Staff Manager Verification
+                                {log?.title}
                               </div>
                               <div 
                                 className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${
-                                  log?.role === 'Staff Manager' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
+                                  log?.approvalType === 'RECOMMENDED_WITH_NOTES' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
                                 }`}
                               >
-                                {log?.role || "-"}
+                                {log?.approvalType || "-"}
                               </div>
                               <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
                                 {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} 
@@ -8895,7 +8899,7 @@ console.log(daysDifference);
                       onOpen={() => setCalendarStart(true)}
                       onClose={() => setCalendarStart(false)}
                       minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
+                      maxDate={add(new Date(), { years: 3 })}
                       value={selectedDateForMac}
                       renderInput={(params) => (
                         <TextField
@@ -8962,7 +8966,7 @@ console.log(daysDifference);
                       onClose={() => setCalendarStart(false)}
 
                       minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
+                      maxDate={add(new Date(), { years: 3 })}
                       value={selectedDateForBod}
                       renderInput={(params) => (
                         <TextField
@@ -8995,7 +8999,7 @@ console.log(daysDifference);
                       onClose={() => setCalendarStart(false)}
 
                       minDate={sub(new Date(), { years: 3 })}
-                      maxDate={new Date()}
+                      maxDate={add(new Date(), { years: 3 })}
                       value={selectedDateForReappoint}
                       renderInput={(params) => (
                         <TextField

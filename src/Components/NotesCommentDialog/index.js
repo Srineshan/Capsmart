@@ -243,6 +243,8 @@ const getApplication = async () => {
   }
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
+  const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MMM dd, yyyy") : "-";
   
 
   // if ((applicationType === "NEW")) {
@@ -383,25 +385,26 @@ const getApplication = async () => {
               <>
               <div className={style.marginTop}>
                 <div className={style.commentsNotesHeadingFontStyle}>
+                  {/* {log.title} Comments & Notes */}
                   Staff Manager Comments & Notes
                 </div>
                 <hr color="grey" size="2"></hr>
                 <div>
                   <div className={style.commentsNotesFontStyle}>
                   Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.
-                  {/* {log.notes} */}
+                  {/* <span dangerouslySetInnerHTML={{ __html:(log.notes) }} /> */}
                   </div>
                 </div>
               </div>
-              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-              Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
+              </>
+             {/* ))} */}
+             <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+              Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
               </div>
               {userRole?.includes("Department Head") && 
               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
               Assigned Credentials Committee: Name
               </div>}
-              </>
-             {/* ))} */}
             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Dept Head Comments & Notes
             </div>

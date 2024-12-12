@@ -240,7 +240,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     //   notes: notes,
     // };
     let role;
-    let notes = userRoleComments;
+    let title;
+    let notes = userRoleComments || "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -248,30 +249,42 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes ,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES`, temp)
+
+    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
       .then(response => {
         console.log('success');
         onClose();
@@ -328,7 +341,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
 
     let role;
-    let notes = userRoleComments;
+    let title;
+    let notes = userRoleComments || "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -336,27 +350,38 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       if (userRole?.includes("Department Head")) {
           role = "Department Head";
           isDelegate = false;
+          title = "Dept. Head / Chief Review"
       } else {
           role = "Department Head";
+          title = "Dept. Head / Chief Review"
       }
      }else if (selectedTab === 'level-3') {
       if (userRole?.includes("Credentialing Committee")) {
         role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (userRole?.includes("chief of staff")) {
         role = "Chief Of Staff";
         isDelegate = false;
+        title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
+      title = "MAC Review";
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: isDelegate ? notes : "",
+      notes: notes,
+      approvedDate: new Date().toISOString(),
+      title: title
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
