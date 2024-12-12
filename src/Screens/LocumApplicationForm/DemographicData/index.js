@@ -50,7 +50,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -643,7 +643,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div> 
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
                         {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
@@ -663,29 +663,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             SKIP FOR NOW
                         </div> */}
-                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer: ""}`}>
-                    <div
-                        className={`${style.saveInProgress} ${style.marginTop}`}
-                        onClick={() => getIsSaveInProgressOpen(true)}
-                    >
-                        SAVE IN PROGRESS
-                    </div>
-                    {/* </div> */}
-                    <div className={style.twoColForButton}>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div
-                            className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => navigate(-1)}
+                            className={`${style.saveInProgress} ${style.marginTop}`}
+                            onClick={() => getIsSaveInProgressOpen(true)}
                         >
-                            BACK
+                            SAVE IN PROGRESS
                         </div>
-                        {/* <div
+                        {/* </div> */}
+                        <div className={style.twoColForButton}>
+                            <div
+                                className={`${style.continue} ${style.marginTop10}`}
+                                onClick={() => navigate(-1)}
+                            >
+                                BACK
+                            </div>
+                            {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={() => setShowJourneyDialog(true)}
                         >
                             CONTINUE
                         </div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

@@ -187,14 +187,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
     setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
     if (basicForm !== undefined && formIndex !== undefined) {
-      setNavigateURL(
-        basicForm?.forms?.filter((data) => data?.formCategory === "Form")
-          ?.length ===
-          formIndex + 1
-          ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck`
-          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
-          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
-      );
+      setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
       if (basicForm?.forms[formIndex]?.data !== null) {
         setPrivilegeChangeYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
         setPrivilegeSetChangeYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
