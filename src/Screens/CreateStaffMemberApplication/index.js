@@ -12,9 +12,8 @@ import SendEmailFromStaffManagerConfirmationDialog from "../../Components/sendEm
 import jwt from "jwt-decode";
 import Cookie from "universal-cookie";
 import { useNavigate } from "react-router-dom";
-import { getValueByPath } from "../../utils/formatting";
+import { fileLoadingURL, getValueByPath } from "../../utils/formatting";
 import ValidationDialog from "../../Components/validationDialog";
-import FileLoading from "../../images/fileLoading.GIF";
 
 const CreateStaffMemberApplication = () => {
   let cookie = new Cookie();
@@ -233,7 +232,7 @@ const CreateStaffMemberApplication = () => {
           ...data,
           error:
             data.key === "basicDetails.applicant.email.officialEmail" &&
-            !validateEmail(data.value)
+              !validateEmail(data.value)
               ? "Invalid email format"
               : "",
         });
@@ -272,10 +271,10 @@ const CreateStaffMemberApplication = () => {
     }
     if (missingKeys?.length !== 0) {
       // Focus the first missing field
-    const firstMissingField = missingKeys[0];
-    if (firstMissingField?.ref?.current) {
-      firstMissingField.ref.current.focus();
-    }
+      const firstMissingField = missingKeys[0];
+      if (firstMissingField?.ref?.current) {
+        firstMissingField.ref.current.focus();
+      }
       setShowValidationDialog(true);
     } else {
       handleSubmitApplicationReq();
@@ -401,7 +400,7 @@ const CreateStaffMemberApplication = () => {
         <div
           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
         >
-          <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
       <div className={style.screenBackground}>
@@ -510,9 +509,8 @@ const CreateStaffMemberApplication = () => {
                 </div>
                 {requiredDocumentList?.map((data, index) => (
                   <div
-                    className={`${style.tableData} ${
-                      index % 2 === 0 ? style.alternativeBackgroundColor : ""
-                    }`}
+                    className={`${style.tableData} ${index % 2 === 0 ? style.alternativeBackgroundColor : ""
+                      }`}
                     key={`${index}radio`}
                   >
                     <div className={style.fileGrid}>

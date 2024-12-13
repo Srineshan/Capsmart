@@ -5,7 +5,6 @@ import ApplicationUserCard from "../../../Components/ApplicationUserCard";
 import ApplicationAssistanceCard from "../../../Components/ApplicationAssistanceCard";
 import CommonDivider from "../../../Components/CommonFields/CommonDivider";
 import ApplicationFieldCard from "../../../Components/ApplicationFieldCard";
-import FileLoading from "./../../../images/fileLoading.GIF";
 import ApplicationReferenceDocuments from "../../../Components/ApplicationReferenceDocuments";
 import { Dialog, Classes, TextArea } from "@blueprintjs/core";
 import { DELETE, GET, POST, PUT } from "../../dataSaver";
@@ -46,6 +45,7 @@ import ReappointmentJourneyDialog from "../../../Components/reappointmentJourney
 import CommonTextField from "../../../Components/CommonFields/CommonTextField";
 import PaymentDialog from "../../../Components/paymentDialog";
 import SaveInProgressDialog from "../../../Components/SaveInProgressDialog";
+import { fileLoadingURL } from "../../../utils/formatting";
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -2134,7 +2134,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         <div
           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
         >
-          <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
       <div className={style.applicationScreenGrid}>

@@ -6,7 +6,7 @@ import CommonDateField from "../CommonFields/CommonDateField";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import { TextField, Tooltip } from "@mui/material";
 import { add, format, isValid, parse, sub } from "date-fns";
-import { FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import CommonRadio from "../CommonFields/CommonRadio";
 import CommonSwitch from "../CommonFields/CommonSwitch";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -15,7 +15,6 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import VerifiedImage from "../../images/verifiedImage.png";
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
-import FileLoading from "../../images/fileLoading.GIF";
 import DeleteIcon from "../../images/deleteHcRow.png";
 import style from "./index.module.scss";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -2748,7 +2747,7 @@ const ApplicationFieldCard = ({
         <div
           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
         >
-          <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
       <div

@@ -6,15 +6,14 @@ import styles from "./index.module.scss";
 export default function LoadingScreen({ subsequentLoad = false, text }) {
   return (
     <div
-      className={`${
-        subsequentLoad ? styles.loadingScreenInline : styles.loadingScreen
-      } ${text ? styles.inline : ""}`}
+      className={`${subsequentLoad ? styles.loadingScreenInline : styles.loadingScreen
+        } ${text ? styles.inline : ""}`}
     >
       <div
         className={`${styles.loadingScreenInline} ${styles.displayInColumn}`}
       >
         <div className={styles.fadeIn}>
-          {/* <img src={logo} alt="" className={styles.logo} /> */}
+          <img src={logo} alt="" className={styles.logo} />
         </div>
         <br />
         {!subsequentLoad && (

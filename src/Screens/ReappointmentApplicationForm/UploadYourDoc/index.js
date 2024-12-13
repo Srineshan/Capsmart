@@ -18,7 +18,6 @@ import imgDocs from './../../../images/imgDocs.png';
 import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
-import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -32,7 +31,7 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { getValueByPath } from '../../../utils/formatting';
+import { fileLoadingURL, getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
@@ -76,7 +75,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -517,7 +516,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
                 >
-                    <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -730,7 +729,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             "Our paperless automated application submission uses electronic signatures with digital fingerprinting.Set up your electronic signature"
                                         }
                                     </p>
-                                    
+
                                 </div>
                             </div>
                         )}
@@ -749,11 +748,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         email={"{Email}"}
                     />
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                       || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer: ""}`}>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
-                        SAVE IN PROGRESS
-                    </div>
-                    {/* <div
+                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
+                            SAVE IN PROGRESS
+                        </div>
+                        {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
                             getMissingDocs()?.length === 0
                             ? style.disabledButton
@@ -768,14 +767,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     >
                         SKIP FOR NOW
                     </div> */}
-                    <div className={style.twoColForButton}>
-                        <div
-                            className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => navigate(-1)}
-                        >
-                            BACK
-                        </div>
-                        {/* <div
+                        <div className={style.twoColForButton}>
+                            <div
+                                className={`${style.continue} ${style.marginTop10}`}
+                                onClick={() => navigate(-1)}
+                            >
+                                BACK
+                            </div>
+                            {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={
                                 // (basicForm?.forms?.[formIndex]?.data !== null &&
@@ -789,8 +788,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

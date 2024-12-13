@@ -89,3 +89,5 @@ console.log(timeZoneAbbreviation, siteTimeZone)
 // export const corsUrl = 'https://app.mytimesmart.com/cors/'
 
 export const corsUrl = 'https://app.timesmartai.com/cors/'
+
+export const fileLoadingURL = 'https://capmanager-dev.s3.us-east-1.amazonaws.com/File_Upload_Loading.gif';

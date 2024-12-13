@@ -18,7 +18,6 @@ import imgDocs from './../../../images/imgDocs.png';
 import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
-import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -32,7 +31,7 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { getValueByPath } from '../../../utils/formatting';
+import { fileLoadingURL, getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
@@ -517,7 +516,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
                 >
-                    <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
