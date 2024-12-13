@@ -795,6 +795,11 @@ const NewActiveApplication = ({
     getApplicationMoveToNext(true)
   };
 
+  const onClickApproveMoveMacFunction = () => {
+    handleApplicationAcceptMac(true);
+    getApplicationMoveToNext(true)
+  };
+
   const onClickRejectFunction = () => {
     handleApplicationReject(true);
   };
@@ -848,6 +853,65 @@ const NewActiveApplication = ({
     // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
     // const requestData = { ...temp, notes: "" };
     await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=APPROVED`, temp)
+      .then(response => {
+        console.log('success')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    getPreApplication();
+  };
+
+  const handleApplicationAcceptMac = async () => {
+    let role;
+    let title;
+    let notes =  "";
+    let isDelegate = true;
+
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+      } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (userRole?.includes("chief of staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+        title = "Chief Of Staff Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+    }
+
+    // Prepare the payload
+    let temp = {
+      role: isDelegate ? role : "",
+      notes: notes ,
+      approvedDate: new Date().toISOString(),
+      title: title
+    };
+
+
+    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    // const requestData = { ...temp, notes: "" };
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
       .then(response => {
         console.log('success')
         onClose()
@@ -7695,10 +7759,14 @@ console.log(daysDifference);
                         SEND LATER
                       </div>
                     </div>
-                    <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                    <div 
+                      // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                      className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      style={{ opacity: isApproved ? 1 : 0.5 }}>
                       <div
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApprovalDeptFunction}
+                        // onClick={onClickApprovalDeptFunction}
+                        onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                       >
                         Verified, Send to Dept. Chief
                       </div>
@@ -8047,7 +8115,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveMacFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               RECOMMENDED BY MAC
