@@ -7991,7 +7991,7 @@ console.log(daysDifference);
                     </div>
                   </>) : ( " ")}
                   {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
-                      <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.fixedBottom} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                         <div className={`${style.cardLeftStyle2}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
@@ -8059,7 +8059,7 @@ console.log(daysDifference);
                     ) :(" ")
                     }
                      {(userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
-                      <div className={`${style.stickyContainer} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.fixedBottom} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                         <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
                           <div
@@ -8123,7 +8123,7 @@ console.log(daysDifference);
                               onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                              APPROVED MY BOD
+                              APPROVED BY BOD
                               </div>
                             </div>
                           </>
@@ -8629,6 +8629,9 @@ console.log(daysDifference);
                         </div>
                         {expandStates.section4 && (
                           <>
+                          {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                VERIFICATION
+                              </div> */}
                         {logDetails?.logs
                           ?.filter((log) => 
                             log?.workflowStatus !== "SUBMITTED" 
