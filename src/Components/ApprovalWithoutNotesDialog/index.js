@@ -22,6 +22,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
+  const [logDetails, setLogDetails] = useState([]);
   const [userRoleComments, setUserRoleComments] = useState('');
   const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false });
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -55,6 +56,11 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   //     setCurrentDate(format(new Date(), dateFormat));
   //   }
   // }, [dateFormat]);
+
+  useEffect(() => {
+      getApplicationEntity();
+      getLog();;
+    }, [applicationType]);
 
   const onClicksignFunction = () => {
     setTodayDate();
@@ -194,6 +200,13 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     getApplicationMoveToNext(true);
   }
 
+   const getLog = async () => {
+      const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+      setLogDetails(basicLog);
+      console.log("basicLog" +JSON.stringify(basicLog));
+      
+    };
+
   const handleApplicationApprove = async () => {
     // let role;
     // let notes = { userRoleComments }
@@ -241,7 +254,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
     let role;
     let title;
-    let notes = userRoleComments || "";
+    let notesComments = userRoleComments || "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -278,7 +291,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: notes ,
+      notes: {
+        notes: notesComments
+      },
       approvedDate: new Date().toISOString(),
       title: title
     };
@@ -342,7 +357,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
     let role;
     let title;
-    let notes = userRoleComments || "";
+    let notesComments = userRoleComments || "";
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -379,7 +394,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: notes,
+      notes: {
+        notes: notesComments
+      },
       approvedDate: new Date().toISOString(),
       title: title
     };
@@ -393,6 +410,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         console.log(error);
       });
   };
+  
 
   const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {
@@ -436,7 +454,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
@@ -619,7 +637,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                     </>
 
                   </div>
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
+                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10} ${style.marginBottom20}`}>
                     <DescriptionIcon className={`${style.docsIcon}`} />
                     {files.length > 0 ? (
                       files.map((file, index) => (

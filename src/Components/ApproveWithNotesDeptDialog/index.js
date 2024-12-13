@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT, POST } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -14,6 +14,9 @@ import { format ,sub,add} from 'date-fns';
 import TextField from "@mui/material/TextField";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import Dropzone from "react-dropzone";
+import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat,selectedTab }) => {
   let cookie = new Cookie();
@@ -41,6 +44,16 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     // const [userSelectRole, setSelectedApplicantTypeRole] = useState('');
     const [calendarStart, setCalendarStart] = useState(false);
     const [selectedDateForDept, setSelectedDateForDept] = useState(null);
+    const [files, setFiles] = useState([]);
+     const [isLoading, setIsLoading] = useState(false);
+    const dropzoneStyle = {
+      width: "100%",
+      height: "auto",
+      borderWidth: 2,
+      borderColor: "rgb(102, 102, 102)",
+      borderStyle: "dashed",
+      borderRadius: 5,
+    };
 
     const isApproveEnabled = 
     userRoleComments.trim() !== '' && 
@@ -88,6 +101,52 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       setEncryptedText(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
     }
   }, [name, dateTime, publicKey]);
+
+   const changeHandler = async (event) => {
+      setIsLoading(true);
+      const filesArray = Array.from(event);
+      setFiles(filesArray);
+      console.log(event, 'Test');
+  
+  
+      const formData = new FormData();
+      let fileNameArray = [];
+      filesArray?.forEach(file => {
+        fileNameArray.push({ "fileName": file?.name });
+        formData.append('documents', file);
+      });
+  
+  
+  
+  
+      formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+        type: "application/json"
+      }));
+  
+      fileNameArray.forEach(file => {
+        console.log("File name:", file.fileName);
+      });
+  
+      console.log("file?.name" + JSON.stringify(fileNameArray));
+      console.log(fileNameArray)
+      console.log(event?.name);
+  
+      try {
+        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+        SuccessToaster('File Uploaded Successfully');
+        console.log(response?.data?.fileName);
+  
+  
+  
+        setIsLoading(false);
+        return response?.data;
+      } catch (error) {
+        ErrorToaster('File Upload Failed');
+        console.error(error);
+        setIsLoading(false);
+        return null;
+      }
+    };
 
   // useEffect(() => {
   //   checkApproveEnabled();
@@ -158,23 +217,24 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   };
 
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true);
-    getApplicationMoveToNext(true);
+    // handleApplicationApprove(true);
+    // getApplicationMoveToNext(true);
     handleApplicationApproveDate(true);
   }
 
-  const handleApplicationApproveDate= async () => {
+  const handleApplicationApproveDate = async () => {
     try {
       // const payload = {
       //   upcomingCredCommitteeMeetingDate: selectedDateForDept,
       // };
 
-      const temp = formDetails
-      const payload = temp?.upcomingCredCommitteeMeetingDate
+      // const temp = formDetails
+      // const payload = temp?.upcomingCredCommitteeMeetingDate
+      formDetails.upcomingCredCommitteeMeetingDate = selectedDateForDept;
 
       await PUT(
         `application-management-service/application/${id}`,
-        payload
+        formDetails
       );
       
       await getApplication();
@@ -207,7 +267,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
           }
 
         const payload = {
-          notes: userRoleComments,
+          // notes: userRoleComments,
+          notes: {
+            notes: userRoleComments
+          },
           title: title,
           approvedDate: new Date().toISOString(),
           userDetail:{
@@ -254,7 +317,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
 
 
     const payload = {
-      notes: userRoleComments,
+      // notes: userRoleComments,
+      notes: {
+        notes: userRoleComments
+      },
       title: title,
       approvedDate: new Date().toISOString(),
       userDetail:{
@@ -365,60 +431,50 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 }}
               />
             </div>
-              <div className={`${style.twoColumnGrid}`}>
-              <div>
-             <div className={`${style.marginTop10}`}>
-                <div className={`${style.filterType}`}>
-                Upcoming Credentialing Committee Meeting Date
-                </div>
-                {/* <CommonDateField
-                              className={style.dateWidth}
-                              onChange={(date) => handleDateChange(date, 'MAC')}
-                              open={calendarStart}
-                              onOpen={() => setCalendarStart(true)}
-                              onClose={() => setCalendarStart(false)}
-                              minDate={sub(new Date(), { years: 3 })}
-                              maxDate={new Date()}
-                              value={selectedDateForDept}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  inputProps={{
-                                    ...params.inputProps,
-                                    placeholder: 'Start Date',
-                                  }}
-                                  variant="outlined"
-                                  margin="normal"
-                                  fullWidth
-                                />
-                              )}
-                            /> */}
-              </div>
-              
-            </div>
-            <div>
-             <div className={`${style.marginTop10}`}>
-            <div className={`${style.filterType}`}>
-                Assign a Credentialing Committee Member to Review & Approve
-            </div>
-            {/* <CommonSelectField
-                value={selectedApplicantType}
-                onChange={(e) => setSelectedApplicantType(e.target.value)}
-                className={style.fullWidth}
-                // firstOptionLabel={''}
-                // firstOptionValue={''}
-                valueList={applicantType?.map(data => data?.id)}
-                labelList={applicantType?.map(data => data?.applicantType)}
-                disabledList={applicantType?.map(data => false)}
-                required={false}
-            /> */}
+            <div className={`${style.marginTop} ${style.cursorPointer}`}>
+
+                    <>
+
+                      <Dropzone
+                        style={dropzoneStyle}
+                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                        accept={{
+                          'image/jpeg': [],
+                          'image/png': [],
+                          'image/jpg': [],
+                          'application/pdf': []
+                        }}
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <section>
+                            <div {...getRootProps()}>
+                              <input {...getInputProps()} />
+                              <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                  Upload any supporting documents
+                                </p>
+                              </div>
+                            </div>
+                          </section>
+                        )}
+                      </Dropzone>
+                    </>
+
                   </div>
-            </div>
-            </div>
+                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10} ${style.marginBottom20}`}>
+                    <DescriptionIcon className={`${style.docsIcon}`} />
+                    {files.length > 0 ? (
+                      files.map((file, index) => (
+                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                      ))
+                    ) : (
+                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                    )}
+                  </div>
             <div className={`${style.twoColumnGrid}`}>
               <div>
                 <CommonDateField
-                className={style.dateWidth}
+                className={style.fullWidth}
                 onChange={(date) => handleDateChange(date, 'MAC')}
                 open={calendarStart}
                 onOpen={() => setCalendarStart(true)}
@@ -426,6 +482,13 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 minDate={sub(new Date(), { years: 3 })}
                 maxDate={add(new Date(), { years: 3 })}
                 value={selectedDateForDept}
+                label=" Upcoming Credentialing Committee Meeting Date"
+                 InputProps={{
+                  style: {
+                      fontSize: 14,
+                      height: 34,
+                  },
+              }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
@@ -453,6 +516,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                     disabledList={false}
                     required={false}
+                    label="Assign a Credentialing Committee Member to Review & Approve"
                   />
               </div>
       

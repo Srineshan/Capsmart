@@ -243,7 +243,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   // }
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 

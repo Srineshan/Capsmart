@@ -76,8 +76,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     let temp = {
       notes: userNotes,
     };
+    const title = `${userRole}Notes/Comments`
 
-    await PUT(`application-management-service/application/${id}/addNote`, temp)
+    await PUT(`application-management-service/application/${id}/addNote?title=${title}`, temp)
       .then(response => {
         console.log('successfull notes added');
         onClose();
@@ -101,7 +102,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              Notes*
+              Create A Note
             </div>
             <div className={style.displayInRow}>
               <img

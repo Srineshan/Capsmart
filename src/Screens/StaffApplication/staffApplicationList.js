@@ -89,6 +89,9 @@ const StaffApplicationList = ({
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const [applicationIsLocum, setApplicationIsLocum] = useState(() =>
+    sessionStorage.getItem('isLocum') || false
+  );
 
   const handleSelectAllClick = () => {
     if (checkedIds.length === tableData.length) {
@@ -118,7 +121,7 @@ const StaffApplicationList = ({
   ]:[
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "Docs",
@@ -184,11 +187,11 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-    <CommonCheckBox
-      size="medium"
-      checked={checkedIds.length === tableData.length}
-      onChange={handleSelectAllClick}
-    />,
+    // <CommonCheckBox
+    //   size="medium"
+    //   checked={checkedIds.length === tableData.length}
+    //   onChange={handleSelectAllClick}
+    // />,
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -210,11 +213,11 @@ const StaffApplicationList = ({
     "Last Updated",
     "Action",
   ] : [
-      <CommonCheckBox
-        size="medium"
-        checked={checkedIds.length === tableData.length}
-        onChange={handleSelectAllClick}
-      />,
+      // <CommonCheckBox
+      //   size="medium"
+      //   checked={checkedIds.length === tableData.length}
+      //   onChange={handleSelectAllClick}
+      // />,
       applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
       applicationType === "NEW" ? "Applicant ID" : "Staff ID",
       applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -249,6 +252,17 @@ const StaffApplicationList = ({
     "Notes",
     "Task list Status",
     "Last Updated",
+    "Action",
+  ];
+
+
+  const locumHeaderValues = [
+    "Locum Staff" ,
+    "Locum ID",
+    "Locum Type",
+    "Privilege Category",
+    "Expiration Date",
+    "Days to Expiration",
     "Action",
   ];
   const approvedHeaderValues = [
@@ -286,7 +300,7 @@ const StaffApplicationList = ({
   ]:[
     false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -345,7 +359,7 @@ const StaffApplicationList = ({
     true,
     false
   ] : [
-    false,
+    // false,
     true,
     true,
     true,
@@ -365,7 +379,7 @@ const StaffApplicationList = ({
     true,
     false,
   ] : [
-    false,
+    // false,
     true,
     true,
     true,
@@ -397,6 +411,16 @@ const StaffApplicationList = ({
     false,
     false,
     true,
+    false,
+  ];
+
+  const locumColSortValues = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
     false,
   ];
   const approvedColSortValues = [
@@ -454,15 +478,29 @@ const StaffApplicationList = ({
   //   setForm(basicForm)
   // }
 
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     const currentValue = sessionStorage.getItem('applicationCreationType');
+  //     if (currentValue !== applicationType) {
+  //       setApplicationType(currentValue);
+  //     }
+  //   }, 500);
+
+  // }, [applicationType]);
   useEffect(() => {
     const intervalId = setInterval(() => {
       const currentValue = sessionStorage.getItem('applicationCreationType');
+      const currentValue1 = sessionStorage.getItem('isLocum');
       if (currentValue !== applicationType) {
         setApplicationType(currentValue);
       }
-    }, 500);
+      if (currentValue1 !== applicationIsLocum) {
+        setApplicationIsLocum(currentValue1);
+      }
+    }, 1000); // Check every second
 
-  }, [applicationType]);
+    return () => clearInterval(intervalId);
+  }, [applicationType, applicationIsLocum]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -487,6 +525,12 @@ const StaffApplicationList = ({
       getDeclineData();
     }
   }, [applicationType]);
+
+  useEffect(() => {
+    if (applicationIsLocum) {
+      getWorkflowUserData();
+    }
+  }, [applicationIsLocum]);
 
   useEffect(() => {
     setUserDetails();
@@ -730,19 +774,26 @@ const StaffApplicationList = ({
     }
   };
 
-
   const getWorkflowUserData = async () => {
-    // const applicationCreationType = selectedTab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
     try {
-      const response = await GET(
-        // `application-management-service/application/workflowUser?tab=${selectedTab}`
-        `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${10}&offset=${page - 1}`
-      );
-      console.log("Application data", response?.data.applications);
-      setTableData(response?.data?.applications);
-      setTotalCount(response?.data?.numberOfElements);
-      console.log("Application data length", response?.data?.numberOfElements);
-      return response?.data.applications || [];
+      let response;
+      if (applicationType === "LOCUM") {
+        response = await GET(`application-management-service/staff`);
+        console.log("LOCUM data", response?.data.staffs);
+        setTableData(response?.data?.staffs);
+        setTotalCount(response?.data?.numberOfElements);
+        console.log("LOCUM data length", response?.data?.numberOfElements);
+        return response?.data.staffs || [];
+      } else {
+        response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}`
+        );
+        console.log("Application data", response?.data.applications);
+        setTableData(response?.data?.applications);
+        setTotalCount(response?.data?.numberOfElements);
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data.applications || [];
+      }
     } catch (error) {
       console.error("Error fetching applications:", error);
       return [];
@@ -766,6 +817,9 @@ const StaffApplicationList = ({
   console.log("rejectionTab", rejectionTab);
 
   const getRejectionData = async () => {
+    if (applicationType === "LOCUM") {
+      return;
+    }
     try {
       const response = await GET(
         `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
@@ -780,6 +834,9 @@ const StaffApplicationList = ({
   };
 
   const getDeclineData = async () => {
+    if (applicationType === "LOCUM") {
+      return;
+    }
     try {
       const response = await GET(
         `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType}`
@@ -806,6 +863,9 @@ const StaffApplicationList = ({
   // }, [showApplicationRejectionDialog]);
 
   const getSentConfirmationCount = async () => {
+    if (applicationType === "LOCUM") {
+      return;
+    }
     await GET(
       `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType}`
     )
@@ -822,6 +882,9 @@ const StaffApplicationList = ({
   };
 
   const getDepartmentCount = async () => {
+    if (applicationType === "LOCUM") {
+      return;
+    }
     await GET(
       `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType}`
     )
@@ -858,6 +921,9 @@ const StaffApplicationList = ({
   });
 
   const getRejectionCounts = async () => {
+    if (applicationType === "LOCUM") {
+      return;
+    }
     await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
       .then((response) => {
         setApplicationRejected(response?.data);
@@ -1152,7 +1218,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
@@ -1189,14 +1255,14 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["No Notes"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -1212,11 +1278,11 @@ const StaffApplicationList = ({
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
-      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
 
       data?.logs?.forEach((log) => {
-        if (log.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log.lastModifiedDate), "MMM dd, yyyy"));
+        if (log?.workflowStatus === "SUBMITTED") {
+          submitted.push(format(new Date(log?.lastModifiedDate), "MMM dd, yyyy"));
         }
       });
       lastUpdated.push(
@@ -1234,7 +1300,7 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
       {
@@ -1268,8 +1334,8 @@ const StaffApplicationList = ({
       {
         type: "iconWithCount",
         value: submitted,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
       },
       {
         type: "iconWithCount",
@@ -1358,14 +1424,14 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -1381,7 +1447,7 @@ const StaffApplicationList = ({
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
-      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -1618,14 +1684,14 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
@@ -1796,7 +1862,7 @@ const StaffApplicationList = ({
       { type: "action", value: action },
     ];
   } : () => {
-    checkbox= [];
+    // checkbox= [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
@@ -1816,14 +1882,14 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
-      checkbox.push(
-        <CommonCheckBox
-          checked={checkedIds.includes(data.id)}
-          onChange={() => handleCheckboxClick(data.id)}
-          color="primary"
-          inputProps={{ 'aria-label': `Select ${data.name}` }}
-        />
-      );
+      // checkbox.push(
+      //   <CommonCheckBox
+      //     checked={checkedIds.includes(data.id)}
+      //     onChange={() => handleCheckboxClick(data.id)}
+      //     color="primary"
+      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
+      //   />
+      // );
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -1850,14 +1916,14 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -1905,7 +1971,7 @@ const StaffApplicationList = ({
     });
 
     return [
-      { type: "checkbox", value: checkbox },
+      // { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -1992,7 +2058,7 @@ const StaffApplicationList = ({
       { type: "action", value: action },
     ];
   }: () => {
-    checkbox= [];
+    // checkbox= [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
@@ -2011,14 +2077,14 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
-      checkbox.push(
-        <CommonCheckBox
-          checked={checkedIds.includes(data.id)}
-          onChange={() => handleCheckboxClick(data.id)}
-          color="primary"
-          inputProps={{ 'aria-label': `Select ${data.name}` }}
-        />
-      );
+      // checkbox.push(
+      //   <CommonCheckBox
+      //     checked={checkedIds.includes(data.id)}
+      //     onChange={() => handleCheckboxClick(data.id)}
+      //     color="primary"
+      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
+      //   />
+      // );
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
@@ -2037,14 +2103,14 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notes?.length || "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -2103,7 +2169,7 @@ const StaffApplicationList = ({
     });
 
     return [
-      { type: "checkbox", value: checkbox },
+      // { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
       { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -2279,6 +2345,37 @@ const StaffApplicationList = ({
         hoverText: lastUpdatedBy,
         isShowHoverText: true,
       },
+      { type: "action", value: action },
+    ];
+  };
+
+  const getLocumValues = () => {
+    applicantName = [];
+    applicantType = [];
+    clarificationTitle = [];
+    raisedBy = [];
+    createdOn = [];
+    lastUpdatedOn = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(`${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        " ");
+      applicantType.push(data?.staffId|| "-");
+      clarificationTitle.push(data?.type|| "-");
+      raisedBy.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name|| "-");
+      createdOn.push(data?.expiryDate || "-");
+      lastUpdatedOn.push("lastUpdatedOn");
+      action.push(true);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: clarificationTitle },
+      { type: "text", value: raisedBy },
+      { type: "text", value: createdOn },
+      { type: "text", value: lastUpdatedOn },
       { type: "action", value: action },
     ];
   };
@@ -2656,10 +2753,12 @@ const StaffApplicationList = ({
             ? macHeaderValues
             : selectedTab === "level-5"
               ? bodHeaderValues
-              : selectedTab === "clarificationsRequired"
-                ? applicantHeaderValues
-                : selectedTab === "rejected"
-                  ? rejectedHeaderValues
+              : selectedTab === "LocumRenewals"
+                ? locumHeaderValues
+                 : selectedTab === "clarificationsRequired"
+                  ? applicantHeaderValues
+                    : selectedTab === "rejected"
+                     ? rejectedHeaderValues
                   // :[];
 
                   // : approvedHeaderValues;
@@ -2675,10 +2774,12 @@ const StaffApplicationList = ({
             ? macColSortValues
             : selectedTab === "level-5"
               ? bodColSortValues
-              : selectedTab === "clarificationsRequired"
-                ? applicantColSortValues
-                : selectedTab === "rejected"
-                  ? rejectedColSortValues
+              : selectedTab === "LocumRenewals"
+                ? locumColSortValues
+                  : selectedTab === "clarificationsRequired"
+                  ? applicantColSortValues
+                    : selectedTab === "rejected"
+                     ? rejectedColSortValues
                   // :[];
 
                   // : approvedColSortValues;
@@ -2694,6 +2795,8 @@ const StaffApplicationList = ({
             ? getMacValues()
             : selectedTab === "level-5"
               ? getBodValues()
+                : selectedTab === "LocumRenewals"
+                ? getLocumValues()
               : selectedTab === "clarificationsRequired"
                 ? getApplicantValues()
                 : selectedTab === "rejected"
@@ -2713,10 +2816,12 @@ const StaffApplicationList = ({
             ? macActionsData
             : selectedTab === "level-5"
               ? bodActionsData
-              : selectedTab === "clarificationsRequired"
-                ? clarificationActionsData
-                : selectedTab === "rejected"
-                  ? rejectedActionsData
+                : selectedTab === "LocumRenewals"
+                ? departmentHeadActionsData
+                  : selectedTab === "clarificationsRequired"
+                  ? clarificationActionsData
+                   : selectedTab === "rejected"
+                   ? rejectedActionsData
                   // :[];
 
                   : approvedActionsData;
@@ -2739,11 +2844,15 @@ const StaffApplicationList = ({
                   : selectedTab === "level-5" && applicationType === "NEW"
                     ? style.bodStaffGrid
                     : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
-                    ? style.bodStaffReappointGrid
-                      : selectedTab === "clarificationsRequired"
+                    ? style.bodStaffReappointGrid 
+                      : selectedTab === "LocumRenewals"
+                      ? style.locumStaffGrid
+                      : selectedTab === "clarificationsRequired"  && applicationType === "NEW"
                       ? style.applicantStaffGrid
-                      : selectedTab === "rejected"
-                        ? style.rejectedStaffGrid
+                        : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
+                        ? style.applicantStaffReappointGrid
+                          : selectedTab === "rejected"
+                          ? style.rejectedStaffGrid
                       // :[];
 
                       // : style.approvedStaffGrid;
@@ -2843,14 +2952,14 @@ const StaffApplicationList = ({
                                   ></div>
                                   <div className={style.marginLeft10}>
                                     {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                      status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase()}
-                                    , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase()}
+                                      status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
+                                    , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"}
                                   </div>
                                 </div>
                                 <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
                                   {status?.createdDate
                                     ? format(new Date(status?.createdDate), "MMM dd, yyyy")
-                                    : "N/A"}
+                                    : "-"}
                                 </div>
                               </div>
                               <ProgressBar
