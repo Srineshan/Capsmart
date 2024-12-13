@@ -19,9 +19,8 @@ body::-webkit-scrollbar {
 .margin20 {
   margin: 20px;
 }
-.mar
 
-.displayInCol {
+.mar .displayInCol {
   display: flex;
   flex-direction: column;
 }
@@ -1496,6 +1495,11 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+.crossStyleImg {
+  height: 20px;
+  width: 20px;
+}
+
 .newContractCrossStyle {
   color: linear-gradient($primarycolor, $statusred) !important;
   cursor: pointer;
@@ -2387,6 +2391,7 @@ select {
   grid-template-columns: 7fr 2fr 2fr;
   grid-gap: 5px;
 }
+
 .grid5and1 {
   display: grid;
   grid-template-columns: 7fr 2fr;
@@ -2819,8 +2824,8 @@ input[type="file"] {
 .profileImage {
   width: 93px;
   height: 89px;
-  object-fit: cover; 
-  border-radius: 4px; 
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .selectedAdministrativeCardStyle {
@@ -3172,6 +3177,7 @@ input[type="number"] {
   grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
 }
+
 .twoColumnGrid1 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3931,19 +3937,18 @@ input[type="number"] {
 
 .businessMailingAddressGrid> :nth-child(1) {
   grid-column: span 12;
-  margin-top: 0px;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-  grid-column: span 5;
+  grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-  grid-column: span 7;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-  grid-column: span 12;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
@@ -4755,7 +4760,7 @@ input[type="number"] {
   color: $primarycolor;
 }
 
-.padding30{
+.padding30 {
   padding: 30px;
 }
 
@@ -4769,7 +4774,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-.marginBothText{
+.marginBothText {
   margin-top: 5px;
   margin-left: 10px;
 }
@@ -4782,47 +4787,47 @@ input[type="number"] {
   align-items: center;
   border: 1px solid #FFF;
   border-radius: 15px;
-  background-color: #FFF; 
+  background-color: #FFF;
   box-sizing: border-box;
-  overflow: hidden; 
+  overflow: hidden;
 }
 
 .searchIcon {
   font-size: 20px;
   color: #888;
   cursor: pointer;
-  margin: 0; 
+  margin: 0;
 }
 
 .searchInput {
-  flex: 1; 
+  flex: 1;
   border: none;
   font-size: 14px;
   outline: none;
-  padding: 0 5px; 
-  background: transparent; 
+  padding: 0 5px;
+  background: transparent;
 }
 
 .todoContainer {
-  background-color: white; 
-  border-radius: 15px; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 10px;
   width: 254px;
   height: 85px;
   display: flex;
-  flex-direction: column; 
-  margin: 0 auto; 
+  flex-direction: column;
+  margin: 0 auto;
   font-family: 'Proxima Nova', Arial, sans-serif;
 }
 
 .row {
   display: flex;
-  justify-content: space-between; 
-  align-items: center; 
-  gap: 0; 
-  padding: 0; 
-  margin: 0; 
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  margin: 0;
 }
 
 .topLeft {
@@ -4867,15 +4872,15 @@ input[type="number"] {
 }
 
 .hiddenStickyContainer {
-  opacity: 0; 
-  pointer-events: none; 
+  opacity: 0;
+  pointer-events: none;
 }
 
-.alignStart{
+.alignStart {
   text-align: start;
 }
 
-.verificationTextStyle{
+.verificationTextStyle {
   text-align: left;
   font: normal normal bold 16px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -4883,7 +4888,7 @@ input[type="number"] {
   opacity: 0.9;
 }
 
-.verificationMethodTextStyle{
+.verificationMethodTextStyle {
   text-align: left;
   font: normal normal bold 16px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -4891,7 +4896,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-.verificationMethodTextStyle{
+.verificationMethodTextStyle {
   text-align: left;
   font: normal normal bold 16px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -4907,7 +4912,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-.notesTextStyle{
+.notesTextStyle {
   text-align: left;
   font: normal normal normal 14px/22px Proxima Nova;
   letter-spacing: 0px;
@@ -4915,7 +4920,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-.DepartmentHeadingTextStyle{
+.DepartmentHeadingTextStyle {
   text-align: left;
   font: normal normal normal 16px/24px Proxima Nova;
   letter-spacing: 0px;

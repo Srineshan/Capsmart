@@ -2550,6 +2550,20 @@ console.log(daysDifference);
                   )}
                 </div>
               )}
+              <div className={`${style.warningCard} ${style.marginTop20}`}>
+                <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
+              </div>
+              <div className={style.marginTop20}>
+                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCovers : ''}</strong></div>
+              </div>
+              {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
+                <div className={style.marginTop20}>
+                  <div className={`${style.cardTitle}`}>
+                    {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
+                  </div>
+                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics : ''}</strong></div>
+                </div>
+              )}
             </div>
           </>
         );
@@ -9302,7 +9316,7 @@ console.log(daysDifference);
                       <img
                         src={CrossPink}
                         alt="cross"
-                        className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+                        className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
                         onClick={() => {
                           setShowDocVerifyDialog(false);
                         }}
@@ -9350,7 +9364,7 @@ console.log(daysDifference);
                   <img
                     src={CrossPink}
                     alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                    className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
                     onClick={() => { setShowCurrentPrivileges(false) }}
                   />
                 </div>

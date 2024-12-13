@@ -219,7 +219,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             </>
                         )}
                     </div> */}
-                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                    <div className={`${style.applicationCardStyle}`}>
                         <div className={style.cardTitle}>
                             {formSchema?.properties?.doYouPrescribeSuboxone?.label}
                         </div>

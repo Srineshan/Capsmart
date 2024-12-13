@@ -1492,14 +1492,15 @@ const ApplicationFieldCard = ({
             return (
               <div>
                 <div className={`${style.lableStylePOD}`}>
-                  {fieldData.label}
-                  {isLableEmpty(fieldData.label)
-                    ? false
-                    : (object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)) &&
-                    "*"}
+                  <strong>{fieldData.label}
+                    {isLableEmpty(fieldData.label)
+                      ? false
+                      : (object.required?.includes(fieldKey) ||
+                        (parentData !== null
+                          ? parentData.required?.includes(fieldKey)
+                          : false)) &&
+                      "*"}
+                  </strong>
                 </div>
                 <div
                   className={style.lableReadOnlyStyleInPOD}
@@ -2101,7 +2102,57 @@ const ApplicationFieldCard = ({
           }
         case "fileupload":
           if (isPOD) {
-            return <div></div>;
+            return <div key={fieldKey}>
+              <div className={`${style.uploadButton}`}>
+                <div className={style.uploadGrid}>
+                  {getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) !== undefined &&
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== null &&
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== "" &&
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    )?.fileURL !== null ? (
+                    <img
+                      src={VerifiedImage}
+                      alt=""
+                      className={`${style.imgIcon} ${style.cursorPointer}`}
+                      onClick={() => {
+                        setShowFileDisplayDialog(true); setselectedFile(
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          )
+                        );
+                      }
+                      }
+                    />
+                  ) : (
+                    <img
+                      src={ToBeVerifiedImage}
+                      alt=""
+                      className={style.imgIcon}
+                    />
+                  )}
+                  <div
+                    className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                  >
+                    {getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    )?.fileName}
+                  </div>
+                </div>
+              </div>
+            </div>;
           } else {
             console.log(
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
