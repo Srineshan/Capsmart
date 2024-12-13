@@ -1,5 +1,7 @@
+@import "../../../index.scss";
+
 .divider {
-    background: #EBF2F7 0% 0% no-repeat padding-box;
+    background: $tableheadhover 0% 0% no-repeat padding-box;
     height: 4px;
 }
 
