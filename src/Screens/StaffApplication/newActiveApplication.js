@@ -8196,7 +8196,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApprovalDeptFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED BY BOD
