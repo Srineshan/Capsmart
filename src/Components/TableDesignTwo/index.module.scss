@@ -93,7 +93,7 @@
 }
 
 .grey {
-    color: #D0D0EC;
+    color: $statusgrey;
 }
 
 .greenDotStyle {
@@ -128,7 +128,7 @@
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background-color: #D0D0EC;
+    background-color: $statusgrey;
 }
 
 .tableDataFontStyle {

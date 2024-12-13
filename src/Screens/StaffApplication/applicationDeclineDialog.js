@@ -178,7 +178,10 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const handleApplicationReject = async () => {
     try {
       const payload = {
-        notes: notes,
+        notes: {
+            notes: notes
+               },
+        approvedDate: new Date().toISOString(),
       };
 
       await PUT(

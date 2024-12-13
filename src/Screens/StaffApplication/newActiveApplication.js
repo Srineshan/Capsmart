@@ -1280,7 +1280,7 @@ const NewActiveApplication = ({
 
   console.log("relevantForm" + JSON.stringify(relevantForm))
 
-  const lastSubmittedLog = form?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
@@ -7766,32 +7766,21 @@ console.log(daysDifference);
                       </div>
                     </div>
                   </div>
-                  <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                    <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                        // onClick={onClickApproveFunction}
-                        onClick={() => {
-                          ""
-                        }}
-                      >
-                        SEND LATER
-                      </div>
-                    </div>
+                  <div className={`${style.marginTop20}`}>
                     <div 
                       // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
-                      className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                      className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                       style={{ opacity: isApproved ? 1 : 0.5 }}>
                       <div
                         className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                         // onClick={onClickApprovalDeptFunction}
                         onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                       >
-                        Verified, Send to Dept. Chief
+                        Verified, Send to Department Head
                       </div>
                     </div>
                   </div>
-                </div>
+                 </div>
                 ) : ("")}
                    {(applicationType === "NEW" && (selectedTab === "level-1" ||selectedTab === "level-2"||selectedTab === "level-3") ) ? (
                   <>
@@ -8111,7 +8100,7 @@ console.log(daysDifference);
                             <>
                               <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
                                 <WarningIcon className={style.warning} />
-                                <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                                <div className={`${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
                               </div>
 
                             </>
@@ -8207,7 +8196,7 @@ console.log(daysDifference);
                             <div
                               className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                              onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                              onClick={isButtonDisabled ? undefined : onClickApprovalDeptFunction}
                             >
                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED BY BOD
@@ -8680,7 +8669,7 @@ console.log(daysDifference);
                   {applicationType === "REAPPOINTMENT" ? (
                     <>
                     {selectedTab === "level-4" || selectedTab === "level-5" ? (
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20} ${style.marginBottom20}`}>    
+                      <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>    
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                         <div
                           className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}

@@ -19,6 +19,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
+  const [logDetails, setLogDetails] = useState([]);
   const [userRoleComments, setUserRoleComments] = useState('');
   const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false });
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -42,6 +43,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //     setCurrentDate(format(new Date(), dateFormat));
   //   }
   // }, [dateFormat]);
+
+   useEffect(() => {
+        getApplicationEntity();
+        getLog();;
+      }, [applicationType]);
+
 
   const onClicksignFunction = () => {
     setTodayDate();
@@ -95,6 +102,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     setEntity(basicFormEntity);
   };
 
+  const getLog = async () => {
+        const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+        setLogDetails(basicLog);
+        console.log("basicLog" +JSON.stringify(basicLog));
+        
+      };
+
   const getApplication = async () => {
     try {
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
@@ -140,7 +154,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const handleApplicationApprove = async () => {
     let role;
     let title;
-    let notes = userRoleComments;
+    let notesComments = userRoleComments;
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -177,7 +191,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: notes,
+      notes: {
+        notes: notesComments
+      },
       approvedDate: new Date().toISOString(),
       title: title
     };
@@ -251,7 +267,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const getApplicationMoveToNext = async () => {
     let role;
     let title;
-    let notes = userRoleComments;
+    let notesComments = userRoleComments;
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
@@ -288,7 +304,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
-      notes: notes,
+      notes: {
+        notes: notesComments
+      },
       approvedDate: new Date().toISOString(),
       title: title
     };
@@ -403,7 +421,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 

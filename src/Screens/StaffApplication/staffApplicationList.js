@@ -1255,14 +1255,14 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["No Notes"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -1334,8 +1334,8 @@ const StaffApplicationList = ({
       {
         type: "iconWithCount",
         value: submitted,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
+        // hoverText: lastUpdatedBy,
+        // isShowHoverText: true,
       },
       {
         type: "iconWithCount",
@@ -1424,14 +1424,14 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -1684,14 +1684,14 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
@@ -1916,14 +1916,14 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push( "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -2103,14 +2103,14 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notes?.length || "0");
+      notes.push(data?.notesDetails?.length|| "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notes || [];
+      const notesDetails = data?.notesDetails || [];
       // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
       const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note.notes ? note.notes.replace(/<[^>]*>/g, '') : '-') 
+      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
       : ["-"];
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",

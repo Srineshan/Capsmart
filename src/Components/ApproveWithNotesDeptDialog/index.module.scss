@@ -30,7 +30,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
-  align-items: center;
 }
 
 .filterType {
@@ -49,7 +48,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 70% !important;
+  width: 80% !important;
 }
 
 .dialogBody {
@@ -77,8 +76,8 @@
 
 
 .crossStyle {
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
 }
 
 .cursorPointer {
@@ -360,6 +359,9 @@ text-align: center;
   opacity: 1;
 }
 
+.fullWidth {
+  width: 100%;
+}
 // .reviewButton {
 //   background-color: $primarycolor;
 //   color: white;
@@ -421,4 +423,51 @@ font: normal normal bold 22px/34px Proxima Nova;
 letter-spacing: 0px;
 color: #52575D;
 opacity: 1;
+}
+
+.uploadBorderStyle {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
+.uploadTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #94979A;
+  opacity: 1;
+  padding: 5px;
+}
+
+.referenceCardStyle {
+  border: 1px solid var(---7165e3);
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 0.9;
+  padding: 10px;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20{
+  margin-bottom: 20px;
 }

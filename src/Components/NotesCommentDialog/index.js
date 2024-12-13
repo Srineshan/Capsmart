@@ -381,30 +381,34 @@ const getApplication = async () => {
               {logDetails?.logs?.[logDetails.logs.length - 1]?.notes}
               </div>
             </div> */}
-            {/* {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => ( */}
+            {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
               <>
               <div className={style.marginTop}>
                 <div className={style.commentsNotesHeadingFontStyle}>
-                  {/* {log.title} Comments & Notes */}
-                  Staff Manager Comments & Notes
+                  {log.title} Comments & Notes
+                  {/* Staff Manager Comments & Notes */}
                 </div>
                 <hr color="grey" size="2"></hr>
                 <div>
                   <div className={style.commentsNotesFontStyle}>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.
-                  {/* <span dangerouslySetInnerHTML={{ __html:(log.notes) }} /> */}
+                  {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
+                  <span dangerouslySetInnerHTML={{ __html:(log.notes) }} />
                   </div>
                 </div>
               </div>
               </>
-             {/* ))} */}
+              ))}
+             {userRole?.includes("Department Head") &&
+             <>
              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
               </div>
-              {userRole?.includes("Department Head") && 
+               
               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
               Assigned Credentials Committee: Name
-              </div>}
+              </div>
+              </>
+              }
             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Dept Head Comments & Notes
             </div>

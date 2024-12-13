@@ -533,3 +533,33 @@
   opacity: 1;
   padding: 5px;
 }
+
+.referenceCardStyle {
+  border: 1px solid var(---7165e3);
+  background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 0.9;
+  padding: 10px;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20{
+  margin-bottom: 20px;
+}
