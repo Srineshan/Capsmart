@@ -4936,5 +4936,11 @@ input[type="number"] {
   z-index: 10;
   padding: 20px;
   background: #F8FCFF 0% 0% no-repeat padding-box;
+}
 
+.fixedBottom1 {
+  position: fixed;
+  bottom: 0;
+  width: 23%;
+  z-index: 10;
 }

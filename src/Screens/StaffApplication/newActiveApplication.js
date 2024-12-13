@@ -174,6 +174,7 @@ const NewActiveApplication = ({
   const [userRole, setUserRole] = useState('');
   const [taskCount, setTaskCount] = useState(0);
   const [isApproved, setIsApproved] = useState(false);
+  const [isApprovedStaff, setIsApprovedStaff] = useState(false);
   const [logDetails, setLogDetails] = useState([]);
   const [statusStyle, setStatusStyle] = useState();
   const canadaData =
@@ -265,18 +266,19 @@ const NewActiveApplication = ({
 
 
 
-  // useEffect(() => {
-  //   if (form?.formSchemas) {
-  //     const approvalStatuses = form.formSchemas.map((_, index) => {
-  //       const isFormApproved = form?.forms[index]?.status === "APPROVED";
-  //       console.log(`Form ${index} status:`, form?.forms[index]?.status);
-  //       console.log(`Form ${index} isApproved:`, isFormApproved);
-  //       return isFormApproved;
-  //     });
+  useEffect(() => {
+    if (form?.completedWorkflows) {
+      const approvalStatuses = form?.completedWorkflows?.map((workflow, index) => {
+        const isStaffManager = workflow?.role === "Staff Manager";
+        const allFormsApproved = isStaffManager && workflow.allFormsApproved;
+        console.log(`Workflow ${index} role:`, workflow.role);
+        console.log(`Workflow ${index} allFormsApproved:`, workflow.allFormsApproved);
+        return allFormsApproved;
+      });
 
-  //     setIsApproved(approvalStatuses);
-  //   }
-  // }, [form]);
+      setIsApprovedStaff(approvalStatuses.some(status => status));
+    }
+  }, [form]);
 
   useEffect(() => {
     if (form?.formSchemas) {
@@ -291,7 +293,7 @@ const NewActiveApplication = ({
         form?.forms[index]?.status === "APPROVED"
       );
 
-      // setIsApproved(areAllFormsApproved);
+      setIsApproved(areAllFormsApproved);
 
       console.log("areAllFormsApproved" + areAllFormsApproved)
 
@@ -304,6 +306,8 @@ const NewActiveApplication = ({
       const approvalStatuses = form.formSchemas.map((_, index) =>
         form?.forms[index]?.status === "APPROVED"
       );
+
+
       // Check if any form is approved
       const hasAnyApproved = approvalStatuses.some(status => status);
       // Check if all forms are approved
@@ -8165,7 +8169,7 @@ const NewActiveApplication = ({
                 ) : (" ")
                 }
                 {(userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
-                  <div className={`${style.fixedBottom} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInCol}`}>
                         <div
