@@ -217,8 +217,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   };
 
   const onClickApproveMoveFunction = () => {
-    // handleApplicationApprove(true);
-    // getApplicationMoveToNext(true);
+    handleApplicationApprove(true);
+    getApplicationMoveToNext(true);
     handleApplicationApproveDate(true);
   }
 
