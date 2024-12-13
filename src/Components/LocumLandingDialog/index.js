@@ -19,7 +19,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
 import { logout } from "../../utils/auth";
 import { GET, PUT } from "../../Screens/dataSaver";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 
 const LocumLandingDialog = ({ getIsOpen, days }) => {
@@ -268,7 +268,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
               <div>
                 <div className={style.welcomeText}>Your Locum Renewal Application</div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  {`Locum Term for your current Privileges is expiring on {expiration date}. Your department has indicated that your privileges be extended for a new term starting {start date} and ending on {end date}.`}
+                  {`Locum Term for your current Privileges is expiring on ${format(subDays(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 1), 'MMM dd, yyyy')}. Your department has indicated that your privileges be extended for a new term starting ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 'MMM dd, yyyy')} and ending on ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.to || null), 'MMM dd, yyyy')}.`}
                 </div>
                 {/* <div className={`${style.descriptionStyle} ${style.marginTop}`}>
                   Processing of your reappointment application will now be a less burdensome activity.
@@ -304,7 +304,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                               size="large"
                             />
                           }
-                          label={'No, I do not want to extend my privileges'}
+                          label={'No, I do not want to Extend my Privileges'}
                           componentsProps={{ typography: { variant: "subtitle1" } }}
                         />
                         <FormControlLabel

@@ -21,6 +21,8 @@ import AdditionalPrivilegeSelection from './AdditionalPrivilegeSelection';
 import CME from './CME';
 import MedicalDirectives from './MedicalDirectives';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
+import PatientConcern from './PatientConcern';
+import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -76,6 +78,10 @@ const ReappointmentApplicationForm = () => {
                 return <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PATIENT_CONCERN_DISCLOSURE':
+                return <PatientConcern basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PRIVILEGE_STATUS_AT_HOSPITAL':
+                return <PrivilegeStatusHospital basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'MedicalHistory':
                 return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'CriminalHistory':
@@ -104,7 +110,7 @@ const ReappointmentApplicationForm = () => {
         }
     };
 
-    console.log(section, step)
+    console.log(section, step,atob(step))
 
     return (
         <div className={style.screenBackground}>

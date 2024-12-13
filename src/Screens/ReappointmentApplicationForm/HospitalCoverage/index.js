@@ -61,7 +61,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           : ""
       );
       setNavigateURL(
-        basicForm?.forms?.filter((data) => data?.formCategory === "Form")
+        basicForm?.forms?.filter((data) => data?.formCategory === 'Form'||'Disclosure')
           ?.length ===
           formIndex + 1
           ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(

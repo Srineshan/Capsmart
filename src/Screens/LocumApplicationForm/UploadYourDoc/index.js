@@ -76,7 +76,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -548,7 +548,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     stepPath={`forms[${formIndex}].data`}
                                 />
                             )}
-                        <div className={`${style.addMoreBorder}`}>
+                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
@@ -751,11 +751,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         email={"{Email}"}
                     />
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                       || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer: ""}`}>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
-                        SAVE IN PROGRESS
-                    </div>
-                    {/* <div
+                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
+                            SAVE IN PROGRESS
+                        </div>
+                        {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
                             getMissingDocs()?.length === 0
                             ? style.disabledButton
@@ -770,14 +770,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     >
                         SKIP FOR NOW
                     </div> */}
-                    <div className={style.twoColForButton}>
-                        <div
-                            className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => navigate(-1)}
-                        >
-                            BACK
-                        </div>
-                        {/* <div
+                        <div className={style.twoColForButton}>
+                            <div
+                                className={`${style.continue} ${style.marginTop10}`}
+                                onClick={() => navigate(-1)}
+                            >
+                                BACK
+                            </div>
+                            {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={
                                 // (basicForm?.forms?.[formIndex]?.data !== null &&
@@ -791,8 +791,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     {/* <div className={style.marginTop}>
                             <ApplicationReferenceDocuments />

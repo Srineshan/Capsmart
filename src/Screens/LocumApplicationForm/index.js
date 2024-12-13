@@ -20,6 +20,8 @@ import ApplicantAcknowledgement from './ApplicantAcknowledgement';
 import CME from './CME';
 import MedicalDirectives from './MedicalDirectives';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
+import PatientConcern from './PatientConcern';
+import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 
 const LocumApplicationForm = () => {
     let cookie = new Cookie();
@@ -79,6 +81,10 @@ const LocumApplicationForm = () => {
                 return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'CriminalHistory':
                 return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PATIENT_CONCERN_DISCLOSURE':
+                return <PatientConcern basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PRIVILEGE_STATUS_AT_HOSPITAL':
+                return <PrivilegeStatusHospital basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'UploadYourDoc':
                 return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'MEDICAL_DIRECTIVES':

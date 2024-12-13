@@ -36,6 +36,8 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import ValidationDialog from "../validationDialog";
 import FileDisplayDialog from "../fileDisplayDialog";
+import PriorDataDialog from "../PriorDataDialog"
+
 
 const TEXTFIELDLEN50 = 50;
 
@@ -52,6 +54,8 @@ const ApplicationFieldCard = ({
   isBasicPath,
   stepPath,
   formId,
+  formIndex,
+  priorData,
   getIsSubmitClicked,
   applicationId,
   tableGrid,
@@ -85,6 +89,7 @@ const ApplicationFieldCard = ({
   // const [isAddMore, setIsAddMore] = useState(
   //     addMoreOpenBydefault ? true : false
   // );
+  const [showPriorDataDialog, setShowPriorDataDialog] = useState(false);
   const [isCollapsableCard, setIsCollapsableCard] = useState(true);
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
   const [selectedFile, setselectedFile] = useState(false);
@@ -165,8 +170,7 @@ const ApplicationFieldCard = ({
     console.log(fileNameArray);
     try {
       const response = await POST(
-        `application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${
-          formSchema?.requiredDocuments?.length !== 0 ? true : false
+        `application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${formSchema?.requiredDocuments?.length !== 0 ? true : false
         }&schemaId=${formSchema?.id}`,
         formData
       );
@@ -193,10 +197,10 @@ const ApplicationFieldCard = ({
                 requirement:
                   response?.data[triggerIndex]?.classification !== null
                     ? basicForm?.documentsRequired?.filter(
-                        (data) =>
-                          data?.document?.name ===
-                          response?.data[triggerIndex]?.classification
-                      )?.[0]?.required
+                      (data) =>
+                        data?.document?.name ===
+                        response?.data[triggerIndex]?.classification
+                    )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
@@ -429,7 +433,7 @@ const ApplicationFieldCard = ({
             tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.streetName !== undefined
               ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                  ?.homeAddress?.streetName
+                ?.homeAddress?.streetName
               : "";
           tempBasicForm.forms[
             addressPageIndex
@@ -437,7 +441,7 @@ const ApplicationFieldCard = ({
             tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.pinCode !== undefined
               ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                  ?.homeAddress?.pinCode
+                ?.homeAddress?.pinCode
               : "";
           tempBasicForm.forms[
             addressPageIndex
@@ -445,7 +449,7 @@ const ApplicationFieldCard = ({
             tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.city !== undefined
               ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                  ?.homeAddress?.city
+                ?.homeAddress?.city
               : "";
           tempBasicForm.forms[
             addressPageIndex
@@ -453,7 +457,7 @@ const ApplicationFieldCard = ({
             tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.province !== undefined
               ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                  ?.homeAddress?.province
+                ?.homeAddress?.province
               : "";
         } else {
           tempBasicForm.forms[
@@ -518,7 +522,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.streetName !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  ?.contactAddress1?.homeAddress?.streetName
+                ?.contactAddress1?.homeAddress?.streetName
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -526,7 +530,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.pinCode !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  ?.contactAddress1?.homeAddress?.pinCode
+                ?.contactAddress1?.homeAddress?.pinCode
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -534,7 +538,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.city !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  ?.contactAddress1?.homeAddress?.city
+                ?.contactAddress1?.homeAddress?.city
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -542,7 +546,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
               ?.homeAddress?.province !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  ?.contactAddress1?.homeAddress?.province
+                ?.contactAddress1?.homeAddress?.province
               : "";
           tempContactAddress3.contactAddress3 = {
             business: {
@@ -564,7 +568,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
               ?.mailingAddress?.streetName !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  .contactAddress2?.mailingAddress?.streetName
+                .contactAddress2?.mailingAddress?.streetName
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -572,7 +576,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
               ?.mailingAddress?.pinCode !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  .contactAddress2?.mailingAddress?.pinCode
+                .contactAddress2?.mailingAddress?.pinCode
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -580,7 +584,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
               ?.mailingAddress?.city !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  .contactAddress2?.mailingAddress?.city
+                .contactAddress2?.mailingAddress?.city
               : "";
           tempContactAddress3.forms[
             addressPageIndex
@@ -588,7 +592,7 @@ const ApplicationFieldCard = ({
             tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
               ?.mailingAddress?.province !== undefined
               ? tempContactAddress3?.forms[addressPageIndex]?.data
-                  .contactAddress2?.mailingAddress?.province
+                .contactAddress2?.mailingAddress?.province
               : "";
           tempContactAddress3.contactAddress3 = {
             business: {
@@ -884,7 +888,9 @@ const ApplicationFieldCard = ({
   const getIsShowFileDialog = (value) => {
     setShowFileDisplayDialog(value);
   };
-
+  const getIsShowPriorDataDialog = (value) => {
+    setShowPriorDataDialog(value);
+  };
   const getSkipClicked = (value) => {
     if (value) {
       console.log("skip clicked", baseKey);
@@ -942,8 +948,7 @@ const ApplicationFieldCard = ({
       //     })
       try {
         const response = await POST(
-          `application-management-service/application/${applicationId}/files?isLLMRequired=${
-            formSchema?.requiredDocuments?.length !== 0 ? true : false
+          `application-management-service/application/${applicationId}/files?isLLMRequired=${formSchema?.requiredDocuments?.length !== 0 ? true : false
           }&schemaId=${formSchema?.id}`,
           formData
         );
@@ -967,10 +972,10 @@ const ApplicationFieldCard = ({
                 requirement:
                   response?.data?.classification !== null
                     ? basicForm?.documentsRequired?.filter(
-                        (data) =>
-                          data?.document?.name ===
-                          response?.data?.classification
-                      )?.[0]?.required
+                      (data) =>
+                        data?.document?.name ===
+                        response?.data?.classification
+                    )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
@@ -1072,26 +1077,26 @@ const ApplicationFieldCard = ({
     if (
       object?.then?.required?.includes(fieldKey) !== undefined
         ? !object?.then?.required?.includes(fieldKey) ||
-          (object?.if?.properties !== undefined &&
+        (object?.if?.properties !== undefined &&
           Array.isArray(firstObject[dynamicValue])
-            ? firstObject[dynamicValue]?.includes(
-                getValueByPath(
-                  basicForm,
-                  `${basicpath}.${baseKey}.${Object.entries(
-                    object?.if?.properties
-                  )?.map(([key, data]) => key)}`
-                )
-              )
-            : getValueByPath(
-                basicForm,
-                `${basicpath}.${baseKey}.${Object.entries(
-                  object?.if?.properties
-                )?.map(([key, data]) => key)}`
-              ) === firstObject[dynamicValue])
+          ? firstObject[dynamicValue]?.includes(
+            getValueByPath(
+              basicForm,
+              `${basicpath}.${baseKey}.${Object.entries(
+                object?.if?.properties
+              )?.map(([key, data]) => key)}`
+            )
+          )
+          : getValueByPath(
+            basicForm,
+            `${basicpath}.${baseKey}.${Object.entries(
+              object?.if?.properties
+            )?.map(([key, data]) => key)}`
+          ) === firstObject[dynamicValue])
         : getAllThenStrings(object)
-            ?.map((data) => data?.value)
-            ?.includes(fieldKey)
-        ? getAllThenStrings(object)
+          ?.map((data) => data?.value)
+          ?.includes(fieldKey)
+          ? getAllThenStrings(object)
             ?.map((data) => data?.value)
             ?.includes(fieldKey) &&
           getAllThenStrings(object)
@@ -1099,24 +1104,23 @@ const ApplicationFieldCard = ({
             ?.includes(fieldKey) &&
           getValueByPath(
             basicForm,
-            `${basicpath}.${baseKey}.${
-              getAllThenStrings(object)?.filter(
-                (data) => data?.value === fieldKey
-              )[0]?.key
+            `${basicpath}.${baseKey}.${getAllThenStrings(object)?.filter(
+              (data) => data?.value === fieldKey
+            )[0]?.key
             }`
           ) ===
-            getAllThenStrings(object)?.filter(
-              (data) => data?.value === fieldKey
-            )[0]?.checkValue
-        : true && fieldData.fieldType
+          getAllThenStrings(object)?.filter(
+            (data) => data?.value === fieldKey
+          )[0]?.checkValue
+          : true && fieldData.fieldType
     ) {
       if (
         (isLableEmpty(fieldData.label)
           ? false
           : object.required?.includes(fieldKey) ||
-            (parentData !== null
-              ? parentData.required?.includes(fieldKey)
-              : false)) &&
+          (parentData !== null
+            ? parentData.required?.includes(fieldKey)
+            : false)) &&
         getAllPath &&
         getAllLabels &&
         fieldData.fieldType !== "switchbutton"
@@ -1146,10 +1150,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
@@ -1187,9 +1191,9 @@ const ApplicationFieldCard = ({
                   isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
                 }
                 // Hide warning specifically for specialty field
                 warning={
@@ -1210,10 +1214,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
@@ -1249,8 +1253,8 @@ const ApplicationFieldCard = ({
                     fieldData.placeHolder !== null
                       ? fieldData.placeHolder
                       : fieldData.label !== null
-                      ? `Enter ${fieldData.label}`
-                      : null
+                        ? `Enter ${fieldData.label}`
+                        : null
                   }
                   value={
                     getValueByPath(
@@ -1262,9 +1266,9 @@ const ApplicationFieldCard = ({
                     isLableEmpty(fieldData.label)
                       ? false
                       : object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)
                   }
                   // warning={warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
                   // ? (value === 0 || (isNaN(value) && value !== undefined) || value === '')
@@ -1273,7 +1277,7 @@ const ApplicationFieldCard = ({
                     warningFields
                       ?.map((data) => data?.key)
                       ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
-                    (value === "" || value === null || value === undefined)
+                      (value === "" || value === null || value === undefined)
                       ? { border: "2px solid #cc0000", borderRadius: "5px" }
                       : {}
                   }
@@ -1291,10 +1295,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
@@ -1330,20 +1334,18 @@ const ApplicationFieldCard = ({
                     {isLableEmpty(fieldData.label)
                       ? false
                       : (object.required?.includes(fieldKey) ||
-                          (parentData !== null
-                            ? parentData.required?.includes(fieldKey)
-                            : false)) &&
-                        "*"}
+                        (parentData !== null
+                          ? parentData.required?.includes(fieldKey)
+                          : false)) &&
+                      "*"}
                   </div>
                   {fieldKey === "applicantType" ? (
                     <Tooltip
-                      title={`To change applicant type contact ${
-                        basicForm?.createdBy?.name?.firstName
-                      } ${
-                        basicForm?.createdBy?.name?.lastName !== null
+                      title={`To change applicant type contact ${basicForm?.createdBy?.name?.firstName
+                        } ${basicForm?.createdBy?.name?.lastName !== null
                           ? basicForm?.createdBy?.name?.lastName
                           : ""
-                      }`}
+                        }`}
                       placement="bottom-start"
                       followCursor
                     >
@@ -1365,7 +1367,7 @@ const ApplicationFieldCard = ({
                 </div>
               ) : (
                 <div key={fieldKey}>
-                  
+
                   <CommonTextField
                     value={
                       getValueByPath(
@@ -1382,18 +1384,18 @@ const ApplicationFieldCard = ({
                         fieldKey,
                         fieldData.type === "number"
                           ? parseInt(
-                              e.target.value <= fieldData.maximum
-                                ? e.target.value
-                                : fieldData.maximum
-                            )
+                            e.target.value <= fieldData.maximum
+                              ? e.target.value
+                              : fieldData.maximum
+                          )
                           : fieldKey === "pinCode"
-                          ? FormatPostalCode(e.target.value)
-                          : fieldData.type === "string" &&
-                            fieldData.maxLength !== 0
-                          ? e.target.value.length <= fieldData.maxLength
-                            ? e.target.value
-                            : e.target.value.slice(0, fieldData.maxLength)
-                          : e.target.value,
+                            ? FormatPostalCode(e.target.value)
+                            : fieldData.type === "string" &&
+                              fieldData.maxLength !== 0
+                              ? e.target.value.length <= fieldData.maxLength
+                                ? e.target.value
+                                : e.target.value.slice(0, fieldData.maxLength)
+                              : e.target.value,
                         baseKey
                       )
                     }
@@ -1402,26 +1404,26 @@ const ApplicationFieldCard = ({
                       fieldData.placeHolder !== null
                         ? fieldData.placeHolder
                         : fieldData.label !== null
-                        ? `Enter ${fieldData.label}`
-                        : null
+                          ? `Enter ${fieldData.label}`
+                          : null
                     }
                     label={fieldData.label}
                     required={
                       isLableEmpty(fieldData.label)
                         ? false
                         : object.required?.includes(fieldKey) ||
-                          (parentData !== null
-                            ? parentData.required?.includes(fieldKey)
-                            : false)
+                        (parentData !== null
+                          ? parentData.required?.includes(fieldKey)
+                          : false)
                     }
                     type={fieldData.type}
                     min={fieldData.minimum}
                     warning={warningFields
                       ?.map((data) => data?.key)
                       ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-                    // InputProps={{
-                    //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
-                    // }}
+                  // InputProps={{
+                  //     readOnly: (user?.roles?.filter(data => data?.roleName === "Staff Manager")?.length === 0 && fieldKey === 'officialEmail') ? true : false,
+                  // }}
                   />
                 </div>
               )
@@ -1436,10 +1438,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
@@ -1457,9 +1459,9 @@ const ApplicationFieldCard = ({
                   {(isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)) && "*"}
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)) && "*"}
                 </div>
                 <TextArea
                   value={
@@ -1477,8 +1479,8 @@ const ApplicationFieldCard = ({
                     fieldData.placeHolder !== null
                       ? fieldData.placeHolder
                       : fieldData.label !== null
-                      ? `Enter ${fieldData.label}`
-                      : null
+                        ? `Enter ${fieldData.label}`
+                        : null
                   }
                   rows={4}
                 />
@@ -1494,10 +1496,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div
                   className={style.lableReadOnlyStyleInPOD}
@@ -1519,9 +1521,9 @@ const ApplicationFieldCard = ({
                   {(isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)) && "*"}
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)) && "*"}
                 </div>
                 <div className={style.marginTop10}>
                   <CKEditor
@@ -1562,10 +1564,10 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
@@ -1599,17 +1601,17 @@ const ApplicationFieldCard = ({
                   fieldData.placeHolder !== null
                     ? fieldData.placeHolder
                     : fieldData.label !== null
-                    ? `Enter ${fieldData.label}`
-                    : null
+                      ? `Enter ${fieldData.label}`
+                      : null
                 }
                 label={fieldData.label}
                 required={
                   isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
                 }
                 warning={warningFields
                   ?.map((data) => data?.key)
@@ -1618,6 +1620,69 @@ const ApplicationFieldCard = ({
             );
           }
         case "datepicker":
+
+          const shouldSetMinDateToToday = (() => {
+            const validation = object?.customValidations?.find((validation) => {
+              const validationDate1 = validation.parameters.date1;
+              const fieldPath = `${baseKey}.${fieldKey}`;
+              return (
+                validation.condition === "Date1GreaterThanCurrentDate" &&
+                (validationDate1 === fieldPath || validationDate1 === fieldKey) // Match with or without prefix
+              );
+            });
+
+            console.log(
+              "Validation for Date1GreaterThanCurrentDate:",
+              validation,
+              "Expected:",
+              `${baseKey}.${fieldKey}`
+            );
+
+            return !!validation; // Return true if validation exists
+          })();
+
+          // Check if Date2 is greater than Date1
+          const minDateForDate2 = (() => {
+            const validation = object?.customValidations?.find((validation) =>
+              validation.condition === "Date2GreaterThanDate1" &&
+              validation.parameters.date2 === `${baseKey}.${fieldKey}`
+            );
+            if (validation) {
+              const date1Path = `${basicpath}.${baseKey}.${validation.parameters.date1.split('.').pop()}`;
+              const date1Value = getValueByPath(basicForm, date1Path);
+
+              if (isValidDateString(date1Value)) {
+                return new Date(date1Value);
+              }
+            }
+            return null;
+          })();
+
+          // Check if the birthday should be less than today
+          const shouldSetMaxDateForBirthday = object?.customValidations?.some(
+            (validation) =>
+              validation.condition === "Date1LessThanCurrentDate" &&
+              `${baseKey}.${fieldKey}` === validation.parameters.date1
+          );
+
+          // Final minDate logic
+          const minDate = (() => {
+            if (shouldSetMinDateToToday) {
+              return new Date(); // Today's date for Date1GreaterThanCurrentDate
+            }
+            if (minDateForDate2) {
+              return minDateForDate2; // Date2 > Date1 logic
+            }
+            return null; // Default
+          })();
+
+          const maxDate = shouldSetMaxDateForBirthday ? new Date() : null;
+
+
+          console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
+          console.log("minDateForDate2:", minDateForDate2);
+          console.log("Final minDate:", minDate);
+
           console.log(
             getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
             "datecheck",
@@ -1633,31 +1698,31 @@ const ApplicationFieldCard = ({
                   {isLableEmpty(fieldData.label)
                     ? false
                     : (object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)) &&
-                      "*"}
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)) &&
+                    "*"}
                 </div>
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
                     `${basicpath}.${baseKey}.${fieldKey}`
                   ) !== undefined &&
-                  isValidDateString(
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    )
-                  )
-                    ? format(
-                        new Date(
-                          getValueByPath(
-                            basicForm,
-                            `${basicpath}.${baseKey}.${fieldKey}`
-                          )
-                        ),
-                        canadaData?.dateFormat || "dd/MM/yyyy"
+                    isValidDateString(
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
                       )
+                    )
+                    ? format(
+                      new Date(
+                        getValueByPath(
+                          basicForm,
+                          `${basicpath}.${baseKey}.${fieldKey}`
+                        )
+                      ),
+                      canadaData?.dateFormat || "dd/MM/yyyy"
+                    )
                     : "-"}
                 </div>
               </div>
@@ -1686,6 +1751,8 @@ const ApplicationFieldCard = ({
                     baseKey
                   )
                 }
+                minDate={minDate}
+                maxDate={maxDate}
                 InputProps={{
                   style: {
                     fontSize: 14,
@@ -1701,22 +1768,22 @@ const ApplicationFieldCard = ({
                         fieldData.placeHolder !== null
                           ? fieldData.placeHolder
                           : fieldData.label !== null
-                          ? `Enter ${fieldData.label}`
-                          : null,
+                            ? `Enter ${fieldData.label}`
+                            : null,
                       readOnly: true,
                     }}
                     color={
                       warningFields
                         ?.map((data) => data?.key)
                         ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
-                      (getValueByPath(
-                        basicForm,
-                        `${basicpath}.${baseKey}.${fieldKey}`
-                      ) === null ||
-                        getValueByPath(
+                        (getValueByPath(
                           basicForm,
                           `${basicpath}.${baseKey}.${fieldKey}`
-                        ) === "")
+                        ) === null ||
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          ) === "")
                         ? "error"
                         : ""
                     }
@@ -1725,23 +1792,23 @@ const ApplicationFieldCard = ({
                       warningFields
                         ?.map((data) => data?.key)
                         ?.includes(`${basicpath}.${baseKey}.${fieldKey}`) &&
-                      (getValueByPath(
-                        basicForm,
-                        `${basicpath}.${baseKey}.${fieldKey}`
-                      ) === null ||
-                        getValueByPath(
+                        (getValueByPath(
                           basicForm,
                           `${basicpath}.${baseKey}.${fieldKey}`
-                        ) === "")
+                        ) === null ||
+                          getValueByPath(
+                            basicForm,
+                            `${basicpath}.${baseKey}.${fieldKey}`
+                          ) === "")
                         ? true
                         : false
                     }
-                    // style={
-                    //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
-                    //         && (value === '' || value === null || value === undefined)
-                    //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
-                    //         : {}
-                    // }
+                  // style={
+                  //     warningFields?.map(data => data?.key)?.includes(`${basicpath}.${baseKey}.${fieldKey}`)
+                  //         && (value === '' || value === null || value === undefined)
+                  //         ? { border: '2px solid #cc0000', borderRadius: '5px' }
+                  //         : {}
+                  // }
                   />
                 )}
                 label={fieldData.label}
@@ -1749,9 +1816,9 @@ const ApplicationFieldCard = ({
                   isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
                 }
               />
             );
@@ -1762,17 +1829,16 @@ const ApplicationFieldCard = ({
               className={`${style.spaceBetween} ${style.verticalAlignCenter}`}
             >
               <div
-                className={`${style.lableRadioStyle} ${
-                  fieldData.label !== null ? style.marginRight : ""
-                }`}
+                className={`${style.lableRadioStyle} ${fieldData.label !== null ? style.marginRight : ""
+                  }`}
               >
                 {fieldData.label}
                 {(isLableEmpty(fieldData.label)
                   ? false
                   : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)) && "*"}
+                  (parentData !== null
+                    ? parentData.required?.includes(fieldKey)
+                    : false)) && "*"}
               </div>
               <CommonRadio
                 className={style.leftAlign}
@@ -1784,7 +1850,7 @@ const ApplicationFieldCard = ({
                 }
                 onChange={
                   isPOD
-                    ? () => {}
+                    ? () => { }
                     : (e) => handleChange(fieldKey, e.target.value, baseKey)
                 }
                 radioValue={fieldData.enum}
@@ -1793,9 +1859,9 @@ const ApplicationFieldCard = ({
                   isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
                 }
                 warning={warningFields
                   ?.map((data) => data?.key)
@@ -1804,6 +1870,17 @@ const ApplicationFieldCard = ({
             </div>
           );
         case "disclosureRadioButton":
+          //if (fieldData.priorDataComparisonNeeded === true){
+          const priorData = getValueByPath(basicForm, `forms[${formIndex}].priorData.${baseKey}.${fieldKey}`);
+          console.log(priorData);
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+          console.log(currentValue);
+          const isConflict = priorData !== undefined && currentValue !== priorData;
+          console.log("Disclosure Conflict", isConflict, fieldKey)
+          if (isConflict && !showPriorDataDialog) {
+            // setShowPriorDataDialog(true)
+          }
+          // }
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -1815,17 +1892,16 @@ const ApplicationFieldCard = ({
                     : ""}
                 </div>
                 <div
-                  className={`${style.lableRadioStyle} ${
-                    fieldData.serialNumber !== null ? style.marginLeft10 : ""
-                  } ${fieldData.label !== null ? style.marginRight : ""}`}
+                  className={`${style.lableRadioStyle} ${fieldData.serialNumber !== null ? style.marginLeft10 : ""
+                    } ${fieldData.label !== null ? style.marginRight : ""}`}
                 >
                   {fieldData.label}
                   {(isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)) && "*"}
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)) && "*"}
                 </div>
               </div>
               <CommonRadio
@@ -1838,7 +1914,7 @@ const ApplicationFieldCard = ({
                 }
                 onChange={
                   isPOD
-                    ? () => {}
+                    ? () => { }
                     : (e) => handleChange(fieldKey, e.target.value, baseKey)
                 }
                 radioValue={fieldData.enum}
@@ -1847,9 +1923,9 @@ const ApplicationFieldCard = ({
                   isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
-                      (parentData !== null
-                        ? parentData.required?.includes(fieldKey)
-                        : false)
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
                 }
                 warning={warningFields
                   ?.map((data) => data?.key)
@@ -1877,7 +1953,7 @@ const ApplicationFieldCard = ({
               }
               onChange={
                 isPOD
-                  ? () => {}
+                  ? () => { }
                   : (e) => handleChange(fieldKey, e.target.checked, baseKey)
               }
               labelName={fieldData.label}
@@ -1885,9 +1961,9 @@ const ApplicationFieldCard = ({
                 isLableEmpty(fieldData.label)
                   ? false
                   : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)
+                  (parentData !== null
+                    ? parentData.required?.includes(fieldKey)
+                    : false)
               }
             />
           );
@@ -1906,18 +1982,17 @@ const ApplicationFieldCard = ({
                 onChange={(e) =>
                   handleChange(fieldKey, e.target.checked, baseKey)
                 }
-                label={`${fieldData.label}${
-                  (
-                    isLableEmpty(fieldData.label)
-                      ? false
-                      : object.required?.includes(fieldKey) ||
-                        (parentData !== null
-                          ? parentData.required?.includes(fieldKey)
-                          : false)
-                  )
-                    ? "*"
-                    : ""
-                }`}
+                label={`${fieldData.label}${(
+                  isLableEmpty(fieldData.label)
+                    ? false
+                    : object.required?.includes(fieldKey) ||
+                    (parentData !== null
+                      ? parentData.required?.includes(fieldKey)
+                      : false)
+                )
+                  ? "*"
+                  : ""
+                  }`}
               />
             );
           }
@@ -1970,16 +2045,16 @@ const ApplicationFieldCard = ({
                   basicForm,
                   `${basicpath}.${baseKey}.${fieldKey}`
                 ) !== undefined &&
-                getValueByPath(
-                  basicForm,
-                  `${basicpath}.${baseKey}.${fieldKey}`
-                ) !== null &&
-                getValueByPath(
-                  basicForm,
-                  `${basicpath}.${baseKey}.${fieldKey}`
-                ) !== "" &&
-                getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
-                  ?.fileURL !== null ? (
+                  getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) !== null &&
+                  getValueByPath(
+                    basicForm,
+                    `${basicpath}.${baseKey}.${fieldKey}`
+                  ) !== "" &&
+                  getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)
+                    ?.fileURL !== null ? (
                   <div
                     onClick={() => {
                       setShowFileDisplayDialog(true);
@@ -2040,18 +2115,18 @@ const ApplicationFieldCard = ({
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
                     ) !== undefined &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== null &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== "" &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    )?.fileURL !== null ? (
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== null &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== "" &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileURL !== null ? (
                       <img
                         src={VerifiedImage}
                         alt=""
@@ -2076,18 +2151,17 @@ const ApplicationFieldCard = ({
                     <div
                       className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                     >
-                      {`${fieldData.label} (${
-                        (
-                          isLableEmpty(fieldData.label)
-                            ? false
-                            : object.required?.includes(fieldKey) ||
-                              (parentData !== null
-                                ? parentData.required?.includes(fieldKey)
-                                : false)
-                        )
-                          ? "Required"
-                          : "Recommended"
-                      })`}
+                      {`${fieldData.label} (${(
+                        isLableEmpty(fieldData.label)
+                          ? false
+                          : object.required?.includes(fieldKey) ||
+                          (parentData !== null
+                            ? parentData.required?.includes(fieldKey)
+                            : false)
+                      )
+                        ? "Required"
+                        : "Recommended"
+                        })`}
                     </div>
                     <div>
                       <label
@@ -2225,9 +2299,9 @@ const ApplicationFieldCard = ({
                 object?.if?.properties
               )?.map(([key, data]) => key)}`
             ) ===
-              Object.entries(object?.if?.properties)?.map(
-                ([key, data]) => data
-              )[0]?.const
+            Object.entries(object?.if?.properties)?.map(
+              ([key, data]) => data
+            )[0]?.const
           ) {
             console.log(
               getValueByPath(
@@ -2528,9 +2602,9 @@ const ApplicationFieldCard = ({
               innerData !== null
                 ? isValidDateString(innerData[data])
                   ? format(
-                      new Date(innerData[data]),
-                      canadaData?.dateFormat || "dd/MM/yyyy"
-                    )
+                    new Date(innerData[data]),
+                    canadaData?.dateFormat || "dd/MM/yyyy"
+                  )
                   : innerData[data]
                 : ""
             ),
@@ -2627,13 +2701,13 @@ const ApplicationFieldCard = ({
         </div>
       )}
       <div
-        className={`${
-          window.location.pathname.includes("applicationForm") ||
+        className={`${window.location.pathname.includes("applicationForm") ||
           window.location.pathname.includes("reappointmentApplicationForm") ||
+          window.location.pathname.includes("locumApplicationForm") ||
           isPOD
-            ? ""
-            : style.backgroundCard
-        } ${style.marginTop}`}
+          ? ""
+          : style.backgroundCard
+          } ${style.marginTop}`}
         key={baseKey}
       >
         {!isReappointment ? (
@@ -2664,8 +2738,8 @@ const ApplicationFieldCard = ({
                       {object?.type === "object"
                         ? renderObjectFields(object, object?.properties)
                         : object?.type === "array"
-                        ? renderObjectFields(object, object?.items?.properties)
-                        : renderObjectFields(object, object?.properties)}
+                          ? renderObjectFields(object, object?.items?.properties)
+                          : renderObjectFields(object, object?.properties)}
                     </div>
                     <div
                       className={`${style.displayInRowRev} ${style.marginTop}`}
@@ -2717,17 +2791,17 @@ const ApplicationFieldCard = ({
                   basicForm?.forms?.filter((data) => data?.id === formId)[0]
                     ?.data !== null
                     ? getApplicantValues(
-                        basicForm?.forms?.filter(
-                          (data) => data?.id === formId
-                        )[0]?.data[baseKey]
-                      )
+                      basicForm?.forms?.filter(
+                        (data) => data?.id === formId
+                      )[0]?.data[baseKey]
+                    )
                     : []
                 }
                 tableData={
                   basicForm?.forms?.filter((data) => data?.id === formId)[0]
                     ?.data !== null
                     ? basicForm?.forms?.filter((data) => data?.id === formId)[0]
-                        ?.data[baseKey]
+                      ?.data[baseKey]
                     : []
                 }
                 gridStyle={tableGrid}
@@ -2737,7 +2811,7 @@ const ApplicationFieldCard = ({
                 heading={heading}
                 subHeading={subHeading}
                 subHeading2={subHeading2}
-                onClickFunction={() => {}}
+                onClickFunction={() => { }}
               />
             )}
           </div>
@@ -2769,8 +2843,8 @@ const ApplicationFieldCard = ({
                     {object?.type === "object"
                       ? renderObjectFields(object, object?.properties)
                       : object?.type === "array"
-                      ? renderObjectFields(object, object?.items?.properties)
-                      : renderObjectFields(object, object?.properties)}
+                        ? renderObjectFields(object, object?.items?.properties)
+                        : renderObjectFields(object, object?.properties)}
                   </div>
                 </>
               )}
@@ -2792,8 +2866,8 @@ const ApplicationFieldCard = ({
                       {object?.type === "object"
                         ? renderObjectFields(object, object?.properties)
                         : object?.type === "array"
-                        ? renderObjectFields(object, object?.items?.properties)
-                        : renderObjectFields(object, object?.properties)}
+                          ? renderObjectFields(object, object?.items?.properties)
+                          : renderObjectFields(object, object?.properties)}
                     </div>
                     {!isView ? (
                       <div
@@ -2801,15 +2875,14 @@ const ApplicationFieldCard = ({
                       >
                         <div className={style.marginLeft}>
                           <div
-                            className={`${style.reappointmentButton} ${
-                              isEdited ? "" : style.disabledButtonLook
-                            }`}
+                            className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
+                              }`}
                             onClick={
                               isEdited
                                 ? () => {
-                                    handleReappointmentUpdate();
-                                  }
-                                : () => {}
+                                  handleReappointmentUpdate();
+                                }
+                                : () => { }
                             }
                           >
                             UPDATE
@@ -2859,24 +2932,22 @@ const ApplicationFieldCard = ({
                       className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                     >
                       <div
-                        className={`${
-                          yesOrNoDemographic === "Yes"
-                            ? style.reappointmentButton
-                            : style.reappointmentButtonOutlined
-                        }`}
+                        className={`${yesOrNoDemographic === "Yes"
+                          ? style.reappointmentButton
+                          : style.reappointmentButtonOutlined
+                          }`}
                         onClick={() => {
                           setIsChanged(true);
                           setYesOrNoDemographic("Yes");
                         }}
                       >
-                        Yes
+                        YES
                       </div>
                       <div
-                        className={`${
-                          yesOrNoDemographic === "No"
-                            ? style.reappointmentButton
-                            : style.reappointmentButtonOutlined
-                        } ${style.marginLeft}`}
+                        className={`${yesOrNoDemographic === "No"
+                          ? style.reappointmentButton
+                          : style.reappointmentButtonOutlined
+                          } ${style.marginLeft}`}
                         onClick={() => {
                           setIsChanged(false);
                           setYesOrNoDemographic("No");
@@ -2892,15 +2963,14 @@ const ApplicationFieldCard = ({
           </div>
         ) : (
           <div
-            className={`${gridStyle} ${
-              object?.label !== null ? style.marginTop : ""
-            }`}
+            className={`${gridStyle} ${object?.label !== null ? style.marginTop : ""
+              }`}
           >
             {object?.type === "object"
               ? renderObjectFields(object, object?.properties)
               : object?.type === "array"
-              ? renderObjectFields(object, object?.items?.properties)
-              : renderObjectFields(object, object?.properties)}
+                ? renderObjectFields(object, object?.items?.properties)
+                : renderObjectFields(object, object?.properties)}
           </div>
         )}
         {showAdd && (
@@ -2922,6 +2992,12 @@ const ApplicationFieldCard = ({
             file={selectedFile}
           />
         )}
+        {
+          showPriorDataDialog && (
+            <PriorDataDialog getIsOpen={getIsShowPriorDataDialog}
+              priorData={priorData} />
+          )
+        }
       </div>
     </>
   );
