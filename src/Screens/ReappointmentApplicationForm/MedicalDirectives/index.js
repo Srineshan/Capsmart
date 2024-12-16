@@ -59,7 +59,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
@@ -344,12 +344,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                    <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
                         description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {!showMedicalDirectives ? (

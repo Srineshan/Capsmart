@@ -61,15 +61,14 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           : ""
       );
       setNavigateURL(
-        basicForm?.forms?.filter((data) => data?.formCategory === 'Form'||'Disclosure')
+        basicForm?.forms?.filter((data) => data?.formCategory === 'Form' || 'Disclosure')
           ?.length ===
           formIndex + 1
           ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(
-              `ApplicantAcknowledgement`
-            )}`
-          : `/reappointmentApplicationForm/${applicationId}/${
-              basicForm?.forms[formIndex + 1]?.formCategory
-            }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
+            `ApplicantAcknowledgement`
+          )}`
+          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
+          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
       );
     }
   }, [basicForm, formIndex]);
@@ -113,9 +112,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   useEffect(() => {
     if (
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-        "Women & Children" &&
+      "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-        "Obstetrics & Gynecology"
+      "Obstetrics & Gynecology"
     ) {
       const fetchObstetricsStaffs = async () => {
         try {
@@ -215,9 +214,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
     if (
       whoCoversObstetrics === "" &&
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-        "Women & Children" &&
+      "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-        "Obstetrics & Gynecology"
+      "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
         label:
@@ -301,6 +300,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           timeNumber={22}
           timeText={"Min"}
           progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+          basicForm={basicForm}
         />
         <ApplicationUserCard
           user={"First Mi Last"}
@@ -385,7 +385,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             {basicForm?.basicDetails?.departmentSpecialty?.department ===
               "Women & Children" &&
               basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-                "Obstetrics & Gynecology" && (
+              "Obstetrics & Gynecology" && (
                 <div className={style.marginTop}>
                   <div className={`${style.lableStyle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
@@ -473,11 +473,10 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             email={"{Email}"}
           />
           <div
-            className={`${style.stickyContainer} ${
-              isSaveInProgressOpen || showValidationDialog || showJourneyDialog
+            className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog
                 ? style.hiddenStickyContainer
                 : ""
-            }`}
+              }`}
           >
             <div
               className={`${style.saveInProgress} ${style.marginTop}`}

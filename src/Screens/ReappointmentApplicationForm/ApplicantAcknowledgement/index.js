@@ -153,10 +153,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
 
     const getSkipClicked = (value) => {
         if (value) {
-             handleSubmitApplicationReq("skipped")
+            handleSubmitApplicationReq("skipped")
         }
     }
-    
+
     const handleSubmitApplicationReq = async () => {
         if (isSigned) {
             let temp = {
@@ -195,7 +195,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -256,12 +256,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer: ""}`}>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
-                    </div>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

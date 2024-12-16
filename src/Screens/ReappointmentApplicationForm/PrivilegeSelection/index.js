@@ -56,6 +56,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
   const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
   const [staffPrivilege, setStaffPrivilege] = useState([]);
+  const [allStaffPrivilege, setAllStaffPrivilege] = useState([]);
   const [selectedPrivilege, setSelectedPrivilege] = useState("");
   const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] =
     useState([]);
@@ -140,6 +141,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
   const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false)
   const [indexForSign, setIndexForSign] = useState(0);
+  const [paymentListData, setPaymentListData] = useState([]);
   const theme = createTheme({
     palette: {
       error: {
@@ -210,6 +212,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     setFormIndex(
       basicForm?.forms?.findIndex((data) => data?.schemaCategory === atob(step))
     );
+    fetchPaymentListData();
   }, [basicForm, step]);
 
   useEffect(() => {
@@ -244,7 +247,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   };
 
   const getStaffPrivilege = async () => {
-    if (applicationData) {
+    if (applicationData && selectedDepartment !== undefined) {
       const { data: privilege } = await GET(
         `entity-service/staffPrivilege?department=${selectedDepartment !== ""
           ? selectedDepartment
@@ -252,6 +255,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         }`
       );
       setStaffPrivilege(privilege);
+      const { data: allPrivilege } = await GET(
+        `entity-service/staffPrivilege`
+      );
+      setAllStaffPrivilege(allPrivilege)
     }
   };
 
@@ -368,6 +375,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     basicForm?.basicDetails?.credentialingPrivilegeCategory
       ?.credentialingCategory
   );
+
+  const fetchPaymentListData = async () => {
+    try {
+      const response = await GET(`entity-service/paymentAndFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}`);
+      setPaymentListData(response.data);
+    } catch (error) {
+      console.error("Error fetching payment list data:", error);
+    }
+  };
 
   const handleSubmit = async () => {
     let temp = {
@@ -544,20 +560,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    await PUT(
-      `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
-      temp
-    )
-      .then((response) => {
-        console.log(response);
-        setBasicForm(response?.data);
-        SuccessToaster("Application Updated Successfully");
-        getPreApplication();
-      })
-      .catch((error) => {
-        console.log(error);
-        ErrorToaster("Unexpected Error Updating Application");
-      });
+    // await PUT(
+    //   `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
+    //   temp
+    // )
+    //   .then((response) => {
+    //     console.log(response);
+    //     setBasicForm(response?.data);
+    //     SuccessToaster("Application Updated Successfully");
+    //     getPreApplication();
+    //     if (paymentListData?.length === 0) {
+    //       handleContinue();
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     ErrorToaster("Unexpected Error Updating Application");
+    //   });
   };
 
   const handleContinue = async () => {
@@ -567,6 +586,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       navigate(navigateURL);
     }
   };
+
+  const handleContinueClick = () => {
+    if (paymentListData?.length !== 0) {
+      setShowPaymentDialog(true);
+    }
+    handleSubmitAcknowledgement();
+  }
 
   const handleDeleteFile = async (files) => {
     await DELETE(
@@ -598,14 +624,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const handleChange = (privilegeId) => {
     setSelectedPrivilege(privilegeId);
     setSelectedPrivilegeForDisplay(
-      staffPrivilege?.filter((data) => data?.id === privilegeId)
+      allStaffPrivilege?.filter((data) => data?.id === privilegeId)
     );
   };
 
   const handleChangeAdditional = (privilegeId) => {
     setSelectedPrivilege(privilegeId);
     setSelectedAdditionalPrivilegeForDisplay(
-      staffPrivilege?.filter((data) => data?.id === privilegeId)
+      allStaffPrivilege?.filter((data) => data?.id === privilegeId)
     );
   };
 
@@ -1019,10 +1045,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
-              ? staffPrivilege
+              ? allStaffPrivilege
                 ?.filter((data) => data?.id === selectedPrivilege)
                 ?.map((data) => data?.privilegeSetTitle)[0]
                 ?.toUpperCase()
@@ -1389,10 +1415,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
-              ? staffPrivilege
+              ? allStaffPrivilege
                 ?.filter((data) => data?.id === selectedPrivilege)
                 ?.map((data) => data?.privilegeSetTitle)[0]
                 ?.toUpperCase()
@@ -2154,6 +2180,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           timeNumber={20}
           timeText={"Min"}
           progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+          basicForm={basicForm}
         />
         <ApplicationUserCard
           user={"First Mi Last"}
@@ -3367,8 +3394,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
               <div
                 className={`${style.continue} ${style.marginTop10}`}
                 onClick={() => {
-                  setShowPaymentDialog(true);
-                  handleSubmitAcknowledgement();
+                  handleContinueClick()
                 }}
               >
                 CONTINUE
@@ -3703,6 +3729,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           <PaymentDialog
             getIsOpen={getIsShowPaymentDialog}
             continueClickFunc={handleContinue}
+            paymentListData={paymentListData}
           />
         )
       }

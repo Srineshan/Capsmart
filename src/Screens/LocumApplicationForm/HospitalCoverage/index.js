@@ -291,6 +291,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           timeNumber={22}
           timeText={"Min"}
           progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+          basicForm={basicForm}
         />
         <ApplicationUserCard
           user={"First Mi Last"}

@@ -468,6 +468,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         timeNumber={1}
                         timeText={"Min"}
                         progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+                        basicForm={basicForm}
                     />
 
                     {formSchema !== undefined && "applicant" in formSchema?.properties && (

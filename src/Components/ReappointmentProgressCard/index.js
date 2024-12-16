@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import style from './index.module.scss'
+import { Tooltip } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const ReappointmentProgressCard = ({ step, dataType, title, timeNumber, timeText, progressStyle }) => {
+const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, basicForm }) => {
     const [startTime, setStartTime] = useState(0);
     const [totalTime, setTotalTime] = useState(() => {
         // Retrieve stored time from localStorage or initialize it to 0
         const savedTime = localStorage.getItem('totalTime');
         return savedTime ? parseInt(savedTime, 10) : 0;
     });
+    const [formIndex, setFormIndex] = useState(0)
+    const { applicationId, section, step } = useParams();
+    const navigate = useNavigate()
 
     useEffect(() => {
         console.log(Math.floor(totalTime / 60000), totalTime)
@@ -67,7 +72,16 @@ const ReappointmentProgressCard = ({ step, dataType, title, timeNumber, timeText
         };
     }, [startTime, totalTime]);
 
-    console.log(Math.floor(totalTime / 60000), totalTime)
+    useEffect(() => {
+        if (basicForm !== undefined) {
+            setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)));
+        }
+    }, [step, basicForm])
+
+    console.log(Math.floor(totalTime / 60000), totalTime, (formIndex / (basicForm?.forms?.length - 1)) * 100, 'progress', formIndex, basicForm?.forms?.length - 1, basicForm?.forms?.reduce(
+        (maxIndex, step, index) => (step?.acknowledged ? index : maxIndex),
+        -1
+    ))
     return (
         <div className={style.progressCard}>
             <div className={style.spaceBetween}>
@@ -82,8 +96,16 @@ const ReappointmentProgressCard = ({ step, dataType, title, timeNumber, timeText
                 {/* <div className={`${style.displayInRow} ${style.flex}`}><span className={style.hourNumberStyle}>{Math.floor(totalTime / 60000)} </span><span className={`${style.hourTextStyle} ${style.textAlignBottom} ${style.marginLeft5}`}> {timeText}</span></div> */}
             </div>
             <div>
-                <div className={`${progressStyle} ${style.marginTop10}`} ></div>
-                <div className={style.sectionSplit}></div>
+                <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
+                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
+                >
+                    {basicForm?.forms?.map((data, index) => (
+                        <Tooltip title={data?.title} arrow>
+                            <div className={data?.acknowledged ? style.dotStyle : style.disabledDotStyle} onClick={data?.acknowledged ? () => navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) : () => { }}></div>
+                        </Tooltip>
+                    ))}
+                </div>
+                {/* <div className={style.sectionSplit}></div> */}
             </div>
         </div>
     )

@@ -2145,6 +2145,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
           timeNumber={20}
           timeText={"Min"}
           progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+          basicForm={basicForm}
         />
         <ApplicationUserCard
           user={"First Mi Last"}

@@ -528,6 +528,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         timeNumber={1}
                         timeText={"Min"}
                         progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+                        basicForm={basicForm}
                     />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {/* <div className={style.titleText}>{formSchema?.description}</div>

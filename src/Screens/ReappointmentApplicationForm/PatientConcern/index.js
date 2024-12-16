@@ -30,26 +30,26 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
-  
+
     const [priorData, setPriorData] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form'||'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
-        
-        
+
+
     }, [basicForm, formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
-       console.log(formIndex);
-       
+        console.log(formIndex);
+
     }, [basicForm, step])
 
-  
+
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -80,7 +80,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
     const getIsShowReappointmentJourneyDialog = (value) => {
         setShowJourneyDialog(value);
     }
-   
+
 
     const getFormSchema = async () => {
         if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
@@ -109,7 +109,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         setIsEdited(value)
     }
 
-    
+
 
     const getMissingFields = () => {
         let missingKeys = [];
@@ -122,7 +122,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
-        
+
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
@@ -168,40 +168,40 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         }
     }
-   
-    
-    
+
+
+
     return (
         <div>
             <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
+                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                 <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
             </div>
             <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                 <div>
-                <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                    <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
                         description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'disclosures' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.criminalHistoryGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} formIndex={formIndex} />
                         )}
                     </div>
-                     <div className={style.threeColForButton}> 
-                     {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  */}
+                    <div className={style.threeColForButton}>
+                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  */}
                         {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> */}
-                     </div> 
+                    </div>
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer: ""}`}>
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
-                    </div>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
