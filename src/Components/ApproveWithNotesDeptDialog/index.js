@@ -386,7 +386,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              SEND TO DEPARTMENT HEAD FOR REVIEW?
+              SEND TO DEPARTMENT HEAD FOR REVIEW
             </div>
             <div className={style.displayInRow}>
               <img
@@ -534,7 +534,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               opacity: isApproveEnabled ? 1 : 0.5 
             }}
           >
-            <div className={style.reviewButton}>APPROVE</div>
+            <div className={style.reviewButton}>SENT FOR REVIEW</div>
           </div>
             </div>
           </div>

@@ -81,8 +81,8 @@
 
 
 .crossStyle {
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
 }
 
 .cursorPointer {
@@ -492,7 +492,7 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 40% 30%;
+  grid-template-columns: 40% 40%;
   grid-gap: 20px;
   justify-items: start;
 }
@@ -535,8 +535,7 @@
 }
 
 .referenceCardStyle {
-  border: 1px solid var(---7165e3);
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid $primarycolor;
   border-radius: 8px;

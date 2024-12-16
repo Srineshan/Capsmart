@@ -1302,8 +1302,18 @@ const NewActiveApplication = ({
   const approvalFromDate = logDetails?.logs?.map((log) => {
     try {
       // Safely format each log's approved date
-      return log.approvedDate
+      return log?.approvedDate
         ? format(new Date(log.approvedDate), "MMM dd, yyyy")
+        : "-";
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return "-";
+    }
+  });const createNoteDate = form?.noteDetails?.map((log) => {
+    try {
+      // Safely format each log's approved date
+      return log?.createdDate
+        ? format(new Date(log?.createdDate), "MMM dd, yyyy")
         : "-";
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -2836,22 +2846,14 @@ const NewActiveApplication = ({
       <div className={style.welcomeBorder}></div>
 
       <div className={`${style.marginLeftRight50}`}>
-        <div
+        {/* <div
           className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}
         >
           {applicationType === "NEW" ?
             `CAP MANAGER > APPLICATIONS >> ${form?.basicDetails?.applicant?.name?.firstName || ""} ${form?.basicDetails?.applicant?.name?.lastName || ""}`
             : `${userRoleTab} DASHBOARD > REAPPOINTMENT APPLICATIONS >>  ${form?.basicDetails?.applicant?.name?.firstName || ""} ${form?.basicDetails?.applicant?.name?.lastName || ""}`}
 
-          {/* <img
-            src={CrossPink}
-            alt="cross"
-            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
-            onClick={() => {
-              onClose();
-            }}
-          /> */}
-        </div>
+        </div> */}
         <div className={style.grid2to1}>
           <>
             {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
@@ -2874,9 +2876,15 @@ const NewActiveApplication = ({
                             <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
                                 <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                                  {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                  {form?.basicDetails?.applicant?.name?.firstName
+                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                  : ""}{" , "}
+                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" , "}        
+                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
-                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                                   {/* {form?.displayId || ""} */}
                                   {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
@@ -2885,23 +2893,23 @@ const NewActiveApplication = ({
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
                               <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name || ""} {","} {form?.basicDetailReferences?.specialty || "-"}
+                                {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
                               </div>
-                              <div className={style.spaceBetween}>
-                                <span className={`${style.emailTextBoldStyle} ${style.marginTop30}`}>
+                              {/* <div className={style.spaceBetween}> */}
+                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                   {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                                </span>
-                                <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                                </div>
+                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                   {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                                </span>
-                              </div>
+                                </div>
+                              {/* </div> */}
                             </div>
                           </div>
                           <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  Reappointment Start Date:
+                                  Reappointment Date:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -2913,17 +2921,17 @@ const NewActiveApplication = ({
                                   Application Submitted:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {formattedSubmissionDate}
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
                               </div>
-                              <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {daysDifference} Days
                                 </span>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
@@ -2947,17 +2955,26 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.spaceBetween}>
                           <div className={style.displayInRow}>
+            
                             <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                              <div className={style.photoCardStyle}>
-                                <span>Photo</span>
-                              </div>
+                              <img
+                                src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                                alt="Profile Picture"
+                                className={style.profileImage}
+                              />
                             </div>
                             <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
                                 <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                                  {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                  {form?.basicDetails?.applicant?.name?.firstName
+                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                  : ""}{", "}
+                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
+                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
-                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                                   {/* {form?.displayId || ""} */}
                                   {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
@@ -2966,23 +2983,23 @@ const NewActiveApplication = ({
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
                               <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name || ""} {","} {form?.basicDetailReferences?.specialty || "-"}
+                                {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
                               </div>
-                              <div className={style.spaceBetween}>
-                                <span className={`${style.emailTextBoldStyle} ${style.marginTop30}`}>
+                              {/* <div className={style.spaceBetween}> */}
+                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                   {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                                </span>
-                                <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                                </div>
+                                {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                   {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                                </span>
-                              </div>
+                                </div> */}
+                              {/* </div> */}
                             </div>
                           </div>
                           <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
-                                  Reappointment Start Date:
+                                  Reappointment Date:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
@@ -2994,17 +3011,20 @@ const NewActiveApplication = ({
                                   Application Submitted:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {formattedSubmissionDate}
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
                               </div>
-                              <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop5}`}>
+                                  {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                                </div>
+                              {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {daysDifference} Days
                                 </span>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
@@ -3419,7 +3439,10 @@ const NewActiveApplication = ({
                                     <div
                                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
-                                      <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
+                                      {/* <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
+                                        {data?.title}
+                                      </div> */}
+                                       <div>
                                         {data?.title}
                                       </div>
                                     </div>
@@ -4314,8 +4337,8 @@ const NewActiveApplication = ({
                                   })?.map((data, index) => (
 
                                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                      <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
-
+                                      {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
+                                      <div>
                                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                           <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
                                         </div>
@@ -4328,7 +4351,309 @@ const NewActiveApplication = ({
                             )}
                           </>
                         )} */}
-                                        {applicationType === "NEW" ? (
+                                        {/* {applicationType === "NEW" ? (
+                                          <>
+                                            {expand?.status && expand?.index === index + 1 && (
+                                              <>
+                                                {credApproval?.some((newData) => {
+                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
+                                                  return newData.schemaId === data.id && newData.approvalRequired;
+                                                }) ? (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                      (() => {
+                                                        const isMatch = logDetails.logs.some((log) => {
+                                                          if (log.form && log.form.id) {
+                                                            const match = log.form.id === form?.forms[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                            if (match) {
+                                                              let Match = false;
+
+                                                              // Check if userRole includes log.role
+                                                              if (userRole?.includes(log.role)) {
+                                                                console.log("Role matches user role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              // Determine selectedTabRole based on selectedTab
+                                                              let selectedTabRole;
+                                                              if (selectedTab === 'level-2') {
+                                                                selectedTabRole = "Department Head";
+                                                              } else if (selectedTab === 'level-3') {
+                                                                selectedTabRole = "Chief Of Staff";
+                                                              } else if (selectedTab === 'level-4') {
+                                                                selectedTabRole = "Advisory Committee";
+                                                              } else if (selectedTab === 'level-5') {
+                                                                selectedTabRole = "Board";
+                                                              } else if (selectedTab === 'level-1') {
+                                                                selectedTabRole = "Staff Manager";
+                                                              }
+
+                                                              // Check if selectedTabRole matches log.role
+                                                              if (selectedTabRole === log.role) {
+                                                                console.log("Selected tab role matches log role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              return Match;
+                                                            }
+                                                          }
+                                                          return false;
+                                                        });
+
+                                                        return (
+                                                          <div>
+                                                            {isMatch ? (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
+                                                                </div>
+                                                              ) : (
+                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                    Approved
+                                                                  </div>
+                                                                </div>
+                                                              )
+                                                            )}
+                                                          </div>
+                                                        );
+                                                      })()
+                                                    )}
+                                                  </>
+                                                ) : (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Approved
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              console.log("newData.approvalRequired:", newData.approvalRequired);
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                            }) ? (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                        if (match) {
+                                                          let Match = false;
+
+                                                          // Check if userRole includes log.role
+                                                          if (userRole?.includes(log.role)) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          // Determine selectedTabRole based on selectedTab
+                                                          let selectedTabRole;
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
+                                                          }
+
+                                                          // Check if selectedTabRole matches log.role
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              >
+                                                                Approve
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()
+                                                )}
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Verified
+                                                </div>
+                                              </div>
+                                            )}
+                                          </>
+                                        )} */}
+
+                                        {/* {expand?.status && expand?.index === index + 1 && (
+                              <>
+                                {credApproval?.filter(
+                                  (newData) => {
+                                    console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                    return newData.schemaId === data.id;
+                                  }
+                                )[0]?.approvalRequired === true && (
+                                  <>
+                                    {logDetails?.logs && Array.isArray(logDetails?.logs) && (() => {
+                                      let isMatch = false;
+
+                                      logDetails.logs.forEach((log) => {
+                                        if (log.form && log.form.id) {
+                                          console.log("form id: " + log.form.id);
+
+                                          if (form?.forms?.some(f => f.id === log.form.id)) {
+                                            console.log("form match found, setting isMatch to true");
+                                            isMatch = true;
+
+                                            // Check if userRole includes log.role
+                                            if (userRole?.includes(log?.role)) {
+                                              console.log("Role matches user role: " + log.role);
+                                              isMatch = true;
+                                            } else {
+                                              console.log("Role does NOT match user role: " + log.role);
+                                              isMatch = false;
+                                            }
+
+                                            // Determine selectedTabRole
+                                            let selectedTabRole;
+                                            switch (selectedTab) {
+                                              case 'level-2':
+                                                selectedTabRole = "Department Head";
+                                                break;
+                                              case 'level-3':
+                                                selectedTabRole = "Chief Of Staff";
+                                                break;
+                                              case 'level-4':
+                                                selectedTabRole = "Advisory Committee";
+                                                break;
+                                              case 'level-5':
+                                                selectedTabRole = "Board";
+                                                break;
+                                              case 'level-1':
+                                                selectedTabRole = "Staff Manager";
+                                                break;
+                                              default:
+                                                selectedTabRole = "";
+                                            }
+
+                                            // Check if selectedTabRole matches log.role
+                                            if (selectedTabRole === log.role) {
+                                              console.log("Selected tab role matches log role: " + log.role);
+                                              isMatch = true;
+                                            } else {
+                                              console.log("Selected tab role does NOT match log role: " + log.role);
+                                              isMatch = false;
+                                            }
+                                          } else {
+                                            console.log("form match NOT found, setting isMatch to false");
+                                            isMatch = false;
+                                          }
+                                        }
+                                      });
+
+                                      return isMatch && (
+                                        <div>
+                                          {form?.forms[index]?.status !== "APPROVED" ? (
+                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                              <div
+                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                              >
+                                                Approve
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                Approved
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })()}
+                                  </>
+                                )}
+                              </>
+                            )} */}
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          {applicationType === "NEW" ? (
+                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                              {
+                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                                              }
+
+                                            </div>
+                                          ) : ''}
+                                        </div>
+                                      </div>
+                                      {applicationType === "NEW" ? (
+                                        <>
+                                          {expand?.status && expand?.index === index + 1 &&
+                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                              {renderFieldsBasedOnStep(data)}
+                                            </div>
+                                          }
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                            {renderFieldsBasedOnStepReappointment(data, index)}
+                                          </div>
+
+                                        </>
+                                      )}
+                                       {applicationType === "NEW" ? (
                                           <>
                                             {expand?.status && expand?.index === index + 1 && (
                                               <>
@@ -4509,127 +4834,6 @@ const NewActiveApplication = ({
                                             )}
                                           </>
                                         )}
-
-                                        {/* {expand?.status && expand?.index === index + 1 && (
-                              <>
-                                {credApproval?.filter(
-                                  (newData) => {
-                                    console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                    return newData.schemaId === data.id;
-                                  }
-                                )[0]?.approvalRequired === true && (
-                                  <>
-                                    {logDetails?.logs && Array.isArray(logDetails?.logs) && (() => {
-                                      let isMatch = false;
-
-                                      logDetails.logs.forEach((log) => {
-                                        if (log.form && log.form.id) {
-                                          console.log("form id: " + log.form.id);
-
-                                          if (form?.forms?.some(f => f.id === log.form.id)) {
-                                            console.log("form match found, setting isMatch to true");
-                                            isMatch = true;
-
-                                            // Check if userRole includes log.role
-                                            if (userRole?.includes(log?.role)) {
-                                              console.log("Role matches user role: " + log.role);
-                                              isMatch = true;
-                                            } else {
-                                              console.log("Role does NOT match user role: " + log.role);
-                                              isMatch = false;
-                                            }
-
-                                            // Determine selectedTabRole
-                                            let selectedTabRole;
-                                            switch (selectedTab) {
-                                              case 'level-2':
-                                                selectedTabRole = "Department Head";
-                                                break;
-                                              case 'level-3':
-                                                selectedTabRole = "Chief Of Staff";
-                                                break;
-                                              case 'level-4':
-                                                selectedTabRole = "Advisory Committee";
-                                                break;
-                                              case 'level-5':
-                                                selectedTabRole = "Board";
-                                                break;
-                                              case 'level-1':
-                                                selectedTabRole = "Staff Manager";
-                                                break;
-                                              default:
-                                                selectedTabRole = "";
-                                            }
-
-                                            // Check if selectedTabRole matches log.role
-                                            if (selectedTabRole === log.role) {
-                                              console.log("Selected tab role matches log role: " + log.role);
-                                              isMatch = true;
-                                            } else {
-                                              console.log("Selected tab role does NOT match log role: " + log.role);
-                                              isMatch = false;
-                                            }
-                                          } else {
-                                            console.log("form match NOT found, setting isMatch to false");
-                                            isMatch = false;
-                                          }
-                                        }
-                                      });
-
-                                      return isMatch && (
-                                        <div>
-                                          {form?.forms[index]?.status !== "APPROVED" ? (
-                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                              <div
-                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                              >
-                                                Approve
-                                              </div>
-                                            </div>
-                                          ) : (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
-                                              </div>
-                                            </div>
-                                          )}
-                                        </div>
-                                      );
-                                    })()}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                          {applicationType === "NEW" ? (
-                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                              {
-                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                              }
-
-                                            </div>
-                                          ) : ''}
-                                        </div>
-                                      </div>
-                                      {applicationType === "NEW" ? (
-                                        <>
-                                          {expand?.status && expand?.index === index + 1 &&
-                                            <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                              {renderFieldsBasedOnStep(data)}
-                                            </div>
-                                          }
-                                        </>
-                                      ) : (
-                                        <>
-                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                            {renderFieldsBasedOnStepReappointment(data, index)}
-                                          </div>
-
-                                        </>
-                                      )}
                                     </div>))}
                               {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
@@ -8101,7 +8305,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : (" ")}
                 {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
-                  <div className={`${style.fixedBottom} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInRow}${style.marginTop20}`}>
                         <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
@@ -8804,24 +9008,39 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                           {expandStates.section5 && (
+                            // <>
+                            //   {logDetails?.logs
+                            //     ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
+                            //     .map((log, index) => (
+                            //       <div key={index}>
+                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                            //           Staff Manager Comments / Notes
+                            //         </div>
+                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
+                            //         {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                            //     Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                            //     </div> */}
+                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                            //           {log.notes || "-"}
+                            //         </div>
+                            //       </div>
+                            //     ))}
+
+                            // </>
                             <>
-                              {logDetails?.logs
-                                ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
-                                .map((log, index) => (
+                              {form?.notesDetails?.map((log, index) => (
                                   <div key={index}>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                      Staff Manager Comments / Notes
+                                      {log.title}
                                     </div>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
-                                    {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                                Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                                </div> */}
+                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                      {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
+                                    </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                                      {log.notes || "-"}
+                                      <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                     </div>
                                   </div>
                                 ))}
-
                             </>
                           )}
                         </div>

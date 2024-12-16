@@ -56,6 +56,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [anchorElDept, setAnchorElDept] = useState(null);
     const openDept = Boolean(anchorElDept);
     const popoverAnchorDept = useRef(null);
+    const [clickedIndex, setClickedIndex] = useState(null);
 
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
@@ -250,6 +251,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const handleCloseTextWithHover = () => {
         setAnchorElTextWithHover(null);
     };
+
+    const handleActionClick = (data, index, action) => {
+        if (action?.conditionToShow !== undefined && !eval(action.conditionToShow)) {
+          return;
+        }
+        setClickedIndex(index);
+        action.onClick(data);
+        handleClose();
+      };
 
     const id = open ? 'simple-popover' : undefined;
 
@@ -469,7 +479,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor} ${clickedIndex === index ? style.tableDataClicked : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter}`}>
@@ -769,7 +779,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         -
                                                     </div>
                                             ) : tableData?.type === "action" ? (
-                                                <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
+                                                <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }}>
                                                     {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)
                                                         : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
                                                     {showOptions && index === selectedMenuIndex && (
@@ -782,6 +792,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 vertical: 'bottom',
                                                                 horizontal: 'left',
                                                             }}
+                                                            anchorReference="anchorPosition"
+                                                            anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1150 }}
                                                         >
                                                             {/* <div className={style.actionsCard} ref={menuRef}>
                                                         {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&

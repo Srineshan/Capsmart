@@ -368,7 +368,7 @@ const Navbar = () => {
                 style.activeMenuColor
               }`}
             >
-              <p>ACTIVE STAFF</p>
+              <p>PRIVILEGED STAFF</p>
             </div>
           </Link>
 
