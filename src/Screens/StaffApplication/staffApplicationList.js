@@ -37,6 +37,7 @@ import jwt from 'jwt-decode';
 // import Checkbox from '@mui/material/Checkbox';
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import CommonDivider from "../../Components/CommonFields/CommonDivider";
 
 const StaffApplicationList = ({
   isLoading,
@@ -75,7 +76,7 @@ const StaffApplicationList = ({
   const [rejectionListData, setRejectionListData] = useState([]);
   const [declineListData, setDeclineListData] = useState([]);
   const [sortField, setSortField] = useState('DEFAULT');
-  const [sortValue, setSortValue] = useState('ASCENDING');
+  const [sortValue, setSortValue] = useState('DESCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [totalCountDept, setTotalCountDept] = useState(0);
@@ -1019,7 +1020,7 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
 
-      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Staff Manager"));
 
       // For debugging the userRole
       // data?.completedWorkflows?.forEach((workflow, index) => {
@@ -1033,8 +1034,8 @@ const StaffApplicationList = ({
 
       // Check currentLevelStatus and set color if workflow is found
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
@@ -1190,7 +1191,7 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
 
-      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Staff Manager"));
 
       // For debugging the userRole
       // data?.completedWorkflows?.forEach((workflow, index) => {
@@ -1204,13 +1205,13 @@ const StaffApplicationList = ({
 
       // Check currentLevelStatus and set color if workflow is found
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -1305,7 +1306,7 @@ const StaffApplicationList = ({
       // { type: "text", value: department },
       {
         type: "iconWithCount",
-        // value: docs,
+        value: docs,
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
@@ -1379,7 +1380,7 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
 
-      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Department Head"));
       if (workflow) {
         const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
           : workflow.currentLevelStatus === "COMPLETED" ? "green"
@@ -1531,7 +1532,7 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
 
-      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
       if (workflow) {
         const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
           : workflow.currentLevelStatus === "COMPLETED" ? "green"
@@ -1655,8 +1656,8 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
 
-      
-      const workflow = data?.completedWorkflows?.find(workflow => userRole?.includes(workflow.role));
+    
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
       const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
       if (workflow) {
         const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
@@ -1977,7 +1978,7 @@ const StaffApplicationList = ({
       { type: "text", value: applicantType },
       {
         type: "iconWithCount",
-        // value: docs,
+        value: docs,
         hoverText: docsHoverText,
         isShowHoverText: true,
         icon: docsIcon,
@@ -3107,11 +3108,11 @@ const StaffApplicationList = ({
 
         </div >
         <div>
-          <div
+          {/* <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
-          </div>
+          </div> */}
           <div className={`${style.marginTop20}`}>
             <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
@@ -3121,12 +3122,13 @@ const StaffApplicationList = ({
             />
           </div>
           <div className={`${style.borderStyleTiles}`}></div>
+          {/* <CommonDivider /> */}
           {/* <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             /> */}
           <div
-            className={`${style.spaceBetween} ${style.marginTop20} ${style.marginLeft30} `}
+            className={`${style.spaceBetween} ${style.marginTop20}`}
           >
             <StaffApplicationTiles
               getSelectedTab={getSelectedTab}

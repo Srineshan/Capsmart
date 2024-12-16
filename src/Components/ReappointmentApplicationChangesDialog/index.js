@@ -293,18 +293,18 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
               <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{","}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{" "}
-                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}
+                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                 </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
                 </div>
               </div>
               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
@@ -315,8 +315,8 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
                   </div>
                 {/* </div>
               </div> */}
@@ -352,6 +352,15 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                     <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
                     {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
                     <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                    </span>
                   </div>
                 </div>
               </div>

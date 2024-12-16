@@ -28,7 +28,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
   );
   const [tableData, setTableData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
-  const [sortValue, setSortValue] = useState("ASCENDING");
+  const [sortValue, setSortValue] = useState("DESCENDING");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 

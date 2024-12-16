@@ -20,6 +20,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userNotes, setUserNotes] = useState('');
+  const [logDetails, setLogDetails] = useState([]);
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
   const [dateTime] = useState(new Date().toISOString());
@@ -27,6 +28,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [encryptedText, setEncryptedText] = useState('');
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [name, setName] = useState('')
+  const [entity, setEntity] = useState([]);
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
@@ -34,6 +36,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
+    getLog();
   }, [applicationType]);
 
 
@@ -44,6 +47,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
+
+  const getApplicationEntity = async () => {
+      const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
+      setEntity(basicFormEntity);
+  };
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -61,6 +69,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     }
   };
 
+     const getLog = async () => {
+        const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+        setLogDetails(basicLog);
+        console.log("basicLog" +JSON.stringify(basicLog));
+        
+      };
+
   const checkApproveEnabled = () => {
     const hasValidComments = userNotes.trim() !== '';
       setIsApproveEnabled(hasValidComments);
@@ -76,7 +91,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     let temp = {
       notes: userNotes,
     };
-    const title = `${userRole}Notes/Comments`
+    const title = `${userRole}${" "}Notes/Comments`
 
     await PUT(`application-management-service/application/${id}/addNote?title=${title}`, temp)
       .then(response => {
@@ -87,6 +102,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         console.log(error);
       });
 };
+
+ const lastModifiedDate = formDetails?.lastModifiedDate;
+ const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 
   return (
 
@@ -115,6 +136,82 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
               />
             </div>
           </div>
+          <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
+                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                  </span>
+                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+                </div>
+                <div>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                </div>
+              </div>
+              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
+              <div className={style.marginTop10}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
+                  </div>
+                {/* </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                  </div>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
+                  </div> */}
+                    {
+                    entity?.multiSiteEntity && (
+                        <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>
+                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                        </span>
+                        </div>
+                    )
+                    }
+                {/* </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                     <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                    {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className={`${style.marginTop10}`}>
               <CKEditor
                 editor={ClassicEditor}

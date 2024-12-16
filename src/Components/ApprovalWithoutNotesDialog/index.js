@@ -515,17 +515,18 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{" "}
-                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "}</span>
+                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
+                  </span>
                 <div className={`${style.rejectionTextStyle}`}>{" "}{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
                 </div>
               </div>
               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
@@ -536,8 +537,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId|| "-"}</span>
                   </div>
                 {/* </div>
               </div>
@@ -570,8 +571,17 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                     <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
                     <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -637,16 +647,18 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                     </>
 
                   </div>
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10} ${style.marginBottom20}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                    )}
-                  </div>
+                  {files.length > 0 && (
+                    <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
+                      <DescriptionIcon className={`${style.docsIcon}`} />
+                      {files.length > 0 ? (
+                        files.map((file, index) => (
+                          <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                        ))
+                      ) : (
+                        <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                      )}
+                    </div>
+                  )}
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
               <CommonCheckBox

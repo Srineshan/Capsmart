@@ -16,7 +16,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [selectedOption, setSelectedOption] = useState({});
   const [tableData, setTableData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
-  const [sortValue, setSortValue] = useState("ASCENDING");
+  const [sortValue, setSortValue] = useState("DESCENDING");
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [privilegeCategories, setPrivilegeCategories] = useState([]);

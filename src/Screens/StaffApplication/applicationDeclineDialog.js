@@ -84,7 +84,7 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import style from './index.module.scss';
 import DeclineMailTemplate from './declineMailTemplate';
-import { GET, PUT,TenantID } from "../../Screens/dataSaver";
+import { GET, PUT,POST,TenantID } from "../../Screens/dataSaver";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
@@ -93,6 +93,9 @@ import CryptoJS from 'crypto-js';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { format } from "date-fns";
+import Dropzone from "react-dropzone";
+import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import DescriptionIcon from '@mui/icons-material/Description';
 
 const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
@@ -104,6 +107,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [isSigned, setIsSigned] = useState(false);
   const [encryptedText, setEncryptedText] = useState('');
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
+  const [logDetails, setLogDetails] = useState([]);
   const [isEdited, setIsEdited] = useState(false);
   const [name, setName] = useState('')
   let cookie = new Cookie();
@@ -114,6 +118,16 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [dateTime] = useState(new Date().toISOString());
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [entity, setEntity] = useState([]);
+  const [files, setFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const dropzoneStyle = {
+        width: "100%",
+        height: "auto",
+        borderWidth: 2,
+        borderColor: "rgb(102, 102, 102)",
+        borderStyle: "dashed",
+        borderRadius: 5,
+      };
 
   const getDeclineMailDialog = (value) => {
     setShowDeclineMailDialog(value);
@@ -124,6 +138,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
+    getLog();
   }, [applicationType]);
 
   useEffect(() => {
@@ -155,6 +170,52 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     setEntity(basicFormEntity);
   };
 
+   const changeHandler = async (event) => {
+        setIsLoading(true);
+        const filesArray = Array.from(event);
+        setFiles(filesArray);
+        console.log(event, 'Test');
+    
+    
+        const formData = new FormData();
+        let fileNameArray = [];
+        filesArray?.forEach(file => {
+          fileNameArray.push({ "fileName": file?.name });
+          formData.append('documents', file);
+        });
+    
+    
+    
+    
+        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+          type: "application/json"
+        }));
+    
+        fileNameArray.forEach(file => {
+          console.log("File name:", file.fileName);
+        });
+    
+        console.log("file?.name" + JSON.stringify(fileNameArray));
+        console.log(fileNameArray)
+        console.log(event?.name);
+    
+        try {
+          const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+          SuccessToaster('File Uploaded Successfully');
+          console.log(response?.data?.fileName);
+    
+    
+    
+          setIsLoading(false);
+          return response?.data;
+        } catch (error) {
+          ErrorToaster('File Upload Failed');
+          console.error(error);
+          setIsLoading(false);
+          return null;
+        }
+      };
+
   useEffect(() => {
     if (name && dateTime) {
       setEncryptedText(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
@@ -174,6 +235,13 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       console.error('Error fetching application:', error);
     }
   };
+
+   const getLog = async () => {
+          const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+          setLogDetails(basicLog);
+          console.log("basicLog" +JSON.stringify(basicLog));
+          
+        };
 
   const handleApplicationReject = async () => {
     try {
@@ -268,7 +336,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-  const lastSubmittedLog = formDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 
@@ -278,7 +346,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
         <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
           <div className={style.spaceBetween}>
             <p className={style.extensionStyle1}>Staff Not Recommended for Reappointment</p>
-            <Icon icon="cross" size={20} intent={Intent.PRIMARY} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
+            <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
           </div>
           <div>
             {/* <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle}`}>
@@ -304,17 +372,18 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}> 
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{" "}
-                  {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","}</span>
+                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                  </span>
                 <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
                 </div>
               </div>
               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
@@ -325,8 +394,8 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
                   </div>
                 {/* </div>
               </div>
@@ -359,8 +428,17 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                     <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
                   </div>
                   <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
                     <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -398,6 +476,45 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   />
                 </div>
               </div>
+              <div className={`${style.marginTop} ${style.cursorPointer}`}>
+                  <>
+                    <Dropzone
+                      style={dropzoneStyle}
+                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                      accept={{
+                        'image/jpeg': [],
+                        'image/png': [],
+                        'image/jpg': [],
+                        'application/pdf': []
+                      }}
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <section>
+                          <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <div className={style.uploadBorderStyle1}>
+                              <p className={style.uploadTextStyle1}>
+                                Upload any supporting documents
+                              </p>
+                            </div>
+                          </div>
+                        </section>
+                      )}
+                    </Dropzone>
+                  </>
+                  </div>
+                  {files.length > 0 && (
+                  <div className={`${style.displayInRow} ${style.referenceCardStyle1} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
+                    <DescriptionIcon className={`${style.docsIcon}`} />
+                    {files.length > 0 ? (
+                      files.map((file, index) => (
+                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                      ))
+                    ) : (
+                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                    )}
+                  </div>
+                  )}
               {/* <div className={`${style.marginTop10}`}>
               <CommonCheckBox
                   className={`${style.marginTop}`}
