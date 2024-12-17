@@ -126,5 +126,12 @@
     background-color: $statusgrey;
     margin-top: -3px;
     border: 1px solid $primarycolor;
+}
+
+.disabled {
     cursor: not-allowed;
+}
+
+.cursorPointer {
+    cursor: pointer;
 }

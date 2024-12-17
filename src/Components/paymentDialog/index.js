@@ -97,7 +97,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
                 </div>
             </Dialog >
             {showThirdPartyDialog && (
-                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} />
+                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} paymentListData={paymentListData} />
             )}
         </>
     )

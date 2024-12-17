@@ -560,23 +560,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
     };
-    // await PUT(
-    //   `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
-    //   temp
-    // )
-    //   .then((response) => {
-    //     console.log(response);
-    //     setBasicForm(response?.data);
-    //     SuccessToaster("Application Updated Successfully");
-    //     getPreApplication();
-    //     if (paymentListData?.length === 0) {
-    //       handleContinue();
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     ErrorToaster("Unexpected Error Updating Application");
-    //   });
+    await PUT(
+      `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
+      temp
+    )
+      .then((response) => {
+        console.log(response);
+        setBasicForm(response?.data);
+        SuccessToaster("Application Updated Successfully");
+        getPreApplication();
+        if (paymentListData?.length === 0) {
+          handleContinue();
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        ErrorToaster("Unexpected Error Updating Application");
+      });
   };
 
   const handleContinue = async () => {

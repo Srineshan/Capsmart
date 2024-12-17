@@ -101,13 +101,13 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                 >
                     {basicForm?.forms?.map((data, index) => (
                         <Tooltip title={data?.title} arrow>
-                            <div className={data?.acknowledged ? style.dotStyle : style.disabledDotStyle} onClick={data?.acknowledged ? () => navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) : () => { }}></div>
+                            <div className={data?.acknowledged ? style.dotStyle : (index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? `${style.disabledDotStyle} ${style.cursorPointer}` : `${style.disabledDotStyle} ${style.disabled}`} onClick={(data?.acknowledged || index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? () => navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) : () => { }}></div>
                         </Tooltip>
                     ))}
                 </div>
                 {/* <div className={style.sectionSplit}></div> */}
             </div>
-        </div>
+        </div >
     )
 }
 
