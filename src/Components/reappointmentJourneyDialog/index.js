@@ -15,6 +15,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+    const [errorSchema, setErrorSchema] = useState('');
     const entityName = sessionStorage.getItem('title')
     const navigate = useNavigate()
     const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory', 'PATIENT_CONCERN_DISCLOSURE', 'PRIVILEGE_STATUS_AT_HOSPITAL'])
@@ -27,7 +28,12 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
         await POST(`application-management-service/application/${applicationId}/submit`)
             .then(response => {
                 console.log(response)
-                setShowSubmitDialog(true)
+                if (response?.response?.status !== 422) {
+                    setShowSubmitDialog(true)
+                } else {
+                    ErrorToaster("Submission failed! Fill all mandatory values.");
+                    setErrorSchema(response?.response?.data)
+                }
                 // SuccessToaster("Application Submitted Successfully");
             })
             .catch((error) => {
@@ -35,12 +41,22 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                 // ErrorToaster("Unexpected Error Submitting Application");
             });
     }
+
+    console.log(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title, errorSchema)
     return (
         <>
             <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
                 <div>
                     <div className={Classes.DIALOG_BODY}>
-                        <div className={style.heading}>{title}</div>
+                        <div className={style.spaceBetween}>
+                            <div className={style.heading}>{title}</div>
+                            {errorSchema !== '' && (
+                                <div className={style.displayInRow}>
+                                    <div className={style.completedItemsTextRed}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
+                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }} />
+                                </div>
+                            )}
+                        </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             <div className={style.verticalAlignCenter}>
                                 <img src={img} alt="step" className={style.journeyImg} />

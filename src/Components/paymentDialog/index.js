@@ -88,8 +88,8 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
-                                // getIsOpen(true); setShowThirdPartyDialog(true)
-                                handleClick()
+                                getIsOpen(true); setShowThirdPartyDialog(true)
+                                // handleClick()
                             }}>CONTINUE</div>
                         </div>
                     </div>

@@ -80,6 +80,38 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     }
   };
 
+  const savePaymentInfo = async (data) => {
+    let temp = {
+      "payee": {
+        "name": {
+          "firstName": data?.card?.name,
+          "lastName": "string",
+          "middleName": "string"
+        },
+        "email": {
+          "officialEmail": "string"
+        },
+        "mobileNumber": "string",
+        "address": {
+          "streetName": "string",
+          "city": "string",
+          "province": "string",
+          "pinCode": "string"
+        }
+      },
+      "fee": data?.amount,
+      "tax": 0,
+      "total": data?.amount,
+      "paymentCompleted": true
+    }
+    // try {
+    //   await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+    //   console.log(response);
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  }
+
   const getPaymentTransaction = async (id) => {
     const API_URL = `https://api.na.bambora.com/v1/payments/${id}`;
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
@@ -106,6 +138,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       setPaymentStatus(
         `Payment Successful! Transaction ID: ${response.data.id}`
       );
+      savePaymentInfo(response.data)
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
@@ -159,7 +192,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
               onFocus={handleInputFocus}
               className={`${style.marginTop} ${style.fullWidth}`}
               inputProps={{
-                pattern: "[\\d| ]{16,22}", // Accepts digits and spaces, length 16-22
+                pattern: "[\\d| ]{16,22}",
               }}
             />
           </div>
@@ -196,7 +229,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
               onFocus={handleInputFocus}
               className={style.marginTop}
               inputProps={{
-                pattern: "\d\d/\d\d", // Accepts digits and spaces, length 16-22
+                pattern: "\d\d/\d\d",
               }}
             />
             <TextField
@@ -208,7 +241,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
               onFocus={handleInputFocus}
               className={style.marginTop}
               inputProps={{
-                pattern: "\d{3,4}", // Accepts digits and spaces, length 16-22
+                pattern: "\d{3,4}",
               }}
             />
           </div>
