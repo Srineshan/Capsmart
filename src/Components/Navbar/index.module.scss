@@ -1,6 +1,10 @@
 @import '../../styles/mixins.scss';
 @import "../../index.scss";
 
+.displayInRow{
+    display: flex;
+}
+
 .navbarStyle {
     top: 0px;
     left: 0px;
@@ -45,11 +49,13 @@
 }
 
 .logoutStyle {
-    margin: 25px 0 0 30px;
+    // margin: 25px 0 0 30px;
     padding: 0 15px;
-    font: normal normal bold 15px/25px proxima-nova;
+    // font: normal normal bold 15px/25px proxima-nova;
+    font: normal normal 600 20px proxima-nova;
     letter-spacing: 1.5px;
     color: #646D82;
+    align-content: center;
 }
 
 .activeMenuColor {
@@ -70,8 +76,10 @@
 .logoutIcons {
     width: 40px;
     height: 40px;
-    margin: 20px 20px 0 -10px;
+    // margin: 20px 20px 0 -10px;
     cursor: pointer;
+    align-self: center;
+    margin-right: 20px;
 }
 
 .notificationIcon {
@@ -123,8 +131,39 @@
 
 .centerAlign{
     align-self: center;
+    margin: 20px;
 }
 
 .logoutStyle:hover {
     background-color: #F0F2F5;
+    color: $primarycolor;
+    opacity: 0.7;
+  }
+
+// .logOutTextStyle{
+//     font: normal normal 600 18px proxima-nova;
+// }
+
+// .logOutTextStyle:hover{
+//     font: normal normal 600 18px proxima-nova;
+//     color: $primarycolor;
+//     transition: all 0.3s ease;
+// }
+
+.iconSize{
+    text-align: left;
+    color: $textcolor;
+    opacity: 0.7;
+}
+
+.iconSize1{
+    text-align: left;
+    color: $textcolor;
+    opacity: 0.7;
+}
+
+.iconSize1:hover {
+    // background-color: #F0F2F5;
+    color: $primarycolor;
+    opacity: 0.7;
   }

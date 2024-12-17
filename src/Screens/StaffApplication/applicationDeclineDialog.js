@@ -376,10 +376,10 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
                   : ""}{", "}
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{",  "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                   </span>
-                <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
@@ -547,7 +547,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
               </div>
             </div> */}
             {/* </div> */}
-            <div className={`${style.displayInRow} ${style.alignCenter} ${style.marginTop10}`}>
+            {/* <div className={`${style.displayInRow} ${style.alignCenter} ${style.marginTop10}`}>
               <button
                 className={`${style.buttonStyle} ${style.sendNotificationsButtonWidth} ${style.floatRight} ${style.cursorPointer}`}
                 // onClick={handleApplicationReject}
@@ -561,6 +561,9 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
               >
                 CONTINUE
               </button>
+            </div> */}
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
+               <div className={style.reviewButton}>CONTINUE</div>
             </div>
           </div>
         </div>

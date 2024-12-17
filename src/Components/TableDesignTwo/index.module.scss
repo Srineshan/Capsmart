@@ -368,3 +368,31 @@
         background-color: #ffffff;
     }
 }
+
+.tableDataClicked {
+    background-color: #D3D3D3; /* Example color */
+  }
+
+  .tableDataUnclicked{
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+  }
+
+  .buttonStyle {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.buttonStyle:hover {
+    background-color: black;
+    color: white;
+}

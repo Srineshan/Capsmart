@@ -422,6 +422,33 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const classes = useStyles();
 
+    function checkRoleVisibility(actionsData, userRole) {
+        if (!actionsData.hideForRoles &&
+            !actionsData.hideForRoles2 &&
+            !actionsData.showForRoles &&
+            !actionsData.showForRoles2) {
+            return true;
+        }
+        if (actionsData.hideForRoles?.includes(userRole)) {
+            return false;
+        }
+        if (actionsData.hideForRoles2?.includes(userRole)) {
+            return false;
+        }
+        if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
+            return true;
+        }
+        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
+            return true;
+        }
+        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
+            return false;
+        }
+        return true;
+    }
+
+    const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, userRole));
+
     useEffect(() => {
         setUserDetails();
     }, [users?.id])
@@ -479,7 +506,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor} ${clickedIndex === index ? style.tableDataClicked : ''}`} key={index}>
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}  ${clickedIndex === index ? style.tableDataClicked : style.tableDataUnclicked}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter}`}>
@@ -779,10 +806,36 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         -
                                                     </div>
                                             ) : tableData?.type === "action" ? (
-                                                <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }}>
-                                                    {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)
-                                                        : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
-                                                    {showOptions && index === selectedMenuIndex && (
+                                                <div
+                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`}
+                                                    onClick={(visibleActions[0]?.conditionToShow !== undefined && visibleActions?.length === 1)
+                                                        ? eval(visibleActions[0]?.conditionToShow)
+                                                            ? () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }
+                                                            : () => { }
+                                                        : () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }}
+                                                >
+                                                    {(visibleActions[0]?.conditionToShow !== undefined && visibleActions?.length === 1)
+                                                        ? eval(visibleActions[0]?.conditionToShow)
+                                                            ? (
+                                                                <div
+                                                                    className={`${style.specificActionCard} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
+                                                                    onClick={() => { visibleActions[0]?.onClick(data); handleClose(); }} key={0}
+                                                                >
+                                                                    {visibleActions[0]?.data}
+                                                                </div>
+                                                            )
+                                                            : (
+                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                            )
+                                                        : visibleActions?.length === 1 ? (
+                                                            <span className={style.singleActionText}>
+                                                                {visibleActions[0]?.data}
+                                                            </span>
+                                                        ) : (
+                                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                        )
+                                                    }
+                                                    {showOptions && index === selectedMenuIndex && visibleActions?.length > 1 && (
                                                         <Popover
                                                             id={id}
                                                             open={open}
@@ -795,84 +848,19 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                             anchorReference="anchorPosition"
                                                             anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1150 }}
                                                         >
-                                                            {/* <div className={style.actionsCard} ref={menuRef}>
-                                                        {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}  onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                            :
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                        )}
-                                                    </div> */}
-                                                            {/* <div className={style.actionsCard} ref={menuRef}>
-                                                            {actions?.map((actionsData, actionsIndex) =>  actionsData?.isParagraph ? 
-                                                                ( <><div className={`${style.divider}`}></div><div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div></>
-                                                                ) : actionsData?.conditionToShow !== undefined ? (eval(actionsData?.conditionToShow) && 
-                                                                ( <div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => {actionsData?.onClick(data); handleClose() }} key={actionsIndex}> {actionsData?.data} </div>))
-                                                                : 
-                                                                (<div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex} > {actionsData?.data} </div>)
-                                                            )}
-                                                    </div> */}
                                                             <div className={style.actionsCard} ref={menuRef}>
-                                                                {actions?.map((actionsData, actionsIndex) => {
-
-                                                                    // if ((actionsData.hideForRoles?.includes("Staff Manager")) || actionsData.hideForRoles?.includes("Department Head")) {
-                                                                    // return null;
-                                                                    // }
-
-
-                                                                    // console.log("hideForRoles" + actionsData.hideForRoles);
-
-                                                                    const checkRoleVisibility = (actionsData, userRole) => {
-
-                                                                        if (!actionsData.hideForRoles &&
-                                                                            !actionsData.hideForRoles2 &&
-                                                                            !actionsData.showForRoles &&
-                                                                            !actionsData.showForRoles2) {
-                                                                            return true;
-                                                                        }
-
-
-                                                                        if (actionsData.hideForRoles?.includes(userRole)) {
-                                                                            return false;
-                                                                        }
-
-                                                                        if (actionsData.hideForRoles2?.includes(userRole)) {
-                                                                            return false;
-                                                                        }
-
-
-                                                                        if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
-                                                                            return true;
-                                                                        }
-
-                                                                        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
-                                                                            return true;
-                                                                        }
-
-                                                                        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
-                                                                            return false;
-                                                                        }
-
-                                                                        return true;
-                                                                    };
-
-                                                                    // Usage
-                                                                    if (!checkRoleVisibility(actionsData, userRole)) {
-                                                                        return null;
-                                                                    }
-
-
+                                                                {visibleActions?.map((actionsData, actionsIndex) => {
                                                                     return actionsData?.isParagraph ? (
-                                                                        <>
+                                                                        <React.Fragment key={actionsIndex}>
                                                                             <div className={`${style.divider}`}></div>
-                                                                            <div className={`${style.isParagraph}`} key={actionsIndex}>
+                                                                            <div className={`${style.isParagraph}`}>
                                                                                 {actionsData.data}
                                                                             </div>
-                                                                        </>
+                                                                        </React.Fragment>
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
                                                                         eval(actionsData?.conditionToShow) && (
                                                                             <div
-                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                                    }`}
+                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                                 onClick={() => {
                                                                                     actionsData?.onClick(data);
                                                                                     handleClose();
@@ -884,8 +872,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         )
                                                                     ) : (
                                                                         <div
-                                                                            className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                                }`}
+                                                                            className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                             onClick={() => {
                                                                                 actionsData?.onClick(data);
                                                                                 handleClose();
@@ -897,11 +884,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     );
                                                                 })}
                                                             </div>
-
                                                         </Popover>
                                                     )}
                                                 </div>
-                                            )
+                                                 ) 
                                                 //  : tableData?.type === "delete" ? (
                                                 //     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
                                                 //         {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={() => { actionsData?.onClick(data); handleClose() }} aria-describedby={id} />)
@@ -917,7 +903,24 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                 //         )} */}
                                                 //     </div>
                                                 // ) 
-                                                : ''
+                                                :  (
+                                                    visibleActions?.length === 1 ? (
+                                                        <div
+                                                        className={`${style.singleActionText} ${style.cursorPointer} ${style.buttonStyle}`}
+                                                        onClick={() => {
+                                                            console.log(visibleActions[0]?.onClick); 
+                                                            // if (visibleActions[0]?.onClick) {
+                                                                visibleActions[0]?.onClick(data);
+                                                                handleClose();
+                                                            // }
+                                                        }}
+                                                        key={0}
+                                                    >
+                                                        {visibleActions[0]?.data}
+                                                    </div>
+                                                    ) : null
+                                                    
+                                                    )
                                 ))}
                             </div >
                         </>

@@ -527,7 +527,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>
             <div
-            className={`${style.reviewButtonStyle} ${style.cursorPointer} ${style.marginLeft}`}
+            className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer} ${style.marginLeft}`}
             onClick={onClickApproveMoveFunction}
             style={{ 
               pointerEvents: isApproveEnabled ? 'auto' : 'none', 

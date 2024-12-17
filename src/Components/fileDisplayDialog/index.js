@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
-import ExpandIcon from '@mui/icons-material/Expand';
+import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 
 
 import style from './index.module.scss'
@@ -16,17 +17,31 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
     };
 
     return (
-        <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+        <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>
                 <div className={Classes.DIALOG_BODY}>
+                {/* <div className={` ${isExpanded ? style.dialog :Classes.DIALOG_BODY}`}> */}
                     <div className={style.spaceBetween}>
-                        <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} (${file?.fileUploaded})` : file?.fileName !== undefined ? ` (${file?.fileName})` : ''}</div>
+                        <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
                         <div className={style.displayInRow}>
-                        <ExpandIcon
+                            {!isExpanded ? (
+                            <FullscreenSharpIcon
+                            className={`${style.iconStyle} ${style.cursorPointer} `}
+                            onClick={toggleExpand}
+                            sx={{ color: '#06617A' }} 
+                        /> ) : (
+                            <FullscreenExitIcon
+                            className={`${style.iconStyle} ${style.cursorPointer} `}
+                            onClick={toggleExpand}
+                            sx={{ color: '#06617A' }} 
+                        />  
+                        )
+                            }
+                        {/* <FullscreenSharpIcon
                                 className={`${style.iconStyle} ${style.cursorPointer} `}
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
-                            />
+                            /> */}
                             <img
                                 src={CrossPink}
                                 alt="cross"
@@ -37,7 +52,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                     </div>
                     <div className={style.marginTop}>
                         {file?.fileType === 'application/pdf' ? (
-                            <iframe src={file?.fileURL} width="100%" height="600px"></iframe>
+                            <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>
                         ) : file?.fileType?.startsWith("image/") ? (
                             <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
                         ) : ''}
