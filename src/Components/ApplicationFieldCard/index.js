@@ -2101,6 +2101,10 @@ const ApplicationFieldCard = ({
           }
         case "fileupload":
           if (isPOD) {
+            const fieldValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+            const fileURL = fieldValue?.fileURL;
+            const fileValid = fileURL && fileURL !== "" && fileURL !== null;
+            if (fileValid) {
             return <div key={fieldKey}>
               <div className={`${style.uploadButton}`}>
                 <div className={style.uploadGrid}>
@@ -2152,7 +2156,7 @@ const ApplicationFieldCard = ({
                 </div>
               </div>
             </div>;
-          } else {
+          }}else {
             console.log(
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
               "filecheck"

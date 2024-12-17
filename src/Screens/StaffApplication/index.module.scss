@@ -1394,9 +1394,9 @@ body::-webkit-scrollbar {
 
 .leftAlignTextStyle {
   text-align: left;
-  font: normal normal bold 16px/23px proxima-nova;
+  font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: #000000;
   text-transform: uppercase;
   opacity: 1;
 }
@@ -2425,8 +2425,8 @@ select {
 
 .twoColumnGridInner1 {
   display: grid;
-  grid-template-columns: 45% 55%;
-  grid-gap: 20px;
+  grid-template-columns: 48% 55%;
+  grid-gap: 10px;
   justify-items: start;
 }
 
@@ -4983,4 +4983,51 @@ input[type="number"] {
   bottom: 0;
   width: 23%;
   z-index: 10;
+}
+
+.marginLeft2{
+  margin-left: 2px;
+}
+
+.reviewButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.reviewButton {
+  background-color: $primarycolor;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+}
+
+.searchContainer {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 16px;
+  opacity: 1;
+  cursor: pointer;
+  padding: 15px;
+}
+
+.searchIcon {
+  color: $primarycolor; 
+  margin-right: 10px; 
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.notesIcon{
+  color: $primarycolor
 }

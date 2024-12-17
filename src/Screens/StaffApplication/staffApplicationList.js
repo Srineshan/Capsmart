@@ -38,6 +38,8 @@ import jwt from 'jwt-decode';
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
+import CommonInputField from "../../Components/CommonFields/CommonInputField";
+// import SearchIcon from '@mui/icons-material/Search';
 
 const StaffApplicationList = ({
   isLoading,
@@ -525,7 +527,7 @@ const StaffApplicationList = ({
       getRejectionCounts();
       getDeclineData();
     }
-  }, [applicationType]);
+  }, [applicationType,showNotesDialog]);
 
   useEffect(() => {
     if (applicationIsLocum) {
@@ -731,10 +733,11 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount,showNotesDialog]);
+  }, [selectedTab, sortField, sortValue, page, totalCount]);
 
   useEffect(() => {
     getWorkflowUserData(showNotesDialog);
+    // getNotesDialog();
   }, [showNotesDialog]);
 
   // useEffect(() => {
@@ -2453,11 +2456,11 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickNotesDialog,
     },
-    {
-      data: "Go to Task List",
-      requiredValue: "boolean",
-      onClick: onClickProcessingTaskFunction,
-    },
+    // {
+    //   data: "Go to Task List",
+    //   requiredValue: "boolean",
+    //   onClick: onClickProcessingTaskFunction,
+    // },
     {
       data: "Update Staff Status",
       requiredValue: "boolean",
@@ -2580,7 +2583,7 @@ const StaffApplicationList = ({
     // },
     { data: userRole?.includes("Staff Manager") || userRole?.includes("Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog , hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
-    { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
+    // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
       data: "Request For Clarification",
@@ -2638,7 +2641,7 @@ const StaffApplicationList = ({
   ]:[
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
@@ -2674,7 +2677,7 @@ const StaffApplicationList = ({
   ] : [
     { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
+    // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
       data: "Request For Clarification",
       requiredValue: "boolean",
@@ -2893,6 +2896,19 @@ const StaffApplicationList = ({
                   </div>
                 </div>
               ) : null}
+               <div className={`${style.searchContainer}`}>
+                  <SearchOutlinedIcon className={`${style.searchIcon}`} 
+                    sx={{
+                      fontSize: 25,
+                      // color: isPrintClicked ? "#fff" : "#06617A",
+                    }}
+                  />
+                  <CommonInputField
+                    type="text"
+                    placeholder="Search By Staff Name"
+                    className={`${style.searchInput}`}
+                  />
+                </div>
 
               {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
@@ -3140,7 +3156,7 @@ const StaffApplicationList = ({
             />
 
             <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              <div
+              {/* <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight20}`}
               >
@@ -3150,7 +3166,7 @@ const StaffApplicationList = ({
                     color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
-              </div>
+              </div> */}
               <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight}`}
