@@ -1154,6 +1154,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
@@ -1218,6 +1219,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
@@ -1299,6 +1301,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
@@ -1442,6 +1445,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
@@ -1569,6 +1573,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,
@@ -1703,6 +1708,7 @@ const ApplicationFieldCard = ({
                         : false)) &&
                     "*"}
                 </div>
+                <hr className={style.borderLine} />
                 <div className={style.lableReadOnlyStyleInPOD}>
                   {getValueByPath(
                     basicForm,

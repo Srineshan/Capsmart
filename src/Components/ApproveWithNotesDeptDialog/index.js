@@ -17,6 +17,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat,selectedTab }) => {
   let cookie = new Cookie();
@@ -54,7 +55,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       borderStyle: "dashed",
       borderRadius: 5,
     };
-
+    const [isLoadingImage, setIsLoadingImage] = useState(false);
     const isApproveEnabled = 
     userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
@@ -183,8 +184,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
 
   const getApplication = async () => {
     try {
+      setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      setIsLoadingImage(false);
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -373,8 +376,16 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   // }
 
   return (
-  
-    
+    <>
+    {isLoadingImage && (
+         <div
+           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+         >
+           <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+         </div>
+       )}
+   
+    {!isLoadingImage && (
     <Dialog
       isOpen={getIsOpen}
       onClose={() => getIsOpen(false)}
@@ -461,6 +472,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     </>
 
                   </div>
+                  {files.length > 0 && (
                   <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10} ${style.marginBottom20}`}>
                     <DescriptionIcon className={`${style.docsIcon}`} />
                     {files.length > 0 ? (
@@ -471,6 +483,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                       <div className={`${style.marginLeft20}`}>No documents uploaded</div>
                     )}
                   </div>
+                   )}
             <div className={`${style.twoColumnGrid}`}>
               <div>
                 <CommonDateField
@@ -534,14 +547,15 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               opacity: isApproveEnabled ? 1 : 0.5 
             }}
           >
-            <div className={style.reviewButton}>SENT FOR REVIEW</div>
+            <div className={style.reviewButton}>SEND FOR REVIEW</div>
           </div>
             </div>
           </div>
         </div>
       </div>
     </Dialog>
-    
+    )}
+</>
   );
 };
 

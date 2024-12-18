@@ -183,8 +183,9 @@ import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
-const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
+const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -199,6 +200,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   const [applicationType, setApplicationType] = useState(() => 
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -208,8 +210,10 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   }, [applicationType]);
 
   const getApplication = async () => {
+    setIsLoadingImage(true);
     const { data: basicForm } = await GET(`application-management-service/application/${id}`);
     setFormDetails(basicForm);
+    setIsLoadingImage(false)
   };
 
   const getApplicationEntity = async () => {
@@ -252,8 +256,15 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
   }
 
   return (
-  
-    
+    <>
+    {isLoadingImage && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+    {!isLoadingImage && (
     <Dialog
       isOpen={getIsOpen}
       onClose={() => getIsOpen(false)}
@@ -376,13 +387,13 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
             {/* {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => ( */}
               <>
               <div className={style.marginTop}>
-                <div className={style.commentsNotesHeadingFontStyle}>
-                 Reappointment Application has updates and changes that require verification:
-                </div>
                 {/* <div className={style.commentsNotesHeadingFontStyle}>
-                Reappointment Application has been submitted with all required documents for processing.
+                 Reappointment Application has updates and changes that require verification:
                 </div> */}
-                <div>
+                <div className={style.commentsNotesHeadingFontStyle}>
+                Reappointment Application has been submitted with all required documents for processing.
+                </div>
+                {/* <div>
                     {formDetails?.formSchemas?.map((item, index) => (
                         <div key={item?.id} className={`${style.commentsNotesFontStyle} ${style.marginTop10}`}>
                         <div className={`${style.twoColumnGridInner1}`}>
@@ -391,7 +402,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
                         </div>
                         </div>
                     ))}
-                    </div>
+                    </div> */}
               </div>
               </>
              {/* ))} */}
@@ -413,7 +424,8 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
         </div>
       </div>
     </Dialog>
-    
+    )}
+    </>
   );
 };
 

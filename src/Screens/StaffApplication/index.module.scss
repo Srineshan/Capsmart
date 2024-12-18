@@ -290,6 +290,14 @@ body::-webkit-scrollbar {
   padding: 10px 20px 20px 20px;
 }
 
+.applicationCardStyleReappointment {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  border: 0.4000000059604645px solid #e5e6e6;
+  padding: 20px;
+}
+
 .flex {
   display: flex;
 }
@@ -889,7 +897,8 @@ body::-webkit-scrollbar {
 
 .applicantStaffReappointGrid {
   display: grid;
-  grid-template-columns: 2% 18% 15% 6% 5% 7% 9% 12% 16% 3%;
+  // grid-template-columns: 2% 18% 15% 6% 5% 7% 9% 12% 16% 3%;
+  grid-template-columns: 2% 20% 16% 8% 6% 8% 13% 16% 5%;
   grid-gap: 1%;
 }
 
@@ -901,7 +910,8 @@ body::-webkit-scrollbar {
 
 .departmentHeadStaffGrid {
   display: grid;
-  grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
+  // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
+  grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
   grid-gap: 1%;
 }
 
@@ -920,7 +930,8 @@ body::-webkit-scrollbar {
 
 .applicationStaffReappointGrid {
   display: grid;
-  grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
+  // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
+  grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
   grid-gap: 1%;
 }
 
@@ -933,7 +944,8 @@ body::-webkit-scrollbar {
 .macStaffReappointGrid {
   display: grid;
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
-  grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
+  // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
+  grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
   grid-gap: 1%;
 }
 
@@ -946,7 +958,8 @@ body::-webkit-scrollbar {
 .bodStaffReappointGrid {
   display: grid;
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
-  grid-template-columns: 20% 15% 14% 6% 6% 8% 9% 11% 5%;
+  // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
+  grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
   grid-gap: 1%;
 }
 
@@ -1396,7 +1409,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #000000;
+  color: $textcolor;
   text-transform: uppercase;
   opacity: 1;
 }
@@ -1487,7 +1500,7 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: black;
   text-transform: capitalize;
   opacity: 0.6;
 }
@@ -2414,6 +2427,26 @@ select {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
+}
+
+.twoColReappointment {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.privilegeContentCard {
+  background: #1D24370A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.privilegeHeadingReappointment {
+  text-align: left;
+  font: normal normal medium 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
 }
 
 .twoColumnGridInner {
@@ -4636,7 +4669,7 @@ input[type="number"] {
 
 .uploadYourDocGrid {
   display: grid;
-  grid-template-columns: 3% 23% 7% 28% 15% 10% 7%;
+  grid-template-columns: 3% 30% 22% 18% 15% 10% 7%;
   gap: 1%;
 }
 
@@ -4644,6 +4677,7 @@ input[type="number"] {
   height: 20px;
   width: auto;
   object-fit: contain;
+  justify-content: center;
 }
 
 .tableGridCME {
@@ -4798,6 +4832,36 @@ input[type="number"] {
   font: normal normal bold 18px/24px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
+}
+
+.privilegeTitleStyleReappointment {
+  text-align: left;
+  font: normal normal bold 16px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: $textgrey;
+}
+
+.privilegeTitleStyleReappointment {
+  text-align: left;
+    font: normal normal bold 16px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+}
+
+.privilegeCard {
+  background: #14358F00 0% 0% no-repeat padding-box;
+  // box-shadow: 0px 0px 8px #040B2014;
+  // border: 0.4000000059604645px solid #5087D9;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 99999 !important;
+}
+
+.privilegeHeading {
+  text-align: left;
+  font: normal normal medium 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
 }
 
 .padding30 {
@@ -4986,7 +5050,7 @@ input[type="number"] {
 }
 
 .marginLeft2{
-  margin-left: 2px;
+  margin-left: 4px;
 }
 
 .reviewButtonContainer {
@@ -5030,4 +5094,34 @@ input[type="number"] {
 
 .notesIcon{
   color: $primarycolor
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter1 {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
 }

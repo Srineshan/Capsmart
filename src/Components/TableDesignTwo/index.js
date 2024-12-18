@@ -509,7 +509,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                             <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}  ${clickedIndex === index ? style.tableDataClicked : style.tableDataUnclicked}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
-                                        <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter}`}>
+                                        <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
                                                 <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
@@ -819,7 +819,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                             ? (
                                                                 <div
                                                                     className={`${style.specificActionCard} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
-                                                                    onClick={() => { visibleActions[0]?.onClick(data); handleClose(); }} key={0}
+                                                                    onClick={() => { 
+                                                                        visibleActions[0]?.onClick(data); 
+                                                                        handleClose(); 
+                                                                    }} 
+                                                                    key={0}                                            
                                                                 >
                                                                     {visibleActions[0]?.data}
                                                                 </div>
@@ -828,7 +832,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                             )
                                                         : visibleActions?.length === 1 ? (
-                                                            <span className={style.singleActionText}>
+                                                            <span className={`${style.singleActionText}`}  
+                                                            // onClick={() => { 
+                                                            //     visibleActions[0]?.onClick(data); 
+                                                            //     handleClose(); 
+                                                            // }} 
+                                                            key={0}>
                                                                 {visibleActions[0]?.data}
                                                             </span>
                                                         ) : (
@@ -846,7 +855,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 horizontal: 'left',
                                                             }}
                                                             anchorReference="anchorPosition"
-                                                            anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1150 }}
+                                                            anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1120 }}
                                                         >
                                                             <div className={style.actionsCard} ref={menuRef}>
                                                                 {visibleActions?.map((actionsData, actionsIndex) => {
@@ -918,9 +927,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     >
                                                         {visibleActions[0]?.data}
                                                     </div>
-                                                    ) : null
-                                                    
-                                                    )
+                                                    ) : null  )
                                 ))}
                             </div >
                         </>
