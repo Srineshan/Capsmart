@@ -818,7 +818,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         ? eval(visibleActions[0]?.conditionToShow)
                                                             ? (
                                                                 <div
-                                                                    className={`${style.specificActionCard} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
+                                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
                                                                     onClick={() => { 
                                                                         visibleActions[0]?.onClick(data); 
                                                                         handleClose(); 
@@ -833,10 +833,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                             )
                                                         : visibleActions?.length === 1 ? (
                                                             <span className={`${style.singleActionText}`}  
-                                                            // onClick={() => { 
-                                                            //     visibleActions[0]?.onClick(data); 
-                                                            //     handleClose(); 
-                                                            // }} 
+                                                            onClick={() => { 
+                                                                visibleActions[0]?.onClick(data); 
+                                                                handleClose(); 
+                                                            }} 
                                                             key={0}>
                                                                 {visibleActions[0]?.data}
                                                             </span>
@@ -869,7 +869,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
                                                                         eval(actionsData?.conditionToShow) && (
                                                                             <div
-                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
+                                                                                className={`${style.tableDataFontStyle1} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                                 onClick={() => {
                                                                                     actionsData?.onClick(data);
                                                                                     handleClose();

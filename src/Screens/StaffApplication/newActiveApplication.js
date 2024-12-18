@@ -2671,10 +2671,11 @@ const NewActiveApplication = ({
               src={`${
                 form?.forms?.[formIndex]?.uploadedFiles[
                   form?.forms?.[formIndex]?.uploadedFiles?.length - 1
-                ]?.fileURL}#toolbar=0&view=FitH`
+                ]?.fileURL}#toolbar=0&view=FitV`
               }
               width="100%"
               height="600px"
+              frameborder="0"
               // style={{ width: "100%", height: "600px", objectFit: "cover }}
             ></iframe>
           </>
@@ -3037,7 +3038,9 @@ const NewActiveApplication = ({
                 overflowY: "auto",
                 scrollbarWidth: "thin",
                 scrollbarColor: "gray transparent",
-              }}>
+              }}
+              // className={style.calcHeight}
+              >
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
