@@ -15,6 +15,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -50,6 +51,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       borderStyle: "dashed",
       borderRadius: 5,
     };
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -170,8 +172,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplication = async () => {
     try {
+      setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      setIsLoadingImage(false)
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -489,7 +493,15 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   }
 
   return (
-
+<>
+ {isLoadingImage && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+ {!isLoadingImage && (
 
     <Dialog
       isOpen={getIsOpen}
@@ -548,7 +560,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                   </span>
-                <div className={`${style.rejectionTextStyle}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
                 </div>
                 <div>
@@ -761,7 +773,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         </div>
       </div>
     </Dialog>
-
+)}
+</>
   );
 };
 

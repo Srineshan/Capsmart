@@ -40,6 +40,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
 import CommonInputField from "../../Components/CommonFields/CommonInputField";
 // import SearchIcon from '@mui/icons-material/Search';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const StaffApplicationList = ({
   isLoading,
@@ -95,6 +96,7 @@ const StaffApplicationList = ({
   const [applicationIsLocum, setApplicationIsLocum] = useState(() =>
     sessionStorage.getItem('isLocum') || false
   );
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const handleSelectAllClick = () => {
     if (checkedIds.length === tableData.length) {
@@ -131,7 +133,7 @@ const StaffApplicationList = ({
     // "Data & Disclosures",
     "CRs",
     "Notes",
-    "Task list",
+    // "Task list",
     "Submitted",
     "Last Updated",
     "",
@@ -144,7 +146,7 @@ const StaffApplicationList = ({
     "Docs",
     "CRs",
     "Notes",
-    "Task list",
+    // "Task list",
     "Last Updated",
     ""
   ];
@@ -202,7 +204,7 @@ const StaffApplicationList = ({
     "Docs",
     "CRs",
     "Notes",
-    "Task List",
+    // "Task List",
     "CC Status",
     "",
   ];
@@ -227,7 +229,7 @@ const StaffApplicationList = ({
       // "Ref",
       "CRs",
       "Notes",
-      "Task List",
+      // "Task List",
       "CC Status",
       "MAC Status",
       "",
@@ -309,7 +311,6 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    false,
     true,
     false
   ]
@@ -319,7 +320,6 @@ const StaffApplicationList = ({
     true,
     true,
     true,
-    false,
     false,
     false,
     false,
@@ -789,12 +789,14 @@ const StaffApplicationList = ({
         console.log("LOCUM data length", response?.data?.numberOfElements);
         return response?.data.staffs || [];
       } else {
+        setIsLoadingImage(true);
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}`
         );
         console.log("Application data", response?.data.applications);
         setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
+        setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
         return response?.data.applications || [];
       }
@@ -1227,7 +1229,7 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
@@ -1240,10 +1242,12 @@ const StaffApplicationList = ({
       //   />
       // );
 
-      if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
-      } else {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
@@ -1274,15 +1278,15 @@ const StaffApplicationList = ({
       // ]);
       notesHoverText.push(notesHoverTextArray);
 
-      if (data?.tasks?.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
-      } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      }  else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
-      }
+      // if (data?.tasks?.completedCount === 0) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
+      // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      // }  else {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
+      // }
 
-      taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
+      // taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
 
       data?.logs?.forEach((log) => {
         if (log?.workflowStatus === "SUBMITTED") {
@@ -1329,11 +1333,11 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: notesIcon,
       },
-      {
-        type: "iconWithCount",
-        value: taskListStatus,
-        icon: taskListDotColor
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: taskListStatus,
+      //   icon: taskListDotColor
+      // },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
@@ -1407,17 +1411,19 @@ const StaffApplicationList = ({
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
-      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
       docsHoverText.push(docHoverTextArray);
-      if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
-      } else {
-        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />);
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -1443,15 +1449,15 @@ const StaffApplicationList = ({
       // ]);
       notesHoverText.push(notesHoverTextArray);
 
-      if (data?.tasks?.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
-      } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      }  else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
-      }
+      // if (data?.tasks?.completedCount === 0) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
+      // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      // }  else {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
+      // }
 
-      taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
+      // taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -1493,11 +1499,11 @@ const StaffApplicationList = ({
         isShowHoverText: true,
         icon: notesIcon,
       },
-      {
-        type: "iconWithCount",
-        value: taskListStatus,
-        icon: taskListDotColor
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: taskListStatus,
+      //   icon: taskListDotColor
+      // },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
@@ -1523,7 +1529,6 @@ const StaffApplicationList = ({
     cc = [];
     ccdate = [];
     lastUpdatedOn = [];
-
     action = [];
 
     tableData?.map((data) => {
@@ -1909,14 +1914,18 @@ const StaffApplicationList = ({
       //     format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       //   )
       // } else { ccapproval.push("-") }
-      docs.push(data?.documents?.uploadedCount + "/" + data?.documents?.uploadedCount || "");
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       const documentDetails = data?.documents?.documentDetails || [];
             const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
             docsHoverText.push(docHoverTextArray);
 
-      if (data?.documents?.uploadedCount === data?.documents?.uploadedCount) {
-              docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }} />);
-            }
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
@@ -1945,15 +1954,15 @@ const StaffApplicationList = ({
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
       //   )
       // } else { cosapproval.push("-") }
-      if (data?.tasks?.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
-      } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      }  else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
-      }
+      // if (data?.tasks?.completedCount === 0) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
+      // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      // }  else {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
+      // }
 
-      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       if (workflowCredRole) {
         const color = workflowCredRole.currentLevelStatus === "IN_PROGRESS" ? "yellow"
           : workflowCredRole.currentLevelStatus === "COMPLETED" ? "green"
@@ -2001,7 +2010,7 @@ const StaffApplicationList = ({
       },
       // { type: "text", value: ccapproval },
       // { type: "text", value: cosapproval },
-      { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
+      // { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
       {
         type: "dot",
         value: cc
@@ -2132,15 +2141,15 @@ const StaffApplicationList = ({
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
       //   )
       // } else { cosapproval.push("-") }
-      if (data?.tasks?.completedCount === 0) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
-      } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
-      }  else {
-        taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
-      }
+      // if (data?.tasks?.completedCount === 0) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
+      // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }} />);
+      // }  else {
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
+      // }
 
-      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       if (workflowCredRole) {
         const color = workflowCredRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
           : workflowCredRole?.currentLevelStatus === "COMPLETED" ? "green"
@@ -2192,7 +2201,7 @@ const StaffApplicationList = ({
       },
       // { type: "text", value: ccapproval },
       // { type: "text", value: cosapproval },
-      { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
+      // { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
       {
         type: "dot",
         value: cc
@@ -2863,6 +2872,17 @@ const StaffApplicationList = ({
                         : style.applicantStaffGrid;
 
   return (
+    <>
+ {/* {isLoadingImage && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+
+ {!isLoadingImage && ( */}
+
     <div className={style.margin20}>
       <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
         <div>
@@ -3261,6 +3281,8 @@ const StaffApplicationList = ({
         )
       }
     </div >
+    {/* )} */}
+</>
   );
 };
 

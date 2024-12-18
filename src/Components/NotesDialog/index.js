@@ -5,13 +5,10 @@ import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
-import CommonTextField from "../CommonFields/CommonTextField";
-import CommonCheckBox from "../CommonFields/CommonCheckBox";
-import ESignature from "../ESignature";
-import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -32,6 +29,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -62,18 +60,21 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplication = async () => {
     try {
+      setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      setIsLoadingImage(false)
     } catch (error) {
       console.error('Error fetching application:', error);
     }
   };
 
      const getLog = async () => {
+        setIsLoadingImage(true);
         const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
         setLogDetails(basicLog);
         console.log("basicLog" +JSON.stringify(basicLog));
-        
+        setIsLoadingImage(false)
       };
 
   const checkApproveEnabled = () => {
@@ -110,8 +111,15 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
    const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 
   return (
-
-
+<>
+{isLoadingImage && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+{!isLoadingImage && (
     <Dialog
       isOpen={getIsOpen}
       onClose={() => getIsOpen(false)}
@@ -252,7 +260,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             </div>
       </div>
     </Dialog>
-
+    )}
+</>
   );
 };
 

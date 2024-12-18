@@ -326,6 +326,7 @@
     opacity: 1;
     margin-top: 10px;
     max-width: 85%;
+    margin-left: 20px;
 }
 
 .fileLoadingStyle {
@@ -357,4 +358,11 @@
 .disabledButtonLook {
     opacity: 0.5;
     cursor: not-allowed !important;
+}
+
+.borderLine{
+    // background: var(--unnamed-color-e8e9e9) 0% 0% no-repeat padding-box;
+    background: #2c2c2c 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    opacity: 1;
 }

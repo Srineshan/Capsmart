@@ -84,9 +84,10 @@
 .selectedApplicantBackground {
     background: #06617A1A 0% 0% no-repeat padding-box;
     // box-shadow: 0px 3px 11px #9AAFB5;
-    border: 0.4000000059604645px solid #06617A1A;
+    border: 2px solid $primarycolor;
     border-radius: 4px 4px 0px 0px;
     opacity: 1;
+    border-bottom: none;
 }
 
 .displayInCol {
@@ -239,6 +240,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+}
+
+.alignCenterNumber{
+    align-items: center
 }
 
 .alignCenter {

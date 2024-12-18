@@ -96,6 +96,7 @@ import { format } from "date-fns";
 import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
@@ -119,7 +120,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [entity, setEntity] = useState([]);
   const [files, setFiles] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
     const dropzoneStyle = {
         width: "100%",
         height: "auto",
@@ -129,6 +130,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
         borderRadius: 5,
       };
 
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   const getDeclineMailDialog = (value) => {
     setShowDeclineMailDialog(value);
     getApplicationDeclineDialog(false);
@@ -229,18 +231,21 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const getApplication = async () => {
     try {
+      setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      setIsLoadingImage(false)
     } catch (error) {
       console.error('Error fetching application:', error);
     }
   };
 
    const getLog = async () => {
+          setIsLoadingImage(true);
           const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
           setLogDetails(basicLog);
           console.log("basicLog" +JSON.stringify(basicLog));
-          
+          setIsLoadingImage(false)
         };
 
   const handleApplicationReject = async () => {
@@ -342,6 +347,15 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   return (
     <div>
+      
+ {isLoadingImage && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+{!isLoadingImage && (
       <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
         <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
           <div className={style.spaceBetween}>
@@ -568,6 +582,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
           </div>
         </div>
       </Dialog>
+      )}
       {
         showDeclineMailDialog && (
           <DeclineMailTemplate getDeclineMailDialog={getDeclineMailDialog} />
