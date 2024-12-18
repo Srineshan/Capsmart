@@ -141,6 +141,16 @@
     width: auto;
 }
 
+.tableDataFontStyle1 {
+    font: normal normal normal 14px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    text-transform: capitalize;
+    text-align: left !important;
+    word-break: break-word;
+    width: auto;
+}
+
 .cursorPointer {
     cursor: pointer;
 }
@@ -404,4 +414,13 @@
 .buttonStyle:hover {
     background-color: black;
     color: white;
+}
+
+.singleActionText{
+    font-size: 15px;
+    color : $primarycolor
+}
+.singleActionText:hover{
+    font-size: 17px;
+    text-decoration: underline;
 }

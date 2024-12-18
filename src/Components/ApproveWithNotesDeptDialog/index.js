@@ -484,7 +484,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     )}
                   </div>
                    )}
-            <div className={`${style.twoColumnGrid}`}>
+            <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
               <div>
                 <CommonDateField
                 className={style.fullWidth}
@@ -511,7 +511,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     }}
                     variant="outlined"
                     margin="normal"
-                    fullWidth
+                    // fullWidth
                   />
                 )}
               />
@@ -520,7 +520,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               <CommonSelectField
                     value={selectedRoleCred}
                     onChange={(e) => setSelectedRoleCred(e.target.value)}
-                    className={style.fullWidth}
+                    className={style.fullWidth1}
                     firstOptionLabel={''}
                     firstOptionValue={''}
                     // valueList={["HIGH", "NO"]}

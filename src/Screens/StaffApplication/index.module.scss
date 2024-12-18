@@ -5123,3 +5123,7 @@ input[type="number"] {
   width: 40%;
   object-fit: contain;
 }
+
+.calcHeight{
+  max-height: calc(100vh - 80px);
+}
