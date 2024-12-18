@@ -10,6 +10,7 @@ import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
 import CrossPink from "./../../images/crossPink.png";
 import ToBeVerified from "./../../images/toBeVerifiedImage.png";
+import DeleteIcon from "./../../images/deleteHcRow.png";
 import Tooltip from "@mui/material/Tooltip";
 import { DELETE, TenantID, GET, PUT, POST } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
@@ -168,8 +169,9 @@ const NewActiveApplication = ({
   const [selectedPrivilege, setSelectedPrivilege] = useState('');
   const [selectedPrivilegeForDisplay, setSelectedPrivilegeForDisplay] = useState([]);
   const [showCurrentPrivileges, setShowCurrentPrivileges] = useState(false);
-
+  const [currentPrivilegesCategory, setCurrentPrivilegesCategory] = useState(false);
   const [staffPrivilege, setStaffPrivilege] = useState([]);
+  const [allStaffPrivilege, setAllStaffPrivilege] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
@@ -182,6 +184,14 @@ const NewActiveApplication = ({
   const [statusStyle, setStatusStyle] = useState();
   const [showCurrentPrivilegesReappointment, setShowCurrentPrivilegesReappointment] = useState(false);
   const [currentPrivilegesCategoryReappointment, setCurrentPrivilegesCategoryReappointment] = useState(false);
+  const [
+    selectedAdditionalPrivilegeForDisplay,
+    setSelectedAdditionalPrivilegeForDisplay,
+  ] = useState([]);
+  const [
+    selectedPrivilegesForDisplayMultiple,
+    setSelectedPrivilegesForDisplayMultiple,
+  ] = useState([]);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -1319,7 +1329,8 @@ const NewActiveApplication = ({
       console.error("Error formatting date:", error);
       return "-";
     }
-  });const createNoteDate = form?.noteDetails?.map((log) => {
+  });
+  const createNoteDate = form?.noteDetails?.map((log) => {
     try {
       // Safely format each log's approved date
       return log?.createdDate
@@ -1447,6 +1458,390 @@ const NewActiveApplication = ({
     setSelectedPrivilege(privilegeId);
     setSelectedPrivilegeForDisplay(staffPrivilege?.filter(data => data?.id === privilegeId))
   }
+
+  const handleChangeAdditional = (privilegeId) => {
+    setSelectedPrivilege(privilegeId);
+    setSelectedAdditionalPrivilegeForDisplay(
+      allStaffPrivilege?.filter((data) => data?.id === privilegeId)
+    );
+  };
+
+  const getFieldsAdditional = () => {
+    if (selectedPrivilege !== "" && selectedAdditionalPrivilegeForDisplay?.length !== 0) {
+      console.log(
+        selectedPrivilegeForDisplay,
+        selectedAdditionalPrivilegeForDisplay,
+        "entered",
+        selectedPrivilege,
+        staffPrivilege?.filter((data) => data?.id === selectedPrivilege),
+        staffPrivilege,
+        selectedPrivilegesForDisplayMultiple
+      );
+      return (
+        <>
+          <div className={style.padding}>
+            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
+              ?.filter((data) => data?.id === selectedPrivilege)
+              ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
+              ? allStaffPrivilege
+                ?.filter((data) => data?.id === selectedPrivilege)
+                ?.map((data) => data?.privilegeSetTitle)[0]
+                ?.toUpperCase()
+              : ""
+              }`}</div>
+
+            {selectedAdditionalPrivilegeForDisplay?.map((data) =>
+              data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
+                (categories, index) => (
+                  <div>
+                    <div className={style.categoryGrid}>
+                      <div className={style.itemLeft}>
+                        <strong>
+                          {categories?.category === null
+                            ? ""
+                            : categories?.category}
+                        </strong>
+                      </div>
+                    </div>
+                    <>
+                      {categories?.privileges?.map((privileges) => (
+                        <div className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privileges?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>
+                            {privileges?.title || ""}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  </div>
+                )
+              )
+            )}
+            {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+              ?.privilegesByCategories?.[0]?.privileges?.length !== 0 &&
+              selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges
+                ?.privilegesByCategories?.[0]?.privileges?.length !==
+              undefined && (
+                <div className={style.twoCol}>
+                  <div
+                  // onClick={() => handleSign("Core", "Additional")}
+                  >
+                    <ESignature
+                      userName={
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.name
+                          : ""
+                      }
+                      encData={
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.esign
+                          : ""
+                      }
+                      showData={
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined
+                          ? true
+                          : false
+                      }
+                      showDatais={true}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <div className={style.displayInRow}>
+                      <div className={style.dateTitle}>Date: </div>
+                      <div className={`${style.date} ${style.marginLeft}`}>
+                        {selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign?.signedDate
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+          </div>
+
+          {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+            ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+            ?.length !== 0 &&
+            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+              ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+              ?.length !== undefined && (
+              <div className={style.padding}>
+                <div className={style.cardDescription}>
+                  {
+                    "The following privileges are restricted and require evidence of qualification and competence. Continued competence would be evaluated as that being acceptable to the Medical Consultant of the Program. Please signify your intention regarding each privilege by marking and sign below."
+                  }
+                </div>
+
+                {selectedAdditionalPrivilegeForDisplay?.map((data, index) =>
+                  data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map(
+                    (categories, categoriesIndex) => (
+                      <div key={`${index}${categoriesIndex}`}>
+                        <div className={style.categoryGrid}></div>
+                        <>
+                          {categories?.privileges?.map(
+                            (privileges, privilegesIndex) => (
+                              <div
+                                className={`${style.restrictedPrivilegeGrid} ${privilegesIndex === 0 ? style.marginTop : ""
+                                  }`}
+                                key={`${index}${privilegesIndex}`}
+                              >
+                                <div className={style.itemLeft}>
+                                  <strong>
+                                    {privileges?.privilegeId || ""}
+                                  </strong>
+                                </div>
+                                <div className={style.itemLeft}>
+                                  {privileges?.title || ""}
+                                </div>
+                                <div className={style.floatRight}>
+                                  <CommonRadio
+                                    value={privileges?.response || ""}
+                                    // onChange={(e) =>
+                                    //   handleRestrictedSelection(
+                                    //     index,
+                                    //     categoriesIndex,
+                                    //     privilegesIndex,
+                                    //     e.target.value,
+                                    //     "response",
+                                    //     'Additional'
+                                    //   )
+                                    // }
+                                    radioValue={["NO", "YES"]}
+                                    label={["No", "Yes"]}
+                                  />
+                                </div>
+                                {privileges?.response === "YES" &&
+                                  (privileges?.isevidenceRequired ||
+                                    privileges?.isevidenceRequired ===
+                                    undefined) && (
+                                    <>
+                                      <div className={style.marginTop}>
+                                        <CKEditor
+                                          editor={ClassicEditor}
+                                          data={privileges?.notes?.notes || ""}
+                                          // onChange={(event, editor) => {
+                                          //   const data = editor.getData();
+                                          //   handleRestrictedSelection(
+                                          //     index,
+                                          //     categoriesIndex,
+                                          //     privilegesIndex,
+                                          //     data,
+                                          //     "notes",
+                                          //     'Additional'
+                                          //   );
+                                          // }}
+                                          onReady={(editor) => {
+                                            editor.editing.view.change(
+                                              (writer) => {
+                                                writer.setStyle(
+                                                  "height",
+                                                  "150px",
+                                                  editor.editing.view.document.getRoot()
+                                                );
+                                              }
+                                            );
+                                          }}
+                                          config={{
+                                            placeholder:
+                                              "Insert any privilege competency and qualification information...",
+                                          }}
+                                        />
+                                      </div>
+
+                                      <div className={style.marginTop10}>
+                                        <div
+                                          className={`${style.uploadButton}`}
+                                        >
+                                          <div className={style.uploadGrid}>
+                                            {privileges?.file !== undefined &&
+                                              privileges?.file !== null ? (
+                                              <img
+                                                src={VerifiedImage}
+                                                alt=""
+                                                className={`${style.imgIcon} `}
+                                              />
+                                            ) : (
+                                              <img
+                                                src={ToBeVerifiedImage}
+                                                alt=""
+                                                className={style.imgIcon}
+                                              />
+                                            )}
+                                            <div
+                                              className={`${style.uploadText} ${style.verticalAlignCenter}`}
+                                            >
+                                              Upload any supporting documents
+                                              for evidence of qualification and
+                                              competence
+                                            </div>
+                                            <div>
+                                              <label
+                                                for={`file-upload-dynamic-basic${privilegesIndex}`}
+                                                className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                                              >
+                                                Click to upload
+                                              </label>
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <input
+                                          id={`file-upload-dynamic-basic${privilegesIndex}`}
+                                          type="file"
+                                          accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
+                                        // onChange={(e) => {
+                                        //   handleRestrictedFileSelection(
+                                        //     index,
+                                        //     categoriesIndex,
+                                        //     privilegesIndex,
+                                        //     e.target.files[0],
+                                        //     "file",
+                                        //     'Additional'
+                                        //   );
+                                        // }}
+                                        />
+                                      </div>
+                                      {privileges?.file !== null &&
+                                        privileges?.file?.fileName !==
+                                        undefined && (
+                                          <div
+                                            className={`${style.fileDisplay} ${style.fileDisplayText} ${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                                          >
+                                            <div className={style.displayInRow}>
+                                              <div
+                                                onClick={() => {
+                                                  window.open(
+                                                    privileges?.file?.fileURL,
+                                                    "_blank"
+                                                  );
+                                                }}
+                                              >
+                                                {privileges?.file?.fileType ===
+                                                  "application/pdf" ? (
+                                                  <img
+                                                    src={PdfDoc}
+                                                    alt=""
+                                                    className={
+                                                      style.docTypeImgStyle
+                                                    }
+                                                  />
+                                                ) : privileges?.file?.fileType?.startsWith(
+                                                  "image/"
+                                                ) ? (
+                                                  <img
+                                                    src={ImgDoc}
+                                                    alt=""
+                                                    className={
+                                                      style.docTypeImgStyle
+                                                    }
+                                                  />
+                                                ) : (
+                                                  <TextSnippetOutlinedIcon
+                                                    style={{
+                                                      fontSize: 20,
+                                                      color: `${data?.subStatus}`,
+                                                    }}
+                                                  />
+                                                )}
+                                              </div>
+                                              <div className={style.marginLeft}>
+                                                {privileges?.file?.fileName}
+                                              </div>
+                                            </div>
+                                            <div>
+                                              <img
+                                                src={DeleteIcon}
+                                                alt=""
+                                                className={
+                                                  style.docTypeImgStyle
+                                                }
+                                              // onClick={() => {
+                                              //   handleRestrictedSelection(
+                                              //     index,
+                                              //     categoriesIndex,
+                                              //     privilegesIndex,
+                                              //     null,
+                                              //     "removeFile",
+                                              //     'Additional'
+                                              //   );
+                                              // }}
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+                                      <br />
+                                    </>
+                                  )}
+                              </div>
+                            )
+                          )}
+                        </>
+                      </div>
+                    )
+                  )
+                )}
+                <div className={style.twoCol}>
+                  <div
+                  // onClick={() => {
+                  //   handleSign("Restricted", "Additional");
+                  // }}
+                  >
+                    <ESignature
+                      userName={
+                        selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.name
+                          : ""
+                      }
+                      encData={
+                        selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.esign
+                          : ""
+                      }
+                      showData={
+                        selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null &&
+                          selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign !== undefined
+                          ? true
+                          : false
+                      }
+                      showDatais={true}
+                    />
+                  </div>
+                  <div className={style.verticalAlignCenter}>
+                    <div className={style.displayInRow}>
+                      <div className={style.dateTitle}>Date: </div>
+                      <div className={`${style.date} ${style.marginLeft}`}>
+                        {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== null
+                          ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.esign?.signedDate
+                          : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+        </>
+      );
+    }
+  };
+
 
   const getFields = () => {
     if (selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) {
@@ -2512,10 +2907,20 @@ const NewActiveApplication = ({
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              'education' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
-                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.education} baseKey={'education'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
+              'cmeCertificates' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeCertificates} baseKey={'cmeCertificates'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
                   heading={'Information Requirement Alert'}
-                  subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
+                  subHeading={'For this application you are required to provide information on the CME certificates.'}
+                  subHeading2={'You will not be able to submit your application if this is not provided.'} />
+              )}
+            <CommonDivider />
+            {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeTranscripts} baseKey={'cmeTranscripts'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
+                  heading={'Information Requirement Alert'}
+                  subHeading={'For this application you are required to provide information on the CME transcript.'}
                   subHeading2={'You will not be able to submit your application if this is not provided.'} />
               )}
           </>
@@ -2668,14 +3073,13 @@ const NewActiveApplication = ({
         return (
           <>
             <iframe
-              src={`${
-                form?.forms?.[formIndex]?.uploadedFiles[
-                  form?.forms?.[formIndex]?.uploadedFiles?.length - 1
-                ]?.fileURL}#toolbar=0&view=FitH`
+              src={`${form?.forms?.[formIndex]?.uploadedFiles[
+                form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+              ]?.fileURL}#toolbar=0&view=FitH`
               }
               width="100%"
               height="600px"
-              // style={{ width: "100%", height: "600px", objectFit: "cover }}
+            // style={{ width: "100%", height: "600px", objectFit: "cover }}
             ></iframe>
           </>
         );
@@ -2828,202 +3232,202 @@ const NewActiveApplication = ({
               ))}
             </div> */}
             <div className={`${style.applicationCardStyleReappointment}`}>
-                                    <div className={`${style.privilegeTitleStyleReappointment} ${style.marginLeft10}`}>Privileges for Reappointment</div>
-                                    <div className={`${style.privilegeCard}`}>
-                                        <div>
-                                            <div className={style.privilegeHeading}>
-                                                <strong>Privilege Category</strong>
-                                            </div>
-                                            <div className={style.twoColReappointment}>
-                                                <div
-                                                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                                                >
-                                                    <div className={style.privilegeHeading}>Current</div>
-                                                    <div className={style.privilegeHeading}>
-                                                        <strong>
-                                                            {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
-                                                                ? form?.basicDetails?.priorPrivilegeCategory
-                                                                    ?.name
-                                                                : form?.basicDetails
-                                                                    ?.credentialingPrivilegeCategory
-                                                                    ?.credentialingCategory}
-                                                        </strong>
-                                                    </div>
-                                                </div>
-                                                {form?.basicDetails?.priorPrivilegeCategory !== null && (
-                                                    <div
-                                                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                                                    >
-                                                        <div className={style.privilegeHeadingReappointment}>
-                                                            Change for Reappointment
-                                                        </div>
-                                                        <div className={style.privilegeHeading}>
-                                                            <strong>
-                                                                {
-                                                                    form?.basicDetails
-                                                                        ?.credentialingPrivilegeCategory
-                                                                        ?.credentialingCategory
-                                                                }
-                                                            </strong>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className={`${style.privilegeHeading} ${style.marginTop20}`}>
-                                                <strong>Privilege Sets</strong>
-                                            </div>
-                                            <div className={style.twoColReappointment}>
-                                                <div
-                                                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                                                >
-                                                    <div className={`${style.privilegeHeading}`}>Current</div>
-                                                    {form?.privileges?.priorObligatedPrivileges?.length ===
-                                                        0 ? (
-                                                        <>
-                                                            {form?.privileges?.obligatedPrivileges?.map(
-                                                                (data) => (
-                                                                    <div
-                                                                        className={`${style.privilegeTitleStyleReappointment}`}
-                                                                    // onClick={() => {
-                                                                    //     setShowCurrentPrivilegesReappointment(true);
-                                                                    //     setCurrentPrivilegesCategoryReappointment('Basic')
-                                                                    //     handleChange(data?.id);
-                                                                    // }}
-                                                                    >
-                                                                        {data?.privilegeSetTitle}
-                                                                    </div>
-                                                                )
-                                                            )}
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            {form?.privileges?.priorObligatedPrivileges?.map(
-                                                                (data) => (
-                                                                    <div
-                                                                        className={`${style.privilegeTitleStyleReappointment}`}
-                                                                    // onClick={() => {
-                                                                    //   setShowCurrentPrivilegesReappointment(true);
-                                                                    //   setCurrentPrivilegesCategoryReappointment('Basic')
-                                                                    //     handleChange(data?.id);
-                                                                    // }}
-                                                                    >
-                                                                        {data?.privilegeSetTitle}
-                                                                    </div>
-                                                                )
-                                                            )}
-                                                        </>
-                                                    )}
-                                                </div>
-                                                {form?.privileges?.priorObligatedPrivileges?.length !==
-                                                    0 && (
-                                                        <div
-                                                            className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                                                        >
-                                                            <div className={`${style.privilegeHeadingReappointment}`}>
-                                                                Change for Reappointment
-                                                            </div>
-                                                            {form?.privileges?.obligatedPrivileges?.map(
-                                                                (data) => (
-                                                                    <div
-                                                                        className={`${style.privilegeTitleStyleReappointment} `}
-                                                                    // onClick={() => {
-                                                                    //    setShowCurrentPrivilegesReappointment(true);
-                                                                    //    setCurrentPrivilegesCategoryReappointment('Basic')
-                                                                    //     handleChange(data?.id);
-                                                                    // }}
-                                                                    >
-                                                                        {data?.privilegeSetTitle}
-                                                                    </div>
-                                                                )
-                                                            )}
-                                                        </div>
-                                                    )}
-                                            </div>
-                                            <div>
-                                                <div className={`${style.privilegeHeading} ${style.marginTop}`}><strong>Additional Privileges</strong></div>
-                                                <div className={style.twoCol}>
-                                                    <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                                                        <div className={`${style.privilegeHeading}`}>Current</div>
-                                                        {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                                                            <>
-                                                                {form?.privileges?.additionalPrivileges?.length === 0 ? (
-                                                                    <strong><div className={style.privilegeHeading}>None</div></strong>
-                                                                ) : (
-                                                                    <>
-                                                                        {form?.privileges?.additionalPrivileges?.map(data => (
-                                                                            <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                                                            // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                                                            >{data?.privilegeSetTitle}</div>
-                                                                        ))}
-                                                                    </>
-                                                                )}
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                {form?.privileges?.priorAdditionalPrivileges?.map(data => (
-                                                                    <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                                                    // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                                                    >{data?.privilegeSetTitle}</div>
-                                                                ))}
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                    {form?.privileges?.priorAdditionalPrivileges?.length !== 0 && (
-                                                        <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                                                            <div className={`${style.privilegeHeadingReappointment}`}>Change for Reappointment</div>
-                                                            {form?.privileges?.additionalPrivileges?.map(data => (
-                                                                <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                                                // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                                                >{data?.privilegeSetTitle}</div>
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className={`${style.privilegeHeading} ${style.marginTop}`}>
-                  <strong>Privileges at Other Hospitals</strong>
-                </div>
-                <div className={style.twoCol}>
-                  <div
-                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                  >
-                    <div className={style.privilegeHeading}>Current</div>
-                    <div className={style.privilegeHeading}>
-                      <div className={style.marginTop10}>
-                        <strong>
-                          {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
-                            ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
-                              <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
-                            ))
-                            : 'None'}
-                        </strong>
-                      </div>
-                    </div>
+              <div className={`${style.privilegeTitleStyleReappointment} ${style.marginLeft10}`}>Privileges for Reappointment</div>
+              <div className={`${style.privilegeCard}`}>
+                <div>
+                  <div className={style.privilegeHeading}>
+                    <strong>Privilege Category</strong>
                   </div>
-                  {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null) && (
+                  <div className={style.twoColReappointment}>
                     <div
                       className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
-                      <div className={style.privilegeHeadingReappointment}>
-                        Change for Reappointment
-                      </div>
+                      <div className={style.privilegeHeading}>Current</div>
                       <div className={style.privilegeHeading}>
-                        <div className={style.marginTop10}>
+                        <strong>
+                          {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                            ? form?.basicDetails?.priorPrivilegeCategory
+                              ?.name
+                            : form?.basicDetails
+                              ?.credentialingPrivilegeCategory
+                              ?.credentialingCategory}
+                        </strong>
+                      </div>
+                    </div>
+                    {form?.basicDetails?.priorPrivilegeCategory !== null && (
+                      <div
+                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                      >
+                        <div className={style.privilegeHeadingReappointment}>
+                          Change for Reappointment
+                        </div>
+                        <div className={style.privilegeHeading}>
                           <strong>
-                            {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
-                              ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
-                                <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
-                              ))
-                              : 'None'}
+                            {
+                              form?.basicDetails
+                                ?.credentialingPrivilegeCategory
+                                ?.credentialingCategory
+                            }
                           </strong>
                         </div>
                       </div>
+                    )}
+                  </div>
+                  <div className={`${style.privilegeHeading} ${style.marginTop20}`}>
+                    <strong>Privilege Sets</strong>
+                  </div>
+                  <div className={style.twoColReappointment}>
+                    <div
+                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                    >
+                      <div className={`${style.privilegeHeading}`}>Current</div>
+                      {form?.privileges?.priorObligatedPrivileges?.length ===
+                        0 ? (
+                        <>
+                          {form?.privileges?.obligatedPrivileges?.map(
+                            (data) => (
+                              <div
+                                className={`${style.privilegeTitleStyleReappointment}`}
+                                onClick={() => {
+                                  setShowCurrentPrivileges(true);
+                                  setCurrentPrivilegesCategory('Basic')
+                                  handleChange(data?.id);
+                                }}
+                              >
+                                {data?.privilegeSetTitle}
+                              </div>
+                            )
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {form?.privileges?.priorObligatedPrivileges?.map(
+                            (data) => (
+                              <div
+                                className={`${style.privilegeTitleStyleReappointment}`}
+                                onClick={() => {
+                                  setShowCurrentPrivilegesReappointment(true);
+                                  setCurrentPrivilegesCategoryReappointment('Basic')
+                                  handleChange(data?.id);
+                                }}
+                              >
+                                {data?.privilegeSetTitle}
+                              </div>
+                            )
+                          )}
+                        </>
+                      )}
                     </div>
-                  )}
+                    {form?.privileges?.priorObligatedPrivileges?.length !==
+                      0 && (
+                        <div
+                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                        >
+                          <div className={`${style.privilegeHeadingReappointment}`}>
+                            Change for Reappointment
+                          </div>
+                          {form?.privileges?.obligatedPrivileges?.map(
+                            (data) => (
+                              <div
+                                className={`${style.privilegeTitleStyleReappointment} `}
+                                onClick={() => {
+                                  setShowCurrentPrivilegesReappointment(true);
+                                  setCurrentPrivilegesCategoryReappointment('Basic')
+                                  handleChange(data?.id);
+                                }}
+                              >
+                                {data?.privilegeSetTitle}
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                  </div>
+                  <div>
+                    <div className={`${style.privilegeHeading} ${style.marginTop}`}><strong>Additional Privileges</strong></div>
+                    <div className={style.twoCol}>
+                      <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                        <div className={`${style.privilegeHeading}`}>Current</div>
+                        {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                          <>
+                            {form?.privileges?.additionalPrivileges?.length === 0 ? (
+                              <strong><div className={style.privilegeHeading}>None</div></strong>
+                            ) : (
+                              <>
+                                {form?.privileges?.additionalPrivileges?.map(data => (
+                                  <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
+                                    onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                  >{data?.privilegeSetTitle}</div>
+                                ))}
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {form?.privileges?.priorAdditionalPrivileges?.map(data => (
+                              <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
+                                onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                              >{data?.privilegeSetTitle}</div>
+                            ))}
+                          </>
+                        )}
+                      </div>
+                      {form?.privileges?.priorAdditionalPrivileges?.length !== 0 && (
+                        <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                          <div className={`${style.privilegeHeadingReappointment}`}>Change for Reappointment</div>
+                          {form?.privileges?.additionalPrivileges?.map(data => (
+                            <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
+                              onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                            >{data?.privilegeSetTitle}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className={`${style.privilegeHeading} ${style.marginTop}`}>
+                      <strong>Privileges at Other Hospitals</strong>
+                    </div>
+                    <div className={style.twoCol}>
+                      <div
+                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                      >
+                        <div className={style.privilegeHeading}>Current</div>
+                        <div className={style.privilegeHeading}>
+                          <div className={style.marginTop10}>
+                            <strong>
+                              {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
+                                ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
+                                  <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
+                                ))
+                                : 'None'}
+                            </strong>
+                          </div>
+                        </div>
+                      </div>
+                      {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null) && (
+                        <div
+                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                        >
+                          <div className={style.privilegeHeadingReappointment}>
+                            Change for Reappointment
+                          </div>
+                          <div className={style.privilegeHeading}>
+                            <div className={style.marginTop10}>
+                              <strong>
+                                {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
+                                  ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
+                                    <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
+                                  ))
+                                  : 'None'}
+                              </strong>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+              </div>
+            </div>
           </>
         );
       default:
@@ -3033,11 +3437,11 @@ const NewActiveApplication = ({
 
   return (
     <div style={{
-                maxHeight: 'calc(100vh - 10px)',
-                overflowY: "auto",
-                scrollbarWidth: "thin",
-                scrollbarColor: "gray transparent",
-              }}>
+      maxHeight: 'calc(100vh - 10px)',
+      overflowY: "auto",
+      scrollbarWidth: "thin",
+      scrollbarColor: "gray transparent",
+    }}>
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
@@ -3090,10 +3494,10 @@ const NewActiveApplication = ({
                                 <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
                                   {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
                                   {form?.basicDetails?.applicant?.name?.firstName
-                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "}
-                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
+                                    ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                    form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                    : ""}{", "}
+                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
@@ -3108,12 +3512,12 @@ const NewActiveApplication = ({
                                 {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
                               </div>
                               {/* <div className={style.spaceBetween}> */}
-                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                                </div>
-                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                                </div>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
                               {/* </div> */}
                             </div>
                           </div>
@@ -3167,7 +3571,7 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.spaceBetween}>
                           <div className={style.displayInRow}>
-            
+
                             <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
                               <img
                                 src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -3180,10 +3584,10 @@ const NewActiveApplication = ({
                                 <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
                                   {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
                                   {form?.basicDetails?.applicant?.name?.firstName
-                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "}
-                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
+                                    ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                    form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                    : ""}{", "}
+                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
@@ -3198,10 +3602,10 @@ const NewActiveApplication = ({
                                 {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
                               </div>
                               {/* <div className={style.spaceBetween}> */}
-                                <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                                </div>
-                                {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                   {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                                 </div> */}
                               {/* </div> */}
@@ -3227,8 +3631,8 @@ const NewActiveApplication = ({
                                 </span>
                               </div>
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop5}`}>
-                                  {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                                </div>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
                               {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
@@ -3654,7 +4058,7 @@ const NewActiveApplication = ({
                                       <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
                                         {data?.title}
                                       </div>
-                                       {/* <div>
+                                      {/* <div>
                                         {data?.title}
                                       </div> */}
                                     </div>
@@ -4048,10 +4452,100 @@ const NewActiveApplication = ({
                                       </div>
                                     </>
                                   )}
-                                {/* </div> */}
-                               {applicationType === "NEW" ? (
-                                <>
-                                  {expand?.status && expand?.index === index + 1 && (
+                                  {/* </div> */}
+                                  {applicationType === "NEW" ? (
+                                    <>
+                                      {expand?.status && expand?.index === index + 1 && (
+                                        <>
+                                          {credApproval?.some((newData) => {
+                                            console.log("newData.approvalRequired:", newData.approvalRequired);
+                                            return newData.schemaId === data.id && newData.approvalRequired;
+                                          }) ? (
+                                            <>
+                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                (() => {
+                                                  const isMatch = logDetails.logs.some((log) => {
+                                                    if (log.form && log.form.id) {
+                                                      const match = log.form.id === form?.forms[index]?.id;
+                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                      if (match) {
+                                                        let Match = false;
+
+                                                        // Check if userRole includes log.role
+                                                        if (userRole?.includes(log.role)) {
+                                                          console.log("Role matches user role: " + log.role);
+                                                          Match = true;
+                                                        }
+
+                                                        // Determine selectedTabRole based on selectedTab
+                                                        let selectedTabRole;
+                                                        if (selectedTab === 'level-2') {
+                                                          selectedTabRole = "Department Head";
+                                                        } else if (selectedTab === 'level-3') {
+                                                          selectedTabRole = "Chief Of Staff";
+                                                        } else if (selectedTab === 'level-4') {
+                                                          selectedTabRole = "Advisory Committee";
+                                                        } else if (selectedTab === 'level-5') {
+                                                          selectedTabRole = "Board";
+                                                        } else if (selectedTab === 'level-1') {
+                                                          selectedTabRole = "Staff Manager";
+                                                        }
+
+                                                        // Check if selectedTabRole matches log.role
+                                                        if (selectedTabRole === log.role) {
+                                                          console.log("Selected tab role matches log role: " + log.role);
+                                                          Match = true;
+                                                        }
+
+                                                        return Match;
+                                                      }
+                                                    }
+                                                    return false;
+                                                  });
+
+                                                  return (
+                                                    <div>
+                                                      {isMatch ? (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Approved
+                                                          </div>
+                                                        </div>
+                                                      ) : (
+                                                        form?.forms[index]?.status !== "APPROVED" ? (
+                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                            <div
+                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                            >
+                                                              Approve
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        )
+                                                      )}
+                                                    </div>
+                                                  );
+                                                })()
+                                              )}
+                                            </>
+                                          ) : (
+                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                Approved
+                                              </div>
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
+                                    </>
+                                  ) : (
                                     <>
                                       {credApproval?.some((newData) => {
                                         console.log("newData.approvalRequired:", newData.approvalRequired);
@@ -4105,7 +4599,7 @@ const NewActiveApplication = ({
                                                   {isMatch ? (
                                                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                       <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                        Approved
+                                                        Verified
                                                       </div>
                                                     </div>
                                                   ) : (
@@ -4115,13 +4609,13 @@ const NewActiveApplication = ({
                                                           className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                           onClick={() => handleStepsVerify(form?.forms[index]?.id)}
                                                         >
-                                                          Approve
+                                                          Verify
                                                         </div>
                                                       </div>
                                                     ) : (
                                                       <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Approved
+                                                          Verified
                                                         </div>
                                                       </div>
                                                     )
@@ -4134,103 +4628,13 @@ const NewActiveApplication = ({
                                       ) : (
                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Approved
+                                            Verified
                                           </div>
                                         </div>
                                       )}
                                     </>
                                   )}
-                                </>
-                              ) : (
-                                <>
-                                  {credApproval?.some((newData) => {
-                                    console.log("newData.approvalRequired:", newData.approvalRequired);
-                                    return newData.schemaId === data.id && newData.approvalRequired;
-                                  }) ? (
-                                    <>
-                                      {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                        (() => {
-                                          const isMatch = logDetails.logs.some((log) => {
-                                            if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms[index]?.id;
-                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                              if (match) {
-                                                let Match = false;
-
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(log.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                // Determine selectedTabRole based on selectedTab
-                                                let selectedTabRole;
-                                                if (selectedTab === 'level-2') {
-                                                  selectedTabRole = "Department Head";
-                                                } else if (selectedTab === 'level-3') {
-                                                  selectedTabRole = "Chief Of Staff";
-                                                } else if (selectedTab === 'level-4') {
-                                                  selectedTabRole = "Advisory Committee";
-                                                } else if (selectedTab === 'level-5') {
-                                                  selectedTabRole = "Board";
-                                                } else if (selectedTab === 'level-1') {
-                                                  selectedTabRole = "Staff Manager";
-                                                }
-
-                                                // Check if selectedTabRole matches log.role
-                                                if (selectedTabRole === log.role) {
-                                                  console.log("Selected tab role matches log role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                return Match;
-                                              }
-                                            }
-                                            return false;
-                                          });
-
-                                          return (
-                                            <div>
-                                              {isMatch ? (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Verified
-                                                  </div>
-                                                </div>
-                                              ) : (
-                                                form?.forms[index]?.status !== "APPROVED" ? (
-                                                  <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                    <div
-                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                    >
-                                                      Verify
-                                                    </div>
-                                                  </div>
-                                                ) : (
-                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                     Verified
-                                                    </div>
-                                                  </div>
-                                                )
-                                              )}
-                                            </div>
-                                          );
-                                        })()
-                                      )}
-                                    </>
-                                  ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Verified
-                                      </div>
-                                    </div>
-                                  )}
-                                </>
-                              )}
-                          </div>))}
+                                </div>))}
                             {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
                               
                               <div className={`${style.margin20}`}>
@@ -5046,187 +5450,187 @@ const NewActiveApplication = ({
 
                                         </>
                                       )}
-                                       {applicationType === "NEW" ? (
-                                          <>
-                                            {expand?.status && expand?.index === index + 1 && (
-                                              <>
-                                                {credApproval?.some((newData) => {
-                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
-                                                  return newData.schemaId === data.id && newData.approvalRequired;
-                                                }) ? (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                      (() => {
-                                                        const isMatch = logDetails.logs.some((log) => {
-                                                          if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                      {applicationType === "NEW" ? (
+                                        <>
+                                          {expand?.status && expand?.index === index + 1 && (
+                                            <>
+                                              {credApproval?.some((newData) => {
+                                                console.log("newData.approvalRequired:", newData.approvalRequired);
+                                                return newData.schemaId === data.id && newData.approvalRequired;
+                                              }) ? (
+                                                <>
+                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                    (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                            if (match) {
-                                                              let Match = false;
+                                                          if (match) {
+                                                            let Match = false;
 
-                                                              // Check if userRole includes log.role
-                                                              if (userRole?.includes(log.role)) {
-                                                                console.log("Role matches user role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              // Determine selectedTabRole based on selectedTab
-                                                              let selectedTabRole;
-                                                              if (selectedTab === 'level-2') {
-                                                                selectedTabRole = "Department Head";
-                                                              } else if (selectedTab === 'level-3') {
-                                                                selectedTabRole = "Chief Of Staff";
-                                                              } else if (selectedTab === 'level-4') {
-                                                                selectedTabRole = "Advisory Committee";
-                                                              } else if (selectedTab === 'level-5') {
-                                                                selectedTabRole = "Board";
-                                                              } else if (selectedTab === 'level-1') {
-                                                                selectedTabRole = "Staff Manager";
-                                                              }
-
-                                                              // Check if selectedTabRole matches log.role
-                                                              if (selectedTabRole === log.role) {
-                                                                console.log("Selected tab role matches log role: " + log.role);
-                                                                Match = true;
-                                                              }
-
-                                                              return Match;
+                                                            // Check if userRole includes log.role
+                                                            if (userRole?.includes(log.role)) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
                                                             }
+
+                                                            // Determine selectedTabRole based on selectedTab
+                                                            let selectedTabRole;
+                                                            if (selectedTab === 'level-2') {
+                                                              selectedTabRole = "Department Head";
+                                                            } else if (selectedTab === 'level-3') {
+                                                              selectedTabRole = "Chief Of Staff";
+                                                            } else if (selectedTab === 'level-4') {
+                                                              selectedTabRole = "Advisory Committee";
+                                                            } else if (selectedTab === 'level-5') {
+                                                              selectedTabRole = "Board";
+                                                            } else if (selectedTab === 'level-1') {
+                                                              selectedTabRole = "Staff Manager";
+                                                            }
+
+                                                            // Check if selectedTabRole matches log.role
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
                                                           }
-                                                          return false;
-                                                        });
-
-                                                        return (
-                                                          <div>
-                                                            {isMatch ? (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            ) : (
-                                                              form?.forms[index]?.status !== "APPROVED" ? (
-                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                  <div
-                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                                  >
-                                                                    Approve
-                                                                  </div>
-                                                                </div>
-                                                              ) : (
-                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                    Approved
-                                                                  </div>
-                                                                </div>
-                                                              )
-                                                            )}
-                                                          </div>
-                                                        );
-                                                      })()
-                                                    )}
-                                                  </>
-                                                ) : (
-                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                      Approved
-                                                    </div>
-                                                  </div>
-                                                )}
-                                              </>
-                                            )}
-                                          </>
-                                        ) : (
-                                          <>
-                                            {credApproval?.some((newData) => {
-                                              console.log("newData.approvalRequired:", newData.approvalRequired);
-                                              return newData.schemaId === data.id && newData.approvalRequired;
-                                            }) ? (
-                                              <>
-                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                  (() => {
-                                                    const isMatch = logDetails.logs.some((log) => {
-                                                      if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                        if (match) {
-                                                          let Match = false;
-
-                                                          // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
-                                                            console.log("Role matches user role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          // Determine selectedTabRole based on selectedTab
-                                                          let selectedTabRole;
-                                                          if (selectedTab === 'level-2') {
-                                                            selectedTabRole = "Department Head";
-                                                          } else if (selectedTab === 'level-3') {
-                                                            selectedTabRole = "Chief Of Staff";
-                                                          } else if (selectedTab === 'level-4') {
-                                                            selectedTabRole = "Advisory Committee";
-                                                          } else if (selectedTab === 'level-5') {
-                                                            selectedTabRole = "Board";
-                                                          } else if (selectedTab === 'level-1') {
-                                                            selectedTabRole = "Staff Manager";
-                                                          }
-
-                                                          // Check if selectedTabRole matches log.role
-                                                          if (selectedTabRole === log.role) {
-                                                            console.log("Selected tab role matches log role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          return Match;
                                                         }
-                                                      }
-                                                      return false;
-                                                    });
+                                                        return false;
+                                                      });
 
-                                                    return (
-                                                      <div>
-                                                        {isMatch ? (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
-                                                            </div>
-                                                          ) : (
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Approved
                                                               </div>
                                                             </div>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    );
-                                                  })()
-                                                )}
-                                              </>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Verified
+                                                          ) : (
+                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()
+                                                  )}
+                                                </>
+                                              ) : (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Approved
+                                                  </div>
                                                 </div>
+                                              )}
+                                            </>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <>
+                                          {credApproval?.some((newData) => {
+                                            console.log("newData.approvalRequired:", newData.approvalRequired);
+                                            return newData.schemaId === data.id && newData.approvalRequired;
+                                          }) ? (
+                                            <>
+                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                (() => {
+                                                  const isMatch = logDetails.logs.some((log) => {
+                                                    if (log.form && log.form.id) {
+                                                      const match = log.form.id === form?.forms[index]?.id;
+                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                      if (match) {
+                                                        let Match = false;
+
+                                                        // Check if userRole includes log.role
+                                                        if (userRole?.includes(log.role)) {
+                                                          console.log("Role matches user role: " + log.role);
+                                                          Match = true;
+                                                        }
+
+                                                        // Determine selectedTabRole based on selectedTab
+                                                        let selectedTabRole;
+                                                        if (selectedTab === 'level-2') {
+                                                          selectedTabRole = "Department Head";
+                                                        } else if (selectedTab === 'level-3') {
+                                                          selectedTabRole = "Chief Of Staff";
+                                                        } else if (selectedTab === 'level-4') {
+                                                          selectedTabRole = "Advisory Committee";
+                                                        } else if (selectedTab === 'level-5') {
+                                                          selectedTabRole = "Board";
+                                                        } else if (selectedTab === 'level-1') {
+                                                          selectedTabRole = "Staff Manager";
+                                                        }
+
+                                                        // Check if selectedTabRole matches log.role
+                                                        if (selectedTabRole === log.role) {
+                                                          console.log("Selected tab role matches log role: " + log.role);
+                                                          Match = true;
+                                                        }
+
+                                                        return Match;
+                                                      }
+                                                    }
+                                                    return false;
+                                                  });
+
+                                                  return (
+                                                    <div>
+                                                      {isMatch ? (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Approved
+                                                          </div>
+                                                        </div>
+                                                      ) : (
+                                                        form?.forms[index]?.status !== "APPROVED" ? (
+                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                            <div
+                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                            >
+                                                              Approve
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Approved
+                                                            </div>
+                                                          </div>
+                                                        )
+                                                      )}
+                                                    </div>
+                                                  );
+                                                })()
+                                              )}
+                                            </>
+                                          ) : (
+                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                Verified
                                               </div>
-                                            )}
-                                          </>
-                                        )}
+                                            </div>
+                                          )}
+                                        </>
+                                      )}
                                     </div>))}
                               {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
@@ -9436,18 +9840,18 @@ const NewActiveApplication = ({
                             // </>
                             <>
                               {form?.notesDetails?.map((log, index) => (
-                                  <div key={index}>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                      {log.title}
-                                    </div>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                      {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
-                                    </div>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                                      <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                                    </div>
+                                <div key={index}>
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                    {log.title}
                                   </div>
-                                ))}
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                    {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
+                                  </div>
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                                    <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                  </div>
+                                </div>
+                              ))}
                             </>
                           )}
                         </div>
@@ -10000,7 +10404,7 @@ const NewActiveApplication = ({
             />
           )
         }
-        <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+        {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
@@ -10017,33 +10421,33 @@ const NewActiveApplication = ({
               <div>{getFields()}</div>
             </div>
           </div>
-        </Dialog>
+        </Dialog> */}
         <Dialog
-        isOpen={showCurrentPrivileges}
-        onClose={() => setShowCurrentPrivileges(false)}
-        className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-        canOutsideClickClose={false}
-        canEscapeKeyClose={false}
-      >
-        <div>
-          <div className={Classes.DIALOG_BODY}>
-            <div className={style.spaceBetween}>
-              <div className={style.heading}>Selected Privilege Set</div>
-              <div className={style.displayInRow}>
-                <img
-                  src={CrossPink}
-                  alt="cross"
-                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
-                  onClick={() => {
-                    setShowCurrentPrivileges(false);
-                  }}
-                />
+          isOpen={showCurrentPrivileges}
+          onClose={() => setShowCurrentPrivileges(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={style.heading}>Selected Privilege Set</div>
+                <div className={style.displayInRow}>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
+                    onClick={() => {
+                      setShowCurrentPrivileges(false);
+                    }}
+                  />
+                </div>
               </div>
+              <div>{currentPrivilegesCategoryReappointment === 'Basic' ? getFields() : getFieldsAdditional()}</div>
             </div>
-            {/* <div>{currentPrivilegesCategoryReappointment === 'Basic' ? getFields() : getFieldsAdditional()}</div> */}
           </div>
-        </div>
-      </Dialog>
+        </Dialog>
       </div >
     </div>
   );

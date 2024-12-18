@@ -292,7 +292,7 @@ body::-webkit-scrollbar {
 
 .applicationCardStyleReappointment {
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  box-shadow: 0px 5px 20px #52575D4D;
+  // box-shadow: 0px 5px 20px #52575D4D;
   border-radius: 20px;
   border: 0.4000000059604645px solid #e5e6e6;
   padding: 20px;
@@ -3339,7 +3339,7 @@ input[type="number"] {
 }
 
 .tableDataStyle {
-  background: #F5F5F8 0% 0% no-repeat padding-box;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
   min-height: 50px;
   width: 96%;
   margin-left: 2%;
@@ -3918,7 +3918,7 @@ input[type="number"] {
 }
 
 .homeMailingAddressGrid> :nth-child(1) {
-  grid-column: span 6;
+  grid-column: span 3;
 }
 
 .homeMailingAddressGrid> :nth-child(2) {
@@ -3952,7 +3952,7 @@ input[type="number"] {
 }
 
 .mailingAddressGrid> :nth-child(2) {
-  grid-column: span 6;
+  grid-column: span 3;
 }
 
 .mailingAddressGrid> :nth-child(3) {
@@ -4836,16 +4836,14 @@ input[type="number"] {
 
 .privilegeTitleStyleReappointment {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: $textgrey;
+  color: $primarycolor;
 }
 
-.privilegeTitleStyleReappointment {
-  text-align: left;
-    font: normal normal bold 16px/24px proxima-nova;
-    letter-spacing: 0px;
-    color: $textgrey;
+.privilegeTitleStyleReappointment:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .privilegeCard {
@@ -5008,7 +5006,7 @@ input[type="number"] {
   opacity: 1;
 }
 
-.verificationMethodTextStyle1{
+.verificationMethodTextStyle1 {
   text-align: left;
   font: normal normal bold 16px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -5049,7 +5047,7 @@ input[type="number"] {
   z-index: 10;
 }
 
-.marginLeft2{
+.marginLeft2 {
   margin-left: 4px;
 }
 
@@ -5081,8 +5079,8 @@ input[type="number"] {
 }
 
 .searchIcon {
-  color: $primarycolor; 
-  margin-right: 10px; 
+  color: $primarycolor;
+  margin-right: 10px;
 }
 
 .searchInput {
@@ -5092,7 +5090,7 @@ input[type="number"] {
   width: 100%;
 }
 
-.notesIcon{
+.notesIcon {
   color: $primarycolor
 }
 
