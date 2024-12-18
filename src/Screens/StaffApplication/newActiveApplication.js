@@ -1451,6 +1451,10 @@ const NewActiveApplication = ({
         `entity-service/staffPrivilege?department=${form?.basicDetailReferences?.department?.id}`
       );
       setStaffPrivilege(privilege);
+      const { data: allPrivilege } = await GET(
+        `entity-service/staffPrivilege`
+      );
+      setAllStaffPrivilege(allPrivilege)
     }
   }
 
@@ -1844,6 +1848,7 @@ const NewActiveApplication = ({
 
 
   const getFields = () => {
+    console.log(selectedPrivilegeForDisplay, 'valueCheck')
     if (selectedPrivilege !== "" && selectedPrivilegeForDisplay?.length !== 0) {
       return (
         <>
@@ -3290,7 +3295,7 @@ const NewActiveApplication = ({
                                 className={`${style.privilegeTitleStyleReappointment}`}
                                 onClick={() => {
                                   setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategory('Basic')
+                                  setCurrentPrivilegesCategoryReappointment('Basic')
                                   handleChange(data?.id);
                                 }}
                               >
@@ -3306,7 +3311,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.privilegeTitleStyleReappointment}`}
                                 onClick={() => {
-                                  setShowCurrentPrivilegesReappointment(true);
+                                  setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategoryReappointment('Basic')
                                   handleChange(data?.id);
                                 }}
@@ -3331,7 +3336,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.privilegeTitleStyleReappointment} `}
                                 onClick={() => {
-                                  setShowCurrentPrivilegesReappointment(true);
+                                  setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategoryReappointment('Basic')
                                   handleChange(data?.id);
                                 }}
@@ -3356,7 +3361,7 @@ const NewActiveApplication = ({
                               <>
                                 {form?.privileges?.additionalPrivileges?.map(data => (
                                   <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                    onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                    onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
                                   >{data?.privilegeSetTitle}</div>
                                 ))}
                               </>
@@ -3366,7 +3371,7 @@ const NewActiveApplication = ({
                           <>
                             {form?.privileges?.priorAdditionalPrivileges?.map(data => (
                               <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
                               >{data?.privilegeSetTitle}</div>
                             ))}
                           </>
@@ -3377,7 +3382,7 @@ const NewActiveApplication = ({
                           <div className={`${style.privilegeHeadingReappointment}`}>Change for Reappointment</div>
                           {form?.privileges?.additionalPrivileges?.map(data => (
                             <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                              onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                              onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
                             >{data?.privilegeSetTitle}</div>
                           ))}
                         </div>
