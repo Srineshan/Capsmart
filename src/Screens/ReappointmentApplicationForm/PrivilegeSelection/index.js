@@ -2480,7 +2480,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     required={true}
                   />
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                    {privilegeCategories?.map(data => {
+                    {privilegeCategories?.filter(filterData => filterData?.category !== 'Locum Tennens')?.map(data => {
                       let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
                       let isDisabled = (data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.category));
                       return (
@@ -3267,7 +3267,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           Privilege Category you have at the Other Hospital
                         </div>
                         <div className={style.chipsContainer}>
-                          {privilegeCategories?.map(data => (
+                          {privilegeCategories?.filter(filterData => filterData?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
                             <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}`} onClick={() => {
                               setHospitalPrivilege(data?.category);
                               setHospitalPrivilegeCategory({

@@ -548,7 +548,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     stepPath={`forms[${formIndex}].data`}
                                 />
                             )}
-                        <div className={`${style.addMoreBorder}`}>
+                        {/* <div className={`${style.addMoreBorder}`}>
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
@@ -563,75 +563,71 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
                                         </div>
                                     )}
-                                </div>
-                                {isCollapsableCard && (
+                                </div> */}
+                        {/* {isCollapsableCard && (
                                     <>
-                                        <CommonDivider />
-                                        <div
-                                            className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
-                                        >
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            >
-                                                Documents you will require
-                                            </div>
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            >
-                                                {/* Requirements */}
-                                            </div>
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            ></div>
-                                        </div>
-                                        {basicForm?.documentsRequired?.map((data, index) => (
-                                            <div>
-                                                <div
-                                                    className={`${style.requiredDocumentCard} ${style.tableGrid
-                                                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                                                            tempValue?.table?.filter(
-                                                                (tableData) =>
-                                                                    tableData?.documentType ===
-                                                                    data?.document?.name
-                                                            )?.length === 0 &&
-                                                            data?.required
-                                                            ? style.redBorder
-                                                            : ""
-                                                        } ${index % 2 === 0
-                                                            ? style.requiredDocumentCardAlternativeColor
-                                                            : ""
-                                                        }  ${style.marginTop5}`}
-                                                >
-                                                    <div
-                                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        <div
-                                                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                        >
-                                                            {data?.document?.name}
-                                                        </div>
-                                                        <InfoOutlinedIcon
-                                                            sx={{ fontSize: 14, marginLeft: "10px" }}
-                                                            className={style.info}
-                                                        />
-                                                    </div>
-                                                    <div
-                                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        {data?.required ? "Required" : "Recommended"}
-                                                    </div>
-                                                    <div
-                                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        {data?.instruction}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
+                                        <CommonDivider /> */}
+                        {/* <div
+                            className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
+                        >
+                            <div
+                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                            >
+                                Documents you will require
                             </div>
-                        </div>
+                            
+                            <div
+                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                            ></div>
+                        </div> */}
+                        {basicForm?.documentsRequired?.map((data, index) => (
+                            <div>
+                                <div
+                                    className={`${style.requiredDocumentCard} ${style.tableGrid
+                                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
+                                            tempValue?.table?.filter(
+                                                (tableData) =>
+                                                    tableData?.documentType ===
+                                                    data?.document?.name
+                                            )?.length === 0 &&
+                                            data?.required
+                                            ? style.redBorder
+                                            : ""
+                                        } ${index % 2 === 0
+                                            ? style.requiredDocumentCardAlternativeColor
+                                            : ""
+                                        }  ${style.marginTop5}`}
+                                >
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                    >
+                                        <div
+                                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                        >
+                                            {data?.document?.name}
+                                        </div>
+                                        {/* <InfoOutlinedIcon
+                                            sx={{ fontSize: 14, marginLeft: "10px" }}
+                                            className={style.info}
+                                        /> */}
+                                    </div>
+                                    <div
+                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                    >
+                                        {data?.required ? "Required" : "Recommended"}
+                                    </div>
+                                    <div
+                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                    >
+                                        {data?.instruction}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {/* </>
+                                )} */}
+                        {/* </div>
+                        </div> */}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             <CommonDropZone
                                 title={"Upload Your Documents"}
@@ -644,7 +640,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <CommonDropZone
                                 title={"Upload A Photo"}
                                 description={
-                                    "Click a picture with your Camera or Upload from Gallery."
+                                    "Take a picture with your Camera or Upload from Gallery."
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
