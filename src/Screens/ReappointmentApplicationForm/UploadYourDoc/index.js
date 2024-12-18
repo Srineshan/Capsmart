@@ -656,7 +656,6 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 tableHeaderValues={[
                                     "",
                                     "File Uploaded",
-                                    "",
                                     "Document Type",
                                     "",
                                     "Verified",

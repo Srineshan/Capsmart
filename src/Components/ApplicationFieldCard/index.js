@@ -96,6 +96,9 @@ const ApplicationFieldCard = ({
   const [isTableEdit, setIsTableEdit] = useState(false);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
+  const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
+  const [disclosurSchema, setDisclosureSchema] = useState({});
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -1870,17 +1873,21 @@ const ApplicationFieldCard = ({
             </div>
           );
         case "disclosureRadioButton":
-          //if (fieldData.priorDataComparisonNeeded === true){
-          const priorData = getValueByPath(basicForm, `forms[${formIndex}].priorData.${baseKey}.${fieldKey}`);
-          console.log(priorData);
-          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
-          console.log(currentValue);
-          const isConflict = priorData !== undefined && currentValue !== priorData;
-          console.log("Disclosure Conflict", isConflict, fieldKey)
-          if (isConflict && !showPriorDataDialog) {
-            // setShowPriorDataDialog(true)
+          if (fieldData.priorDataComparisonNeeded === true) {
+            const priorData = basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]]?.[fieldKey];
+            const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+            const isConflict = priorData !== undefined && currentValue !== priorData;
+            console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData)
+            let isIssueResolved = basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== undefined && basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== null;
+            let isShowAdditionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.if?.properties?.[fieldKey]?.const;
+            console.log(isShowAdditionalFields)
+            if (isConflict && !showPriorDataDialog && !isIssueResolved && isShowAdditionalFields !== currentValue) {
+              setDisclosureBaseKey(baseKey?.split('.')?.[1])
+              setDisclosureFieldKey(fieldKey)
+              setDisclosureSchema(parentData)
+              setShowPriorDataDialog(true)
+            }
           }
-          // }
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -1893,15 +1900,20 @@ const ApplicationFieldCard = ({
                 </div>
                 <div
                   className={`${style.lableRadioStyle} ${fieldData.serialNumber !== null ? style.marginLeft10 : ""
-                    } ${fieldData.label !== null ? style.marginRight : ""}`}
+                    } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
                 >
-                  {fieldData.label}
-                  {(isLableEmpty(fieldData.label)
+                  <span className={style.description}
+                    dangerouslySetInnerHTML={{
+                      __html: fieldData.label
+                    }}
+                  />
+                  {/* <span>{(isLableEmpty(fieldData.label)
                     ? false
                     : object.required?.includes(fieldKey) ||
                     (parentData !== null
                       ? parentData.required?.includes(fieldKey)
                       : false)) && "*"}
+                  </span> */}
                 </div>
               </div>
               <CommonRadio
@@ -2105,58 +2117,59 @@ const ApplicationFieldCard = ({
             const fileURL = fieldValue?.fileURL;
             const fileValid = fileURL && fileURL !== "" && fileURL !== null;
             if (fileValid) {
-            return <div key={fieldKey}>
-              <div className={`${style.uploadButton}`}>
-                <div className={style.uploadGrid}>
-                  {getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) !== undefined &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== null &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    ) !== "" &&
-                    getValueByPath(
-                      basicForm,
-                      `${basicpath}.${baseKey}.${fieldKey}`
-                    )?.fileURL !== null ? (
-                    <img
-                      src={VerifiedImage}
-                      alt=""
-                      className={`${style.imgIcon} ${style.cursorPointer}`}
-                      onClick={() => {
-                        setShowFileDisplayDialog(true); setselectedFile(
-                          getValueByPath(
-                            basicForm,
-                            `${basicpath}.${baseKey}.${fieldKey}`
-                          )
-                        );
-                      }
-                      }
-                    />
-                  ) : (
-                    <img
-                      src={ToBeVerifiedImage}
-                      alt=""
-                      className={style.imgIcon}
-                    />
-                  )}
-                  <div
-                    className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                  >
+              return <div key={fieldKey}>
+                <div className={`${style.uploadButton}`}>
+                  <div className={style.uploadGrid}>
                     {getValueByPath(
                       basicForm,
                       `${basicpath}.${baseKey}.${fieldKey}`
-                    )?.fileName}
+                    ) !== undefined &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== null &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      ) !== "" &&
+                      getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileURL !== null ? (
+                      <img
+                        src={VerifiedImage}
+                        alt=""
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                        onClick={() => {
+                          setShowFileDisplayDialog(true); setselectedFile(
+                            getValueByPath(
+                              basicForm,
+                              `${basicpath}.${baseKey}.${fieldKey}`
+                            )
+                          );
+                        }
+                        }
+                      />
+                    ) : (
+                      <img
+                        src={ToBeVerifiedImage}
+                        alt=""
+                        className={style.imgIcon}
+                      />
+                    )}
+                    <div
+                      className={`${style.uploadText} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                    >
+                      {getValueByPath(
+                        basicForm,
+                        `${basicpath}.${baseKey}.${fieldKey}`
+                      )?.fileName}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>;
-          }}else {
+              </div>;
+            }
+          } else {
             console.log(
               getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`),
               "filecheck"
@@ -3049,7 +3062,7 @@ const ApplicationFieldCard = ({
         {
           showPriorDataDialog && (
             <PriorDataDialog getIsOpen={getIsShowPriorDataDialog}
-              priorData={priorData} />
+              basicForm={basicForm} setBasicForm={setBasicForm} disclosureBaseKey={disclosureBaseKey} disclosureFieldKey={disclosureFieldKey} disclosurSchema={disclosurSchema} />
           )
         }
       </div>

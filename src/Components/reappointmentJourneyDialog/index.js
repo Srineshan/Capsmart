@@ -31,7 +31,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                 if (response?.response?.status !== 422) {
                     setShowSubmitDialog(true)
                 } else {
-                    ErrorToaster("Submission failed! Fill all mandatory values.");
+                    // ErrorToaster("Submission failed! Fill all mandatory values.");
                     setErrorSchema(response?.response?.data)
                 }
                 // SuccessToaster("Application Submitted Successfully");

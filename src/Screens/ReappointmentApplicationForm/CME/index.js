@@ -28,6 +28,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
     const [isAddMore, setIsAddMore] = useState(false)
+    const [isAddMore2, setIsAddMore2] = useState(false)
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
@@ -240,16 +241,19 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                     <WelcomeCard title={<strong>For Professional Staff, the CME requirement is 40 hours of college approved education hours.</strong>}
                         description={'Please include a print out of your continuing education transcripts or certificates for the past 12 months, including any peer review / evaluations you have had.'} />
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        {formSchema !== undefined && 'education' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.education} gridStyle={style.EducationGrid} baseKey={'education'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
+                        {formSchema !== undefined && 'cmeCertificates' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.cmeCertificates} gridStyle={style.EducationGrid} baseKey={'cmeCertificates'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
                                 heading={'Information Requirement Alert'}
                                 subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
                         )}
-                        {/* <CommonDivider />
-                        {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
-                        )} */}
+                        <CommonDivider />
+                        {formSchema !== undefined && 'cmeTranscripts' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.cmeTranscripts} gridStyle={style.EducationGrid} baseKey={'cmeTranscripts'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject}
+                                heading={'Information Requirement Alert'}
+                                subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
+                                subHeading2={'You will not be able to submit your application if this is not provided.'} />
+                        )}
                         {/* <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.cmeCard}>

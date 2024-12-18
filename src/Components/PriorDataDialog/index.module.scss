@@ -1,7 +1,19 @@
 @import '../../index.scss';
 
+.marginLeft {
+    margin-left: 20px;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
 .dialog {
-    width: 600px;
+    width: 50% !important;
     border-radius: 10px;
 }
 
@@ -35,7 +47,8 @@
     margin: 10px 0;
 }
 
-.notesSection, .explanationSection {
+.notesSection,
+.explanationSection {
     margin-top: 15px;
 }
 
@@ -50,13 +63,13 @@
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 14px/20px proxima-nova;
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
-    width: 240px;
+    min-width: 180px;
 }
 
 .saveInProgress {
@@ -65,13 +78,13 @@
     border: 0.5px solid $primarycolor;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
+    font: normal normal bold 14px/20px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
     text-transform: uppercase;
-    padding: 5px;
+    padding: 10px;
     cursor: pointer;
-    width: 240px;
+    min-width: 180px;
 }
 
 .displayInRow {
@@ -101,4 +114,32 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.docCard {
+    height: 40px;
+    width: 100%;
+    background: #F5F5F8 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $primarycolor;
+    border-radius: 4px;
+    padding: 0 10px;
+}
+
+.docTypeImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    // cursor: pointer;
 }

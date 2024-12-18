@@ -98,3 +98,8 @@
     align-items: center;
     height: 100%;
 }
+
+.serialNumberGrid {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+}
