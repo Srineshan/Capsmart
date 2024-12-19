@@ -129,7 +129,7 @@ const ReappointmentApplicationFormRequirement = () => {
                 <div className={style.screenBackground}>
                     <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
                     <div className={style.screenPadding}>
-                        <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                        <div className={`${style.applicationScreenGrid}`}>
                             <div>
                                 <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your reappointment application.'} description={''} />
                                 <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
@@ -149,7 +149,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
                                                     {/* <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} /> */}
                                                 </div>
-                                                <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                             </div>
                                         </div>

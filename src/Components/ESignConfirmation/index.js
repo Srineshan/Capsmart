@@ -8,11 +8,11 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 
 const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, updateFunc, confirmFunc }) => {
-    let eSignImg = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.file');
-    let eSignTypeContent = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.text');
-    let eSignTypeContentStyle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.type.style');
-    let eSignInitial = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.initial');
-    let eSignTitle = getValueByPath(basicForm, 'forms[0].data.setUpYourSignature.title');
+    let eSignImg = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.file`);
+    let eSignTypeContent = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.text`);
+    let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.style`);
+    let eSignInitial = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.initial`);
+    let eSignTitle = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.title`);
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
     console.log(eSignTypeContent, eSignType)
 

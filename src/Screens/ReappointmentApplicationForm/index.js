@@ -23,6 +23,7 @@ import MedicalDirectives from './MedicalDirectives';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
+import LoadingScreen from '../../Components/LoadingScreen';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -32,6 +33,7 @@ const ReappointmentApplicationForm = () => {
     const [basicForm, setBasicForm] = useState({})
     // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -61,10 +63,12 @@ const ReappointmentApplicationForm = () => {
     };
 
     const getPreApplication = async () => {
+        setIsLoading(true)
         const { data: basicForm } = await GET(
             `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
+        setIsLoading(false);
     }
 
     const StepDisplay = () => {
@@ -110,7 +114,11 @@ const ReappointmentApplicationForm = () => {
         }
     };
 
-    console.log(section, step,atob(step))
+    console.log(section, step, atob(step))
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div className={style.screenBackground}>

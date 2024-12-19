@@ -87,17 +87,17 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
             <div className={style.spaceBetween}>
                 <div className={style.displayInRow}>
                     <div className={style.stepTextStyle}>{dataType}</div>
+                    <div className={`${style.titleTextStyle} ${style.marginLeft}`}>{title}</div>
                     {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div> */}
                 </div>
                 {/* <div className={style.timeSpentText}>Time spent</div> */}
             </div>
-            <div className={`${style.spaceBetween} ${style.marginTop10}`}>
-                <div className={style.titleTextStyle}>{title}</div>
-                {/* <div className={`${style.displayInRow} ${style.flex}`}><span className={style.hourNumberStyle}>{Math.floor(totalTime / 60000)} </span><span className={`${style.hourTextStyle} ${style.textAlignBottom} ${style.marginLeft5}`}> {timeText}</span></div> */}
-            </div>
+            {/* <div className={`${style.spaceBetween} ${style.marginTop10}`}>
+                <div className={`${style.displayInRow} ${style.flex}`}><span className={style.hourNumberStyle}>{Math.floor(totalTime / 60000)} </span><span className={`${style.hourTextStyle} ${style.textAlignBottom} ${style.marginLeft5}`}> {timeText}</span></div>
+            </div> */}
             <div>
                 <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
-                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
+                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
                 >
                     {basicForm?.forms?.map((data, index) => (
                         <Tooltip title={data?.title} arrow>

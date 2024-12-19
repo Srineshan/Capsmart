@@ -703,7 +703,7 @@ const ApplicationFieldCard = ({
   }, [registeredBusinessAddress]);
 
   useEffect(() => {
-    if (department !== undefined && department !== null && !isPOD) {
+    if (department !== undefined && department !== null && !isPOD && !window.location.pathname.includes("reappointmentApplicationForm") && !window.location.pathname.includes("locumApplicationForm")) {
       setBasicForm((prevData) => {
         let tempData = { ...prevData };
         if (
@@ -1899,13 +1899,15 @@ const ApplicationFieldCard = ({
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
             >
               <div className={style.displayInRow}>
-                <div className={`${style.lableRadioSerialNumberStyle}`}>
-                  {fieldData.serialNumber !== null
-                    ? `${fieldData.serialNumber}. `
-                    : ""}
-                </div>
+                {!isPOD && (
+                  <div className={`${style.lableRadioSerialNumberStyle}`}>
+                    {fieldData.serialNumber !== null
+                      ? `${fieldData.serialNumber}. `
+                      : ""}
+                  </div>
+                )}
                 <div
-                  className={`${style.lableRadioStyle} ${fieldData.serialNumber !== null ? style.marginLeft10 : ""
+                  className={`${style.lableRadioStyle} ${!isPOD ? fieldData.serialNumber !== null ? style.marginLeft10 : "" : ""
                     } ${fieldData.label !== null ? style.marginRight : ""} ${style.displayInRow}`} style={{ display: 'inline' }}
                 >
                   <span className={style.description}

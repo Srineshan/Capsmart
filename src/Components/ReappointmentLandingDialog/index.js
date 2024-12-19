@@ -155,7 +155,6 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
       .then(response => {
         console.log(response)
         SuccessToaster("Application Terminated Successfully");
-        logout();
       })
       .catch((error) => {
         console.log(error)
@@ -187,14 +186,17 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title} has been declined.`}
+            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title} has been suspended.`}
+          </div>
+          <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+            {`Prior to Jun 30, 2025, if you change your mind, you can click on the link in the application declined notification.`}
           </div>
           <div className={style.alignCenter}>
             <div
               className={`${style.continue} ${style.marginTop}`}
               onClick={() => logout()}
             >
-              Logout
+              Okay
             </div>
           </div>
 
@@ -360,11 +362,11 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         <div>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for Jan 1, 2025 to Dec 31, 2025 at ${title}.`}
+            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}
-            {`If we do not receive a completed reappointment application by Jun 30, 2024 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
+            {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
             <div
@@ -375,7 +377,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <div
               className={`${style.continue} ${style.marginTop}`}
-              onClick={() => { handleTerminate() }}
+              onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
             >
               OKAY & EXIT
             </div>

@@ -29,7 +29,12 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
               )}
               <div className={style.serialNumberGrid}>
                 <p className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}>{`${index + 1}.`}</p>
-                <p className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}>{`${data?.label}`}</p>
+                <div
+                  className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
+                  dangerouslySetInnerHTML={{
+                    __html: data?.label
+                  }}
+                />
               </div>
               {data?.error && (
                 <p
