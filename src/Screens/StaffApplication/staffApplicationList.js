@@ -78,7 +78,7 @@ const StaffApplicationList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [declineListData, setDeclineListData] = useState([]);
-  const [sortField, setSortField] = useState('DEFAULT');
+  const [sortField, setSortField] = useState('LAST_UPDATED');
   const [sortValue, setSortValue] = useState('DESCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -113,7 +113,7 @@ const StaffApplicationList = ({
   const applicantHeaderValues = applicationType === "NEW" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Department",
     "Docs",
@@ -141,7 +141,7 @@ const StaffApplicationList = ({
   const departmentHeadHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     "Docs",
     "CRs",
@@ -154,7 +154,7 @@ const StaffApplicationList = ({
   const applicationHeaderValues = applicationType === "NEW" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
     // "Commitee",
@@ -165,11 +165,11 @@ const StaffApplicationList = ({
     "CC",
     "CC Date",
     "Last Updated",
-    "Action",
+    "",
   ] : [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
     // "Department",
     // "Commitee",
@@ -177,20 +177,20 @@ const StaffApplicationList = ({
     // "CEO",
     "CRs",
     "Notes",
-    "Dept. Head",
+    // "Dept. Head",
     "Submitted",
     "Last Updated",
     "",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "CC Approval",
     "COS Approval",
     "Tasklist Status",
     "Last Updated",
-    "Action",
+    "",
   ] : [
     // <CommonCheckBox
     //   size="medium"
@@ -198,25 +198,25 @@ const StaffApplicationList = ({
     //   onChange={handleSelectAllClick}
     // />,
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
     "Docs",
     "CRs",
     "Notes",
     // "Task List",
-    "CC Status",
+    // "CC Status",
     "",
   ];
   const bodHeaderValues = applicationType === "NEW" ? [
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-    applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff Application ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     // "Ref",
     "MAC Approval",
     "Task list Status",
     "Last Updated",
-    "Action",
+    "",
   ] : [
       // <CommonCheckBox
       //   size="medium"
@@ -224,14 +224,14 @@ const StaffApplicationList = ({
       //   onChange={handleSelectAllClick}
       // />,
       applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
-      applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+      // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
       applicationType === "NEW" ? "Applicant Type" : "Staff Type",
       // "Ref",
       "CRs",
       "Notes",
       // "Task List",
-      "CC Status",
-      "MAC Status",
+      // "CC Status",
+      // "MAC Status",
       "",
   ]
   const clarificationHeaderValues = [
@@ -294,7 +294,7 @@ const StaffApplicationList = ({
   const applicantColSortValues  = applicationType === "NEW" ? [
     false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -318,7 +318,7 @@ const StaffApplicationList = ({
   const departmentHeadColSortValues = [
     false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -330,7 +330,7 @@ const StaffApplicationList = ({
   const applicationColSortValues = applicationType === "NEW" ? [
     false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -342,9 +342,8 @@ const StaffApplicationList = ({
   ] : [
     false,
     true,
+    // true,
     true,
-    true,
-    false,
     false,
     false,
     false,
@@ -354,7 +353,7 @@ const StaffApplicationList = ({
   ];
   const macColSortValues = applicationType === "NEW" ? [
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -364,7 +363,7 @@ const StaffApplicationList = ({
   ] : [
     // false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -375,7 +374,7 @@ const StaffApplicationList = ({
   ]
   const bodColSortValues = applicationType === "NEW" ? [
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -384,7 +383,7 @@ const StaffApplicationList = ({
   ] : [
     // false,
     true,
-    true,
+    // true,
     true,
     false,
     false,
@@ -515,7 +514,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData().then(() => {
-      setIsDataLoaded(true); // Mark data as loaded
+      setIsDataLoaded(false); // Mark data as loaded
     });
     setCheckedIds([]);
   }, [ sortField, sortValue]);
@@ -1053,7 +1052,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
@@ -1124,7 +1123,7 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
       {
@@ -1406,7 +1405,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
@@ -1474,7 +1473,7 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: department },
       {
@@ -1558,7 +1557,7 @@ const StaffApplicationList = ({
         " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -1609,7 +1608,7 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
 
       // { type: "text", value: department },
@@ -1666,7 +1665,7 @@ const StaffApplicationList = ({
 
     
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
-      const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
+      // const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
       if (workflow) {
         const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
           : workflow.currentLevelStatus === "COMPLETED" ? "green"
@@ -1684,7 +1683,7 @@ const StaffApplicationList = ({
         " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -1732,17 +1731,17 @@ const StaffApplicationList = ({
       //   cc.push("grey"); // If the role is not "Chief of Staff"
       // }
       // deptHead.push("grey")
-      if (workflowDeptRole) {
-        const color = workflowDeptRole.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowDeptRole.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-            deptHead.push(color);
-        console.log("Matching workflow found:", {
-          role: workflowDeptRole.role,
-          status: workflowDeptRole.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflowDeptRole) {
+      //   const color = workflowDeptRole.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflowDeptRole.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //       deptHead.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflowDeptRole.role,
+      //     status: workflowDeptRole.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       // if (data?.logs[data.logs.length - 2]?.role === "Credentialing Committee") {
       //   ccdate.push(
       //     format(new Date(data?.logs[data.logs.length - 2].createdDate), "MMM dd, yyyy")
@@ -1763,7 +1762,7 @@ const StaffApplicationList = ({
     return [
       { type: "dot", value: dot },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
 
       // { type: "text", value: department },
@@ -1785,7 +1784,7 @@ const StaffApplicationList = ({
         icon: notesIcon,
       },
       // { type: "dot", value: cos },
-      { type: "dot", value: deptHead },
+      // { type: "dot", value: deptHead },
       // {
       //   type: "iconWithCount",
       //   value: ccdate,
@@ -1823,7 +1822,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
@@ -1857,7 +1856,7 @@ const StaffApplicationList = ({
 
     return [
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: ccapproval },
       { type: "text", value: cosapproval },
@@ -1890,7 +1889,7 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
+      // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       // checkbox.push(
       //   <CommonCheckBox
       //     checked={checkedIds.includes(data.id)}
@@ -1903,7 +1902,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
@@ -1963,17 +1962,17 @@ const StaffApplicationList = ({
       // }
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
-      if (workflowCredRole) {
-        const color = workflowCredRole.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowCredRole.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-            cc.push(color);
-        console.log("Matching workflow found:", {
-          role: workflowCredRole.role,
-          status: workflowCredRole.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflowCredRole) {
+      //   const color = workflowCredRole.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflowCredRole.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //       cc.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflowCredRole.role,
+      //     status: workflowCredRole.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       // cc.push("green");
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
@@ -1986,7 +1985,7 @@ const StaffApplicationList = ({
     return [
       // { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       {
         type: "iconWithCount",
@@ -2011,10 +2010,10 @@ const StaffApplicationList = ({
       // { type: "text", value: ccapproval },
       // { type: "text", value: cosapproval },
       // { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
-      {
-        type: "dot",
-        value: cc
-      },
+      // {
+      //   type: "dot",
+      //   value: cc
+      // },
       { type: "action", value: action },
     ];
   }
@@ -2034,7 +2033,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       ref.push(data?.ref || "-");
       // macapproval.push(data?.macapproval || "05/05/2024");
@@ -2057,7 +2056,7 @@ const StaffApplicationList = ({
 
     return [
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       // { type: "text", value: ref },
       { type: "text", value: macapproval },
@@ -2088,8 +2087,8 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
-      const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
+      // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
+      // const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
       // checkbox.push(
       //   <CommonCheckBox
       //     checked={checkedIds.includes(data.id)}
@@ -2102,7 +2101,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
-      applicantId.push(data?.displayId);
+      // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
       // ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
@@ -2150,28 +2149,28 @@ const StaffApplicationList = ({
       // }
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
-      if (workflowCredRole) {
-        const color = workflowCredRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowCredRole?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-            cc.push(color);
-        console.log("Matching workflow found:", {
-          role: workflowCredRole.role,
-          status: workflowCredRole?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
-      if (workflowMacRole) {
-        const color = workflowMacRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowMacRole?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-            mac.push(color);
-        console.log("Matching workflow found:", {
-          role: workflowMacRole.role,
-          status: workflowMacRole.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflowCredRole) {
+      //   const color = workflowCredRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflowCredRole?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //       cc.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflowCredRole.role,
+      //     status: workflowCredRole?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
+      // if (workflowMacRole) {
+      //   const color = workflowMacRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflowMacRole?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //       mac.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflowMacRole.role,
+      //     status: workflowMacRole.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       // mac.push("green");
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
@@ -2184,7 +2183,7 @@ const StaffApplicationList = ({
     return [
       // { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       {
         type: "countWithHover",
@@ -2202,14 +2201,14 @@ const StaffApplicationList = ({
       // { type: "text", value: ccapproval },
       // { type: "text", value: cosapproval },
       // { type: "iconWithCount", value: taskListStatus,icon: taskListDotColor },
-      {
-        type: "dot",
-        value: cc
-      },
-      {
-        type: "dot",
-        value: mac
-      },
+      // {
+      //   type: "dot",
+      //   value: cc
+      // },
+      // {
+      //   type: "dot",
+      //   value: mac
+      // },
       { type: "action", value: action },
     ];
   }
@@ -2888,7 +2887,7 @@ const StaffApplicationList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <>
-              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
@@ -3149,7 +3148,7 @@ const StaffApplicationList = ({
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div> */}
-          <div className={`${style.marginTop20}`}>
+          <div>
             <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
@@ -3159,12 +3158,13 @@ const StaffApplicationList = ({
           </div>
           <div className={`${style.borderStyleTiles}`}></div>
           {/* <CommonDivider /> */}
+          {/* <CommonDivider /> */}
           {/* <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             /> */}
           <div
-            className={`${style.spaceBetween} ${style.marginTop20}`}
+            className={`${style.spaceBetween} ${style.marginTop10}`}
           >
             <StaffApplicationTiles
               getSelectedTab={getSelectedTab}
@@ -3281,7 +3281,7 @@ const StaffApplicationList = ({
         )
       }
     </div >
-    {/* )} */}
+    {/* //  )}  */}
 </>
   );
 };

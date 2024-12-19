@@ -15,7 +15,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedOption, setSelectedOption] = useState({});
   const [tableData, setTableData] = useState([]);
-  const [sortField, setSortField] = useState("DEFAULT");
+  const [sortField, setSortField] = useState("REAPPOINTMENT_STATUS");
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -39,7 +39,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
   useEffect(() => {
     getActiveUserData().then(() => {
-      setIsDataLoaded(true); // Mark data as loaded
+      setIsDataLoaded(false);
     });
     setCheckedIds([]);
   }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue,page,totalCount]);
@@ -83,12 +83,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       onChange={handleSelectAllClick}
     />,
     "Staff Name",
-    "Staff ID",
     "Staff Type",
     "Department",
     "Reappointment"
   ];
-  const colSortValues = [false, true, false, false, false, true];
+  const colSortValues = [false, true, false, false, true];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -223,7 +222,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </>
       );
 
-      applicantId.push(`${data?.staffId}` || "123");
+      // applicantId.push(`${data?.staffId}` || "123");
       applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
       reappointment.push(
@@ -242,7 +241,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     return [
       { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
-      { type: "text", value: applicantId },
+      // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
       { type: "text", value: reappointment },

@@ -354,282 +354,282 @@
 // export default NotesCommentsDialog;
 
 
-// // import React, { useState, useEffect, useCallback, useRef } from "react";
-// // import { GET,TenantID } from "../../Screens/dataSaver";
-// // import { format } from "date-fns";
-// // import { Dialog, Classes } from "@blueprintjs/core";
-// // import CrossPink from "../../images/crossPink.png";
-// // import Cookie from 'universal-cookie';
-// // import jwt from 'jwt-decode';
-// // import style from "./index.module.scss";
+// import React, { useState, useEffect, useCallback, useRef } from "react";
+// import { GET,TenantID } from "../../Screens/dataSaver";
+// import { format } from "date-fns";
+// import { Dialog, Classes } from "@blueprintjs/core";
+// import CrossPink from "../../images/crossPink.png";
+// import Cookie from 'universal-cookie';
+// import jwt from 'jwt-decode';
+// import style from "./index.module.scss";
 
-// // const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
-// //   let cookie = new Cookie();
-// //   let userDetails = cookie.get('user');
-// //   const user = jwt(userDetails);
-// //   const [userRole, setUserRole] = useState('');
-// //   const [selectedOption, setSelectedOption] = useState({});
-// //   const [formDetails, setFormDetails] = useState([]);
-// //   const [entity, setEntity] = useState([]);
-// //   const [logDetails, setLogDetails] = useState([]);
-// //   const userId = sessionStorage.getItem("applicationId");
-// //   const componentRef = useRef(null);
-// //   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
-// //   const [applicationType, setApplicationType] = useState(() => 
-// //     sessionStorage.getItem('applicationCreationType') || 'NEW'
-// //   );
+// const NotesCommentsDialog = ({ getIsOpen,selectedTab }) => {
+//   let cookie = new Cookie();
+//   let userDetails = cookie.get('user');
+//   const user = jwt(userDetails);
+//   const [userRole, setUserRole] = useState('');
+//   const [selectedOption, setSelectedOption] = useState({});
+//   const [formDetails, setFormDetails] = useState([]);
+//   const [entity, setEntity] = useState([]);
+//   const [logDetails, setLogDetails] = useState([]);
+//   const userId = sessionStorage.getItem("applicationId");
+//   const componentRef = useRef(null);
+//   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [applicationType, setApplicationType] = useState(() => 
+//     sessionStorage.getItem('applicationCreationType') || 'NEW'
+//   );
 
-// //   useEffect(() => {
-// //     sessionStorage.setItem("fromSummary", false);
-// //     getApplication();
-// //     getLog();
-// //   }, [applicationType]);
+//   useEffect(() => {
+//     sessionStorage.setItem("fromSummary", false);
+//     getApplication();
+//     getLog();
+//   }, [applicationType]);
 
-// //   // useEffect(() => {
-// //   //   getApplication();
-// //   // }, [id]);
+//   // useEffect(() => {
+//   //   getApplication();
+//   // }, [id]);
 
-// // const getApplication = async () => {
-// //     try {
-// //       const { data: basicForm } = await GET(`application-management-service/application/${userId}`);
-// //       setFormDetails(basicForm);
-// //     } catch (error) {
-// //       console.error('Error fetching application:', error);
-// //     }
-// //   };
+// const getApplication = async () => {
+//     try {
+//       const { data: basicForm } = await GET(`application-management-service/application/${userId}`);
+//       setFormDetails(basicForm);
+//     } catch (error) {
+//       console.error('Error fetching application:', error);
+//     }
+//   };
 
-// //   const getApplicationEntity = async () => {
-// //     const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
-// //     setEntity(basicFormEntity);
-// //   };
+//   const getApplicationEntity = async () => {
+//     const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
+//     setEntity(basicFormEntity);
+//   };
 
 
-// //   const getLog = async () => {
-// //     const { data: basicLog } = await GET(`application-management-service/application/${userId}/logs`);
-// //     setLogDetails(basicLog);
-// //     console.log("basicLog" +JSON.stringify(basicLog));
+//   const getLog = async () => {
+//     const { data: basicLog } = await GET(`application-management-service/application/${userId}/logs`);
+//     setLogDetails(basicLog);
+//     console.log("basicLog" +JSON.stringify(basicLog));
     
-// //   };
+//   };
 
-// //   useEffect(() => {
-// //     setUserDetails();
-// //   }, [user?.id]);
+//   useEffect(() => {
+//     setUserDetails();
+//   }, [user?.id]);
 
-// //   const setUserDetails = async () => {
-// //       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-// //       console.log("userdataaaa" + JSON.stringify(userData))
-// //       sessionStorage.setItem('user', JSON.stringify(userData))
-// //       setUserRole(userData?.roles?.map((data) => data?.roleName));
-// //     }
+//   const setUserDetails = async () => {
+//       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+//       console.log("userdataaaa" + JSON.stringify(userData))
+//       sessionStorage.setItem('user', JSON.stringify(userData))
+//       setUserRole(userData?.roles?.map((data) => data?.roleName));
+//     }
 
-// //   const getApplicationCreationType = (value) => {
-// //     setApplicationCreationType(value);
-// //   }
+//   const getApplicationCreationType = (value) => {
+//     setApplicationCreationType(value);
+//   }
 
-// //   if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
-// //     return null;
-// //   }
-// //   const lastModifiedDate = formDetails?.lastModifiedDate;
-// //   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
-// //   const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
-// //   const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MMM dd, yyyy") : "-";
+//   if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+//     return null;
+//   }
+//   const lastModifiedDate = formDetails?.lastModifiedDate;
+//   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+//   const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
+//   const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MMM dd, yyyy") : "-";
   
 
-// //   // if ((applicationType === "NEW")) {
-// //   //   return null;
-// //   // }
+//   // if ((applicationType === "NEW")) {
+//   //   return null;
+//   // }
 
-// //   if ((userRole?.includes('Department Head') && selectedTab === "level-3")) {
-// //     return null;
-// //   }
+//   if ((userRole?.includes('Department Head') && selectedTab === "level-3")) {
+//     return null;
+//   }
 
-// //   // if ((selectedTab === "level-1")) {
-// //   //   return null;
-// //   // }
+//   // if ((selectedTab === "level-1")) {
+//   //   return null;
+//   // }
 
-// //   // if (applicationType === "NEW") {
-// //   //   return null;
-// //   // } else if (userRole?.includes('Department Head') && selectedTab === "level-3") {
-// //   //   return null;
-// //   // } else if (selectedTab === "level-1") {
-// //   //   return null;
-// //   // }else if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
-// //   //   return null;
-// //   // }
+//   // if (applicationType === "NEW") {
+//   //   return null;
+//   // } else if (userRole?.includes('Department Head') && selectedTab === "level-3") {
+//   //   return null;
+//   // } else if (selectedTab === "level-1") {
+//   //   return null;
+//   // }else if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+//   //   return null;
+//   // }
 
-// //   return (
+//   return (
   
     
-// //     <Dialog
-// //       isOpen={getIsOpen}
-// //       onClose={() => getIsOpen(false)}
-// //       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-// //       canOutsideClickClose={false}
-// //       canEscapeKeyClose={false}
-// //       getApplicationCreationType={getApplicationCreationType}
-// //     >
-// //       <div>
-// //         <div className={Classes.DIALOG_BODY}>
-// //           <div className={style.spaceBetween}>
-// //             <div className={`${style.heading}`}>
-// //               Staff Reappointment for Review & Approval
-// //             </div>
-// //             <div className={style.displayInRow}>
-// //               <img
-// //                 src={CrossPink}
-// //                 alt="cross"
-// //                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-// //                 onClick={() => {
-// //                   getIsOpen(false);
-// //                 }}
-// //               />
-// //             </div>
-// //           </div>
-// //           <div ref={componentRef} className={`${style.pagebreak}`}>
-// //             {/* <div className={`${style.spaceBetween}`}>
-// //               <div className={`${style.fontstyle} ${style.marginTop10}`}>
-// //               <span className={`${style.fontstyleassociate}`}>
-// //                 {applicationType === "NEW" 
-// //                   ? `Review Staff for Appointment as ${formDetails?.providerType?.serviceProviderType}` 
-// //                   : `Review Staff for ReAppointment as ${formDetails?.providerType?.serviceProviderType}`}
-// //               </span>
-// //               </div>
-// //             </div> */}
-// //             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-// //               <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
-// //                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-// //                   <span className={style.rejectionHeadingTextStyle}>
-// //                   {formDetails?.basicDetails?.applicant?.name?.firstName
-// //                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-// //                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-// //                   : ""}{", "}
-// //                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
-// //                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-// //                   </span>
-// //                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-// //                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
-// //                 </div>
-// //                 <div>
-// //                 <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-// //                 </div>
-// //               </div>
-// //               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
-// //               <div className={style.marginTop10}>
-// //                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
-// //                   </div>
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
-// //                   </div>
-// //                 {/* </div>
-// //               </div>
-// //               <div className={style.marginTop5}>
-// //                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
-// //                   </div>
-// //                   {/* <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
-// //                   </div> */}
-// //                     {
-// //                     entity?.multiSiteEntity && (
-// //                         <div className={`${style.twoColumnGridInner}`}>
-// //                         <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-// //                         <span className={`${style.rejectionTextStyle1}`}>
-// //                             {entity?.multiSiteEntity?.[0]?.name || "-"}
-// //                         </span>
-// //                         </div>
-// //                     )
-// //                     }
-// //                 {/* </div>
-// //               </div>
-// //               <div className={style.marginTop5}>
-// //                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>OHIP Billing Number:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.specialtyBilling || "-"}</span>
-// //                   </div>
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-// //                     {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-// //                     <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-// //                   </div>
-// //                   <div className={`${style.twoColumnGridInner}`}>
-// //                     <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-// //                     <span className={`${style.rejectionTextStyle1}`}>
-// //                       {formDetails?.basicDetails?.applicant?.name?.firstName
-// //                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-// //                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-// //                       : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
-// //                     </span>
-// //                   </div>
-// //                 </div>
-// //               </div>
-// //             </div>
-// //             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-// //             {logDetails?.logs?.[logDetails.logs.length - 1]?.role} Comments & Notes
-// //             </div>
-// //             <div className={`${style.notesBorderStyle}`}>
-// //               <div className={`${style.commentsNotesFontStyle}`}>
-// //               {logDetails?.logs?.[logDetails.logs.length - 1]?.notes}
-// //               </div>
-// //             </div> */}
-// //             {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
-// //               <>
-// //               <div className={style.marginTop}>
-// //                 <div className={style.commentsNotesHeadingFontStyle}>
-// //                   {log.title} Comments & Notes
-// //                   {/* Staff Manager Comments & Notes */}
-// //                 </div>
-// //                 <hr color="grey" size="2"></hr>
-// //                 <div>
-// //                   <div className={style.commentsNotesFontStyle}>
-// //                   {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
-// //                   <span dangerouslySetInnerHTML={{ __html:(log.notes) }} />
-// //                   </div>
-// //                 </div>
-// //               </div>
-// //               </>
-// //               ))}
-// //              {userRole?.includes("Department Head") &&
-// //              <>
-// //              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-// //               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
-// //               </div>
+//     <Dialog
+//       isOpen={getIsOpen}
+//       onClose={() => getIsOpen(false)}
+//       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+//       canOutsideClickClose={false}
+//       canEscapeKeyClose={false}
+//       getApplicationCreationType={getApplicationCreationType}
+//     >
+//       <div>
+//         <div className={Classes.DIALOG_BODY}>
+//           <div className={style.spaceBetween}>
+//             <div className={`${style.heading}`}>
+//               Staff Reappointment for Review & Approval
+//             </div>
+//             <div className={style.displayInRow}>
+//               <img
+//                 src={CrossPink}
+//                 alt="cross"
+//                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+//                 onClick={() => {
+//                   getIsOpen(false);
+//                 }}
+//               />
+//             </div>
+//           </div>
+//           <div ref={componentRef} className={`${style.pagebreak}`}>
+//             {/* <div className={`${style.spaceBetween}`}>
+//               <div className={`${style.fontstyle} ${style.marginTop10}`}>
+//               <span className={`${style.fontstyleassociate}`}>
+//                 {applicationType === "NEW" 
+//                   ? `Review Staff for Appointment as ${formDetails?.providerType?.serviceProviderType}` 
+//                   : `Review Staff for ReAppointment as ${formDetails?.providerType?.serviceProviderType}`}
+//               </span>
+//               </div>
+//             </div> */}
+//             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+//               <div className={`${style.spaceBetween} ${style.marginLeftRight20}`}>
+//                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+//                   <span className={style.rejectionHeadingTextStyle}>
+//                   {formDetails?.basicDetails?.applicant?.name?.firstName
+//                   ? formDetails?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+//                     formDetails?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+//                   : ""}{", "}
+//                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}        
+//                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+//                   </span>
+//                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+//                   {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+//                 </div>
+//                 <div>
+//                 <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+//                 </div>
+//               </div>
+//               {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
+//               <div className={style.marginTop10}>
+//                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+//                   </div>
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
+//                   </div>
+//                 {/* </div>
+//               </div>
+//               <div className={style.marginTop5}>
+//                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+//                   </div>
+//                   {/* <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
+//                   </div> */}
+//                     {
+//                     entity?.multiSiteEntity && (
+//                         <div className={`${style.twoColumnGridInner}`}>
+//                         <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+//                         <span className={`${style.rejectionTextStyle1}`}>
+//                             {entity?.multiSiteEntity?.[0]?.name || "-"}
+//                         </span>
+//                         </div>
+//                     )
+//                     }
+//                 {/* </div>
+//               </div>
+//               <div className={style.marginTop5}>
+//                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>OHIP Billing Number:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.specialtyBilling?.code || "-"}</span>
+//                   </div>
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+//                     {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
+//                     <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+//                   </div>
+//                   <div className={`${style.twoColumnGridInner}`}>
+//                     <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+//                     <span className={`${style.rejectionTextStyle1}`}>
+//                       {formDetails?.basicDetails?.applicant?.name?.firstName
+//                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+//                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+//                       : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+//             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+//             {logDetails?.logs?.[logDetails.logs.length - 1]?.role} Comments & Notes
+//             </div>
+//             <div className={`${style.notesBorderStyle}`}>
+//               <div className={`${style.commentsNotesFontStyle}`}>
+//               {logDetails?.logs?.[logDetails.logs.length - 1]?.notes}
+//               </div>
+//             </div> */}
+//             {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
+//               <>
+//               <div className={style.marginTop}>
+//                 <div className={style.commentsNotesHeadingFontStyle}>
+//                   {log.title} Comments & Notes
+//                   {/* Staff Manager Comments & Notes */}
+//                 </div>
+//                 <hr color="grey" size="2"></hr>
+//                 <div>
+//                   <div className={style.commentsNotesFontStyle}>
+//                   {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
+//                   <span dangerouslySetInnerHTML={{ __html:(log.notes) }} />
+//                   </div>
+//                 </div>
+//               </div>
+//               </>
+//               ))}
+//              {userRole?.includes("Department Head") &&
+//              <>
+//              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+//               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
+//               </div>
                
-// //               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-// //               Assigned Credentials Committee: Name
-// //               </div>
-// //               </>
-// //               }
-// //             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-// //               Dept Head Comments & Notes
-// //             </div>
-// //             <div className={`${style.notesBorderStyle}`}>
-// //               <div className={`${style.commentsNotesFontStyle}`}>
-// //                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
-// //               </div>
-// //             </div> */}
-// //             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-// //               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
-// //             </div> */}
-// //             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-// //               {userRole?.includes("Department Head") ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
-// //             </div>
-// //           </div>
-// //         </div>
-// //       </div>
-// //     </Dialog>
+//               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+//               Assigned Credentials Committee: Name
+//               </div>
+//               </>
+//               }
+//             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+//               Dept Head Comments & Notes
+//             </div>
+//             <div className={`${style.notesBorderStyle}`}>
+//               <div className={`${style.commentsNotesFontStyle}`}>
+//                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
+//               </div>
+//             </div> */}
+//             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+//               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
+//             </div> */}
+//             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
+//               {userRole?.includes("Department Head") ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </Dialog>
     
-// //   );
-// // };
+//   );
+// };
 
-// // export default NotesCommentsDialog;
+// export default NotesCommentsDialog;
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { GET, PUT , POST , TenantID } from "../../Screens/dataSaver";
