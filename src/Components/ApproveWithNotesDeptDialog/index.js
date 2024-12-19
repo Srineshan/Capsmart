@@ -57,7 +57,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     };
     const [isLoadingImage, setIsLoadingImage] = useState(false);
     const isApproveEnabled = 
-    userRoleComments.trim() !== '' && 
+    // userRoleComments.trim() !== '' && 
     selectedDateForDept !== null && 
     selectedRoleCred !== '';
 
@@ -492,7 +492,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 open={calendarStart}
                 onOpen={() => setCalendarStart(true)}
                 onClose={() => setCalendarStart(false)}
-                minDate={sub(new Date(), { years: 3 })}
+                minDate={add(new Date(), { days: 1 })}
                 maxDate={add(new Date(), { years: 3 })}
                 value={selectedDateForDept}
                 label=" Upcoming Credentialing Committee Meeting Date"

@@ -16,8 +16,10 @@ import { DELETE, TenantID, GET, PUT, POST } from "./../dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
-import PdfDoc from './../../images/pdfDoc.png';
-import ImgDoc from './../../images/imgDoc.png';
+// import PdfDoc from './../../images/pdfDoc.png';
+import PdfDoc from './../../images/PDFDocs.png';
+// import ImgDoc from './../../images/imgDoc.png';
+import ImgDoc from './../../images/imgDocs.png';
 import BlueSign from "./../../images/blueSign.png";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -268,14 +270,21 @@ const NewActiveApplication = ({
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const getPreApplication = async () => {
+  // const getPreApplication = async () => {
+  //   const { data: basicForm } = await GET(
+  //     `application-management-service/application/${applicationId}`
+  //   );
+  //   setForm(basicForm);
+  //   console.log("basicFormmmm" + JSON.stringify(basicForm));
+
+  // };
+
+    const getPreApplication = async () => {
     const { data: basicForm } = await GET(
       `application-management-service/application/${applicationId}`
     );
     setForm(basicForm);
-    console.log("basicFormmmm" + JSON.stringify(basicForm));
-
-  };
+  }
 
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
@@ -1233,12 +1242,14 @@ const NewActiveApplication = ({
     let temp = [];
     temp.push({
       "type": "icon", "icon": medicalDirectives?.map(innerData =>
-        <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
-            ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}>
+        <div
+        //  className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
+            // ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}
+            >
           {innerData?.status === 'COMPLETED' ? (
-            <CheckCircleOutlineIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+            <CheckCircleRoundedIcon sx={{ fontSize: 20, color: `#25BF6A` }} />
           ) : (
-            <WarningAmberIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+            <WarningAmberRoundedIcon sx={{ fontSize: 20, color: `#FF6562` }} />
           )}
         </div>
         // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
@@ -2987,7 +2998,7 @@ const NewActiveApplication = ({
                 <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
               </div>
               <div className={style.marginTop20}>
-                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCovers : ''}</strong></div>
+                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup : ''} : {form?.forms?.[formIndex]?.data?.coverer?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCovers : ''}</strong></div>
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
                 <div className={style.marginTop20}>
@@ -3007,7 +3018,7 @@ const NewActiveApplication = ({
               <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
             </div>
             <div className={style.marginTop20}>
-              <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.whoCovers : ''}</strong></div>
+              <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.specificProviderGroup !== undefined ? form?.forms?.[formIndex]?.data?.specificProviderGroup : ''} : {form?.forms?.[formIndex]?.data?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.whoCovers : ''}</strong></div>
             </div>
             {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
               <div className={style.marginTop20}>
@@ -3442,11 +3453,12 @@ const NewActiveApplication = ({
 
   return (
     <div style={{
-      maxHeight: 'calc(100vh - 10px)',
+      // maxHeight: 'calc(100vh - 10px)',
       overflowY: "auto",
       scrollbarWidth: "thin",
       scrollbarColor: "gray transparent",
-    }}>
+    }}
+    className={style.calcHeight}>
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
@@ -3514,15 +3526,18 @@ const NewActiveApplication = ({
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
                               <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name 
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
+                                  : ""}
                               </div>
                               {/* <div className={style.spaceBetween}> */}
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div>
+                              </div> */}
                               {/* </div> */}
                             </div>
                           </div>
@@ -3537,13 +3552,16 @@ const NewActiveApplication = ({
                                   {reappointmentStartDate}
                                 </span>
                               </div>
-                              <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Application Submitted:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
+                              </div>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div>
                               {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
@@ -3603,8 +3621,14 @@ const NewActiveApplication = ({
                               {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
-                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                                 {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
+                              </div> */}
+                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name 
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
+                                  : ""}
                               </div>
                               {/* <div className={style.spaceBetween}> */}
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
@@ -3627,7 +3651,7 @@ const NewActiveApplication = ({
                                   {reappointmentStartDate}
                                 </span>
                               </div>
-                              <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Application Submitted:
                                 </span>
@@ -3635,7 +3659,7 @@ const NewActiveApplication = ({
                                   {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                 </span>
                               </div>
-                              <div className={`${style.emailTextBoldStyle} ${style.marginTop5}`}>
+                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div>
                               {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
@@ -5141,8 +5165,19 @@ const NewActiveApplication = ({
                                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
                                       {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
                                       <div>
-                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.tableHeaderGridStyleCred1}`} >
                                           <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                          {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} > */}
+                                          {applicationType === "NEW" ? (
+                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                              {
+                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                                              }
+
+                                            </div>
+                                          ) : ''}
+                                        {/* </div> */}
                                         </div>
                                         {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
@@ -5427,7 +5462,7 @@ const NewActiveApplication = ({
                                 )}
                               </>
                             )} */}
-                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                           {applicationType === "NEW" ? (
                                             <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                                               {
@@ -5437,7 +5472,7 @@ const NewActiveApplication = ({
 
                                             </div>
                                           ) : ''}
-                                        </div>
+                                        </div> */}
                                       </div>
                                       {applicationType === "NEW" ? (
                                         <>
@@ -8008,6 +8043,39 @@ const NewActiveApplication = ({
                                     <div className={`${style.tableDataFontStyle1}`}>
                                       {data?.title}
                                     </div>
+                                    <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                    >
+                                      {expand?.status && expand?.index === index + 1 ? (
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setExpand({ status: false, index: 0 });
+                                            setFormSchemaId("");
+                                          }}
+                                        />
+                                      ) : (
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setExpand({ status: true, index: index + 1 });
+                                            setFormSchemaId(data?.id);
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
                                   </div>
                                   {/* {expand?.status && expand?.index === index + 1 ? (
                           <>
@@ -8203,7 +8271,7 @@ const NewActiveApplication = ({
                                       </div>
                                     </>
                                   )}
-                                  <div
+                                  {/* <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                   >
                                     <div
@@ -8235,7 +8303,7 @@ const NewActiveApplication = ({
                                         />
                                       )}
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                                 {expand?.status && expand?.index === index + 1 && (
                                   <div
