@@ -3453,12 +3453,13 @@ const NewActiveApplication = ({
 
   return (
     <div style={{
-      // maxHeight: 'calc(100vh - 10px)',
+      maxHeight: 'calc(100vh - 10px)',
       overflowY: "auto",
       scrollbarWidth: "thin",
       scrollbarColor: "gray transparent",
     }}
-    className={style.calcHeight}>
+    // className={style.calcHeight}
+    >
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
