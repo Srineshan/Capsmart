@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -41,6 +42,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   useEffect(() => {
     checkApproveEnabled();
   }, [userNotes]);
+
+  useEffect(() => {
+    getActiveApplicationView(true);
+    // getApplication();
+  }, [userNotes]);
+
 
   useEffect(() => {
     setUserDetails();
@@ -83,7 +90,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   };
 
   const onClose = () => {
-    getActiveApplicationView(false);
+    // getActiveApplicationView(false);
     getIsOpen(false);
   };
 
@@ -113,11 +120,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   return (
 <>
 {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
     )}
 {!isLoadingImage && (
     <Dialog

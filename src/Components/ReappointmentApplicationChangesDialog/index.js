@@ -184,6 +184,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
   let cookie = new Cookie();
@@ -258,11 +259,12 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
   return (
     <>
     {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
     )}
     {!isLoadingImage && (
     <Dialog
@@ -424,7 +426,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
         </div>
       </div>
     </Dialog>
-    )}
+     )} 
     </>
   );
 };

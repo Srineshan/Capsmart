@@ -97,6 +97,7 @@ import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../../Components/LoadingScreen";
 
 const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicationDeclineDialog, getActiveApplicationView }) => {
   const [showDeclineMailDialog, setShowDeclineMailDialog] = useState(false);
@@ -121,6 +122,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [entity, setEntity] = useState([]);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+   const [uploadFileData, setUploadFileData]= useState('');
     const dropzoneStyle = {
         width: "100%",
         height: "auto",
@@ -173,50 +175,50 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   };
 
    const changeHandler = async (event) => {
-        setIsLoading(true);
-        const filesArray = Array.from(event);
-        setFiles(filesArray);
-        console.log(event, 'Test');
+      console.log("Event received:", event);
+      setIsLoading(true);
+      const filesArray = Array.from(event);
+      console.log("Converted files array:", filesArray);
+      setFiles(filesArray);
     
+      const formData = new FormData();
+      let fileNameArray = [];
     
-        const formData = new FormData();
-        let fileNameArray = [];
-        filesArray?.forEach(file => {
-          fileNameArray.push({ "fileName": file?.name });
-          formData.append('documents', file);
-        });
+      filesArray.forEach(file => {
+        const fileInfo = {
+          "filePath": file.path || '', 
+          "fileName": file.name,
+          "fileURL": "",  
+          "fileType": file.type,
+          "classification": "",  
+          "verified": true,     
+          "valid": true         
+        };
+        fileNameArray.push(fileInfo);
+        formData.append('documents', file);
+      });
     
+      const blob = new Blob([JSON.stringify(fileNameArray)], {
+        type: "application/json"
+      });
+      formData.append('files', blob);
     
+      try {
+        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+        console.log("API Response:", response);
+        SuccessToaster('File Uploaded Successfully');
+        console.log("Response data:", response?.data);
+        setUploadFileData(response?.data)
     
-    
-        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
-          type: "application/json"
-        }));
-    
-        fileNameArray.forEach(file => {
-          console.log("File name:", file.fileName);
-        });
-    
-        console.log("file?.name" + JSON.stringify(fileNameArray));
-        console.log(fileNameArray)
-        console.log(event?.name);
-    
-        try {
-          const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-          SuccessToaster('File Uploaded Successfully');
-          console.log(response?.data?.fileName);
-    
-    
-    
-          setIsLoading(false);
-          return response?.data;
-        } catch (error) {
-          ErrorToaster('File Upload Failed');
-          console.error(error);
-          setIsLoading(false);
-          return null;
-        }
-      };
+        setIsLoading(false);
+        return response?.data;
+      } catch (error) {
+        ErrorToaster('File Upload Failed');
+        console.error("Error:", error);
+        setIsLoading(false);
+        return null;
+      }
+    };  
 
   useEffect(() => {
     if (name && dateTime) {
@@ -255,6 +257,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
             notes: notes
                },
         approvedDate: new Date().toISOString(),
+        files: uploadFileData || []
       };
 
       await PUT(
@@ -349,11 +352,12 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     <div>
       
  {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
     )}
 {!isLoadingImage && (
       <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>

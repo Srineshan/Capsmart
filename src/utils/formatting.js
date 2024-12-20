@@ -1,5 +1,6 @@
 import { ErrorToaster } from './toaster';
 import Payment from "payment";
+import dataLoadinglogo from '../images/loaderCommon.gif';
 
 export const FormatPhoneNumber = (value) => {
   if (!value) return value;
@@ -92,6 +93,8 @@ console.log(timeZoneAbbreviation, siteTimeZone)
 export const corsUrl = 'https://app.timesmartai.com/cors/'
 
 export const fileLoadingURL = 'https://capmanager-dev.s3.us-east-1.amazonaws.com/File_Upload_Loading.gif';
+
+export const dataLoadingGIF = dataLoadinglogo
 
 const clearNumber = (value = "") => {
   return value.replace(/\D+/g, "");

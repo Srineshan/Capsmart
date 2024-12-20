@@ -642,6 +642,7 @@ import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -1123,11 +1124,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   return (
 <>
  {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
     )}
 
  {!isLoadingImage && (
@@ -1277,7 +1279,17 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </div>
                
                <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-               Assigned Credentials Committee: Name
+               Assigned Credentials Committee: {
+                  formDetails?.completedWorkflows
+                    ?.find(workflow => workflow.role === "Credentialing Committee")
+                    ?.approverDetail?.name
+                    ? `${formDetails?.completedWorkflows
+                        .find(workflow => workflow.role === "Credentialing Committee")
+                        ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
+                        .find(workflow => workflow.role === "Credentialing Committee")
+                        ?.approverDetail?.name?.lastName}`
+                    : "No approver found"
+                }
                </div>
                </>
                }

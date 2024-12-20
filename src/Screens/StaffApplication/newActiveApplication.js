@@ -60,6 +60,7 @@ import CommonRadio from "../../Components/CommonFields/CommonRadio";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import { useNavigate, useParams } from "react-router-dom";
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -92,6 +93,7 @@ const NewActiveApplication = ({
     sessionStorage.getItem("applicationId")
   );
   const [form, setForm] = useState();
+  const {step } = useParams();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(
     contractType?.value
@@ -194,6 +196,12 @@ const NewActiveApplication = ({
     selectedPrivilegesForDisplayMultiple,
     setSelectedPrivilegesForDisplayMultiple,
   ] = useState([]);
+  const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([])
+  const [privilegeChangeYesOrNo, setPrivilegeChangeYesOrNo] = useState("");
+  const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
+  const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("");
+  const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
+  const [formIndex, setFormIndex] = useState();
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -288,7 +296,21 @@ const NewActiveApplication = ({
 
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
+   useEffect(() => {
+      setFormIndex(
+        form?.forms?.findIndex((data) => data?.schemaCategory)
+      );
+    }, [form, step]);
 
+useEffect(() => {
+      if (form?.forms[formIndex]?.data !== null) {
+        setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
+        setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
+        setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+        setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+        setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+      }
+  }, [form, formIndex]);
 
   useEffect(() => {
     if (form?.completedWorkflows) {
@@ -2920,6 +2942,16 @@ const NewActiveApplication = ({
       case "CME":
         return (
           <>
+          {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeTranscripts} baseKey={'cmeTranscripts'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
+                  heading={'Information Requirement Alert'}
+                  subHeading={'For this application you are required to provide information on the CME transcript.'}
+                  subHeading2={'You will not be able to submit your application if this is not provided.'} />
+              )}
+              <CommonDivider />
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -2927,16 +2959,6 @@ const NewActiveApplication = ({
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeCertificates} baseKey={'cmeCertificates'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
                   heading={'Information Requirement Alert'}
                   subHeading={'For this application you are required to provide information on the CME certificates.'}
-                  subHeading2={'You will not be able to submit your application if this is not provided.'} />
-              )}
-            <CommonDivider />
-            {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
-                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeTranscripts} baseKey={'cmeTranscripts'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
-                  heading={'Information Requirement Alert'}
-                  subHeading={'For this application you are required to provide information on the CME transcript.'}
                   subHeading2={'You will not be able to submit your application if this is not provided.'} />
               )}
           </>
@@ -3247,202 +3269,219 @@ const NewActiveApplication = ({
                 </div>
               ))}
             </div> */}
-            <div className={`${style.applicationCardStyleReappointment}`}>
-              <div className={`${style.privilegeTitleStyleReappointment} ${style.marginLeft10}`}>Privileges for Reappointment</div>
-              <div className={`${style.privilegeCard}`}>
-                <div>
-                  <div className={style.privilegeHeading}>
-                    <strong>Privilege Category</strong>
-                  </div>
-                  <div className={style.twoColReappointment}>
-                    <div
-                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                    >
-                      <div className={style.privilegeHeading}>Current</div>
-                      <div className={style.privilegeHeading}>
-                        <strong>
-                          {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
-                            ? form?.basicDetails?.priorPrivilegeCategory
-                              ?.name
-                            : form?.basicDetails
-                              ?.credentialingPrivilegeCategory
-                              ?.credentialingCategory}
-                        </strong>
-                      </div>
+            <div className={`${style.applicationCardStyleReappointment} ${style.marginTop10}`}>
+            <div className={`${style.privilegeCard} ${style.marginTop10}`}>
+              <div>
+                <div className={style.privilegeHeading}>
+                  <strong>Privilege Category</strong>
+                </div>
+                <div className={style.twoColReappointment}>
+                  <div
+                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                  >
+                    <div className={style.privilegeHeadingCurrent}>Current</div>
+                    <div className={style.privilegeHeading}>
+                      {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                        ? form?.basicDetails?.priorPrivilegeCategory
+                          ?.name
+                        : form?.basicDetails
+                          ?.credentialingPrivilegeCategory
+                          ?.credentialingCategory}
                     </div>
-                    {form?.basicDetails?.priorPrivilegeCategory !== null && (
-                      <div
-                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                      >
-                        <div className={style.privilegeHeadingReappointment}>
-                          Change for Reappointment
-                        </div>
-                        <div className={style.privilegeHeading}>
-                          <strong>
+                  </div>
+                  {privilegeChangeYesOrNo !== '' && (
+                    <div
+                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                    >
+                      <div className={style.privilegeHeadingReappointment}>
+                        Change for Reappointment
+                      </div>
+                      <div className={style.privilegeHeading}>
+                        {privilegeChangeYesOrNo === "Yes" ? (
+                          <div className={style.privilegeHeading}>
+                            Same as Before
+                          </div>
+                        ) : (
+                          <div className={style.privilegeHeading}>
                             {
                               form?.basicDetails
                                 ?.credentialingPrivilegeCategory
                                 ?.credentialingCategory
                             }
-                          </strong>
-                        </div>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  )}
+                </div>
+                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                  <strong>Privilege Sets</strong>
+                </div>
+                <div className={style.twoColReappointment}>
+                  <div
+                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                  >
+                    <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                    {form?.privileges?.priorObligatedPrivileges?.length ===
+                      0 ? (
+                      <>
+                        {form?.privileges?.obligatedPrivileges?.map(
+                          (data) => (
+                            <div className={style.privilegeHeading}
+                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                            // onClick={() => {
+                            //   setShowCurrentPrivileges(true);
+                            //   setCurrentPrivilegesCategory('Basic')
+                            //   handleChange(data?.id);
+                            // }}
+                            >
+                              {data?.privilegeSetTitle}
+                            </div>
+                          )
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        {form?.privileges?.priorObligatedPrivileges?.map(
+                          (data) => (
+                            <div className={style.privilegeHeading}
+                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                            // onClick={() => {
+                            //   setShowCurrentPrivileges(true);
+                            //   setCurrentPrivilegesCategory('Basic')
+                            //   handleChange(data?.id);
+                            // }}
+                            >
+                              {data?.privilegeSetTitle}
+                            </div>
+                          )
+                        )}
+                      </>
                     )}
                   </div>
-                  <div className={`${style.privilegeHeading} ${style.marginTop20}`}>
-                    <strong>Privilege Sets</strong>
-                  </div>
-                  <div className={style.twoColReappointment}>
+                  {privilegeSetChangeYesOrNo !== '' && (
                     <div
-                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                     >
-                      <div className={`${style.privilegeHeading}`}>Current</div>
-                      {form?.privileges?.priorObligatedPrivileges?.length ===
-                        0 ? (
+                      <div className={`${style.privilegeHeadingReappointment}`}>
+                        Change for Reappointment
+                      </div>
+                      {privilegeSetChangeYesOrNo === "Yes" ? (
+                        <div className={style.privilegeHeading}>
+                          Same Privileges Requested
+                        </div>
+                      ) : (
                         <>
                           {form?.privileges?.obligatedPrivileges?.map(
                             (data) => (
-                              <div
-                                className={`${style.privilegeTitleStyleReappointment}`}
-                                onClick={() => {
-                                  setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategoryReappointment('Basic')
-                                  handleChange(data?.id);
-                                }}
+                              <div className={style.privilegeHeading}
+                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                              // onClick={() => {
+                              //   setShowCurrentPrivileges(true);
+                              //   setCurrentPrivilegesCategory('Basic')
+                              //   handleChange(data?.id);
+                              // }}
                               >
                                 {data?.privilegeSetTitle}
                               </div>
                             )
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
+                  <div className={style.twoColReappointment}>
+                    <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                      <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                      {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                        <>
+                          {form?.privileges?.additionalPrivileges?.length === 0 ? (
+                            <div className={style.privilegeHeading}>None</div>
+                          ) : (
+                            <>
+                              {form?.privileges?.additionalPrivileges?.map(data => (
+                                <div className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                >{data?.privilegeSetTitle}</div>
+                              ))}
+                            </>
                           )}
                         </>
                       ) : (
                         <>
-                          {form?.privileges?.priorObligatedPrivileges?.map(
-                            (data) => (
-                              <div
-                                className={`${style.privilegeTitleStyleReappointment}`}
-                                onClick={() => {
-                                  setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategoryReappointment('Basic')
-                                  handleChange(data?.id);
-                                }}
-                              >
-                                {data?.privilegeSetTitle}
-                              </div>
-                            )
-                          )}
+                          {form?.privileges?.priorAdditionalPrivileges?.map(data => (
+                            <div className={style.privilegeHeading}
+                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                            >{data?.privilegeSetTitle}</div>
+                          ))}
                         </>
                       )}
                     </div>
-                    {form?.privileges?.priorObligatedPrivileges?.length !==
-                      0 && (
-                        <div
-                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                        >
-                          <div className={`${style.privilegeHeadingReappointment}`}>
-                            Change for Reappointment
-                          </div>
-                          {form?.privileges?.obligatedPrivileges?.map(
-                            (data) => (
-                              <div
-                                className={`${style.privilegeTitleStyleReappointment} `}
-                                onClick={() => {
-                                  setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategoryReappointment('Basic')
-                                  handleChange(data?.id);
-                                }}
-                              >
-                                {data?.privilegeSetTitle}
-                              </div>
-                            )
-                          )}
-                        </div>
-                      )}
-                  </div>
-                  <div>
-                    <div className={`${style.privilegeHeading} ${style.marginTop}`}><strong>Additional Privileges</strong></div>
-                    <div className={style.twoCol}>
-                      <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                        <div className={`${style.privilegeHeading}`}>Current</div>
-                        {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                          <>
-                            {form?.privileges?.additionalPrivileges?.length === 0 ? (
-                              <strong><div className={style.privilegeHeading}>None</div></strong>
-                            ) : (
-                              <>
-                                {form?.privileges?.additionalPrivileges?.map(data => (
-                                  <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                    onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
-                                  >{data?.privilegeSetTitle}</div>
-                                ))}
-                              </>
-                            )}
-                          </>
+                    {additionalPrivilegeChangeYesOrNo !== '' && (
+                      <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
+                        <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                        {additionalPrivilegeChangeYesOrNo === 'No' ? (
+                          <div className={`${style.privilegeHeading}`}>None</div>
                         ) : (
                           <>
-                            {form?.privileges?.priorAdditionalPrivileges?.map(data => (
-                              <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                                onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
-                              >{data?.privilegeSetTitle}</div>
+                            {form?.privileges?.additionalPrivileges?.map(data => (
+                              <div className={style.privilegeHeading}
+                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                              >Requested: {data?.privilegeSetTitle}</div>
                             ))}
                           </>
                         )}
                       </div>
-                      {form?.privileges?.priorAdditionalPrivileges?.length !== 0 && (
-                        <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                          <div className={`${style.privilegeHeadingReappointment}`}>Change for Reappointment</div>
-                          {form?.privileges?.additionalPrivileges?.map(data => (
-                            <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}
-                              onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategoryReappointment('Additional') }}
-                            >{data?.privilegeSetTitle}</div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className={`${style.privilegeHeading} ${style.marginTop}`}>
-                      <strong>Privileges at Other Hospitals</strong>
-                    </div>
-                    <div className={style.twoCol}>
-                      <div
-                        className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                      >
-                        <div className={style.privilegeHeading}>Current</div>
-                        <div className={style.privilegeHeading}>
-                          <div className={style.marginTop10}>
-                            <strong>
-                              {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
-                                ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
-                                  <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
-                                ))
-                                : 'None'}
-                            </strong>
-                          </div>
-                        </div>
-                      </div>
-                      {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null) && (
-                        <div
-                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                        >
-                          <div className={style.privilegeHeadingReappointment}>
-                            Change for Reappointment
-                          </div>
-                          <div className={style.privilegeHeading}>
-                            <div className={style.marginTop10}>
-                              <strong>
-                                {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
-                                  ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
-                                    <div className={`${style.privilegeTitleStyleReappointment} ${style.cursorPointer}`}>{data?.privileges}</div>
-                                  ))
-                                  : 'None'}
-                              </strong>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
+                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                  <strong>Privileges at Other Hospitals</strong>
+                </div>
+                <div className={style.twoColReappointment}>
+                  <div
+                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                  >
+                    <div className={style.privilegeHeadingCurrent}>Current</div>
+                    <div className={style.privilegeHeading}>
+                      {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
+                        ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
+                          <div>{data?.privileges}</div>
+                        )) : (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
+                          ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
+                            <div>{data?.privileges}</div>
+                          ))
+                          : 'None'}
+                    </div>
+                  </div>
+                  {privilegeAtOtherHospitalYesOrNo !== '' && (
+                    <div
+                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                    >
+                      <div className={style.privilegeHeadingReappointment}>
+                        Change for Reappointment
+                      </div>
+                      <div className={style.privilegeHeading}>
+                        <div>
+                          {privilegeAtOtherHospitalYesOrNo === 'No' ? (
+                            <div className={style.privilegeHeading}>None</div>
+                          ) : (
+                            <div>
+                              {hospitalPrivilegeSet?.map(data => (
+                                <div className={style.privilegeHeading}>{`${data?.hospitalName} - ${data?.privileges}`}</div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+            </div>
             </div>
           </>
         );
@@ -3497,7 +3536,7 @@ const NewActiveApplication = ({
                     <div className={style.grid5and2}>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.spaceBetween}>
-                          <div className={style.displayInRow}>
+                          {/* <div className={style.displayInRow}> */}
                             <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
 
                               <img
@@ -3507,9 +3546,9 @@ const NewActiveApplication = ({
                               />
 
                             </div>
-                            <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                            <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
-                                <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                                <span className={`${style.cardTextBoldStyle}`}>
                                   {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
                                   {form?.basicDetails?.applicant?.name?.firstName
                                     ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
@@ -3518,38 +3557,58 @@ const NewActiveApplication = ({
                                   {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
-                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
                                   {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
-                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
-                            </div> */}
-                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                                {form?.basicDetailReferences?.specialty?.name 
-                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
-                                  : ""}
-                              </div>
-                              {/* <div className={style.spaceBetween}> */}
-                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                              </div>
-                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div> */}
-                              {/* </div> */}
-                            </div>
-                          </div>
-                          <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                            <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Reappointment Date:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
+                                  {reappointmentStartDate}
+                                </span>
+                              </div>
+                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
+                            </div> */}
+                              <div className={`${style.cardTextNormalStyle}`}>
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name 
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
+                                  : ""}
+                              </div>
+                              <div className={`${style.twoColumnGridInner1}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Application Submitted:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                                </span>
+                              </div>
+                              {/* <div className={style.spaceBetween}> */}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div> */}
+                              {/* </div> */}
+                            </div>
+                          {/* </div> */}
+                          {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                            <div className={style.displayInCol}>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Reappointment Date:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  
                                   {reappointmentStartDate}
                                 </span>
                               </div>
@@ -3563,7 +3622,7 @@ const NewActiveApplication = ({
                               </div>
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div>
+                              </div> */}
                               {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
@@ -3572,8 +3631,8 @@ const NewActiveApplication = ({
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                            </div>
-                          </div>
+                            {/* </div>
+                          </div> */}
                         </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
@@ -3593,19 +3652,20 @@ const NewActiveApplication = ({
                   ) : (
                     <div className={style.grid5and1}>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                        <div className={style.spaceBetween}>
-                          <div className={style.displayInRow}>
-
+                      <div className={style.flex}>
+                          {/* <div className={style.displayInRow}> */}
                             <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+
                               <img
                                 src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
                                 alt="Profile Picture"
                                 className={style.profileImage}
                               />
+
                             </div>
-                            <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                            <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
-                                <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                                <span className={`${style.cardTextBoldStyle}`}>
                                   {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
                                   {form?.basicDetails?.applicant?.name?.firstName
                                     ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
@@ -3614,41 +3674,58 @@ const NewActiveApplication = ({
                                   {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
-                                <span className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                <span className={`${style.cardTextNormalStyle}`}>
                                   {/* {form?.displayId || ""} */}
                                   {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
-                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
-                            </div> */}
-                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name || ""} {form?.basicDetailReferences?.specialty}
-                              </div> */}
-                              <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                                {form?.basicDetailReferences?.specialty?.name 
-                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
-                                  : ""}
-                              </div>
-                              {/* <div className={style.spaceBetween}> */}
-                              <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                              </div>
-                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
-                                  {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                                </div> */}
-                              {/* </div> */}
-                            </div>
-                          </div>
-                          <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                            <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Reappointment Date:
                                 </span>
                                 <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
                                   {/* {form?.createdDate} */}
+                                  {reappointmentStartDate}
+                                </span>
+                              </div>
+                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
+                            </div> */}
+                              <div className={`${style.cardTextNormalStyle}`}>
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name 
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
+                                  : ""}
+                              </div>
+                              <div className={`${style.twoColumnGridInner1}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Application Submitted:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                                </span>
+                              </div>
+                              {/* <div className={style.spaceBetween}> */}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div> */}
+                              {/* </div> */}
+                            </div>
+                          {/* </div> */}
+                          {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                            <div className={style.displayInCol}>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Reappointment Date:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  
                                   {reappointmentStartDate}
                                 </span>
                               </div>
@@ -3662,7 +3739,7 @@ const NewActiveApplication = ({
                               </div>
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div>
+                              </div> */}
                               {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
@@ -3671,8 +3748,8 @@ const NewActiveApplication = ({
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                            </div>
-                          </div>
+                            {/* </div>
+                          </div> */}
                         </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
@@ -9913,19 +9990,19 @@ const NewActiveApplication = ({
 
                             // </>
                             <>
-                              {form?.notesDetails?.map((log, index) => (
-                                <div key={index}>
-                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                    {log.title}
-                                  </div>
-                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                    {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
-                                  </div>
-                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                                    <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                                  </div>
+                          {form?.notesDetails?.filter(log => log.notes.notes).map((log, index) => (
+                              <div key={index}>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                  {log.title}
                                 </div>
-                              ))}
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                  {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
+                                </div>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                                  <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                </div>
+                              </div>
+                            ))}
                             </>
                           )}
                         </div>

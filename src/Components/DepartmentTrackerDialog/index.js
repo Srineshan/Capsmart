@@ -8,6 +8,8 @@ import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
+import { fileLoadingURL,dataLoadingGIF } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
   let cookie = new Cookie();
@@ -31,6 +33,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   useEffect(() => {
     getActiveUserData()
@@ -56,8 +59,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
 
   const getApplication = async () => {
     try {
+      // setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      // setIsLoadingImage(false);
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -66,7 +71,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
 const headerValues = [
     "",
     "Staff",
-    "Staff ID",
+    // "Staff ID",
     "Staff Type",
     "Staff Manager",
     "CC Status",
@@ -98,13 +103,14 @@ const headerValues = [
 
   const getActiveUserData = async () => {
     try {
-      
+      setIsLoadingImage(true);
       const response = await GET(
         `application-management-service/application?sortBy=${sortValue}&sortByField=${sortField}&limit=${10}&offset=${page - 1}`
       );
 
       setTableData(response?.data?.applications);
       setTotalCount(response?.data?.numberOfElements);
+      setIsLoadingImage(false);
       return response?.data?.applications;
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -165,49 +171,49 @@ const headerValues = [
         </>
       );
 
-      staffId.push(`${data?.displayId}` || "123");
+      // staffId.push(`${data?.displayId}` || "123");
       staffType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
       if (workflowStaffManagerRole) {
-        const color = workflowStaffManagerRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowStaffManagerRole?.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflowStaffManagerRole?.status === "IN_PROGRESS" ? "yellow"
+          : workflowStaffManagerRole?.status === "COMPLETED" ? "green"
             : "grey";
             staffManager.push(color);
         console.log("Matching workflow found:", {
           role: workflowStaffManagerRole.role,
-          status: workflowStaffManagerRole?.currentLevelStatus,
+          status: workflowStaffManagerRole?.status,
           assignedColor: color
         });
       }
       if (workflowCredRole) {
-        const color = workflowCredRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowCredRole?.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflowCredRole?.status === "IN_PROGRESS" ? "yellow"
+          : workflowCredRole?.status === "COMPLETED" ? "green"
             : "grey";
             cc.push(color);
         console.log("Matching workflow found:", {
           role: workflowCredRole.role,
-          status: workflowCredRole?.currentLevelStatus,
+          status: workflowCredRole?.status,
           assignedColor: color
         });
       }
       if (workflowMacRole) {
-        const color = workflowMacRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowMacRole?.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflowMacRole?.status === "IN_PROGRESS" ? "yellow"
+          : workflowMacRole?.status === "COMPLETED" ? "green"
             : "grey";
             mac.push(color);
         console.log("Matching workflow found:", {
           role: workflowMacRole.role,
-          status: workflowMacRole.currentLevelStatus,
+          status: workflowMacRole.status,
           assignedColor: color
         });
       }
       if (workflowBodRole) {
-        const color = workflowBodRole?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflowBodRole?.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflowBodRole?.status === "IN_PROGRESS" ? "yellow"
+          : workflowBodRole?.status === "COMPLETED" ? "green"
             : "grey";
             bod.push(color);
         console.log("Matching workflow found:", {
           role: workflowBodRole.role,
-          status: workflowBodRole.currentLevelStatus,
+          status: workflowBodRole.status,
           assignedColor: color
         });
       }
@@ -223,7 +229,7 @@ const headerValues = [
     return [
       { type: "dot", value: dot },
       { type: "text", value: staff },
-      { type: "text", value: staffId },
+      // { type: "text", value: staffId },
       { type: "text", value: staffType },
       { type: "dot", value: staffManager },
       { type: "dot", value: cc },
@@ -238,7 +244,16 @@ const headerValues = [
   };
 
   return (
-
+<>
+ {isLoadingImage && (
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
+    )}
+ {/* {!isLoadingImage && ( */}
 
     <Dialog
       isOpen={getIsOpen}
@@ -296,7 +311,8 @@ const headerValues = [
    </div>
  </div>
 </Dialog>
-
+{/* // )} */}
+</>
   );
 };
 
