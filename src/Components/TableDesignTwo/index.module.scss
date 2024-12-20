@@ -60,7 +60,7 @@
 }
 
 .tableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 100%;
     // margin-left: 2%;
@@ -68,6 +68,10 @@
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 2px;
     padding: 10px 20px;
+}
+
+.alternativeBackground {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .alternativeBackgroundColor {
@@ -390,13 +394,9 @@
     // background-color: #D3D3D3;
     border: 1px solid $primarycolor;
     border-radius: 4px;
-  }
+}
 
-  .tableDataUnclicked{
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-  }
-
-  .buttonStyle {
+.buttonStyle {
     background-color: white;
     color: black;
     border: 1px solid black;
@@ -416,11 +416,12 @@
     color: white;
 }
 
-.singleActionText{
+.singleActionText {
     font-size: 15px;
-    color : $primarycolor
+    color: $primarycolor
 }
-.singleActionText:hover{
+
+.singleActionText:hover {
     font-size: 17px;
     text-decoration: underline;
 }

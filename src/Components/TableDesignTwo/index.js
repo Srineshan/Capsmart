@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue ,checkedIds}) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -110,7 +110,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
         'Applicant ID': 'APPLICANT_ID',
-        'Reappointment':'REAPPOINTMENT_STATUS'
+        'Reappointment': 'REAPPOINTMENT_STATUS'
     }
 
     // useEffect(() => {
@@ -254,12 +254,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const handleActionClick = (data, index, action) => {
         if (action?.conditionToShow !== undefined && !eval(action.conditionToShow)) {
-          return;
+            return;
         }
         setClickedIndex(index);
         action.onClick(data);
         handleClose();
-      };
+    };
 
     const id = open ? 'simple-popover' : undefined;
 
@@ -506,7 +506,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle}  ${clickedIndex === index ? style.tableDataClicked : style.tableDataUnclicked}`} key={index}>
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
@@ -819,11 +819,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                             ? (
                                                                 <div
                                                                     className={`${style.tableDataFontStyle} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
-                                                                    onClick={() => { 
-                                                                        visibleActions[0]?.onClick(data); 
-                                                                        handleClose(); 
-                                                                    }} 
-                                                                    key={0}                                            
+                                                                    onClick={() => {
+                                                                        visibleActions[0]?.onClick(data);
+                                                                        handleClose();
+                                                                    }}
+                                                                    key={0}
                                                                 >
                                                                     {visibleActions[0]?.data}
                                                                 </div>
@@ -832,12 +832,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                             )
                                                         : visibleActions?.length === 1 ? (
-                                                            <span className={`${style.singleActionText}`}  
-                                                            onClick={() => { 
-                                                                visibleActions[0]?.onClick(data); 
-                                                                handleClose(); 
-                                                            }} 
-                                                            key={0}>
+                                                            <span className={`${style.singleActionText}`}
+                                                                onClick={() => {
+                                                                    visibleActions[0]?.onClick(data);
+                                                                    handleClose();
+                                                                }}
+                                                                key={0}>
                                                                 {visibleActions[0]?.data}
                                                             </span>
                                                         ) : (
@@ -896,7 +896,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         </Popover>
                                                     )}
                                                 </div>
-                                                 ) 
+                                            )
                                                 //  : tableData?.type === "delete" ? (
                                                 //     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
                                                 //         {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={() => { actionsData?.onClick(data); handleClose() }} aria-describedby={id} />)
@@ -912,22 +912,22 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                 //         )} */}
                                                 //     </div>
                                                 // ) 
-                                                :  (
+                                                : (
                                                     visibleActions?.length === 1 ? (
                                                         <div
-                                                        className={`${style.singleActionText} ${style.cursorPointer} ${style.buttonStyle}`}
-                                                        onClick={() => {
-                                                            console.log(visibleActions[0]?.onClick); 
-                                                            // if (visibleActions[0]?.onClick) {
+                                                            className={`${style.singleActionText} ${style.cursorPointer} ${style.buttonStyle}`}
+                                                            onClick={() => {
+                                                                console.log(visibleActions[0]?.onClick);
+                                                                // if (visibleActions[0]?.onClick) {
                                                                 visibleActions[0]?.onClick(data);
                                                                 handleClose();
-                                                            // }
-                                                        }}
-                                                        key={0}
-                                                    >
-                                                        {visibleActions[0]?.data}
-                                                    </div>
-                                                    ) : null  )
+                                                                // }
+                                                            }}
+                                                            key={0}
+                                                        >
+                                                            {visibleActions[0]?.data}
+                                                        </div>
+                                                    ) : null)
                                 ))}
                             </div >
                         </>

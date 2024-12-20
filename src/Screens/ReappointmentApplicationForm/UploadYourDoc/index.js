@@ -10,6 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CryptoJS from 'crypto-js';
 import { GET, PUT, POST, DELETE } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import PDFDocs from './../../../images/PDFDocs.png';
@@ -38,10 +39,11 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { loadStripe } from "@stripe/stripe-js";
+import ESignature from '../../../Components/ESignature';
 
 const stripePromise = loadStripe("your-publishable-key");
 
-const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
+const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const { section, step } = useParams()
     const [sessionDetails, setSessionDetails] = useState(null);
     const [formSchema, setFormSchema] = useState();
@@ -70,6 +72,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
+    const [dateTime, setDateTime] = useState(new Date().toISOString());
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(eSignTypeContent + dateTime, publicKey).toString());
+    // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
+    const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -519,7 +526,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            <div className={`${style.applicationScreenGrid}`}>
                 <div>
                     <ReappointmentProgressCard
                         step={""}
@@ -596,7 +603,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         } ${index % 2 === 0
                                             ? style.requiredDocumentCardAlternativeColor
                                             : ""
-                                        }  ${style.marginTop5}`}
+                                        }  ${style.marginTop2}`}
                                 >
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter}`}
@@ -628,7 +635,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 )} */}
                         {/* </div>
                         </div> */}
-                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                        <div className={`${style.twoCol} ${style.marginTop10}`}>
                             <CommonDropZone
                                 title={"Upload Your Documents"}
                                 description={
@@ -647,7 +654,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 accept="image/*"
                             />
                         </div>
-                        {tempValue?.table?.length !== 0 && (
+                        {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                             <TableTwo
                                 tableHeaderValues={[
                                     "",
@@ -677,7 +684,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <>
-                                <div
+                                {/* <div
                                     className={`${style.setupCompleteCard} ${style.setupCompleteGrid}  ${style.marginTop}`}
 
                                 >
@@ -702,6 +709,31 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         fontFamily: eSignTypeContentStyle,
                                         fontSize: "24px",
                                     }}>{eSignTypeContent}</div>
+                                </div> */}
+                                <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                                    <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
+                                    <div>
+                                        <div className={style.eSignGrid}>
+                                            <ESignature
+                                                userName={name}
+                                                encData={encryptedText}
+                                                showData={true}
+                                                showDatais={true}
+                                            />
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                    <div className={style.dateTitle}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{currentDate}</div>
+                                                </div>
+                                            </div>
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.dateTitle}>{eSignTitle}</div>
+                                            </div>
+                                        </div>
+                                        <div className={style.eSignatureOnFileButton}>
+                                            <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>CLICK TO UPDATE</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </>
                         ) : (

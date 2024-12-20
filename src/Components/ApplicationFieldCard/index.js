@@ -2781,8 +2781,8 @@ const ApplicationFieldCard = ({
           window.location.pathname.includes("locumApplicationForm") ||
           isPOD
           ? ""
-          : style.backgroundCard
-          } ${style.marginTop}`}
+          : `${style.backgroundCard} ${style.marginTop10}`
+          } ${style.marginTop10}`}
         key={baseKey}
       >
         {!isReappointment ? (
@@ -2891,8 +2891,8 @@ const ApplicationFieldCard = ({
             )}
           </div>
         ) : !addMoreType && collapsableQuestionCard ? (
-          <div className={`${style.addMoreBorder} ${style.marginTop}`}>
-            <div className={style.padding20}>
+          <div className={`${window.location.pathname.includes("applicationForm") ? style.addMoreBorder : ""} ${window.location.pathname.includes("applicationForm") ? style.marginTop : ''}`}>
+            <div className={window.location.pathname.includes("applicationForm") ? style.padding20 : ""}>
               <div className={style.spaceBetween}>
                 <div className={style.collapsableCardText}>
                   {
@@ -2901,19 +2901,25 @@ const ApplicationFieldCard = ({
                     )[0]?.label
                   }
                 </div>
-                {isCollapsableCard ? (
-                  <div onClick={() => setIsCollapsableCard(false)}>
-                    <KeyboardArrowUpIcon sx={{ color: "#c4bef3" }} />
-                  </div>
-                ) : (
-                  <div onClick={() => setIsCollapsableCard(true)}>
-                    <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
-                  </div>
+                {window.location.pathname.includes("applicationForm") && (
+                  <>
+                    {isCollapsableCard ? (
+                      <div onClick={() => setIsCollapsableCard(false)}>
+                        <KeyboardArrowUpIcon sx={{ color: "#c4bef3" }} />
+                      </div>
+                    ) : (
+                      <div onClick={() => setIsCollapsableCard(true)}>
+                        <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               {isCollapsableCard && (
                 <>
-                  <CommonDivider />
+                  {window.location.pathname.includes("applicationForm") && (
+                    <CommonDivider />
+                  )}
                   <div className={`${gridStyle} ${style.marginTop}`}>
                     {object?.type === "object"
                       ? renderObjectFields(object, object?.properties)
@@ -2937,7 +2943,7 @@ const ApplicationFieldCard = ({
                       className={style.addMoreText}
                       dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                     />
-                    <div className={`${gridStyle} ${style.marginTop}`}>
+                    <div className={`${gridStyle} ${object?.items?.label !== null ? style.marginTop : ''}`}>
                       {object?.type === "object"
                         ? renderObjectFields(object, object?.properties)
                         : object?.type === "array"

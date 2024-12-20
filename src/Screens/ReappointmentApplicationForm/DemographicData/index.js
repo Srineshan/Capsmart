@@ -506,7 +506,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     )}
 
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
+                        <div className={`${style.cardTitle} ${style.marginTop10}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
                         {showContactInfo ? (
                             <div className={`${style.reappointmentCard} ${style.padding20} ${style.marginTop}`}>
                                 {/* <div

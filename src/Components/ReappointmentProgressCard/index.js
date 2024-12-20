@@ -86,7 +86,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
         <div className={style.progressCard}>
             <div className={style.spaceBetween}>
                 <div className={style.displayInRow}>
-                    <div className={style.stepTextStyle}>{dataType}</div>
+                    <div className={style.stepTextStyle}>{`${formIndex + 1}/${basicForm?.forms?.length}`}</div>
                     <div className={`${style.titleTextStyle} ${style.marginLeft}`}>{title}</div>
                     {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div> */}
                 </div>
@@ -97,7 +97,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
             </div> */}
             <div>
                 <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
-                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
+                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
                 >
                     {basicForm?.forms?.map((data, index) => (
                         <Tooltip title={data?.title} arrow>

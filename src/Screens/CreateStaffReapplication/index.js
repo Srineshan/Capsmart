@@ -33,16 +33,19 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
   useEffect(() => {
     getDepartmentList();
-    getPrivilegeCategory();
     getApplicantType();
   }, [])
+
+  useEffect(() => {
+    getPrivilegeCategory();
+  }, [selectedApplicantType])
 
   useEffect(() => {
     getActiveUserData().then(() => {
       setIsDataLoaded(false);
     });
     setCheckedIds([]);
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue,page,totalCount]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, sortField, sortValue, page, totalCount]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -164,10 +167,17 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   }
 
   const getPrivilegeCategory = async () => {
-    const { data: privilege } = await GET(
-      `entity-service/privilege`
-    );
-    setPrivilegeCategories(privilege);
+    if (selectedApplicantType !== '') {
+      const { data: privilege } = await GET(
+        `entity-service/privilege?applicantTypeId=${selectedApplicantType}`
+      );
+      setPrivilegeCategories(privilege);
+    } else {
+      const { data: privilege } = await GET(
+        `entity-service/privilege`
+      );
+      setPrivilegeCategories(privilege);
+    }
   }
 
   const getApplicantType = async () => {
@@ -179,7 +189,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
   const getSelectedPage = (value) => {
     setPage(value);
-}
+  }
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === "ASCENDING") {

@@ -123,7 +123,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [isEditAdditionalPrivileges, setIsEditAdditionalPrivileges] = useState(true);
   const [isEditPrivilege, setIsEditPrivilege] = useState(true);
   const [isEditPrivilegeAtOtherHospitals, setIsEditPrivilegeAtOtherHospitals] = useState(true);
-  const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([])
+  const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([]);
+  const [showPrivilegeResetError, setShowPrivilegeResetError] = useState(false);
   const [
     selectedPrivilegesForDisplayMultiple,
     setSelectedPrivilegesForDisplayMultiple,
@@ -195,9 +196,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
       setSelectedAdditionalPrivilegeForDisplay(
         basicForm?.privileges?.additionalPrivileges
       );
-      setSelectedPrivilegesForDisplayMultiple(
-        basicForm?.privileges?.obligatedPrivileges
-      );
+      // setSelectedPrivilegesForDisplayMultiple(
+      //   basicForm?.privileges?.obligatedPrivileges
+      // );
       setSelectedAdditionalPrivilegesForDisplayMultiple(
         basicForm?.privileges?.additionalPrivileges
       );
@@ -298,8 +299,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   };
 
   const getPrivilegeCategory = async () => {
-    const { data: privilege } = await GET(`entity-service/privilege`);
-    setPrivilegeCategories(privilege);
+    const { data: privilege } = await GET(`entity-service/privilege/${basicForm?.basicDetails?.priorPrivilegeCategory !== null ? basicForm?.basicDetails?.priorPrivilegeCategory?.id : basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}?applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}`);
+    setPrivilegeCategories(privilege?.allowedPrivilegeCategories);
   };
 
   const getDepartmentList = async () => {
@@ -416,20 +417,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
   };
 
-  console.log(
-    "application data",
-    applicationData,
-    privilegeCategories?.filter(
-      (data) =>
-        data?.category ===
-        basicForm?.basicDetails?.credentialingPrivilegeCategory
-          ?.credentialingCategory
-    ),
-    privilegeCategories,
-    basicForm?.basicDetails?.credentialingPrivilegeCategory
-      ?.credentialingCategory
-  );
-
   const fetchPaymentListData = async () => {
     try {
       const response = await GET(`entity-service/paymentAndFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}`);
@@ -440,8 +427,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
   };
 
   const handleSubmit = async () => {
+    let mergedArray = [...basicForm?.privileges?.obligatedPrivileges, ...selectedPrivilegesForDisplayMultiple].reduce((unique, current) => {
+      if (!unique.some(obj => JSON.stringify(obj) === JSON.stringify(current))) {
+        unique.push(current);
+      }
+      return unique;
+    }, []);
+
     let temp = {
-      obligatedPrivileges: selectedPrivilegesForDisplayMultiple,
+      obligatedPrivileges: showPrivilegeResetError ? selectedPrivilegesForDisplayMultiple : mergedArray,
       additionalPrivileges: selectedAdditionalPrivilegeForDisplay,
       priorAdditionalPrivileges:
         basicForm?.privileges?.priorAdditionalPrivileges?.length === 0
@@ -469,44 +463,44 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         data.basicDetails.priorPrivilegeCategory = {
           id: privilegeCategories?.filter(
             (data) =>
-              data?.category ===
+              data?.privilegeCategory?.category ===
               basicForm?.basicDetails?.credentialingPrivilegeCategory
                 ?.credentialingCategory
-          )[0]?.id,
+          )?.[0]?.privilegeCategory?.id,
           name: privilegeCategories?.filter(
             (data) =>
-              data?.category ===
+              data?.privilegeCategory?.category ===
               basicForm?.basicDetails?.credentialingPrivilegeCategory
                 ?.credentialingCategory
-          )[0]?.category,
+          )?.[0]?.privilegeCategory?.category,
           type: privilegeCategories?.filter(
             (data) =>
-              data?.category ===
+              data?.privilegeCategory?.category ===
               basicForm?.basicDetails?.credentialingPrivilegeCategory
                 ?.credentialingCategory
-          )[0]?.type,
+          )?.[0]?.privilegeCategory?.type,
         };
       }
       if (selectedPrivilegeCategory !== "") {
         data.basicDetails.credentialingPrivilegeCategory.credentialingCategory =
           privilegeCategories?.filter(
-            (data) => data?.id === selectedPrivilegeCategory
-          )[0]?.category;
+            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
+          )?.[0]?.privilegeCategory?.category;
       }
       data.basicDetails.departmentSpecialty.department = departmentList?.filter(
         (data) => data?.id === selectedDepartment
-      )[0]?.departmentName?.name;
+      )?.[0]?.departmentName?.name;
       data.basicDetails.existingCredentialingPrivilegeCategory = {
         hasExistingPrivilege:
           doYouHavePrivilegeAtAnyOtherHospital === "Yes" ? true : false,
         credentialingPrivilegeCategory: {
           id: selectedPrivilegeCategoryAtPrevHospital,
           name: privilegeCategories?.filter(
-            (data) => data?.id === selectedPrivilegeCategoryAtPrevHospital
-          )[0]?.category,
+            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
+          )?.[0]?.privilegeCategory?.category,
           type: privilegeCategories?.filter(
-            (data) => data?.id === selectedPrivilegeCategoryAtPrevHospital
-          )[0]?.type,
+            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
+          )?.[0]?.privilegeCategory?.type,
         },
         hospitalName:
           doYouHavePrivilegeAtAnyOtherHospital === "Yes"
@@ -2516,32 +2510,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
               )}
               {isPrivilegeCategoryChanging && (
                 <div className={`${style.privilegeCardWithBorder} ${style.marginTop}`}>
-                  {/* <CommonSelectField
-                    value={selectedPrivilegeCategory}
-                    // onChange={(e) => setSelectedPrivilegeCategory(e.target.value)}
-                    className={style.fullWidth}
-                    valueList={privilegeCategories?.map((data) => data?.id)}
-                    labelList={privilegeCategories?.map((data) =>
-                      data?.category ===
-                        basicForm?.basicDetails?.credentialingPrivilegeCategory
-                          ?.credentialingCategory
-                        ? `${data?.category} (Current Privilege Category)`
-                        : data?.category
-                    )}
-                    disabledList={privilegeCategories?.map((data) =>
-                      data?.category ===
-                        basicForm?.basicDetails?.credentialingPrivilegeCategory
-                          ?.credentialingCategory
-                        ? true
-                        : false
-                    )}
-                    label={
-                      "What would you like to change your current Privilege Category to?"
-                    }
-                    required={false}
-                  /> */}
                   <CommonTextField
-                    value={privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)?.[0]?.category}
+                    value={privilegeCategories?.filter(data => data?.privilegeCategory?.id === selectedPrivilegeCategory)?.[0]?.privilegeCategory?.category}
                     className={style.fullWidth}
                     maxLength={50}
                     placeholder={"Enter Hospital Name"}
@@ -2549,34 +2519,37 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     required={true}
                   />
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                    {privilegeCategories?.filter(filterData => filterData?.category !== 'Locum Tennens')?.map(data => {
+                    {privilegeCategories?.map(data => {
                       let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
-                      let isDisabled = (data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.category));
+                      let isDisabled = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
                       return (
-                        <div className={`${style.privilegeCategoryChips} ${selectedPrivilegeCategory === data?.id ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}
+                        <div className={`${style.privilegeCategoryChips} ${selectedPrivilegeCategory === data?.privilegeCategory?.id ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}
                       ${isDisabled ? style.disabledButton : ''}`}
                           onClick={isDisabled ? () => { } : () => {
-                            setSelectedPrivilegeCategory(data?.id);
-                          }}>{data?.category}</div>
+                            setShowPrivilegeResetError(data?.inheritExistingPrivilegeSets ? false : true)
+                            setSelectedPrivilegeCategory(data?.privilegeCategory?.id);
+                          }}>{data?.privilegeCategory?.category}</div>
                       )
                     })}
                   </div>
+                  {showPrivilegeResetError && (
+                    <div
+                      className={`${style.privilegeWarningPart} ${style.marginTop}`}
+                    >
+                      <div className={style.privilegeWarningText}>
+                        Changing of the privilege category removes your current
+                        granted set of privileges.
+                      </div>
+                      <div
+                        className={`${style.marginTop10} ${style.privilegeWarningText}`}
+                      >
+                        You will need to request the set of privileges you would
+                        like to have for the category you are changing to
+                      </div>
+                    </div>
+                  )}
                   {selectedPrivilegeCategory !== "" && (
                     <>
-                      <div
-                        className={`${style.privilegeWarningPart} ${style.marginTop}`}
-                      >
-                        <div className={style.privilegeWarningText}>
-                          Changing of the privilege category removes your current
-                          granted set of privileges.
-                        </div>
-                        <div
-                          className={`${style.marginTop10} ${style.privilegeWarningText}`}
-                        >
-                          You will need to request the set of privileges you would
-                          like to have for the category you are changing to
-                        </div>
-                      </div>
                       <div className={style.marginTop}>
                         <CommonSelectField
                           value={selectedDepartment}
@@ -2592,8 +2565,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                         />
                       </div>
                       {privilegeCategories?.filter(
-                        (data) => data?.id === selectedPrivilegeCategory
-                      )[0]?.category !== "Courtesy Staff with Admitting Privileges" ? (
+                        (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
+                      )[0]?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" ? (
                         <>
                           {staffPrivilege?.map((data, index) => (
                             <>
@@ -2674,8 +2647,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </>
                   )}
                   {privilegeCategories?.filter(
-                    (data) => data?.id === selectedPrivilegeCategory
-                  )[0]?.category === "Courtesy Staff with Admitting Privileges" && (
+                    (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
+                  )[0]?.privilegeCategory?.category === "Courtesy Staff with Admitting Privileges" && (
                       <>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                           <div>
@@ -2775,25 +2748,25 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                                       ![
                                         "Courtesy Staff with Admitting Privileges",
                                         "Courtesy Staff without Admitting Privileges",
-                                      ]?.includes(data?.category)
+                                      ]?.includes(data?.privilegeCategory?.category)
                                   )
-                                  ?.map((data) => data?.id)}
+                                  ?.map((data) => data?.privilegeCategory?.id)}
                                 labelList={privilegeCategories
                                   ?.filter(
                                     (data) =>
                                       ![
                                         "Courtesy Staff with Admitting Privileges",
                                         "Courtesy Staff without Admitting Privileges",
-                                      ]?.includes(data?.category)
+                                      ]?.includes(data?.privilegeCategory?.category)
                                   )
-                                  ?.map((data) => data?.category)}
+                                  ?.map((data) => data?.privilegeCategory?.category)}
                                 disabledList={privilegeCategories
                                   ?.filter(
                                     (data) =>
                                       ![
                                         "Courtesy Staff with Admitting Privileges",
                                         "Courtesy Staff without Admitting Privileges",
-                                      ]?.includes(data?.category)
+                                      ]?.includes(data?.privilegeCategory?.category)
                                   )
                                   ?.map((data) => false)}
                                 label={
@@ -2807,7 +2780,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       </>
                     )}
                   {privilegeCategories?.filter(
-                    (data) => data?.id === selectedPrivilegeCategory
+                    (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
                   )[0]?.category === "Courtesy Staff with Admitting Privileges" ? (
                     <div
                       className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
@@ -2823,6 +2796,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                           selectedPrivilegeCategoryAtPrevHospital !== "" &&
                             prevHospitalName !== ""
                             ? () => {
+                              setPrivilegeSetChangeYesOrNo('No');
                               setIsPrivilegeCategoryChanging(false);
                               handleSubmit();
                               setIsEdit(false);
@@ -2846,6 +2820,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
                         onClick={() => {
+                          setPrivilegeSetChangeYesOrNo('No');
                           setIsPrivilegeCategoryChanging(false);
                           handleSubmit();
                           setIsEdit(false);
@@ -3170,7 +3145,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
             {isAdditionalPrivilegeCategoryChanging && (
               <div className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}>
                 <>
-                  <div className={style.marginTop}>
+                  <div>
                     <CommonSelectField
                       value={selectedDepartment}
                       onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -3307,15 +3282,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
                       Privilege Category you have at the Other Hospital
                     </div>
                     <div className={style.chipsContainer}>
-                      {privilegeCategories?.filter(filterData => filterData?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
-                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}`} onClick={() => {
-                          setHospitalPrivilege(data?.category);
+                      {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
+                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}`} onClick={() => {
+                          setHospitalPrivilege(data?.privilegeCategory?.category);
                           setHospitalPrivilegeCategory({
-                            "id": data?.id,
-                            "name": data?.category,
-                            "type": data?.type
+                            "id": data?.privilegeCategory?.id,
+                            "name": data?.privilegeCategory?.category,
+                            "type": data?.privilegeCategory?.type
                           })
-                        }}>{data?.category}</div>
+                        }}>{data?.privilegeCategory?.category}</div>
                       ))}
                     </div>
                   </div>
