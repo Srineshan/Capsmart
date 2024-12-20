@@ -116,7 +116,7 @@ const ReappointmentApplicationForm = () => {
 
     console.log(section, step, atob(step))
 
-    if (isLoading) {
+    if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
         return <LoadingScreen />;
     }
 

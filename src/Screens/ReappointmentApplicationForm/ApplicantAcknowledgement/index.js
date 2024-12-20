@@ -71,10 +71,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }
 
     const getRenderedContent = async () => {
-        const { data: content } = await GET(
-            `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
-        );
-        setFormContent(content)
+        if (basicForm?.forms?.[formIndex]?.id !== undefined) {
+            const { data: content } = await GET(
+                `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
+            );
+            setFormContent(content)
+        }
     }
 
     const getIsShowReappointmentJourneyDialog = (value) => {
@@ -134,10 +136,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
             pagebreak: { mode: ["avoid-all", "css", "legacy"] },
         };
-        const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
-        nestedElements.forEach((_element) => {
-            _element.classList.remove('applicationCardScrollStyle');
-        });
+        // const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+        // nestedElements.forEach((_element) => {
+        //     _element.classList.remove('applicationCardScrollStyle');
+        // });
         html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
             addNewDocument(pdfBlob);
         });
