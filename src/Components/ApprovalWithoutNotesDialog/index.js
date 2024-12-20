@@ -16,6 +16,7 @@ import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -43,6 +44,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const [entity, setEntity] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
+  const [uploadFileData, setUploadFileData]= useState('');
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -68,51 +70,51 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     handleSignatureClick();
   };
 
-  const changeHandler = async (event) => {
-    setIsLoading(true);
-    const filesArray = Array.from(event);
-    setFiles(filesArray);
-    console.log(event, 'Test');
-
-
-    const formData = new FormData();
-    let fileNameArray = [];
-    filesArray?.forEach(file => {
-      fileNameArray.push({ "fileName": file?.name });
-      formData.append('documents', file);
-    });
-
-
-
-
-    formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
-      type: "application/json"
-    }));
-
-    fileNameArray.forEach(file => {
-      console.log("File name:", file.fileName);
-    });
-
-    console.log("file?.name" + JSON.stringify(fileNameArray));
-    console.log(fileNameArray)
-    console.log(event?.name);
-
-    try {
-      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-      SuccessToaster('File Uploaded Successfully');
-      console.log(response?.data?.fileName);
-
-
-
-      setIsLoading(false);
-      return response?.data;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error(error);
-      setIsLoading(false);
-      return null;
-    }
-  };
+    const changeHandler = async (event) => {
+        console.log("Event received:", event);
+        setIsLoading(true);
+        const filesArray = Array.from(event);
+        console.log("Converted files array:", filesArray);
+        setFiles(filesArray);
+      
+        const formData = new FormData();
+        let fileNameArray = [];
+      
+        filesArray.forEach(file => {
+          const fileInfo = {
+            "filePath": file.path || '', 
+            "fileName": file.name,
+            "fileURL": "",  
+            "fileType": file.type,
+            "classification": "",  
+            "verified": true,     
+            "valid": true         
+          };
+          fileNameArray.push(fileInfo);
+          formData.append('documents', file);
+        });
+      
+        const blob = new Blob([JSON.stringify(fileNameArray)], {
+          type: "application/json"
+        });
+        formData.append('files', blob);
+      
+        try {
+          const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+          console.log("API Response:", response);
+          SuccessToaster('File Uploaded Successfully');
+          console.log("Response data:", response?.data);
+          setUploadFileData(response?.data)
+      
+          setIsLoading(false);
+          return response?.data;
+        } catch (error) {
+          ErrorToaster('File Upload Failed');
+          console.error("Error:", error);
+          setIsLoading(false);
+          return null;
+        }
+      };  
 
   const setTodayDate = () => {
     const today = new Date();
@@ -257,6 +259,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
     let role;
     let title;
+    let files = uploadFileData || [];
     let notesComments = userRoleComments || "";
     let isDelegate = true;
 
@@ -298,7 +301,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         notes: notesComments
       },
       approvedDate: new Date().toISOString(),
-      title: title
+      title: title,
+      files: files
     };
 
 
@@ -360,6 +364,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
     let role;
     let title;
+    let files = uploadFileData || [];
     let notesComments = userRoleComments || "";
     let isDelegate = true;
 
@@ -401,7 +406,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         notes: notesComments
       },
       approvedDate: new Date().toISOString(),
-      title: title
+      title: title,
+      files: files
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
@@ -467,11 +473,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   return (
 <>
  {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
     )}
 
  {!isLoadingImage && (

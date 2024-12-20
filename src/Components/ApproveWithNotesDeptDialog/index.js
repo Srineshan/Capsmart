@@ -18,6 +18,7 @@ import Dropzone from "react-dropzone";
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
 const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateFormat,selectedTab }) => {
   let cookie = new Cookie();
@@ -40,14 +41,18 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [encryptedText, setEncryptedText] = useState('');
   const [isCheckedSign, setIsCheckedSign] = useState(false);
   const [name, setName] = useState('')
-   const [applicantType, setApplicantType] = useState([]);
-    const [selectedApplicantType, setSelectedApplicantType] = useState('');
-    // const [userSelectRole, setSelectedApplicantTypeRole] = useState('');
-    const [calendarStart, setCalendarStart] = useState(false);
-    const [selectedDateForDept, setSelectedDateForDept] = useState(null);
-    const [files, setFiles] = useState([]);
-     const [isLoading, setIsLoading] = useState(false);
-    const dropzoneStyle = {
+  const [applicantType, setApplicantType] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState('');
+  // const [userSelectRole, setSelectedApplicantTypeRole] = useState('');
+  const [calendarStart, setCalendarStart] = useState(false);
+  const [selectedDateForDept, setSelectedDateForDept] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [middleName, setMiddleName] = useState('');
+  const [uploadFileData, setUploadFileData]= useState('');
+  const dropzoneStyle = {
       width: "100%",
       height: "auto",
       borderWidth: 2,
@@ -55,11 +60,11 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       borderStyle: "dashed",
       borderRadius: 5,
     };
-    const [isLoadingImage, setIsLoadingImage] = useState(false);
-    const isApproveEnabled = 
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const isApproveEnabled = 
     // userRoleComments.trim() !== '' && 
-    selectedDateForDept !== null && 
-    selectedRoleCred !== '';
+  selectedDateForDept !== null && 
+  selectedRoleCred !== '';
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -75,7 +80,29 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
+    console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
 }, [])
+
+useEffect(() => {
+  console.log('userSelectRole:', userSelectRole);
+  console.log('selectedRoleCred:', selectedRoleCred);
+
+  // Find the matched role by ID
+  const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
+  console.log('matchedRole:', matchedRole);
+
+  // If a role is found, extract the name properties
+  if (matchedRole) {
+    const { firstName, lastName, middleName } = matchedRole?.name || {};
+    console.log('firstName:', firstName);
+    console.log('lastName:', lastName);
+
+    // Set the state with the extracted values
+    setFirstName(firstName || '');
+    setLastName(lastName || '');
+    setMiddleName(middleName || '');;
+  }
+}, [userSelectRole, selectedRoleCred]);
 
 
   const setTodayDate = () => {
@@ -103,51 +130,52 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     }
   }, [name, dateTime, publicKey]);
 
-   const changeHandler = async (event) => {
-      setIsLoading(true);
-      const filesArray = Array.from(event);
-      setFiles(filesArray);
-      console.log(event, 'Test');
+  const changeHandler = async (event) => {
+    console.log("Event received:", event);
+    setIsLoading(true);
+    const filesArray = Array.from(event);
+    console.log("Converted files array:", filesArray);
+    setFiles(filesArray);
   
+    const formData = new FormData();
+    let fileNameArray = [];
   
-      const formData = new FormData();
-      let fileNameArray = [];
-      filesArray?.forEach(file => {
-        fileNameArray.push({ "fileName": file?.name });
-        formData.append('documents', file);
-      });
+    filesArray.forEach(file => {
+      const fileInfo = {
+        "filePath": file.path || '', 
+        "fileName": file.name,
+        "fileURL": "",  
+        "fileType": file.type,
+        "classification": "",  
+        "verified": true,     
+        "valid": true         
+      };
+      fileNameArray.push(fileInfo);
+      formData.append('documents', file);
+    });
   
+    const blob = new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    });
+    formData.append('files', blob);
   
+    try {
+      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+      console.log("API Response:", response);
+      SuccessToaster('File Uploaded Successfully');
+      console.log("Response data:", response?.data);
+      setUploadFileData(response?.data)
   
-  
-      formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
-        type: "application/json"
-      }));
-  
-      fileNameArray.forEach(file => {
-        console.log("File name:", file.fileName);
-      });
-  
-      console.log("file?.name" + JSON.stringify(fileNameArray));
-      console.log(fileNameArray)
-      console.log(event?.name);
-  
-      try {
-        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-        SuccessToaster('File Uploaded Successfully');
-        console.log(response?.data?.fileName);
-  
-  
-  
-        setIsLoading(false);
-        return response?.data;
-      } catch (error) {
-        ErrorToaster('File Upload Failed');
-        console.error(error);
-        setIsLoading(false);
-        return null;
-      }
-    };
+      setIsLoading(false);
+      return response?.data;
+    } catch (error) {
+      ErrorToaster('File Upload Failed');
+      console.error("Error:", error);
+      setIsLoading(false);
+      return null;
+    }
+  };  
+
 
   // useEffect(() => {
   //   checkApproveEnabled();
@@ -276,12 +304,22 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
           },
           title: title,
           approvedDate: new Date().toISOString(),
-          userDetail:{
-            id: selectedRoleCred,
-            role: "Credentialing Committee"
-          } 
+          // userDetail:{
+          //   id: selectedRoleCred,
+          //   role: "Credentialing Committee"
+          // } 
+          userDetail: {
+              id: selectedRoleCred,
+              name: {
+                firstName: firstName,
+                lastName: lastName,
+                middleName: middleName
+              },
+              role: "Credentialing Committee"
+            },
+          files: uploadFileData || []
         };
-  
+        
       await PUT(
         `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=false&approvalType=VERIFIED_AND_ACCEPTED`,
         payload
@@ -326,10 +364,16 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       },
       title: title,
       approvedDate: new Date().toISOString(),
-      userDetail:{
+      userDetail: {
         id: selectedRoleCred,
+        name: {
+          firstName: firstName,
+          lastName: lastName,
+          middleName: middleName
+        },
         role: "Credentialing Committee"
-      } 
+      },
+       files: uploadFileData || []
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=false`, payload)
@@ -378,11 +422,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   return (
     <>
     {isLoadingImage && (
-         <div
-           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-         >
-           <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-         </div>
+        //  <div
+        //    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+        //  >
+        //    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+        //  </div>
+        <LoadingScreen />
        )}
    
     {!isLoadingImage && (
@@ -412,7 +457,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Provide notes, if any, for the Department Head regarding this application
+            Provide notes, if any, for the Department Head regarding this application (Optional)
             </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}

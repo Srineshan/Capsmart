@@ -1262,21 +1262,20 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notesDetails?.length|| "0");
+      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      notes.push(validNotes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notesDetails || [];
-      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["No Notes"];
-      const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
+      const notesHoverTextArray = validNotes.length > 0 
+      ? validNotes.map(note => {
+          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
+          return `${firstName} on ${createdDate}: ${text}`;
+        })
       : ["-"];
-      // notesHoverText.push([
-      //   "June 13 00:00, Nina Grealy",
-      //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
-      // ]);
       notesHoverText.push(notesHoverTextArray);
-
       // if (data?.tasks?.completedCount === 0) {
       //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
       // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
@@ -1433,21 +1432,20 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notesDetails?.length|| "0");
+      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      notes.push(validNotes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notesDetails || [];
-      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
-      const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
+      const notesHoverTextArray = validNotes.length > 0 
+      ? validNotes.map(note => {
+          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
+          return `${firstName} on ${createdDate}: ${text}`;
+        })
       : ["-"];
-      // notesHoverText.push([
-      //   "June 13 00:00, Nina Grealy",
-      //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
-      // ]);
       notesHoverText.push(notesHoverTextArray);
-
       // if (data?.tasks?.completedCount === 0) {
       //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
       // } else if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
@@ -1692,14 +1690,18 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notesDetails?.length|| "0");
+      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      notes.push(validNotes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notesDetails || [];
-      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
-      const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
+      const notesHoverTextArray = validNotes.length > 0 
+      ? validNotes.map(note => {
+          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
+          return `${firstName} on ${createdDate}: ${text}`;
+        })
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
@@ -1928,15 +1930,20 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      notes.push(data?.notesDetails?.length|| "0");
+      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      notes.push(validNotes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notesDetails || [];
-      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails.map(note => note.notes) : ["-"];
-      const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
+      const notesHoverTextArray = validNotes.length > 0 
+      ? validNotes.map(note => {
+          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
+          return `${firstName} on ${createdDate}: ${text}`;
+        })
       : ["-"];
+      notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -2115,15 +2122,20 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      notes.push(data?.notesDetails?.length|| "0");
+      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      notes.push(validNotes.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
-      const notesDetails = data?.notesDetails || [];
-      // const notesHoverTextArray = notesDetails.length > 0 ? notesDetails?.map(note => note?.notes) : ["-"];
-      const notesHoverTextArray = notesDetails.length > 0 
-      ? notesDetails.map(note => note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-') 
+      const notesHoverTextArray = validNotes.length > 0 
+      ? validNotes.map(note => {
+          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
+          return `${firstName} on ${createdDate}: ${text}`;
+        })
       : ["-"];
+      notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
