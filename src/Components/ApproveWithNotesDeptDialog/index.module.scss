@@ -26,6 +26,10 @@
   justify-content: space-between;
 }
 
+.displayInRowCenter {
+  align-items: center;
+}
+
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -437,6 +441,10 @@ opacity: 1;
   border-radius: 4px;
   opacity: 1;
   // padding: 5px;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
 }
 
 .uploadTextStyle {

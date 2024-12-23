@@ -411,6 +411,14 @@ body::-webkit-scrollbar {
   color: $statusgreen;
 }
 
+.lightGreenDotStyle {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: $statuslightgreen;
+  color: $statuslightgreen;
+}
+
 .yellowDotStyle {
   height: 12px;
   width: 12px;
@@ -685,7 +693,7 @@ body::-webkit-scrollbar {
 
 .leftCardHeadingNameStyle {
   text-align: left;
-  font: normal normal 400 16px proxima-nova;
+  font: normal normal 400 15px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   opacity: 1;
@@ -747,6 +755,7 @@ body::-webkit-scrollbar {
   display: flex;
   justify-content: space-evenly;
 }
+
 
 .warningTextAlign {
   display: flex;
@@ -900,7 +909,7 @@ body::-webkit-scrollbar {
 .applicantStaffReappointGrid {
   display: grid;
   // grid-template-columns: 2% 18% 15% 6% 5% 7% 9% 12% 16% 3%;
-  grid-template-columns: 2% 25% 17% 6% 4% 6% 14% 16% 5%;
+  grid-template-columns: 2% 25% 14% 20% 6% 4% 6% 12% 5%;
   grid-gap: 1%;
 }
 
@@ -914,7 +923,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
-  grid-template-columns: 3% 25% 18% 8% 8% 8% 17% 6%;
+  grid-template-columns: 3% 25% 16% 25% 6% 5% 9% 6%;
   grid-gap: 1%;
 }
 
@@ -936,7 +945,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
-  grid-template-columns: 2% 28% 15% 5% 7% 14% 17% 6%;
+  grid-template-columns: 2% 26% 15% 26% 7% 5% 8% 6%;
   grid-gap: 1%;
 }
 
@@ -952,7 +961,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
   // grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
-  grid-template-columns: 33% 19% 11% 11% 12% 9%;
+  grid-template-columns: 3% 26% 13% 25% 7% 7% 8% 6%;
   grid-gap: 1%;
 }
 
@@ -968,7 +977,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
   // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
-  grid-template-columns: 34% 25% 13% 13% 11%;
+  grid-template-columns: 5% 25% 17% 25% 6% 5% 7% 5%;
   grid-gap: 1%;
 }
 
@@ -2422,7 +2431,7 @@ select {
 
 .grid5and2 {
   display: grid;
-  grid-template-columns: 7fr 2fr 2fr;
+  grid-template-columns: 8fr 2fr 2fr;
   grid-gap: 5px;
 }
 
@@ -2482,6 +2491,13 @@ select {
 .twoColumnGridInner1 {
   display: grid;
   grid-template-columns: 50% 50%;
+  grid-gap: 10px;
+  justify-items: start;
+}
+
+.twoColumnGridInner2 {
+  display: grid;
+  grid-template-columns: 70% 48%;
   grid-gap: 10px;
   justify-items: start;
 }
@@ -3248,7 +3264,7 @@ input[type="number"] {
 
 .twoColumnGrid1 {
   display: grid;
-  grid-template-columns: 48% 43%;
+  grid-template-columns: 42% 43%;
   grid-gap: 5px;
 }
 

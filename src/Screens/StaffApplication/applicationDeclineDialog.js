@@ -393,7 +393,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{",  "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                   </span>
@@ -511,9 +511,14 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                           <div {...getRootProps()}>
                             <input {...getInputProps()} />
                             <div className={style.uploadBorderStyle1}>
-                              <p className={style.uploadTextStyle1}>
-                                Upload any supporting documents
-                              </p>
+                            <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle1}>
+                                  Upload any supporting documents
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  click to upload
+                                </div>
+                                </div>
                             </div>
                           </div>
                         </section>
@@ -581,7 +586,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
               </button>
             </div> */}
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
-               <div className={style.reviewButton}>CONTINUE</div>
+               <div className={style.reviewButton}>NOT RECOMMENDED</div>
             </div>
           </div>
         </div>
