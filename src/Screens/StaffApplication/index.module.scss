@@ -2423,6 +2423,13 @@ select {
   grid-gap: 20px;
 }
 
+.gridDot {
+  display: grid;
+  grid-template-columns: 7% 88%;
+  grid-gap: 5px;
+}
+
+
 .grid2to1 {
   display: grid;
   grid-template-columns: 74% 25%;

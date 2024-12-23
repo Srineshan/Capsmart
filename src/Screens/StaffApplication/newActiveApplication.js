@@ -9186,8 +9186,8 @@ useEffect(() => {
                 {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
-                      <div className={`${style.flex} ${style.alignContent} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                       <div className={` ${style.alignItem} ${style.yellowDotStyle}`} />
+                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                       <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                           onClick={() => {
@@ -9198,9 +9198,9 @@ useEffect(() => {
                         </div>
                       </div>
                       <div
-                        className={` ${style.flex} ${style.alignContent} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
                       >
-                        <div className={` ${style.alignItem} ${style.redDotStyle}`} />
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
                           // onClick={() => {
@@ -9215,8 +9215,8 @@ useEffect(() => {
                       </div>
                     {/* </div> */}
                     <div className={`${style.marginTop20}`}>
-                      <div className={` ${style.flex} ${style.alignContent} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={` ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
                           // onClick={onClickApproveFunction}
@@ -9227,8 +9227,8 @@ useEffect(() => {
                           RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
-                      <div className={` ${style.flex} ${style.alignContent} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                      <div className={` ${style.alignItem} ${style.greenDotStyle}`} />
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
                           onClick={onClickApprovalwithoutnotesFunction}
