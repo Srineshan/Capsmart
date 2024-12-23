@@ -315,10 +315,10 @@ const App = ({ props }) => {
   }, [cookie.get("authorization"), isAuthenticated, errorInfo, isSessionLoading])
 
   useEffect(() => {
-    if ((!userFromCookie && entityId !== undefined && entityId !== '' && authorization !== undefined && isAuthenticated) || (!userFromCookie && entityId !== undefined && entityId !== '' && authorization !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
+    if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
       login(entityId);
     }
-  }, [entityId, authorization, isAuthenticated, errorInfo])
+  }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo])
 
   useEffect(() => {
     if (userFromCookie) {
@@ -409,7 +409,7 @@ const App = ({ props }) => {
       return response;
     },
     (error) => {
-      // logError(error);
+      logError(error);
       console.log("response error", error);
       return error;
     }
@@ -555,22 +555,24 @@ const App = ({ props }) => {
         type: "application/json",
       })
     );
-    if (
-      interceptorsInfo !==
-      `${error?.response?.data?.error} ${error?.response?.data?.path}`
-    ) {
-      await POST(`feedback-management-service/ticket`, formData)
-        .then((response) => {
-          sessionStorage.setItem(
-            "interceptorsInfo",
-            `${error?.response?.data?.error} ${error?.response?.data?.path}`
-          );
-          // SuccessToaster('Error Logged Successfully');
-        })
-        .catch((error) => {
-          // ErrorToaster('Unexpected Error Occured');
-        });
-    }
+    console.log(error)
+    sessionStorage.setItem('errorInfo', error.message)
+    // if (
+    //   interceptorsInfo !==
+    //   `${error?.response?.data?.error} ${error?.response?.data?.path}`
+    // ) {
+    //   await POST(`feedback-management-service/ticket`, formData)
+    //     .then((response) => {
+    //       sessionStorage.setItem(
+    //         "interceptorsInfo",
+    //         `${error?.response?.data?.error} ${error?.response?.data?.path}`
+    //       );
+    //       // SuccessToaster('Error Logged Successfully');
+    //     })
+    //     .catch((error) => {
+    //       // ErrorToaster('Unexpected Error Occured');
+    //     });
+    // }
   };
 
   // const refreshTokens = async () => {
@@ -606,35 +608,44 @@ const App = ({ props }) => {
   // };
 
   const refreshToken = async () => {
-    // try {
-    refresh()
-      .then((refreshedSession) => {
-        if (refreshedSession) {
-          cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
-            path: '/'
-          });
-          console.log('Session refreshed and cookie updated!', refreshedSession);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to refresh token:', error);
-        cookie.remove("user", { path: "/" });
-        cookie.remove("entityId", { path: "/" });
-        logout();
-      });
-    // const { data } = refresh();
-    // setSession(data?.sessionJwt); // Update the session with the new token
-    // cookie.set('authorization', data?.sessionJwt, {
-    //   path: '/',
-    // });
-    // console.log('Token refreshed successfully!', data?.sessionJwt);
-    // } catch (error) {
-    //   console.error('Failed to refresh token:', error);
-    //   cookie.remove("user", { path: "/" });
-    //   cookie.remove("entityId", { path: "/" });
-    //   logout();
-    //   // window.location.href = '/';
-    // }
+    if (isAuthenticated) {
+      // try {
+      refresh()
+        .then((refreshedSession) => {
+          console.log(refreshedSession, 'refreshed session')
+          if (refreshedSession) {
+            cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
+              path: '/'
+            });
+            console.log('Session refreshed and cookie updated!', refreshedSession);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to refresh token:', error);
+          cookie.remove("authorization", { path: "/" });
+          cookie.remove("user", { path: "/" });
+          cookie.remove("entityId", { path: "/" });
+          logout();
+        });
+      // const { data } = refresh();
+      // setSession(data?.sessionJwt); // Update the session with the new token
+      // cookie.set('authorization', data?.sessionJwt, {
+      //   path: '/',
+      // });
+      // console.log('Token refreshed successfully!', data?.sessionJwt);
+      // } catch (error) {
+      //   console.error('Failed to refresh token:', error);
+      //   cookie.remove("user", { path: "/" });
+      //   cookie.remove("entityId", { path: "/" });
+      //   logout();
+      //   // window.location.href = '/';
+      // }
+    } else {
+      cookie.remove("authorization", { path: "/" });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
+    }
   };
 
   const scheduleTokenRefresh = (decodedToken) => {
@@ -643,7 +654,7 @@ const App = ({ props }) => {
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
     console.log(timeToExpiry, currentTime, 'exp', sessionToken)
 
-    // Schedule the refresh 1 minute before expiration
+    // Schedule the refresh 0.5 minute before expiration
     console.log(timeToExpiry, currentTime, 'exp', sessionToken)
     setTimeout(() => {
       refreshToken();

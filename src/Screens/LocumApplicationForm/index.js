@@ -9,7 +9,6 @@ import DemographicData from './DemographicData';
 import PrivilegeSelection from './PrivilegeSelection';
 import ProfessionalConduct from './ProfessionalConduct';
 import UploadYourDoc from './UploadYourDoc';
-import { logout } from '../../utils/auth';
 import MedicalHistory from './MedicalHistory';
 import CriminalHistory from './CriminalHistory';
 import LMSModules from './LMSModules';
@@ -22,12 +21,14 @@ import MedicalDirectives from './MedicalDirectives';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
+import { useDescope } from '@descope/react-sdk';
 
 const LocumApplicationForm = () => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [basicForm, setBasicForm] = useState({})
     // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);

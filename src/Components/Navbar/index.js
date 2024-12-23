@@ -655,7 +655,7 @@ const Navbar = () => {
             className={style.logoutIcons}
             onClick={logout}
           /> */}
-          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={logout} style={{ fontSize: 40 }} />
+          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 40 }} />
         </div>
       </div>
     </div>

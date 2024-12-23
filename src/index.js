@@ -127,6 +127,7 @@ const logError = async (error, info) => {
   formData.append('ticketDetail', new Blob([JSON.stringify(data)], {
     type: "application/json"
   }));
+  sessionStorage.setItem('errorInfo', error.message)
   // if (errorInfo !== error.message) {
   //   await POST(`feedback-management-service/ticket`, formData)
   //     .then(response => {

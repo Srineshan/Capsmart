@@ -796,7 +796,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
       return {
         label: label,
-        count: counts[`level-${key}`],
+        count: counts?.[`level-${key}`],
         level: `level-${key}`,
       };
     });

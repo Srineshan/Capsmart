@@ -150,7 +150,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
             />
             <div className={style.borderLeft}></div>
             <p className={style.loginHeaderText}>
-              <span className={style.bold}>Cap</span>Smart
+              <span className={style.bold}>CAP</span>Manager
             </p>
             <img
               src={CrossPink}
@@ -226,7 +226,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
               />
               <div className={style.borderLeft}></div>
               <p className={style.loginHeaderText}>
-                <span className={style.bold}>Cap</span>Smart
+                <span className={style.bold}>CAP</span>Manager
               </p>
             </div>
             <Slider {...settings}>
