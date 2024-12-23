@@ -182,7 +182,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
           formData.append('files', blob);
         
           try {
-            const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+            const response = await POST(`application-management-service/application/${id}/files?isLLMRequired=${false}`, formData);
             console.log("API Response:", response);
             SuccessToaster('File Uploaded Successfully');
             console.log("Response data:", response?.data);
@@ -610,7 +610,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                   </span>
@@ -724,16 +724,23 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                         }}
                       >
                         {({ getRootProps, getInputProps }) => (
+                          <>
                           <section>
                             <div {...getRootProps()}>
                               <input {...getInputProps()} />
                               <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
+                                <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
                                   Upload any supporting documents
-                                </p>
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  click to upload
+                                </div>
+                                </div>
                               </div>
                             </div>
                           </section>
+                          </>
                         )}
                       </Dropzone>
                     </>
@@ -813,7 +820,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
-                <div className={style.reviewButton}>RECOMMEND STAFF</div>
+                <div className={style.reviewButton}>RECOMMEND STAFF WITH COMMENTS</div>
               </div>
               {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}

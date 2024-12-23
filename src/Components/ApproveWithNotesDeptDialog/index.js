@@ -506,9 +506,14 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                             <div {...getRootProps()}>
                               <input {...getInputProps()} />
                               <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
+                              <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
                                   Upload any supporting documents
-                                </p>
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  click to upload
+                                </div>
+                                </div>
                               </div>
                             </div>
                           </section>
@@ -540,7 +545,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 minDate={add(new Date(), { days: 1 })}
                 maxDate={add(new Date(), { years: 3 })}
                 value={selectedDateForDept}
-                label=" Upcoming Credentialing Committee Meeting Date"
+                label=" Upcoming Credentialing Committee Meeting Date*"
                  InputProps={{
                   style: {
                       fontSize: 14,
@@ -553,9 +558,11 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     inputProps={{
                       ...params.inputProps,
                       placeholder: 'Start Date',
+                      readOnly: true
                     }}
                     variant="outlined"
                     margin="normal"
+                    
                     // fullWidth
                   />
                 )}
@@ -574,7 +581,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                     disabledList={false}
                     required={false}
-                    label="Assign a Credentialing Committee Member to Review & Approve"
+                    label="Assign a Credentialing Committee Member to Review & Approve*"
                   />
               </div>
       

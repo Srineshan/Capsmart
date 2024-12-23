@@ -466,9 +466,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
-    return null;
-  }
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+  //   return null;
+  // }
 
   return (
 <>
@@ -537,7 +537,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
                   </span>
@@ -655,9 +655,14 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                             <div {...getRootProps()}>
                               <input {...getInputProps()} />
                               <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
+                              <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
                                   Upload any supporting documents
-                                </p>
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  click to upload
+                                </div>
+                                </div>
                               </div>
                             </div>
                           </section>
