@@ -17,6 +17,7 @@ import ESignature from '../../../Components/ESignature';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { format } from 'date-fns';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import WelcomeCard from '../../../Components/WelcomeCard';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -27,6 +28,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [warningFields, setWarningFields] = useState([]);
     const [isAddMore, setIsAddMore] = useState(false)
+    const [isAddMore2, setIsAddMore2] = useState(false)
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
     const navigate = useNavigate()
@@ -45,14 +47,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     useEffect(() => {
@@ -116,11 +118,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
     }
 
-    // const getSkipClicked = (value) => {
-    //     if (value) {
-    //         handleSubmitApplicationReq("skipped")
-    //     }
-    // }
+    const getSkipClicked = (value) => {
+        if (value) {
+            // handleSubmitApplicationReq("skipped")
+            navigate(navigateURL);
+        }
+    }
 
     const getMissingFields = () => {
         let missingKeys = [];
@@ -156,7 +159,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     };
 
 
-    const handleSubmitApplicationReq = async (data, skip) => {
+    const handleSubmitApplicationReq = async (data) => {
         // if(isEdited){
         let missingFields = []
         let emptyStringCheckedObject = removeEmptyStrings(data?.forms?.[formIndex]?.data);
@@ -229,23 +232,27 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
 
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            <div className={`${style.applicationScreenGrid}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
-                        {formSchema !== undefined && 'education' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.education} gridStyle={style.EducationGrid} baseKey={'education'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
+                    <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={style.marginTop}>
+                        <WelcomeCard title={<strong>For Professional Staff, the CME requirement is 40 hours of college approved education hours.</strong>}
+                            description={'Please include a print out of your continuing education transcripts or certificates for the past 12 months, including any peer review / evaluations you have had.'} />
+                    </div>
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                        {formSchema !== undefined && 'cmeTranscripts' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.cmeTranscripts} gridStyle={style.EducationGrid} baseKey={'cmeTranscripts'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore2} setIsAddMore={setIsAddMore2} formSchema={formSchemaWholeObject}
                                 heading={'Information Requirement Alert'}
-                                subHeading={'For this application you are required to provide information on all of the different undergraduate / graduate qualifications you have.'}
+                                subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
                         )}
-                        {/* <CommonDivider />
-                        {formSchema !== undefined && 'postGraduate' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.postGraduate} gridStyle={style.EducationGrid} baseKey={'postGraduate'} basicForm={basicForm} setBasicForm={setBasicForm} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} />
-                        )} */}
+                        <CommonDivider />
+                        {formSchema !== undefined && 'cmeCertificates' in formSchema?.properties && (
+                            <ApplicationFieldCard object={formSchema?.properties?.cmeCertificates} gridStyle={style.EducationGrid} baseKey={'cmeCertificates'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
+                                heading={'Information Requirement Alert'}
+                                subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
+                                subHeading2={'You will not be able to submit your application if this is not provided.'} />
+                        )}
                         {/* <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.cmeCard}>
@@ -296,18 +303,19 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             </div>
                         </div> */}
                     </div>
-                    <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div>
                 </div>
                 <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    <div className={style.marginTop}>
+                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    </div>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

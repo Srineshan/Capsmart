@@ -386,7 +386,7 @@ const HelpHome = () => {
                 {showChatView && (
                     <div className={style.chatContainer}>
                         <div className={style.blueChatPart}>
-                            <div className={style.justifyCenter}>CAPSmart Team</div>
+                            <div className={style.justifyCenter}>CAPManager Team</div>
                             <div className={`${style.justifyCenter}`}>
                                 <div className={`${style.displayInRow} ${style.marginTop10}`}>
                                     <div>
@@ -425,7 +425,7 @@ const HelpHome = () => {
                                     </div>
                                     <div className={style.messageContainer}>
                                         Hi there, <br /><br />
-                                        Welcome to CAPSmart Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
+                                        Welcome to CAPManager Team!<br /> Please let us know if you have anything questions about your account or anything you might want to share. we would be happy to help you out
                                     </div>
                                 </div>
                             </div>
@@ -471,15 +471,15 @@ const HelpHome = () => {
                         <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => setShowVideoConnectingDialog(false)} />
                     </div>
                     <div className={style.spaceBetween}>
-                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#0e5197' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#06617A' }} className={style.marginTop10} />
                         <div className={`${style.displayInRow} ${style.verticalCenter}`}>
-                            <FiberManualRecordIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
-                            <FiberManualRecordOutlinedIcon style={{ color: '#0e5197', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordIcon style={{ color: '#06617A', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#06617A', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#06617A', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#06617A', fontSize: 12 }} className={`${style.marginTop40}`} />
+                            <FiberManualRecordOutlinedIcon style={{ color: '#06617A', fontSize: 12 }} className={`${style.marginTop40}`} />
                         </div>
-                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#0e5197' }} className={style.marginTop10} />
+                        <DesktopWindowsIcon style={{ fontSize: 80, color: '#06617A' }} className={style.marginTop10} />
                     </div>
                     <div>
                         <div className={`${style.displayInCol} ${style.marginTop20} ${style.alignCenter}`}>

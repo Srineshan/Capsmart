@@ -168,10 +168,10 @@ const ApplicationForm = () => {
                 return <ConflictOfInterest acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'OffenceDeclaration':
                 return <OffenceDeclaration acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
-            case 'acknowledgementStep9':
-                return <ApplicationAcknowledgementStep9 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
-            case 'acknowledgementStep10':
-                return <ApplicationAcknowledgementStep10 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
+            case 'PACS_Request':
+                return <ApplicationAcknowledgementStep9 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId}  />;
+            case 'PharmacySignature':
+                return <ApplicationAcknowledgementStep10 acknowledgementForm={acknowledgementForms[0]} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             case 'acknowledgementStep11':
                 return <ApplicationAcknowledgementStep11 basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} />;
             case 'DisabilitiesAct':

@@ -50,7 +50,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
     }, [basicForm, formIndex])
 
@@ -62,7 +62,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     const getIsOpen = (value) => {
@@ -226,9 +226,16 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq()
+            handleSubmitApplicationReq("skipped")
         }
         setUpdateFrom('')
+    }
+
+    const getSkipClicked1 = (value) => {
+        if (value) {
+            // handleSubmitApplicationReq("skipped")
+            navigate(navigateURL);
+        }
     }
 
     const getContactSkipClicked = (value, data, skip) => {
@@ -256,67 +263,67 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         };
 
         keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0 ||
-                (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
-                    !validateBusinessPhone(data?.value)) ||
-                (data?.key ===
-                    `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
-                    !validateBusinessWebsite(data?.value))
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
+                // || (data?.key === `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+                //     !validateBusinessPhone(data?.value)) ||
+                // (data?.key ===
+                //     `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+                //     !validateBusinessWebsite(data?.value))
             ) {
-                if (
-                    data?.key ===
-                    `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
-                    !validateBusinessPhone(data?.value)
-                ) {
-                    setBasicForm((prevForm) => ({
-                        ...prevForm,
-                        forms: prevForm.forms.map((form) => {
-                            if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-                                return {
-                                    ...form,
-                                    data: {
-                                        ...form.data,
-                                        contactAddress3: {
-                                            ...form.data.contactAddress3,
-                                            business: {
-                                                ...form.data.contactAddress3.business,
-                                                businessPhone: "",
-                                            },
-                                        },
-                                    },
-                                };
-                            }
-                            return form;
-                        }),
-                    }));
-                }
-                if (
-                    data?.key ===
-                    `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
-                    !validateBusinessWebsite(data?.value)
-                ) {
-                    setBasicForm((prevForm) => ({
-                        ...prevForm,
-                        forms: prevForm.forms.map((form) => {
-                            if (form.schemaId === basicForm.forms[formIndex].schemaId) {
-                                return {
-                                    ...form,
-                                    data: {
-                                        ...form.data,
-                                        contactAddress3: {
-                                            ...form.data.contactAddress3,
-                                            business: {
-                                                ...form.data.contactAddress3.business,
-                                                businessWebsite: "",
-                                            },
-                                        },
-                                    },
-                                };
-                            }
-                            return form;
-                        }),
-                    }));
-                }
+                // if (
+                //     data?.key ===
+                //     `forms[${formIndex}].data.contactAddress3.business.businessPhone` &&
+                //     !validateBusinessPhone(data?.value)
+                // ) {
+                //     setBasicForm((prevForm) => ({
+                //         ...prevForm,
+                //         forms: prevForm.forms.map((form) => {
+                //             if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                //                 return {
+                //                     ...form,
+                //                     data: {
+                //                         ...form.data,
+                //                         contactAddress3: {
+                //                             ...form.data.contactAddress3,
+                //                             business: {
+                //                                 ...form.data.contactAddress3.business,
+                //                                 businessPhone: "",
+                //                             },
+                //                         },
+                //                     },
+                //                 };
+                //             }
+                //             return form;
+                //         }),
+                //     }));
+                // }
+                // if (
+                //     data?.key ===
+                //     `forms[${formIndex}].data.contactAddress3.business.businessWebsite` &&
+                //     !validateBusinessWebsite(data?.value)
+                // ) {
+                //     setBasicForm((prevForm) => ({
+                //         ...prevForm,
+                //         forms: prevForm.forms.map((form) => {
+                //             if (form.schemaId === basicForm.forms[formIndex].schemaId) {
+                //                 return {
+                //                     ...form,
+                //                     data: {
+                //                         ...form.data,
+                //                         contactAddress3: {
+                //                             ...form.data.contactAddress3,
+                //                             business: {
+                //                                 ...form.data.contactAddress3.business,
+                //                                 businessWebsite: "",
+                //                             },
+                //                         },
+                //                     },
+                //                 };
+                //             }
+                //             return form;
+                //         }),
+                //     }));
+                // }
                 missingKeys.push(data)
             }
         })
@@ -461,6 +468,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         timeNumber={1}
                         timeText={"Min"}
                         progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`}
+                        basicForm={basicForm}
                     />
 
                     {formSchema !== undefined && "applicant" in formSchema?.properties && (
@@ -498,7 +506,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     )}
 
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        <div className={`${style.cardTitle} ${style.marginTop}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
+                        <div className={`${style.cardTitle} ${style.marginTop10}`}>{formSchema?.properties?.isAddressChanged?.label}</div>
                         {showContactInfo ? (
                             <div className={`${style.reappointmentCard} ${style.padding20} ${style.marginTop}`}>
                                 {/* <div
@@ -506,7 +514,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                                 /> */}
                                 {formSchema !== undefined && "contactAddress1" in formSchema?.properties && (
-                                    <div>
+                                    <div >
+                                        {/* <div className={`${style.applicationCardStyle} `}> */}
                                         <div className={` ${style.marginTop}`}>
                                             {/* {showDemographicInfo && ( */}
                                             <ApplicationFieldCard
@@ -526,6 +535,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             />
 
                                         </div>
+                                        <CommonDivider />
                                         <div className={` ${style.marginTop}`}>
                                             {/* {showDemographicInfo && ( */}
                                             <ApplicationFieldCard
@@ -545,6 +555,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             />
 
                                         </div>
+                                        <CommonDivider />
+                                        {/* </div>
+                                        <div className={`${style.applicationCardStyle} ${style.marginTop} `}> */}
                                         <div className={` ${style.marginTop}`}>
                                             {/* {showDemographicInfo && ( */}
                                             <ApplicationFieldCard
@@ -563,6 +576,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 formSchema={formSchemaWholeObject}
                                             />
                                         </div>
+                                        {/* </div> */}
                                     </div>
                                 )}
                                 {!viewContactInfo ? (
@@ -619,7 +633,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
                                         onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
-                                        Yes
+                                        YES
                                     </div>
                                     <div
                                         className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
@@ -632,9 +646,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
@@ -651,27 +666,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             SKIP FOR NOW
                         </div> */}
-                    <div
-                        className={`${style.saveInProgress} ${style.marginTop}`}
-                        onClick={() => getIsSaveInProgressOpen(true)}
-                    >
-                        SAVE IN PROGRESS
-                    </div>
-                    {/* </div> */}
-                    <div className={style.twoColForButton}>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div
-                            className={`${style.continue} ${style.marginTop10}`}
-                            onClick={() => navigate(-1)}
+                            className={`${style.saveInProgress} ${style.marginTop}`}
+                            onClick={() => getIsSaveInProgressOpen(true)}
                         >
-                            BACK
+                            SAVE IN PROGRESS
                         </div>
-                        {/* <div
+                        {/* </div> */}
+                        <div className={style.twoColForButton}>
+                            <div
+                                className={`${style.continue} ${style.marginTop10}`}
+                                onClick={() => navigate(-1)}
+                            >
+                                BACK
+                            </div>
+                            {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={() => setShowJourneyDialog(true)}
                         >
                             CONTINUE
                         </div> */}
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

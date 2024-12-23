@@ -26,6 +26,23 @@
     cursor: pointer !important;
 }
 
+.stickyContainer {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
+    // filter: blur(5px); 
+    // box-shadow: 0 0 10px 5px #06617A;
+}
+
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -399,7 +416,7 @@
 }
 
 .iconBackgroundColorYellow {
-    background-color: #FEC106;
+    background-color: $statusyellow;
     border-radius: 50%;
     height: 25px;
     width: 25px;
@@ -413,7 +430,7 @@
 }
 
 .iconBackgroundColorRed {
-    background-color: #FF6562;
+    background-color: $statusred;
     border-radius: 50%;
     height: 25px;
     width: 25px;

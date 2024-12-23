@@ -75,7 +75,7 @@ const ActiveContract = ({ contractId, activeContractView, getActiveContractView 
                   // handlePrint()
                 }}
               >
-                {/* <PrintOutlinedIcon style={{ color: "#0e5197" }} /> */}
+                {/* <PrintOutlinedIcon style={{ color: "#06617A" }} /> */}
               </div>
               <Icon
                 icon="cross"

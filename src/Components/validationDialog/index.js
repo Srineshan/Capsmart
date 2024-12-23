@@ -27,7 +27,15 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
               {(data?.key?.split('.')[2] === 'contactAddress1' || data?.key?.split('.')[2] === 'contactAddress2' || data?.key?.split('.')[2] === 'contactAddress3') && labelList[index - 1]?.key?.split('.')[2] !== labelList[index]?.key?.split('.')[2] && (
                 <p className={`${style.description} ${style.marginTop10} `}><strong>{data?.key?.split('.')[2] === 'contactAddress1' ? 'Home Address' : data?.key?.split('.')[2] === 'contactAddress2' ? 'Mailing Address' : 'Business Address'}</strong></p>
               )}
-              <p className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}>{`${index + 1}. ${data?.label}`}</p>
+              <div className={style.serialNumberGrid}>
+                <p className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}>{`${index + 1}.`}</p>
+                <div
+                  className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
+                  dangerouslySetInnerHTML={{
+                    __html: data?.label
+                  }}
+                />
+              </div>
               {data?.error && (
                 <p
                   className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}

@@ -268,7 +268,7 @@
 
 .userNameStyle {
   text-align: left;
-  font: normal normal 600 15px/13px proxima-nova;
+  font: normal normal 600 $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -311,7 +311,7 @@
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
   position: absolute;
@@ -723,7 +723,7 @@
   color: #7165e3;
   text-decoration: underline;
   cursor: pointer;
-  font: normal normal bold 16px/26px Proxima Nova;
+  font: normal normal bold $labelvaluetext Proxima Nova;
 }
 
 .tableHeaderIndustriesFontStyle {
@@ -798,7 +798,7 @@
 }
 
 .tableSubHeaderIndustriesFontStyle {
-  font: normal 15px/20px proxima-nova;
+  font: normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #494a51;
   opacity: 1;
@@ -1242,7 +1242,7 @@
 
 .extentionLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   text-transform: capitalize;
@@ -1264,13 +1264,13 @@
 }
 
 .dialogCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 25px;
   cursor: pointer;
   position: absolute;
@@ -1281,7 +1281,7 @@
   font-size: 32px;
   color: #9c47fc;
   display: block;
-  background: -webkit-linear-gradient(#9c47fc, #ff6562);
+  background: -webkit-linear-gradient(#9c47fc, $statusred);
   background-clip: text;
 }
 
@@ -1536,7 +1536,7 @@
 
 .entityLableStyle {
   text-align: left;
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   margin-top: 5px;
@@ -1690,7 +1690,7 @@
 }
 
 .healthCareListFontStyle {
-  font: normal normal medium 13px/17px proxima-nova;
+  font: normal normal medium $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -1769,7 +1769,7 @@
 }
 
 .healthCareHeaderTextStyle2 {
-  font: normal normal 600 15px/20px proxima-nova;
+  font: normal normal 600 $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -2027,7 +2027,7 @@
 
 .boardCertificationTextStyle2 {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
@@ -2193,7 +2193,7 @@
 
 .entityLableStyle2 {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #b3b8bd;
   opacity: 1;
@@ -2201,7 +2201,7 @@
 
 .entityLableStyle3 {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #000000;
   margin-top: 5px;
@@ -2478,7 +2478,7 @@
 
 .customersAdminTableFontStyle {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -2488,7 +2488,7 @@
 
 .costCenterFontStyle {
   text-align: left;
-  font: normal normal normal 14px/15px proxima-nova;
+  font: normal normal normal $tableheadtext proxima-nova;
   color: #52575d;
 }
 
@@ -2753,7 +2753,7 @@
 }
 
 .healthCareHeaderTextStyle3 {
-  font: normal normal 600 16px/20px proxima-nova;
+  font: normal normal 600 $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -2875,7 +2875,7 @@
 }
 
 .healthCareHeaderTextStyle6 {
-  font: normal normal 600 15px/20px proxima-nova;
+  font: normal normal 600 $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #6d6d6d;
   text-align: left;
@@ -3019,7 +3019,7 @@
 }
 
 .tableTitleContent {
-  font: normal normal bold 15px/20px proxima-nova !important;
+  font: normal normal bold $navbartext proxima-nova !important;
   color: #52575d !important;
   padding-bottom: 10px;
 }
@@ -3049,7 +3049,7 @@
 }
 
 .siteName {
-  font: normal normal bold 15px/20px proxima-nova;
+  font: normal normal bold $navbartext proxima-nova;
   color: #52575d;
   text-align: left;
 }
@@ -3350,7 +3350,7 @@
 }
 
 .departmentCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   cursor: pointer;
 }
 
@@ -3868,6 +3868,7 @@ input:checked+.slider:before {
 }
 
 .entityLabelStyle {
+  text-align: left;
   font-size: 14px;
   margin-bottom: 8px;
 }
@@ -3878,4 +3879,113 @@ input:checked+.slider:before {
 
 .inputField {
   width: 100% !important;
+  margin-bottom: 15px; /* Add gap between select and button */
+}
+
+.commonCell {
+  border: 1px solid #ccc;
+  text-align: center; // or any alignment you prefer
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+}
+
+// .customTable {
+//   border: 2px solid #7165e3;
+//   width: 100%;
+// }
+
+.customTable th,
+.customTable td {
+  border: 1px solid #7165e3;
+  padding: 0; // Remove padding
+}
+
+.radioGroup {
+  display: flex;
+  justify-content: center;
+}
+.rowGap {
+  margin-bottom: 16px; // Add gap between rows
+}
+
+.verticalStack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Add spacing between each dropdown */
+}
+
+.flexRow {
+  display: flex;
+  width: 100%;
+  gap: 1px; /* Adjust space between dropdown and input */
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionButtonContainer {
+  display: flex;
+  justify-content: flex-end; /* Align button to the right */
+  margin-top: 10px;
+}
+
+.responseMessage {
+  margin-top: 10px;
+  font-size: 14px;
+  color: green; /* Adjust according to success/failure color */
+}
+
+.submitButton {
+  background-color: #06617A;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.submitButton:disabled {
+  background-color: #ccc;
+}
+
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.marginTop35 {
+  margin-top: 35px;
+}
+
+.marginTop55 {
+  margin-top: 55px;
+}
+
+.feeContainer {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc; /* Optional border styling */
+  border-radius: 4px; /* Optional border radius */
+  padding: 4px; /* Padding for alignment */
+}
+
+.currencyLabel {
+  margin-right: 8px; /* Space between currency and input */
+  font-weight: bold;
+  color: #555; /* Optional text color */
+}
+
+.feeInput {
+  flex: 1; /* Input takes the remaining width */
+  border: none;
+  outline: none;
+  font-size: 1rem;
 }

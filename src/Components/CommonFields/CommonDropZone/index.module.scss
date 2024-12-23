@@ -18,8 +18,8 @@
 }
 
 .uploadBorderStyle {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 2px dashed $secondarycolor;
+    background: #F5F8F8 0% 0% no-repeat padding-box;
+    border: 1px dashed $primarycolor;
     border-radius: 4px;
     padding: 10px;
 }
@@ -27,7 +27,7 @@
 .uploadDescriptionText {
     text-align: center;
     font: normal normal normal 14px/18px proxima-nova;
-    color: #2C2C2C;
+    color: $textgrey;
     padding: 0 80px;
 }
 

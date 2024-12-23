@@ -556,7 +556,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                                     //     </>
                                 }
 
-                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#0e5197' }} onClick={() => {
+                                {metadata?.selectedActivities?.map(selectedActivity => selectedActivity?.activity)?.includes(data?.activity) && <EditOutlinedIcon style={{ color: '#06617A' }} onClick={() => {
                                     setEditAdminActivitySelected(true);
                                     let adminActivity = metadata?.selectedActivities?.filter(activities => activities?.id === data?.id)?.map(activities => activities)[0];
                                     setAdminActivity({
@@ -649,7 +649,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#06617A
 
 
 ">Administrative & Business Reports Creation</Typography>} />
@@ -669,7 +669,7 @@ const AdministrativeFields = ({ getMetaData, services, serviceSelected, editServ
                         </div>
                         <div className={`${style.displayInRow} ${style.administrativeCardStyle} ${style.verticalAlignCenter} ${style.selectedAdministrativeCardStyle}`}>
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#0e5197
+                                <FormControlLabel control={<Checkbox />}  label={<Typography variant="body2" color="#06617A
 
 
 ">Corrective Action Plan Participation</Typography>} />

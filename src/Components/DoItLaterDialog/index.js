@@ -23,7 +23,7 @@ const DoItLaterDialog = ({ getIsOpen }) => {
                             />
                         </div>
                     </div>
-                    <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your application anytime when you're ready. By clicking Confirm, you will be logged out.</p>
+                    <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your application anytime you're ready by clicking the link in the original email you received.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { logout(); }}>CONFIRM</div>

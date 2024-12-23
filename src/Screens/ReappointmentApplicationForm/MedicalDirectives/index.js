@@ -11,6 +11,7 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import WelcomeCard from '../../../Components/WelcomeCard';
 import CryptoJS from 'crypto-js';
 import WhiteSign from "./../../../images/whiteSign.png";
 import BlueSign from "./../../../images/blueSign.png";
@@ -58,14 +59,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${basicForm?.forms[formIndex + 1]?.schemaCategory}`)
+            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     useEffect(() => {
@@ -184,12 +185,6 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
     }
 
-    // const getSkipClicked = (value) => {
-    //     if (value) {
-    //         handleSubmitApplicationReq("skipped")
-    //     }
-    // }
-
     const getMissingFields = () => {
         let missingKeys = [];
         let keyValuePair = [];
@@ -223,6 +218,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         return obj;
     };
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            // handleSubmitApplicationReq("skipped")
+            navigate(navigateURL);
+        }
+    }
 
     const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
@@ -303,7 +304,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     };
 
     const handleEdit = (data) => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}/${data?.medicalDirective?.id}`)
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}/${data?.medicalDirective?.id}`)
     }
 
     const getMedicalDirectiveTable = () => {
@@ -342,21 +343,24 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            <div className={`${style.applicationScreenGrid}`}>
                 <div>
-                    <div className={style.applicationCardStyle}>
+                    <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={style.marginTop}>
+                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                            description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
+                    </div>
+                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {!showMedicalDirectives ? (
                             <>
                                 <div className={`${style.cardTitle} ${style.marginTop}`}>Medical Directives Review</div>
                                 <CommonDivider />
-                                <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
-                                    <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}> {medicalDirectives?.length === 0 ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
-                                </div>
+                                {allMedicalDirectives?.completed?.length !== 0 && (
+                                    <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
+                                        <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                        <div className={style.marginLeft}> {medicalDirectives?.length === 0 ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
+                                    </div>
+                                )}
                                 {allMedicalDirectives?.pending?.length !== 0 && (
                                     <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
                                         <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
@@ -440,18 +444,19 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                             </>
                         )}
                     </div>
-                    <div className={style.threeColForButton}>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
-                    </div>
                 </div>
                 <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                    <div className={style.twoColForButton}>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
+                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    <div className={style.marginTop}>
+                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    </div>
+                    <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={style.twoColForButton}>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={showMedicalDirectives ? () => { setShowMedicalDirectives(false) } : () => handleContinue()}>CONTINUE</div>
+                        </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

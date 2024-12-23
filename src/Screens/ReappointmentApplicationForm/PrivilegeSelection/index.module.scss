@@ -1,7 +1,7 @@
 @import "../../../index.scss";
 
 .marginTop {
-    margin-top: 20px;
+    margin-top: 20px !important;
 }
 
 .marginLeft {
@@ -20,6 +20,23 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+}
+
+.stickyContainer {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
+    // filter: blur(5px); 
+    // box-shadow: 0 0 10px 5px #06617A;
 }
 
 .saveInProgress {
@@ -54,7 +71,7 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 10px 20px 20px 20px;
+    padding: 0px 20px 20px 20px;
 }
 
 .categoryGrid {
@@ -245,7 +262,7 @@
     text-align: left;
     font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
-    color: #2C2C2C;
+    color: #454747;
     // text-transform: capitalize;
 }
 
@@ -393,7 +410,7 @@
 }
 
 .fileDisplayText {
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     color: #2C2C2C;
 }
 
@@ -410,6 +427,15 @@
 
 .privilegeCard {
     background: #14358F00 0% 0% no-repeat padding-box;
+    // box-shadow: 0px 0px 8px #040B2014;
+    // border: 0.4000000059604645px solid #5087D9;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 99999 !important;
+}
+
+.privilegeCardWithBorder {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 8px #040B2014;
     border: 0.4000000059604645px solid #5087D9;
     border-radius: 5px;
@@ -417,8 +443,48 @@
     z-index: 99999 !important;
 }
 
+.privilegeCategoryChips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: normal normal normal $labelvaluetext proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+}
+
+.privilegeCategoryChipsSelected {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border: 1px solid $primarycolor;
+    color: $secondarycolor;
+}
+
+.chipsContainer {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 10px;
+}
+
+.hospitalPrivilegeSetGrid {
+    display: grid;
+    grid-template-columns: 20% 73% 5%;
+    gap: 1%;
+}
+
+.primaryColor {
+    color: $primarycolor !important;
+}
+
 .privilegeContentCard {
     background: #1D24370A 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.privilegeContentChangeCard {
+    background: #F5F8F8 0% 0% no-repeat padding-box;
     box-shadow: 0px 0px 8px #040B2014;
     border-radius: 8px;
     padding: 10px;
@@ -431,12 +497,29 @@
     color: #1D2437;
 }
 
+.privilegeHeadingCurrent {
+    text-align: left;
+    font: italic normal bold 12px/17px proxima-nova !important;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.privilegeHeadingReappointment {
+    text-align: left;
+    font: italic normal bold 12px/17px proxima-nova !important;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
 .privilegeTitleStyle {
     text-align: left;
-    text-decoration: underline;
     font: normal normal bold 18px/24px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
+}
+
+.privilegeTitleStyle:hover {
+    text-decoration: underline;
 }
 
 .privilegeWarningPart {
@@ -461,10 +544,11 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    text-align: center;
 }
 
 .reappointmentButtonOutlined {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
+    background: #F5F8F8 0% 0% no-repeat padding-box;
     border-radius: 8px;
     border: 1px solid $primarycolor;
     padding: 10px 15px;
@@ -514,7 +598,7 @@
 
 .eSignDialog {
     height: 75%;
-    width: 60% !important;
+    width: 75% !important;
 }
 
 .fullWidth {
@@ -535,13 +619,13 @@
 
 .markedAsText {
     text-align: left;
-    font: italic normal medium 16px/24px proxima-nova;
+    font: italic normal medium $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #1D2437;
 }
 
 .reappointmentButtonEdit {
-    background: #14358F1A 0% 0% no-repeat padding-box;
+    background: #F5F8F8 0% 0% no-repeat padding-box;
     border-radius: 8px;
     border: 1px solid $primarycolor;
     padding: 10px 15px;

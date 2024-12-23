@@ -19,9 +19,8 @@ body::-webkit-scrollbar {
 .margin20 {
   margin: 20px;
 }
-.mar
 
-.displayInCol {
+.mar .displayInCol {
   display: flex;
   flex-direction: column;
 }
@@ -106,7 +105,7 @@ body::-webkit-scrollbar {
 }
 
 .buttonCardStyle {
-  height: 70px;
+  height: 50px;
   // width: 270px;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
@@ -144,6 +143,8 @@ body::-webkit-scrollbar {
   border: 0.5px solid #14B15A;
   border-radius: 8px;
   opacity: 1;
+  // margin-left: 100px;
+  justify-self: end;
 
 }
 
@@ -168,6 +169,7 @@ body::-webkit-scrollbar {
   border: 0.5px solid $primarycolor;
   border-radius: 8px;
   opacity: 1;
+  justify-self: end;
 
 }
 
@@ -288,6 +290,14 @@ body::-webkit-scrollbar {
   padding: 10px 20px 20px 20px;
 }
 
+.applicationCardStyleReappointment {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D4D;
+  border-radius: 20px;
+  border: 0.4000000059604645px solid #e5e6e6;
+  padding: 0px 20px 20px 20px;
+}
+
 .flex {
   display: flex;
 }
@@ -397,24 +407,24 @@ body::-webkit-scrollbar {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #00C07F;
-  color: #00C07F;
+  background-color: $statusgreen;
+  color: $statusgreen;
 }
 
 .yellowDotStyle {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #FEC106;
-  color: #FEC106;
+  background-color: $statusyellow;
+  color: $statusyellow;
 }
 
 .redDotStyle {
   height: 12px;
   width: 12px;
   border-radius: 50%;
-  background-color: #FF6562;
-  color: #FF6562;
+  background-color: $statusred;
+  color: $statusred;
 }
 
 .greyDotStyle {
@@ -512,6 +522,15 @@ body::-webkit-scrollbar {
   text-transform: capitalize;
 }
 
+.tableHeaderHeadingTextStyle1 {
+  text-align: left;
+  font: normal normal normal 18px/23px Proxima Nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+  text-transform: capitalize;
+}
+
 .progressMargin {
   margin: -5px 0 20px 0;
 }
@@ -534,7 +553,7 @@ body::-webkit-scrollbar {
 
 .staffPragraphStyle {
   text-align: left;
-  font: normal normal normal 16px/24px proxima-nova;
+  font: normal normal normal $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -561,7 +580,7 @@ body::-webkit-scrollbar {
 
 .textStyle {
   text-align: left;
-  font: normal normal normal 16px/24px proxima-nova;
+  font: normal normal normal $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -578,7 +597,7 @@ body::-webkit-scrollbar {
 }
 
 .bigCardStyle {
-  height: calc(100vh - 255px);
+  height: calc(100vh - 225px);
   overflow: scroll;
   background: #ffffff 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #c4c8d066;
@@ -659,16 +678,16 @@ body::-webkit-scrollbar {
 
 .userNameStyle {
   text-align: left;
-  font: normal normal 600 15px/13px proxima-nova;
+  font: normal normal 600 $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
 }
 
 .leftCardHeadingNameStyle {
   text-align: left;
-  font: normal normal bold 16px/20px proxima-nova;
+  font: normal normal 400 16px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $primarycolor;
   opacity: 1;
 }
 
@@ -741,15 +760,15 @@ body::-webkit-scrollbar {
 }
 
 .green {
-  color: #00c07f;
+  color: $statusgreen;
 }
 
 .yellow {
-  color: #fec106;
+  color: $statusyellow;
 }
 
 .orange {
-  color: orange;
+  color: $statusorange;
 }
 
 .searchBarStyle {
@@ -772,6 +791,7 @@ body::-webkit-scrollbar {
   display: flex;
   flex-direction: row;
 }
+
 
 .displayInRowDecline {
   display: flex;
@@ -872,7 +892,15 @@ body::-webkit-scrollbar {
 
 .applicantStaffGrid {
   display: grid;
-  grid-template-columns: 2% 13% 13% 19% 6% 5% 5% 10% 14% 6%;
+  // grid-template-columns: 2% 13% 13% 19% 6% 5% 6% 10% 14% 6%;
+  grid-template-columns: 3% 21% 19% 6% 5% 7% 9% 18% 6%;
+  grid-gap: 1%;
+}
+
+.applicantStaffReappointGrid {
+  display: grid;
+  // grid-template-columns: 2% 18% 15% 6% 5% 7% 9% 12% 16% 3%;
+  grid-template-columns: 2% 25% 17% 6% 4% 6% 14% 16% 5%;
   grid-gap: 1%;
 }
 
@@ -884,38 +912,63 @@ body::-webkit-scrollbar {
 
 .departmentHeadStaffGrid {
   display: grid;
-  grid-template-columns: 2% 16% 8% 19% 6% 6% 6% 10% 14% 6%;
+  // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
+  // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
+  grid-template-columns: 3% 25% 18% 8% 8% 8% 17% 6%;
+  grid-gap: 1%;
+}
+
+.locumStaffGrid {
+  display: grid;
+  grid-template-columns: 14% 12% 12% 18% 10% 19% 6%;
   grid-gap: 1%;
 }
 
 
 .applicationStaffGrid {
   display: grid;
-  grid-template-columns: 2% 14% 12% 17% 6% 5% 5% 11% 15% 6%;
+  // grid-template-columns: 2% 14% 12% 17% 6% 5% 5% 11% 15% 6%;
+  grid-template-columns: 2% 20% 19% 5% 5% 5% 13% 17% 6%;
   grid-gap: 1%;
 }
 
 .applicationStaffReappointGrid {
   display: grid;
-  grid-template-columns: 2% 20% 15% 20% 6% 5% 15% 11%;
+  // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
+  // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
+  grid-template-columns: 2% 28% 15% 5% 7% 14% 17% 6%;
   grid-gap: 1%;
 }
 
 .macStaffGrid {
   display: grid;
-  grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
+  // grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
+  grid-template-columns: 20% 19% 13% 14% 10% 13% 7%;
   grid-gap: 1%;
 }
 
 .macStaffReappointGrid {
   display: grid;
-  grid-template-columns: 14% 13% 15% 15% 15% 15% 13%;
+  // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
+  // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
+  // grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
+  grid-template-columns: 33% 19% 11% 11% 12% 9%;
   grid-gap: 1%;
 }
 
 .bodStaffGrid {
   display: grid;
-  grid-template-columns: 13% 13% 18% 18% 10% 16% 7%;
+  // grid-template-columns: 13% 13% 18% 18% 10% 16% 7%;
+  grid-template-columns: 20% 21% 16% 16% 17% 7%;
+  grid-gap: 1%;
+}
+
+.bodStaffReappointGrid {
+  display: grid;
+  // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
+  // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
+  // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
+  grid-template-columns: 34% 25% 13% 13% 11%;
   grid-gap: 1%;
 }
 
@@ -994,7 +1047,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofTextWidth {
-  font: normal normal bold 13px/17px proxima-nova;
+  font: normal normal bold $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1004,7 +1057,7 @@ body::-webkit-scrollbar {
 }
 
 .documentProofDataTextWidth {
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   opacity: 1;
@@ -1044,7 +1097,7 @@ body::-webkit-scrollbar {
 
 .extensionStyle {
   text-align: left;
-  font: normal normal bold 15px/13px proxima-nova;
+  font: normal normal bold $usernametext proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
 }
@@ -1073,20 +1126,23 @@ body::-webkit-scrollbar {
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
 }
 
+.displayInRowCenter {
+  align-items: center;
+}
+
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal medium 14px/22px proxima-nova;
+  font: normal normal bold 16px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
-  text-transform: capitalize;
-  opacity: 0.5;
+  color: #454747;
+  opacity: 1;
 }
 
 .rejectionTextStyle {
@@ -1099,7 +1155,7 @@ body::-webkit-scrollbar {
 }
 
 .declineBorderStyle {
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
@@ -1107,7 +1163,7 @@ body::-webkit-scrollbar {
 
 .extensionOptionsStyle {
   text-align: left;
-  font: normal normal medium 15px/13px proxima-nova;
+  font: normal normal medium $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1175,7 +1231,7 @@ body::-webkit-scrollbar {
 
 .contractId {
   text-align: left;
-  font: normal normal medium 15px/13px proxima-nova;
+  font: normal normal medium $usernametext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -1250,7 +1306,7 @@ body::-webkit-scrollbar {
 
 .extentionLableStyle {
   text-align: left;
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: capitalize;
@@ -1349,11 +1405,20 @@ body::-webkit-scrollbar {
   opacity: 0.8;
 }
 
-.leftAlignTextStyle {
-  text-align: left;
-  font: normal normal bold 16px/23px proxima-nova;
+.rightAlignTextStyle1 {
+  text-align: right;
+  font: normal normal normal 14px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 0.8;
+}
+
+.leftAlignTextStyle {
+  text-align: left;
+  font: normal normal medium 16px/23px proxima-nova;
+  letter-spacing: 0px;
+  color: $textcolor;
   text-transform: uppercase;
   opacity: 1;
 }
@@ -1401,15 +1466,15 @@ body::-webkit-scrollbar {
 
 .cardTextBoldStyle {
   text-align: left;
-  font: normal normal bold 16px/20px proxima-nova;
+  font: normal normal 600 $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   text-transform: capitalize;
   opacity: 1;
 }
 
 .greyDotTextStyle {
-  text-align: left;
+  text-align: center;
   font: normal normal normal 13px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
@@ -1433,8 +1498,8 @@ body::-webkit-scrollbar {
 }
 
 .emailTextBoldStyle {
-  text-align: center;
-  font: normal normal bold 17px/20px proxima-nova;
+  text-align: start;
+  font: normal normal 400 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -1444,13 +1509,13 @@ body::-webkit-scrollbar {
   text-align: left;
   font: normal normal medium 16px/23px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: black;
   text-transform: capitalize;
   opacity: 0.6;
 }
 
 .switchFontStyle {
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   color: #52575d;
 }
 
@@ -1459,13 +1524,18 @@ body::-webkit-scrollbar {
 }
 
 .crossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   margin-bottom: 15px;
   cursor: pointer;
 }
 
+.crossStyleImg {
+  height: 20px;
+  width: 20px;
+}
+
 .newContractCrossStyle {
-  color: linear-gradient($primarycolor, #ff6562) !important;
+  color: linear-gradient($primarycolor, $statusred) !important;
   cursor: pointer;
   margin-top: -10px;
   margin-right: -20px;
@@ -1534,7 +1604,7 @@ select {
 
 .contractCards:hover {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -1563,7 +1633,7 @@ select {
 
 .selectedContractCard {
   background: linear-gradient(white, white) padding-box,
-    linear-gradient(to bottom, $primarycolor, #ff6562) border-box;
+    linear-gradient(to bottom, $primarycolor, $statusred) border-box;
   border-radius: 20px;
   border: 2px solid transparent;
 }
@@ -2151,7 +2221,7 @@ select {
 
 .plusOneText {
   text-align: left;
-  font: normal normal medium 16px/20px proxima-nova;
+  font: normal normal medium $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #aeb2b7;
 }
@@ -2350,6 +2420,12 @@ select {
   grid-gap: 1%;
 }
 
+.grid5and2 {
+  display: grid;
+  grid-template-columns: 7fr 2fr 2fr;
+  grid-gap: 5px;
+}
+
 .grid5and1 {
   display: grid;
   grid-template-columns: 7fr 2fr;
@@ -2362,10 +2438,51 @@ select {
   grid-gap: 20px;
 }
 
+.twoColReappointment {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.privilegeContentCard {
+  background: #1D24370A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.privilegeHeadingCurrent {
+  text-align: left;
+  font: italic normal bold 12px/17px proxima-nova !important;
+  letter-spacing: 0px;
+  color: #1D2437;
+}
+
+.privilegeHeadingReappointment {
+  text-align: left;
+  font: italic normal bold 12px/17px proxima-nova !important;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.privilegeContentChangeCard {
+  background: #F5F8F8 0% 0% no-repeat padding-box;
+  box-shadow: 0px 0px 8px #040B2014;
+  border-radius: 8px;
+  padding: 10px;
+}
+
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 40% 40%;
   grid-gap: 20px;
+  justify-items: start;
+}
+
+.twoColumnGridInner1 {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-gap: 10px;
   justify-items: start;
 }
 
@@ -2376,6 +2493,10 @@ select {
 
 .padding5 {
   padding: 5px;
+}
+
+.paddingBottom5 {
+  padding-bottom: 5px;
 }
 
 .padding10 {
@@ -2545,7 +2666,7 @@ input[type="file"] {
 }
 
 .purpleTitle {
-  font: normal 15px/13px proxima-nova;
+  font: normal $usernametext proxima-nova;
   color: $primarycolor;
   font-size: 15px;
   text-align: left;
@@ -2611,9 +2732,9 @@ input[type="file"] {
 .addStyle {
   background: $primarycolor 0% 0% no-repeat padding-box;
   box-shadow: 0px 0px 6px #00000029;
-  border-radius: 8px;
+  border-radius: 4px;
   height: 33px;
-  min-width: 35px;
+  min-width: 45px;
 }
 
 .addSmallStyle {
@@ -2706,13 +2827,13 @@ input[type="file"] {
 }
 
 .orangeChip {
-  background: orange 0% 0% no-repeat padding-box;
+  background: $statusorange 0% 0% no-repeat padding-box;
   color: orangered;
 }
 
 .yellowChip {
   background: lemonchiffon 0% 0% no-repeat padding-box;
-  color: orange;
+  color: $statusorange;
 }
 
 .blueChip {
@@ -2751,25 +2872,28 @@ input[type="file"] {
   padding: 20px;
 }
 
-.photoCardStyle {
-  width: 93px;
-  height: 89px;
-  transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
-  /* UI Properties */
-  text-align: left;
-  font: normal normal bold 34px/58px proxima-nova;
-  letter-spacing: 0px;
-  color: $primarycolor;
-  opacity: 0.1;
-}
+// .photoCardStyle {
+//   width: 93px;
+//   height: 89px;
+//   transform: matrix(0.74, -0.67, 0.67, 0.74, 0, 0);
+//   /* UI Properties */
+//   text-align: left;
+//   // font: normal normal bold 34px/58px proxima-nova;
+//   // letter-spacing: 0px;
+//   // color: $primarycolor;
+//   opacity: 0.1;
+// }
 
 .photoBorderStyle {
-  width: 108px;
-  height: 108px;
-  /* UI Properties */
-  background: $primarycolor 0% 0% no-repeat padding-box;
-  border-radius: 10px;
-  opacity: 0.1;
+  width: 93px;
+  height: 89px;
+}
+
+.profileImage {
+  width: 93px;
+  height: 89px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .selectedAdministrativeCardStyle {
@@ -2894,7 +3018,7 @@ input[type="file"] {
 }
 
 .yellowBigNumber {
-  color: #fec106 !important;
+  color: $statusyellow !important;
 }
 
 .redBigNumber {
@@ -2912,13 +3036,13 @@ input[type="file"] {
 }
 
 .yellowSmallNumber {
-  color: #fec106;
+  color: $statusyellow;
   background-color: #fff2cc;
 }
 
 .yellowSmallNumberSelected {
   color: #fff;
-  background-color: #fec106;
+  background-color: $statusyellow;
 }
 
 .redSmallNumber {
@@ -3051,7 +3175,7 @@ input[type="number"] {
 
 .validationHeaderText {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #18191b;
   text-transform: uppercase;
@@ -3073,14 +3197,14 @@ input[type="number"] {
 
 .validationTopicText {
   text-align: left;
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #94979a;
 }
 
 .statusText {
   text-align: left;
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   letter-spacing: 0px;
   color: #000000;
 }
@@ -3119,8 +3243,21 @@ input[type="number"] {
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
 }
+
+.twoColumnGrid1 {
+  display: grid;
+  grid-template-columns: 48% 43%;
+  grid-gap: 5px;
+}
+
+.twoColumnGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  // grid-gap: 5px;
+}
+
 
 .fourColumnGrid {
   display: grid;
@@ -3215,7 +3352,7 @@ input[type="number"] {
 }
 
 .tableHeaderFontStyle {
-  font: normal normal bold 14px/15px proxima-nova;
+  font: normal normal bold $tableheadtext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3232,12 +3369,13 @@ input[type="number"] {
 }
 
 .tableDataStyle {
-  background: #F5F5F8 0% 0% no-repeat padding-box;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
   min-height: 50px;
   width: 96%;
   margin-left: 2%;
   border: 0.400000006px solid $secondarycolor;
   border-radius: 2px;
+  padding: 10px;
 }
 
 .tableDataStyle1 {
@@ -3250,7 +3388,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle {
-  font: normal normal normal 13px/17px proxima-nova;
+  font: normal normal normal $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3258,7 +3396,7 @@ input[type="number"] {
 }
 
 .tableDataFontBoldStyle {
-  font: normal normal bold 13px/17px proxima-nova;
+  font: normal normal bold $tabledatatext proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-transform: uppercase;
@@ -3266,7 +3404,7 @@ input[type="number"] {
 }
 
 .tableDataFontStyle1 {
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #52575d;
   text-align: left;
@@ -3274,7 +3412,7 @@ input[type="number"] {
 
 .tableDataFontStyle2 {
   text-align: left;
-  font: normal normal 600 16px/24px proxima-nova;
+  font: normal normal 600 $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -3650,10 +3788,10 @@ input[type="number"] {
 }
 
 .headingForStaffs {
-  font: normal normal bolder 15px/20px proxima-nova !important;
+  font: normal normal 500 15px proxima-nova !important;
   letter-spacing: 0px;
   text-align: left;
-  color: #2C2C2C;
+  color: #9AAFB5;
   text-transform: uppercase;
   opacity: 1;
 
@@ -3669,10 +3807,11 @@ input[type="number"] {
   box-shadow: 0px 10px 20px #130D4B1F;
   border-radius: 20px;
   text-align: left;
-  font: normal normal bold 16px/20px proxima-nova;
+  font: normal normal bold 18px proxima-nova;
+  font-weight: 500;
   letter-spacing: 0px;
   color: #F5F9FD;
-  text-transform: uppercase;
+  // text-transform: uppercase;
   opacity: 1;
   padding: 15px;
   margin-right: 18px;
@@ -3721,7 +3860,7 @@ input[type="number"] {
   display: flex;
   flex-wrap: nowrap;
   /* Items will stay in a single line */
-  gap: 5px;
+  // gap: 5px;
   opacity: 1;
 }
 
@@ -3809,7 +3948,7 @@ input[type="number"] {
 }
 
 .homeMailingAddressGrid> :nth-child(1) {
-  grid-column: span 6;
+  grid-column: span 3;
 }
 
 .homeMailingAddressGrid> :nth-child(2) {
@@ -3843,7 +3982,7 @@ input[type="number"] {
 }
 
 .mailingAddressGrid> :nth-child(2) {
-  grid-column: span 6;
+  grid-column: span 3;
 }
 
 .mailingAddressGrid> :nth-child(3) {
@@ -3874,19 +4013,18 @@ input[type="number"] {
 
 .businessMailingAddressGrid> :nth-child(1) {
   grid-column: span 12;
-  margin-top: 0px;
 }
 
 .businessMailingAddressGrid> :nth-child(2) {
-  grid-column: span 5;
+  grid-column: span 12;
 }
 
 .businessMailingAddressGrid> :nth-child(3) {
-  grid-column: span 7;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(4) {
-  grid-column: span 12;
+  grid-column: span 6;
 }
 
 .businessMailingAddressGrid> :nth-child(5) {
@@ -4069,7 +4207,8 @@ input[type="number"] {
 }
 
 .borderStyleTiles {
-  border: 2px solid $secondarycolor;
+  background: $tableheadhover 0% 0% no-repeat padding-box;
+  height: 2px;
 
 }
 
@@ -4147,7 +4286,8 @@ input[type="number"] {
 }
 
 .tableDataFontStyleCred {
-  font: normal normal normal 16px/20px proxima-nova;
+  // font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal 16px/22px proxima-nova;
   margin-left: 20px;
   letter-spacing: 0px;
   color: #52575d;
@@ -4216,7 +4356,6 @@ input[type="number"] {
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
-  margin-top: 20px;
 }
 
 .statusCard {
@@ -4227,7 +4366,7 @@ input[type="number"] {
   border: 0.4000000059604645px solid #E9E9F0;
   border-radius: 12px;
   opacity: 1;
-  height: 20%;
+  // height: 20%;
 }
 
 .statusCardTextStyle1 {
@@ -4252,7 +4391,7 @@ input[type="number"] {
 
 .statusRoleTextStyle {
   text-align: center;
-  font: normal normal bold 16px/26px Proxima Nova;
+  font: normal normal bold $labelvaluetext Proxima Nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: uppercase;
@@ -4312,23 +4451,29 @@ input[type="number"] {
   border-radius: 12px;
   opacity: 1;
   height: fit-content;
-  // margin-bottom: -700px;
   padding-bottom: 30px;
 }
 
 .referenceCardStyle {
-
-
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid #173790;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 0.9;
   width: 90%;
   margin: auto;
   padding: 10px;
 
+}
+
+.referenceCardStyle1 {
+  background: #dddddf 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 0.9;
+  padding: 10px;
 }
 
 .sideHeadingFontStyle {
@@ -4375,7 +4520,7 @@ input[type="number"] {
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid #173790;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 0.5;
   width: 60px;
@@ -4416,16 +4561,16 @@ input[type="number"] {
 
 .assessInCred {
   background: #FFEFEF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #FF6562;
+  border: 0.4000000059604645px solid $statusred;
   border-radius: 12px;
   opacity: 1;
 }
 
 .assessTextStyle {
   text-align: center;
-  font: normal normal bold 16px/26px Proxima Nova;
+  font: normal normal bold $labelvaluetext Proxima Nova;
   letter-spacing: 0px;
-  color: #FF6562;
+  color: $statusred;
   opacity: 1;
 }
 
@@ -4438,7 +4583,7 @@ input[type="number"] {
 
 .ApprovedTextStyle {
   text-align: center;
-  font: normal normal bold 16px/26px Proxima Nova;
+  font: normal normal bold $labelvaluetext Proxima Nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -4456,14 +4601,14 @@ input[type="number"] {
   text-align: left;
   font: normal normal normal 20px/24px la-solid-900;
   letter-spacing: 0px;
-  color: #173790;
+  color: $primarycolor;
   opacity: 1;
 }
 
 .my-custom-description {
   text-align: center;
   /* or any other styles you want to override */
-  font: normal normal normal 16px/20px Arial, sans-serif;
+  font: normal normal normal $tabledatatext1 Arial, sans-serif;
   /* Customize as needed */
   color: #000000;
   /* New color */
@@ -4482,7 +4627,7 @@ input[type="number"] {
 .checkListitem {
   // color: var(--unnamed-color-52575d);
   text-align: left;
-  font: italic normal medium 16px/24px Proxima Nova;
+  font: italic normal medium $tabledatatext2 Proxima Nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 0.5;
@@ -4504,11 +4649,28 @@ input[type="number"] {
   padding: 10px;
 }
 
+.uploadBorderStyle1 {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
 .uploadTextStyle {
   text-align: center;
   font: normal normal 600 20px/28px proxima-nova;
   color: $primarycolor;
   text-transform: capitalize;
+}
+
+.uploadTextStyle1 {
+  text-align: left;
+  font: normal normal normal 18px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: black;
+  opacity: 1;
+  padding: 5px;
 }
 
 .uploadDescriptionText {
@@ -4538,14 +4700,15 @@ input[type="number"] {
 
 .uploadYourDocGrid {
   display: grid;
-  grid-template-columns: 3% 23% 7% 28% 15% 10% 7%;
+  grid-template-columns: 3% 30% 22% 18% 15% 10% 7%;
   gap: 1%;
 }
 
 .docTypeImgStyle {
-  height: 20px;
+  height: 30px;
   width: auto;
   object-fit: contain;
+  justify-content: center;
 }
 
 .tableGridCME {
@@ -4574,7 +4737,7 @@ input[type="number"] {
 }
 
 .iconBackgroundColorYellow {
-  background-color: #FEC106;
+  background-color: $statusyellow;
   border-radius: 50%;
   height: 25px;
   width: 25px;
@@ -4583,12 +4746,12 @@ input[type="number"] {
 .iconBackgroundColorGreen {
   background-color: #25BF6A;
   border-radius: 50%;
-  height: 25px;
-  width: 25px;
+  // height: 25px;
+  // width: 25px;
 }
 
 .iconBackgroundColorRed {
-  background-color: #FF6562;
+  background-color: $statusred;
   border-radius: 50%;
   height: 25px;
   width: 25px;
@@ -4596,7 +4759,7 @@ input[type="number"] {
 
 .markedAsText {
   text-align: left;
-  font: italic normal medium 16px/24px proxima-nova;
+  font: italic normal medium $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
 }
@@ -4620,7 +4783,7 @@ input[type="number"] {
 
 .lableReadOnlyStyleInPOD {
   text-align: left;
-  font: normal normal normal 16px/20px proxima-nova;
+  font: normal normal normal $tabledatatext1 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   // text-transform: capitalize;
@@ -4686,7 +4849,7 @@ input[type="number"] {
 }
 
 .fileDisplayText {
-  font: normal normal normal 15px/20px proxima-nova;
+  font: normal normal normal $navbartext proxima-nova;
   color: #2C2C2C;
 }
 
@@ -4702,21 +4865,296 @@ input[type="number"] {
   color: $primarycolor;
 }
 
-.padding30{
+.privilegeTitleStyleReappointment {
+  text-align: left;
+  font: normal normal bold 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.privilegeTitleStyleReappointment:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.privilegeCard {
+  background: #14358F00 0% 0% no-repeat padding-box;
+  // box-shadow: 0px 0px 8px #040B2014;
+  // border: 0.4000000059604645px solid #5087D9;
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 99999 !important;
+}
+
+.privilegeHeading {
+  text-align: left;
+  font: normal normal medium 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+}
+
+.padding30 {
   padding: 30px;
 }
 
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal 600 22px/27px Proxima Nova;
+  font: normal normal normal 15px / 17px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: #171a1a;
   text-transform: capitalize;
   opacity: 1;
 }
 
-.marginBothText{
+.marginBothText {
   margin-top: 5px;
   margin-left: 10px;
+}
+
+.searchContainer {
+  position: relative;
+  width: 254px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #FFF;
+  border-radius: 15px;
+  background-color: #FFF;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.searchIcon {
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  margin: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  padding: 0 5px;
+  background: transparent;
+}
+
+.todoContainer {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  width: 254px;
+  height: 85px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  font-family: 'Proxima Nova', Arial, sans-serif;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.topLeft {
+  font: normal normal normal 14px 'Proxima Nova';
+  font-weight: bold;
+  color: #06617A;
+}
+
+/* Commented as it’s not needed */
+// .topRight { 
+// }
+
+.centerLeft {
+  font: normal normal normal 16px 'Proxima Nova';
+  font-weight: bold;
+}
+
+.middleRight {
+  font: normal normal normal 12px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.bottomLeft {
+  font: normal normal normal 14px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.bottomRight {
+  font: normal normal normal 12px 'Proxima Nova';
+  font-weight: normal;
+}
+
+.alignCenter1 {
+  justify-content: center;
+  height: 100%;
+}
+
+.stickyContainer {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.hiddenStickyContainer {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.alignStart {
+  text-align: start;
+}
+
+.verificationTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: $textcolor;
+  opacity: 0.9;
+}
+
+.verificationMethodTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #14B15A;
+  opacity: 1;
+}
+
+.verificationMethodTextStyle {
+  text-align: left;
+  font: normal normal bold 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #14B15A;
+  opacity: 1;
+}
+
+.verificationMethodTextStyle1 {
+  text-align: left;
+  font: normal normal bold 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #FFCA27;
+  opacity: 1;
+}
+
+.notesTextStyle {
+  text-align: left;
+  font: normal normal normal 14px/22px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+}
+
+.DepartmentHeadingTextStyle {
+  text-align: left;
+  font: normal normal normal 16px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.fixedBottom {
+  position: fixed;
+  bottom: 0;
+  width: 23%;
+  z-index: 10;
+  padding: 20px;
+  background: #F8FCFF 0% 0% no-repeat padding-box;
+}
+
+.fixedBottom1 {
+  position: fixed;
+  bottom: 0;
+  width: 23%;
+  z-index: 10;
+}
+
+.marginLeft2 {
+  margin-left: 4px;
+}
+
+.reviewButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.reviewButton {
+  background-color: $primarycolor;
+  color: white;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: center;
+}
+
+.searchContainer {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #c4c8d066;
+  border-radius: 16px;
+  opacity: 1;
+  cursor: pointer;
+  padding: 15px;
+}
+
+.searchIcon {
+  color: $primarycolor;
+  margin-right: 10px;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.notesIcon {
+  color: $primarycolor
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter1 {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
+}
+
+.calcHeight{
+  height: calc(100vh - 80px);
 }

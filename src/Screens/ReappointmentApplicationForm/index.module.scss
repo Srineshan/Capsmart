@@ -4,7 +4,7 @@
     padding: 20px 100px;
     height: calc(100vh - 80px);
     overflow: auto;
-    overflow-y: auto !important;
+    overflow-y: scroll !important;
     scrollbar-width: thin !important;
     scrollbar-color: gray transparent !important;
 }
@@ -25,6 +25,16 @@
 
 .marginTop10 {
     margin-top: 10px;
+}
+
+.stickyContainer {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
 }
 
 .saveInProgress {

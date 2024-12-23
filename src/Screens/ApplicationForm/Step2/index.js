@@ -17,7 +17,6 @@ import WordDoc from './../../../images/wordDoc.png';
 import ImgDoc from './../../../images/imgDoc.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
-import FileLoading from './../../../images/fileLoading.GIF';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -31,7 +30,7 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { getValueByPath } from '../../../utils/formatting';
+import { fileLoadingURL, getValueByPath } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 
 const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
@@ -405,7 +404,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
         <div
           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
         >
-          <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
       <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
@@ -578,7 +577,7 @@ const Step2 = ({ basicForm, setBasicForm, applicationId, getPreApplication }) =>
                 <div
                   className={`${style.displayInRow} ${style.justifyCenter}`}
                 >
-                  <DoneIcon sx={{ color: "#0e5197", fontSize: 25 }} />
+                  <DoneIcon sx={{ color: "#06617A", fontSize: 25 }} />
                   <div
                     className={`${style.setupCompletedText} ${style.marginLeft10}`}
                   >

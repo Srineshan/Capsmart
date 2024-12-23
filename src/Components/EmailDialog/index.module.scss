@@ -54,6 +54,9 @@
   border-radius: 20px !important;
 }
 
+.alignCenter{
+  align-items: center;
+}
 
 .displayInRow {
   display: flex;
@@ -62,8 +65,8 @@
 
 
 .crossStyle {
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
 }
 
 .cursorPointer {
@@ -195,7 +198,7 @@
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
   letter-spacing: 0px;
-  color: #FEC106;
+  color: $statusyellow;
   opacity: 1;
 }
 
@@ -262,11 +265,11 @@
 }
 
 .templateHeadertext {
+  color: var(--unnamed-color-06617a);
   text-align: left;
-  font: normal normal bold 26px/28px Proxima Nova;
+  font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: #7165E3;
-  text-transform: capitalize;
+  color: #06617A;
   opacity: 1;
 }
 
@@ -288,19 +291,20 @@
 }
 
 .changeTemplateButton {
-  background: #7165E3 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 11px #7165E3;
+  background: var(--unnamed-color-06617a) 0% 0% no-repeat padding-box;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
-  padding: 10px 20px;
-  border: none;
+  padding: 5px;
 }
 
 .templateButtonText {
-  text-align: left;
-  font: normal normal medium 20px/26px Proxima Nova;
+  text-align: center;
+  font: normal normal bold 20px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #FFFFFF;
+  color: #F5F8F8;
+  text-transform: uppercase;
   opacity: 1;
 }
 
@@ -320,7 +324,7 @@
 
 .textReference {
   text-align: left;
-  font: italic normal normal 16px/26px Proxima Nova;
+  font: italic normal normal $labelvaluetext Proxima Nova;
   letter-spacing: 0px;
   color: #646D82;
   opacity: 1;
@@ -339,13 +343,57 @@
 }
 
 .recipient {
-  display: inline-block;
-  background: #7165E3 0% 0% no-repeat padding-box;
+  background: var(--unnamed-color-06617a) 0% 0% no-repeat padding-box;
+  background: #06617A 0% 0% no-repeat padding-box;
   border-radius: 4px;
-  padding: 4px 8px;
-  margin-right: 4px;
-  margin-bottom: 4px;
-  opacity: 90%;
+  opacity: 0.1;
+}
+
+.recipientText{
+  text-align: left;
+  font: normal normal medium 20px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.1;
+}
+
+.emailInputContainer {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dcdcdc; /* Light gray border */
+  border-radius: 4px; /* Rounded corners */
+  padding: 5px 10px; /* Padding around the content */
+  // margin-bottom: 10px; /* Space between email input containers */
+}
+
+.emailInput {
+  border: none; /* Remove default border */
+  outline: none; /* Remove outline on focus */
+  font-size: 14px; /* Font size */
+  padding: 5px; /* Padding inside the input */
+  flex: 1; /* Take up remaining space */
+}
+
+.closeButton {
+  background-color: #e0e0e0; /* Light gray background for the button */
+  border: none; /* Remove default border */
+  border-radius: 50%; /* Rounded button */
+  width: 20px; /* Width of the button */
+  height: 20px; /* Height of the button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer; /* Pointer cursor on hover */
+  margin-left: 10px; /* Space between the input and button */
+}
+
+.closeButton:hover {
+  background-color: #ccc; /* Darker gray on hover */
+}
+
+.closeButton::before {
+  // content: '✕'; /* X character */
+  font-size: 14px; /* Font size for the X */
 }
 
 .borderBoxType {
@@ -451,7 +499,7 @@
 .notesBorderStyle {
   // border: 0.4px solid var(---7165e3) ;
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  // border: 0.4000000059604645px solid #173790 !important;
+  // border: 0.4000000059604645px solid $primarycolor !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;

@@ -1,18 +1,28 @@
 import { ErrorToaster } from './toaster';
+import Payment from "payment";
+import dataLoadinglogo from '../images/loaderCommon.gif';
 
 export const FormatPhoneNumber = (value) => {
   if (!value) return value;
 
   const phoneNumber = value.replace(/[^\d]/g, "");
+  if (/^(\d)\1{9}$/.test(phoneNumber)) {
+    return ""; // Invalid phone number with all digits the same
+  }
   const phoneNumberLength = phoneNumber.length;
 
   if (phoneNumberLength < 4) return phoneNumber;
 
-  if (phoneNumberLength < 7) {
-    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`;
+  const areaCode = phoneNumber.slice(0, 3);
+  if (!/^[2-9]\d{2}$/.test(areaCode)) {
+    return ""; // Invalid area code
   }
 
-  return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(
+  if (phoneNumberLength < 7) {
+    return `(${areaCode}) ${phoneNumber.slice(3)}`;
+  }
+
+  return `(${areaCode}) ${phoneNumber.slice(
     3,
     6
   )}-${phoneNumber.slice(6, 10)}`;
@@ -81,3 +91,70 @@ console.log(timeZoneAbbreviation, siteTimeZone)
 // export const corsUrl = 'https://app.mytimesmart.com/cors/'
 
 export const corsUrl = 'https://app.timesmartai.com/cors/'
+
+export const fileLoadingURL = 'https://capmanager-dev.s3.us-east-1.amazonaws.com/File_Upload_Loading.gif';
+
+export const dataLoadingGIF = dataLoadinglogo
+
+const clearNumber = (value = "") => {
+  return value.replace(/\D+/g, "");
+}
+
+export function formatCreditCardNumber(value) {
+  if (!value) {
+    return value;
+  }
+
+  const issuer = Payment.fns.cardType(value);
+  const clearValue = clearNumber(value);
+  let nextValue;
+
+  switch (issuer) {
+    case "amex":
+      nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
+        4,
+        10
+      )} ${clearValue.slice(10, 15)}`;
+      break;
+    case "dinersclub":
+      nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
+        4,
+        10
+      )} ${clearValue.slice(10, 14)}`;
+      break;
+    default:
+      nextValue = `${clearValue.slice(0, 4)} ${clearValue.slice(
+        4,
+        8
+      )} ${clearValue.slice(8, 12)} ${clearValue.slice(12, 19)}`;
+      break;
+  }
+
+  return nextValue.trim();
+}
+
+export function formatCVC(value, prevValue, allValues = {}) {
+  const clearValue = clearNumber(value);
+  let maxLength = 4;
+
+  if (allValues.number) {
+    const issuer = Payment.fns.cardType(allValues.number);
+    maxLength = issuer === "amex" ? 4 : 3;
+  }
+
+  return clearValue.slice(0, maxLength);
+}
+
+export function formatExpirationDate(value) {
+  const clearValue = clearNumber(value);
+
+  if (clearValue.length >= 3) {
+    return `${clearValue.slice(0, 2)}/${clearValue.slice(2, 4)}`;
+  }
+
+  return clearValue;
+}
+
+export function formatFormData(data) {
+  return Object.keys(data).map(d => `${d}: ${data[d]}`);
+}

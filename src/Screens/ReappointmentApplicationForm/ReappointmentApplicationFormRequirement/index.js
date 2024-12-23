@@ -108,7 +108,7 @@ const ReappointmentApplicationFormRequirement = () => {
         //         console.log(error)
         //         ErrorToaster("Unexpected Error Updating Application");
         //     });
-        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${basicForm?.forms[0]?.schemaCategory}`)
+        navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
     }
 
     // const calculateRemainingDays = (createdDate, totalDays) => {
@@ -130,17 +130,17 @@ const ReappointmentApplicationFormRequirement = () => {
                 <div className={style.screenBackground}>
                     <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
                     <div className={style.screenPadding}>
-                        <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+                        <div className={`${style.applicationScreenGrid}`}>
                             <div>
                                 <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your reappointment application.'} description={''} />
                                 <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                                    <div className={style.titleTextStyle}>Recommended & Required List of Documents to have Readily Available for this Application</div>
+                                    <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
                                     {/* <div className={style.marginTop}>
                                 <RequiredDocumentCard array={basicForm?.documentsRequired?.map(data => ({ title: data?.document?.name }))} />
                             </div> */}
                                     <div className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}>
                                         <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Document Type</div>
-                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}>Requirements</div>
+                                        <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}> </div>
                                         <div className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}></div>
                                     </div>
                                     {basicForm?.documentsRequired?.map((data, index) => (
@@ -148,9 +148,9 @@ const ReappointmentApplicationFormRequirement = () => {
                                             <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
-                                                    <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} />
+                                                    {/* <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} /> */}
                                                 </div>
-                                                <div className={style.documentTextStyle}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
                                                 <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                             </div>
                                         </div>
@@ -179,8 +179,10 @@ const ReappointmentApplicationFormRequirement = () => {
                                 <div className={style.marginTop10}>
                                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                                 </div>
-                                <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
-                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
+                                <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                    <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
+                                </div>
                             </div>
                         </div>
                     </div>

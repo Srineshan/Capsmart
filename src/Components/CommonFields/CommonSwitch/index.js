@@ -7,7 +7,7 @@ import style from './index.module.scss';
 const switchTheme = createTheme({
   palette: {
     primary: {
-      main: "#0e5197",
+      main: "#06617A",
     },
   },
 });

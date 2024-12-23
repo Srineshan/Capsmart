@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { GET, POST, PUT } from "../dataSaver";
@@ -12,9 +12,8 @@ import SendEmailFromStaffManagerConfirmationDialog from "../../Components/sendEm
 import jwt from "jwt-decode";
 import Cookie from "universal-cookie";
 import { useNavigate } from "react-router-dom";
-import { getValueByPath } from "../../utils/formatting";
+import { fileLoadingURL, getValueByPath } from "../../utils/formatting";
 import ValidationDialog from "../../Components/validationDialog";
-import FileLoading from "../../images/fileLoading.GIF";
 
 const CreateStaffMemberApplication = () => {
   let cookie = new Cookie();
@@ -185,16 +184,22 @@ const CreateStaffMemberApplication = () => {
     return regex.test(email);
   };
 
+  const refsMap = useRef({});
   const getMissingFields = () => {
     setIsLoading(true);
 
     let missingKeys = [];
     let keyValuePair = [];
+
     metadata?.map((data, index) => {
+      if (!refsMap.current[data]) {
+        refsMap.current[data] = React.createRef(); // Create and store refs dynamically
+      }
       keyValuePair.push({
         key: data,
         value: getValueByPath(basicForm, data),
         label: labels[index],
+        ref: refsMap.current[data], // Associate ref with field
       });
     });
     keyValuePair?.map((data) => {
@@ -227,7 +232,7 @@ const CreateStaffMemberApplication = () => {
           ...data,
           error:
             data.key === "basicDetails.applicant.email.officialEmail" &&
-            !validateEmail(data.value)
+              !validateEmail(data.value)
               ? "Invalid email format"
               : "",
         });
@@ -235,16 +240,17 @@ const CreateStaffMemberApplication = () => {
       // Handle cellPhone -> mobileNumber transformation
       if (data.key === "basicDetails.applicant.cellPhone" && data.value) {
         setBasicForm((prevForm) => ({
-            ...prevForm,
-            basicDetails: {
-                ...prevForm.basicDetails,
-                applicant: {
-                    ...prevForm.basicDetails.applicant,
-                    mobileNumber: data.value || prevForm.basicDetails.applicant.mobileNumber,
-                },
+          ...prevForm,
+          basicDetails: {
+            ...prevForm.basicDetails,
+            applicant: {
+              ...prevForm.basicDetails.applicant,
+              mobileNumber:
+                data.value || prevForm.basicDetails.applicant.mobileNumber,
             },
+          },
         }));
-    }    
+      }
     });
 
     if (
@@ -264,6 +270,11 @@ const CreateStaffMemberApplication = () => {
       missingKeys = temp;
     }
     if (missingKeys?.length !== 0) {
+      // Focus the first missing field
+      const firstMissingField = missingKeys[0];
+      if (firstMissingField?.ref?.current) {
+        firstMissingField.ref.current.focus();
+      }
       setShowValidationDialog(true);
     } else {
       handleSubmitApplicationReq();
@@ -389,7 +400,7 @@ const CreateStaffMemberApplication = () => {
         <div
           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
         >
-          <img src={FileLoading} alt="" className={style.fileLoadingStyle} />
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
       <div className={style.screenBackground}>
@@ -419,6 +430,7 @@ const CreateStaffMemberApplication = () => {
                   getAllLabels={getAllLabels}
                   warningFields={warningFields}
                   formSchema={formSchemaWholeObject}
+                  refsMap={refsMap.current}
                 />
               )}
               {form !== undefined &&
@@ -434,6 +446,7 @@ const CreateStaffMemberApplication = () => {
                     getAllLabels={getAllLabels}
                     warningFields={warningFields}
                     formSchema={formSchemaWholeObject}
+                    refsMap={refsMap.current}
                   />
                 )}
               {form !== undefined &&
@@ -496,9 +509,8 @@ const CreateStaffMemberApplication = () => {
                 </div>
                 {requiredDocumentList?.map((data, index) => (
                   <div
-                    className={`${style.tableData} ${
-                      index % 2 === 0 ? style.alternativeBackgroundColor : ""
-                    }`}
+                    className={`${style.tableData} ${index % 2 === 0 ? style.alternativeBackgroundColor : ""
+                      }`}
                     key={`${index}radio`}
                   >
                     <div className={style.fileGrid}>

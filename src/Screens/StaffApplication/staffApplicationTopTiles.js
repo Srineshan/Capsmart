@@ -82,18 +82,415 @@
 
 // export default StaffApplicationTopTiles;
 
+// wWORKING CODE 11/12
+
+
+// import React, { useState, useEffect } from 'react';
+// import TopTileApplication from '../../Components/TopTileApplication';
+// import style from './index.module.scss';
+// import { GET } from './../../Screens/dataSaver';
+
+// const StaffApplicationTopTiles = () => {
+//   const [selectedTab, setSelectedTab] = useState('NewApplicants');
+//   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [newCounts, setNewCounts] = useState({});
+//   const [reappointmentCounts, setReappointmentCounts] = useState({});
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getTitleCounts = async (type) => {
+//     try {
+//       setIsLoading(true);
+//       const response = await GET(
+//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
+//       );
+      
+//       if (response?.data) {
+//         if (type === 'NEW') {
+//           setNewCounts(response.data);
+//         } else {
+//           setReappointmentCounts(response.data);
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error fetching counts:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Initialize from session storage
+//   useEffect(() => {
+//     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+//     if (storedApplicationType) {
+//       setApplicationCreationType(storedApplicationType);
+//       setSelectedTab(storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments');
+//     }
+//     else {
+//       sessionStorage.setItem('applicationCreationType', 'NEW');
+//     }
+//   }, []);
+
+//   // Fetch counts on mount and when application type changes
+//   useEffect(() => {
+//     const fetchBothCounts = async () => {
+//       await Promise.all([
+//         getTitleCounts('NEW'),
+//         getTitleCounts('REAPPOINTMENT')
+//       ]);
+//     };
+
+//     fetchBothCounts();
+//   }, []);
+
+//   const sumCounts = (countsObj) => {
+//     if (!countsObj) return 0;
+    
+//     return Object.entries(countsObj)
+//       .filter(([key]) => key.startsWith('level-'))
+//       .reduce((sum, [_, value]) => sum + (value || 0), 0);
+//   };
+
+//   const getSelectedTab = (tab) => {
+//     const newType = tab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
+//     setSelectedTab(tab);
+//     setApplicationCreationType(newType);
+//     sessionStorage.setItem('applicationCreationType', newType);
+//   };
+
+//   return (
+//     <div className={style.tabs}>
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(newCounts)}
+//         tileLabel="New Applicants" 
+//         currentTile="NewApplicants"
+//         isLoading={isLoading}
+//       />
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(reappointmentCounts)}
+//         tileLabel="Staff Reappointments" 
+//         currentTile="StaffReappointments"
+//         isLoading={isLoading}
+//       />
+//     </div>
+//   );
+// };
+
+// export default StaffApplicationTopTiles;
+
+
+// import React, { useState, useEffect } from 'react';
+// import TopTileApplication from '../../Components/TopTileApplication';
+// import style from './index.module.scss';
+// import { GET } from './../../Screens/dataSaver';
+// import Cookie from 'universal-cookie';
+// import jwt from 'jwt-decode';
+
+// const StaffApplicationTopTiles = () => {
+//   const [selectedTab, setSelectedTab] = useState('NewApplicants');
+//   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [locumType, setLocumType] = useState(false);
+//   const [newCounts, setNewCounts] = useState({});
+//   const [reappointmentCounts, setReappointmentCounts] = useState({});
+//   const [locumCounts, setLocumCounts] = useState({});
+//   const [isLoading, setIsLoading] = useState(true);
+//   const cookie = new Cookie();
+//   const userDetails = cookie.get('user');
+//   const user = jwt(userDetails);
+//   const [userRole, setUserRole] = useState('');
+
+//   const getTitleCounts = async (type, level) => {
+//     try {
+//       setIsLoading(true);
+//       const response = await GET(
+//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&isLocum=${level}`
+//       );
+      
+//       if (response?.data) {
+//         if (type === 'NEW' && !level) {
+//           setNewCounts(response.data);
+//         } else if (type === 'REAPPOINTMENT' && !level) {
+//           setReappointmentCounts(response.data);
+//         } else if (level === true) {
+//           setLocumCounts(response.data);
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error fetching counts:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Initialize from session storage
+//   useEffect(() => {
+//     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+//     const storedLocumType = sessionStorage.getItem('isLocum');
+//     if (storedApplicationType) {
+//       setApplicationCreationType(storedApplicationType);
+//       setSelectedTab(storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments');
+//     } else {
+//       sessionStorage.setItem('applicationCreationType', 'NEW');
+//     }
+//     if (storedLocumType) {
+//       setLocumType(storedLocumType === 'true');
+//       if (storedLocumType === 'true') {
+//         setSelectedTab('LocumRenewals');
+//       } 
+//     } else {
+//       sessionStorage.setItem('isLocum', 'false');
+//     }
+//   }, []);
+
+//   // Fetch counts on mount and when application type changes
+//   useEffect(() => {
+//     const fetchCounts = async () => {
+//       await Promise.all([
+//         getTitleCounts('NEW', false),
+//         getTitleCounts('REAPPOINTMENT', false),
+//         getTitleCounts('REAPPOINTMENT', true),
+//       ]);
+//     };
+
+//     fetchCounts();
+//   }, []);
+
+//   const sumCounts = (countsObj) => {
+//     if (!countsObj) return 0;
+    
+//     return Object.entries(countsObj)
+//       .filter(([key]) => key.startsWith('level-'))
+//       .reduce((sum, [_, value]) => sum + (value || 0), 0);
+//   };
+
+//   const getSelectedTab = (tab) => {
+//     let newType;
+//     let locumlevel = false;
+//     if (tab === 'NewApplicants') {
+//       newType = 'NEW';
+//     } else if (tab === 'StaffReappointments') {
+//       newType = 'REAPPOINTMENT';
+//     } else if (tab === 'LocumRenewals') {
+//       newType = '';
+//       locumlevel = true;
+//     }
+//     setSelectedTab(tab);
+//     setApplicationCreationType(newType);
+//     setLocumType(locumlevel);
+//     sessionStorage.setItem('applicationCreationType', newType);
+//     sessionStorage.setItem('isLocum', locumlevel);
+//   };
+
+//   useEffect(() => {
+//     setUserDetails();
+//   }, []);
+
+//   const setUserDetails = async () => {
+//     try {
+//       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+//       sessionStorage.setItem('user', JSON.stringify(userData));
+//       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+//     } catch (error) {
+//       console.error('Error fetching user details:', error);
+//     }
+//   };
+
+//   return (
+//     <div className={style.tabs}>
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(newCounts)}
+//         tileLabel="New Applicants" 
+//         currentTile="NewApplicants"
+//         isLoading={isLoading}
+//       />
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(reappointmentCounts)}
+//         tileLabel="Staff Reappointments" 
+//         currentTile="StaffReappointments"
+//         isLoading={isLoading}
+//       />
+//       {userRole?.includes("Department Head") &&
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(locumCounts)}
+//         tileLabel="Locum Renewals" 
+//         currentTile="LocumRenewals"
+//         isLoading={isLoading}
+//       />
+// }
+//     </div>
+//   );
+// };
+
+// export default StaffApplicationTopTiles;
+
+
+// import React, { useState, useEffect } from 'react';
+// import TopTileApplication from '../../Components/TopTileApplication';
+// import style from './index.module.scss';
+// import { GET } from './../../Screens/dataSaver';
+// import Cookie from 'universal-cookie';
+// import jwt from 'jwt-decode';
+
+// const StaffApplicationTopTiles = () => {
+//   const cookie = new Cookie();
+//   const userDetails = cookie.get('user');
+//   const user = jwt(userDetails);
+//   const [userRole, setUserRole] = useState('');
+//   const [selectedTab, setSelectedTab] = useState('NewApplicants');
+//   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
+//   const [newCounts, setNewCounts] = useState({});
+//   const [reappointmentCounts, setReappointmentCounts] = useState({});
+//   const [isLoading, setIsLoading] = useState(true);
+
+//   const getTitleCounts = async (type) => {
+//     try {
+//       setIsLoading(true);
+//       const response = await GET(
+//         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
+//       );
+      
+//       if (response?.data) {
+//         if (type === 'NEW') {
+//           setNewCounts(response.data);
+//         } else if (type === 'REAPPOINTMENT') {
+//           setReappointmentCounts(response.data);
+//         }
+//       }
+//     } catch (error) {
+//       console.error('Error fetching counts:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   // Initialize from session storage
+//   useEffect(() => {
+//     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
+//     if (storedApplicationType) {
+//       setApplicationCreationType(storedApplicationType);
+//       setSelectedTab(
+//         storedApplicationType === 'NEW'
+//           ? 'NewApplicants'
+//           : storedApplicationType === 'REAPPOINTMENT'
+//           ? 'StaffReappointments'
+//           : 'LocumRenewals'
+//       );
+//     } else {
+//       sessionStorage.setItem('applicationCreationType', 'NEW');
+//     }
+//   }, []);
+
+//   // Fetch counts on mount and when application type changes
+//   useEffect(() => {
+//     const fetchBothCounts = async () => {
+//       await Promise.all([
+//         getTitleCounts('NEW'),
+//         getTitleCounts('REAPPOINTMENT')
+//       ]);
+//     };
+
+//     fetchBothCounts();
+//   }, []);
+
+//   const sumCounts = (countsObj) => {
+//     if (!countsObj) return 0;
+    
+//     return Object.entries(countsObj)
+//       .filter(([key]) => key.startsWith('level-'))
+//       .reduce((sum, [_, value]) => sum + (value || 0), 0);
+//   };
+
+//   const getSelectedTab = (tab) => {
+//     let newType;
+//     if (tab === 'NewApplicants') {
+//       newType = 'NEW';
+//     } else if (tab === 'StaffReappointments') {
+//       newType = 'REAPPOINTMENT';
+//     } else if (tab === 'LocumRenewals') {
+//       newType = 'LOCUM';
+//     }
+
+//     setSelectedTab(tab);
+//     setApplicationCreationType(newType);
+//     sessionStorage.setItem('applicationCreationType', newType);
+//   };
+
+//   useEffect(() => {
+//     setUserDetails();
+//   }, []);
+
+//   const setUserDetails = async () => {
+//     try {
+//       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+//       sessionStorage.setItem('user', JSON.stringify(userData));
+//       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+//     } catch (error) {
+//       console.error('Error fetching user details:', error);
+//     }
+//   };
+
+//   return (
+//     <div className={style.tabs}>
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(newCounts)}
+//         tileLabel="New Applicants" 
+//         currentTile="NewApplicants"
+//         isLoading={isLoading}
+//       />
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileCount={sumCounts(reappointmentCounts)}
+//         tileLabel="Staff Reappointments" 
+//         currentTile="StaffReappointments"
+//         isLoading={isLoading}
+//       />
+//       {/* {userRole?.includes("Department Head") &&
+//       <TopTileApplication 
+//         selectedTab={selectedTab} 
+//         getSelectedTab={getSelectedTab} 
+//         tileLabel="Locum Renewals" 
+//         currentTile="LocumRenewals"
+//         isLoading={isLoading}
+//       />
+//    } */}
+//     </div>
+//   );
+// };
+
+// export default StaffApplicationTopTiles;
 
 import React, { useState, useEffect } from 'react';
-import TileApplication from '../../Components/TileApplication';
+import TopTileApplication from '../../Components/TopTileApplication';
 import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
+import Cookie from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const StaffApplicationTopTiles = () => {
+  const cookie = new Cookie();
+  const userDetails = cookie.get('user');
+  const user = jwt(userDetails);
+  const [userRole, setUserRole] = useState('');
   const [selectedTab, setSelectedTab] = useState('NewApplicants');
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   const [newCounts, setNewCounts] = useState({});
   const [reappointmentCounts, setReappointmentCounts] = useState({});
+  const [userFlow, setUserFlow] = useState('');
+  const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const applicationId = "66dc44ec788741fedc982b01";
 
   const getTitleCounts = async (type) => {
     try {
@@ -105,7 +502,7 @@ const StaffApplicationTopTiles = () => {
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
-        } else {
+        } else if (type === 'REAPPOINTMENT') {
           setReappointmentCounts(response.data);
         }
       }
@@ -116,65 +513,143 @@ const StaffApplicationTopTiles = () => {
     }
   };
 
+  const getUserRoleType = async (type) => {
+    if (type === "LOCUM") return;
+    
+    try {
+      const response = await GET(
+        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${type}`
+      );
+      setUserFlow(response?.data?.approvalFlowMap);
+    } catch (error) {
+      console.error('Error fetching user role type:', error);
+    }
+  };
+
   // Initialize from session storage
   useEffect(() => {
     const storedApplicationType = sessionStorage.getItem('applicationCreationType');
     if (storedApplicationType) {
       setApplicationCreationType(storedApplicationType);
-      setSelectedTab(storedApplicationType === 'NEW' ? 'NewApplicants' : 'StaffReappointments');
-    }
-    else {
+      setSelectedTab(
+        storedApplicationType === 'NEW'
+          ? 'NewApplicants'
+          : storedApplicationType === 'REAPPOINTMENT'
+          ? 'StaffReappointments'
+          : 'LocumRenewals'
+      );
+    } else {
       sessionStorage.setItem('applicationCreationType', 'NEW');
     }
   }, []);
 
-  // Fetch counts on mount and when application type changes
+  // Fetch counts and user role type on mount and when application type changes
   useEffect(() => {
-    const fetchBothCounts = async () => {
+    const fetchData = async () => {
       await Promise.all([
         getTitleCounts('NEW'),
-        getTitleCounts('REAPPOINTMENT')
+        getTitleCounts('REAPPOINTMENT'),
+        getUserRoleType('NEW'),
+        getUserRoleType('REAPPOINTMENT')
       ]);
     };
 
-    fetchBothCounts();
+    fetchData();
   }, []);
 
-  const sumCounts = (countsObj) => {
-    if (!countsObj) return 0;
+  const calculateVisibleCounts = (countsObj) => {
+    if (!countsObj || !userFlow?.workflow) return 0;
     
-    return Object.entries(countsObj)
-      .filter(([key]) => key.startsWith('level-'))
-      .reduce((sum, [_, value]) => sum + (value || 0), 0);
+    const UserFlowType = userFlow.workflow;
+    const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
+    
+    let visibleLevels = [];
+    if (userRole?.includes("Department Head")) {
+      visibleLevels = ['level-2'];
+    } else if (userRole?.includes("Credentialing Committee")) {
+      visibleLevels = ['level-3'];
+    } else if (isManagerOrChief) {
+      visibleLevels = Object.keys(UserFlowType).map(key => `level-${key}`);
+    } else {
+      const currentIndex = Object.entries(UserFlowType).findIndex(([key, value]) => {
+        const details = value?.flowDetails;
+        return details?.some(detail => 
+          detail?.role && userRole?.includes(detail?.role?.roleName)
+        );
+      });
+      
+      if (currentIndex !== -1) {
+        visibleLevels = Object.keys(UserFlowType)
+          .slice(currentIndex)
+          .map(key => `level-${key}`);
+      }
+    }
+
+    return visibleLevels.reduce((sum, level) => sum + (countsObj[level] || 0), 0) + 
+           (countsObj.clarificationsRequired || 0);
   };
 
   const getSelectedTab = (tab) => {
-    const newType = tab === 'NewApplicants' ? 'NEW' : 'REAPPOINTMENT';
+    let newType;
+    if (tab === 'NewApplicants') {
+      newType = 'NEW';
+    } else if (tab === 'StaffReappointments') {
+      newType = 'REAPPOINTMENT';
+    } else if (tab === 'LocumRenewals') {
+      newType = 'LOCUM';
+    }
+
     setSelectedTab(tab);
     setApplicationCreationType(newType);
     sessionStorage.setItem('applicationCreationType', newType);
   };
 
+  const setUserDetails = async () => {
+    try {
+      const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
+  };
+
+  useEffect(() => {
+    setUserDetails();
+  }, []);
+
   return (
     <div className={style.tabs}>
-      <TileApplication 
+      <TopTileApplication 
         selectedTab={selectedTab} 
         getSelectedTab={getSelectedTab} 
-        tileCount={sumCounts(newCounts)}
+        tileCount={calculateVisibleCounts(newCounts)}
         tileLabel="New Applicants" 
         currentTile="NewApplicants"
         isLoading={isLoading}
       />
-      <TileApplication 
+      <TopTileApplication 
         selectedTab={selectedTab} 
         getSelectedTab={getSelectedTab} 
-        tileCount={sumCounts(reappointmentCounts)}
+        tileCount={calculateVisibleCounts(reappointmentCounts)}
         tileLabel="Staff Reappointments" 
         currentTile="StaffReappointments"
         isLoading={isLoading}
       />
+      {/* {userRole?.includes("Department Head") &&
+        <TopTileApplication 
+          selectedTab={selectedTab} 
+          getSelectedTab={getSelectedTab} 
+          tileLabel="Locum Renewals" 
+          currentTile="LocumRenewals"
+          isLoading={isLoading}
+        />
+      } */}
     </div>
   );
 };
 
 export default StaffApplicationTopTiles;
+
+
+

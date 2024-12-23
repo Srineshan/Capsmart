@@ -10,7 +10,7 @@ import RedBackground from "./../../images/redBackground.png";
 import NotificationCount from "./../../images/notificationCount.png";
 import File from "./../../images/file.png";
 import { Link } from "react-router-dom";
-import LogoutIcon from "./../../images/logoutIcon.png";
+import LogoutIcon1 from "./../../images/logoutIcon.png";
 import Cookies from "universal-cookie";
 import Popover from "@mui/material/Popover";
 import { isSuperAdminAccess } from "../../Screens/dataSaver";
@@ -18,6 +18,9 @@ import { TenantID, GET, POST, PUT } from "./../../Screens/dataSaver";
 import { ErrorToaster } from "./../../utils/toaster";
 import html2canvas from "html2canvas";
 import jwt from "jwt-decode";
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
+import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
+import LogoutIcon from '@mui/icons-material/Logout';
 import axios from "axios";
 
 import style from "./index.module.scss";
@@ -349,7 +352,7 @@ const Navbar = () => {
                 style.activeMenuColor
                 }`}
             >
-              <p>ACTIVE STAFF</p>
+              <p>PRIVILEGED STAFF</p>
             </div>
           </Link>
 
@@ -638,18 +641,21 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
+          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
+          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
           >
-            <p>Logout</p>
+            <div className={`${style.logOutTextStyle}`}>Logout</div>
           </div>
-          <img
-            src={LogoutIcon}
+          {/* <img
+            src={LogoutIcon1}
             alt="print"
             className={style.logoutIcons}
-            onClick={() => handleLogout()}
-          />
+            onClick={logout}
+          /> */}
+          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={logout} style={{ fontSize: 40 }} />
         </div>
       </div>
     </div>

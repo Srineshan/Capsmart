@@ -20,6 +20,7 @@ import { GET } from "../../Screens/dataSaver";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Checkbox from '@mui/material/Checkbox';
+import CommonCheckBox from '../CommonFields/CommonCheckBox';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -55,6 +56,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [anchorElDept, setAnchorElDept] = useState(null);
     const openDept = Boolean(anchorElDept);
     const popoverAnchorDept = useRef(null);
+    const [clickedIndex, setClickedIndex] = useState(null);
 
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
@@ -82,7 +84,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     //       ? JSON.parse(storedCheckedIds)
     //       : tableData?.map(item => item.id)?.filter(id => id != null);
     //   });
-    const [checkedIds, setCheckedIds] = useState([]);
+    // const [checkedIds, setCheckedIds] = useState([]);
     const menuRef = useRef(null);
     const countHoverRef = useRef(null);
     const textHoverRef = useRef(null);
@@ -97,7 +99,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_TYPE: 'Applicant Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
-        APPLICANT_ID: 'Applicant ID'
+        APPLICANT_ID: 'Applicant ID',
+        REAPPOINTMENT_STATUS: 'Reappointment'
     }
 
     const availableSortValueEnum = {
@@ -106,7 +109,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Applicant Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
-        'Applicant ID': 'APPLICANT_ID'
+        'Applicant ID': 'APPLICANT_ID',
+        'Reappointment': 'REAPPOINTMENT_STATUS'
     }
 
     // useEffect(() => {
@@ -177,15 +181,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorEl(null);
     };
 
-    const getCheckedIdsFromSession = useCallback(() => {
-        const storedIds = sessionStorage.getItem('checkedIds');
-        return storedIds ? JSON.parse(storedIds) : [];
-    }, []);
+    // const getCheckedIdsFromSession = useCallback(() => {
+    //     const storedIds = sessionStorage.getItem('checkedIds');
+    //     return storedIds ? JSON.parse(storedIds) : [];
+    // }, []);
 
-    useEffect(() => {
-        // Fetch checked IDs from session storage on component mount
-        setCheckedIds(getCheckedIdsFromSession());
-    }, [sessionStorage.getItem('checkedIds')]);
+    // useEffect(() => {
+    //     // Fetch checked IDs from session storage on component mount
+    //     setCheckedIds(getCheckedIdsFromSession());
+    // }, [sessionStorage.getItem('checkedIds')]);
 
     // useEffect(() => {
     //     // Retrieve the string from session storage
@@ -246,6 +250,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const handleCloseTextWithHover = () => {
         setAnchorElTextWithHover(null);
+    };
+
+    const handleActionClick = (data, index, action) => {
+        if (action?.conditionToShow !== undefined && !eval(action.conditionToShow)) {
+            return;
+        }
+        setClickedIndex(index);
+        action.onClick(data);
+        handleClose();
     };
 
     const id = open ? 'simple-popover' : undefined;
@@ -409,6 +422,33 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const classes = useStyles();
 
+    function checkRoleVisibility(actionsData, userRole) {
+        if (!actionsData.hideForRoles &&
+            !actionsData.hideForRoles2 &&
+            !actionsData.showForRoles &&
+            !actionsData.showForRoles2) {
+            return true;
+        }
+        if (actionsData.hideForRoles?.includes(userRole)) {
+            return false;
+        }
+        if (actionsData.hideForRoles2?.includes(userRole)) {
+            return false;
+        }
+        if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
+            return true;
+        }
+        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
+            return true;
+        }
+        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
+            return false;
+        }
+        return true;
+    }
+
+    const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, userRole));
+
     useEffect(() => {
         if (userDetails !== undefined) {
             setUsers(jwt(userDetails));
@@ -445,7 +485,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
-                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} key={index}>
+                        <div className={` ${style.verticalAlignCenter}`} key={index}>
                             {data === 'CHECKBOX' ? (
                                 <img src={Checkbox} alt="" className={`${style.CheckboxImgStyle} ${style.marginLeft30}`} />
                             ) : data === 'POD Icon' ? (
@@ -472,10 +512,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${index % 2 === 0 && style.alternativeBackgroundColor}`} key={index}>
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
-                                        <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter}`}>
+                                        <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
                                                 <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
@@ -483,7 +523,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                     )
                                         : tableData?.type === "checkbox" ? (
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                <Checkbox
+                                                <CommonCheckBox
                                                     checked={checkedIds?.includes(data.id)}
                                                     onChange={() => handleCheckboxClick(data.id)}
                                                     color="primary"
@@ -527,7 +567,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -586,7 +626,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#0e5197",
+                                                                        backgroundColor: "#06617A",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -612,7 +652,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     onMouseLeave={() => handleCloseIconWithCount()}
                                                     aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
                                                     aria-haspopup="true">
-                                                    <Typography className={`${style.displayInRow} ${style.cursorPointer} ${style.verticalAlignCenter}`}  >
+                                                    <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
                                                         <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
@@ -642,7 +682,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         position: "relative",
                                                                         mt: "10px",
                                                                         "&::before": {
-                                                                            backgroundColor: "#0e5197",
+                                                                            backgroundColor: "#06617A",
                                                                             content: '""',
                                                                             display: "block",
                                                                             position: "absolute",
@@ -772,10 +812,45 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                         -
                                                     </div>
                                             ) : tableData?.type === "action" ? (
-                                                <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
-                                                    {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)
-                                                        : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
-                                                    {showOptions && index === selectedMenuIndex && (
+                                                <div
+                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`}
+                                                    onClick={(visibleActions[0]?.conditionToShow !== undefined && visibleActions?.length === 1)
+                                                        ? eval(visibleActions[0]?.conditionToShow)
+                                                            ? () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }
+                                                            : () => { }
+                                                        : () => { setShowOptions(true); setSelectedMenuIndex(index); setClickedIndex(index); }}
+                                                >
+                                                    {(visibleActions[0]?.conditionToShow !== undefined && visibleActions?.length === 1)
+                                                        ? eval(visibleActions[0]?.conditionToShow)
+                                                            ? (
+                                                                <div
+                                                                    className={`${style.tableDataFontStyle} ${style.cursorPointer} ${visibleActions[0]?.isIndent ? style.marginLeft30 : ''}`}
+                                                                    onClick={() => {
+                                                                        visibleActions[0]?.onClick(data);
+                                                                        handleClose();
+                                                                    }}
+                                                                    key={0}
+                                                                >
+                                                                    {visibleActions[0]?.data}
+                                                                </div>
+                                                            )
+                                                            : (
+                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                            )
+                                                        : visibleActions?.length === 1 ? (
+                                                            <span className={`${style.singleActionText}`}
+                                                                onClick={() => {
+                                                                    visibleActions[0]?.onClick(data);
+                                                                    handleClose();
+                                                                }}
+                                                                key={0}>
+                                                                {visibleActions[0]?.data}
+                                                            </span>
+                                                        ) : (
+                                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                        )
+                                                    }
+                                                    {showOptions && index === selectedMenuIndex && visibleActions?.length > 1 && (
                                                         <Popover
                                                             id={id}
                                                             open={open}
@@ -785,85 +860,22 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 vertical: 'bottom',
                                                                 horizontal: 'left',
                                                             }}
+                                                            anchorReference="anchorPosition"
+                                                            anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1120 }}
                                                         >
-                                                            {/* <div className={style.actionsCard} ref={menuRef}>
-                                                        {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}  onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                            :
-                                                            (<div className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                        )}
-                                                    </div> */}
-                                                            {/* <div className={style.actionsCard} ref={menuRef}>
-                                                            {actions?.map((actionsData, actionsIndex) =>  actionsData?.isParagraph ? 
-                                                                ( <><div className={`${style.divider}`}></div><div className={`${style.isParagraph}` } key={actionsIndex}> {actionsData.data} </div></>
-                                                                ) : actionsData?.conditionToShow !== undefined ? (eval(actionsData?.conditionToShow) && 
-                                                                ( <div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => {actionsData?.onClick(data); handleClose() }} key={actionsIndex}> {actionsData?.data} </div>))
-                                                                : 
-                                                                (<div className={`${style.specificActionCard} ${style.cursorPointer} ${ actionsData?.isIndent ? style.marginLeft30 : "" }`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex} > {actionsData?.data} </div>)
-                                                            )}
-                                                    </div> */}
                                                             <div className={style.actionsCard} ref={menuRef}>
-                                                                {actions?.map((actionsData, actionsIndex) => {
-
-                                                                    // if ((actionsData.hideForRoles?.includes("Staff Manager")) || actionsData.hideForRoles?.includes("Department Head")) {
-                                                                    // return null;
-                                                                    // }
-
-
-                                                                    // console.log("hideForRoles" + actionsData.hideForRoles);
-
-                                                                    const checkRoleVisibility = (actionsData, userRole) => {
-
-                                                                        if (!actionsData.hideForRoles &&
-                                                                            !actionsData.hideForRoles2 &&
-                                                                            !actionsData.showForRoles &&
-                                                                            !actionsData.showForRoles2) {
-                                                                            return true;
-                                                                        }
-
-
-                                                                        if (actionsData.hideForRoles?.includes(userRole)) {
-                                                                            return false;
-                                                                        }
-
-                                                                        if (actionsData.hideForRoles2?.includes(userRole)) {
-                                                                            return false;
-                                                                        }
-
-
-                                                                        if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
-                                                                            return true;
-                                                                        }
-
-                                                                        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
-                                                                            return true;
-                                                                        }
-
-                                                                        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
-                                                                            return false;
-                                                                        }
-
-                                                                        return true;
-                                                                    };
-
-                                                                    // Usage
-                                                                    if (!checkRoleVisibility(actionsData, userRole)) {
-                                                                        return null;
-                                                                    }
-
-
+                                                                {visibleActions?.map((actionsData, actionsIndex) => {
                                                                     return actionsData?.isParagraph ? (
-                                                                        <>
+                                                                        <React.Fragment key={actionsIndex}>
                                                                             <div className={`${style.divider}`}></div>
-                                                                            <div className={`${style.isParagraph}`} key={actionsIndex}>
+                                                                            <div className={`${style.isParagraph}`}>
                                                                                 {actionsData.data}
                                                                             </div>
-                                                                        </>
+                                                                        </React.Fragment>
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
                                                                         eval(actionsData?.conditionToShow) && (
                                                                             <div
-                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                                    }`}
+                                                                                className={`${style.tableDataFontStyle1} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                                 onClick={() => {
                                                                                     actionsData?.onClick(data);
                                                                                     handleClose();
@@ -875,8 +887,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         )
                                                                     ) : (
                                                                         <div
-                                                                            className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ""
-                                                                                }`}
+                                                                            className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                             onClick={() => {
                                                                                 actionsData?.onClick(data);
                                                                                 handleClose();
@@ -888,7 +899,6 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     );
                                                                 })}
                                                             </div>
-
                                                         </Popover>
                                                     )}
                                                 </div>
@@ -908,7 +918,22 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                 //         )} */}
                                                 //     </div>
                                                 // ) 
-                                                : ''
+                                                : (
+                                                    visibleActions?.length === 1 ? (
+                                                        <div
+                                                            className={`${style.singleActionText} ${style.cursorPointer} ${style.buttonStyle}`}
+                                                            onClick={() => {
+                                                                console.log(visibleActions[0]?.onClick);
+                                                                // if (visibleActions[0]?.onClick) {
+                                                                visibleActions[0]?.onClick(data);
+                                                                handleClose();
+                                                                // }
+                                                            }}
+                                                            key={0}
+                                                        >
+                                                            {visibleActions[0]?.data}
+                                                        </div>
+                                                    ) : null)
                                 ))}
                             </div >
                         </>

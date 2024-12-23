@@ -37,7 +37,7 @@ const CommonRadio = ({ onChange, className, value, radioValue, label, required }
                 <Radio
                   sx={{
                     color: "#B3B8BD",
-                    "&.Mui-checked": { color: "#0e5197" },
+                    "&.Mui-checked": { color: "#06617A" },
                   }}
                   size="small"
                   disabled={contractStatus === "ACTIVE" ? true : false}

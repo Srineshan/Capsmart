@@ -1,3 +1,4 @@
+@import "../../../index.scss";
 .helperText {
     color: #fff;
     font: normal normal normal 15px/17px proxima-nova;
@@ -12,5 +13,5 @@
 }
 
 .errorColor {
-    background: #FF6562 0% 0% no-repeat padding-box;
+    background: $statusred 0% 0% no-repeat padding-box;
 }

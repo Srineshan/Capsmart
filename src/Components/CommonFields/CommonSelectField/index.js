@@ -7,7 +7,7 @@ import style from './index.module.scss';
 
 const CommonSelectField = ({ value, onChange, className, firstOptionLabel, firstOptionValue, valueList, labelList, disabledList, disabledSelect, defaultValue, widthValue, menuColor, error, label, required, warning }) => {
     const contractStatus = sessionStorage.getItem('Selected Contract Status');
-    const warningCheck = (value === '' || value === undefined || value === null);
+    const warningCheck = (value === '' || value === undefined || value === null) && value !== firstOptionValue;
     const [touched, setTouched] = useState(false);
     const handleBlur = () => {
         setTouched(true);

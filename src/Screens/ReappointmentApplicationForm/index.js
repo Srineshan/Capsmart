@@ -20,6 +20,9 @@ import AdditionalPrivilegeSelection from './AdditionalPrivilegeSelection';
 import CME from './CME';
 import MedicalDirectives from './MedicalDirectives';
 import MiscellaneousQuestions from './MiscellaneousQuestions';
+import PatientConcern from './PatientConcern';
+import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
+import LoadingScreen from '../../Components/LoadingScreen';
 import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentApplicationForm = () => {
@@ -31,6 +34,7 @@ const ReappointmentApplicationForm = () => {
     const [basicForm, setBasicForm] = useState({})
     // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const canadaData = sessionStorage.getItem('canadaData') !== 'undefined' ? JSON.parse(sessionStorage.getItem('canadaData')) : {};
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -60,14 +64,17 @@ const ReappointmentApplicationForm = () => {
     };
 
     const getPreApplication = async () => {
+        setIsLoading(true)
         const { data: basicForm } = await GET(
             `application-management-service/application/${applicationId}`
         );
         setBasicForm(basicForm)
+        setIsLoading(false);
     }
 
     const StepDisplay = () => {
-        switch (step) {
+        console.log(atob(step), 'btoastring', step)
+        switch (atob(step)) {
             case 'DemographicData':
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
@@ -76,12 +83,16 @@ const ReappointmentApplicationForm = () => {
                 return <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
                 return <ProfessionalConduct basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PATIENT_CONCERN_DISCLOSURE':
+                return <PatientConcern basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+            case 'PRIVILEGE_STATUS_AT_HOSPITAL':
+                return <PrivilegeStatusHospital basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'MedicalHistory':
                 return <MedicalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'CriminalHistory':
                 return <CriminalHistory basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'UploadYourDoc':
-                return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+                return <UploadYourDoc basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />;
             case 'MEDICAL_DIRECTIVES':
                 return <MedicalDirectives basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} />
             case 'CME':
@@ -104,7 +115,11 @@ const ReappointmentApplicationForm = () => {
         }
     };
 
-    console.log(section, step)
+    console.log(section, step, atob(step))
+
+    if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
+        return <LoadingScreen />;
+    }
 
     return (
         <div className={style.screenBackground}>

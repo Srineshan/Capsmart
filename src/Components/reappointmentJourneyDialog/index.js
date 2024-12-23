@@ -16,9 +16,10 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const { applicationId, section, step } = useParams();
     const { logout } = useDescope();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
+    const [errorSchema, setErrorSchema] = useState('');
     const entityName = sessionStorage.getItem('title')
     const navigate = useNavigate()
-    const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory'])
+    const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory', 'PATIENT_CONCERN_DISCLOSURE', 'PRIVILEGE_STATUS_AT_HOSPITAL'])
     const getIsShowSubmitDialog = (value) => {
         setShowSubmitDialog(value);
     }
@@ -28,7 +29,12 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
         await POST(`application-management-service/application/${applicationId}/submit`)
             .then(response => {
                 console.log(response)
-                setShowSubmitDialog(true)
+                if (response?.response?.status !== 422) {
+                    setShowSubmitDialog(true)
+                } else {
+                    // ErrorToaster("Submission failed! Fill all mandatory values.");
+                    setErrorSchema(response?.response?.data)
+                }
                 // SuccessToaster("Application Submitted Successfully");
             })
             .catch((error) => {
@@ -36,12 +42,22 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                 // ErrorToaster("Unexpected Error Submitting Application");
             });
     }
+
+    console.log(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title, errorSchema)
     return (
         <>
             <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
                 <div>
                     <div className={Classes.DIALOG_BODY}>
-                        <div className={style.heading}>{title}</div>
+                        <div className={style.spaceBetween}>
+                            <div className={style.heading}>{title}</div>
+                            {errorSchema !== '' && (
+                                <div className={style.displayInRow}>
+                                    <div className={style.completedItemsTextRed}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
+                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }} />
+                                </div>
+                            )}
+                        </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             <div className={style.verticalAlignCenter}>
                                 <img src={img} alt="step" className={style.journeyImg} />
@@ -61,7 +77,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`}>{data?.title}</div>
-                                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${data?.schemaCategory}`); getIsOpen(false) }} />
+                                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} />
                                                 </div>
                                                 <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
                                             </div>
@@ -109,7 +125,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
             </Dialog >
 
             {showSubmitDialog && (
-                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Reappointment Application Submitted`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of ${entityName} for final consideration.`} />
+                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of ${entityName} for final consideration.`} />
             )}
         </>
     )

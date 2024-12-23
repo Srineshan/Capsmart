@@ -3,7 +3,7 @@ import { Intent, Position, Toaster } from '@blueprintjs/core';
 /** Singleton toaster instance. Create separate instances for different options. */
 export const CommonToaster = Toaster.create({
   position: Position.TOP,
-}); 
+});
 
 export const CommonToasterInstance = () =>
   Toaster.create({

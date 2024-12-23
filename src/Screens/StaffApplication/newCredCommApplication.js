@@ -16,6 +16,7 @@ import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import UserLogo from "../../images/defaultUserLogo.jpg";
 import DataStatusIcon from './../../images/dqStatus.png';
 import DocumentIcon from '../../images/document.png';
 import EditBlue from "../../images/editBlue.png";
@@ -43,7 +44,7 @@ const NewCredCommApplication = ({
   isEditable,
   selectedTab,
   getCredCommApplicationView,
-//   approveView 
+  //   approveView 
 }) => {
   console.log('contract Type', contractType)
   const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
@@ -82,7 +83,7 @@ const NewCredCommApplication = ({
     fieldName: "",
     empty: false,
   });
-  
+
   const [selectedFileURL, setSelectedFileURL] = useState("");
   const [priorContractId, setPriorContractId] = useState("");
   const [showAlert, setShowAlert] = useState(false);
@@ -213,7 +214,7 @@ const NewCredCommApplication = ({
       setFormSchema(form?.schema)
     }
   }
-   
+
 
   const getTabDataStatus = () => {
     // let temp = validateTabs(contractSelected?.id);
@@ -316,27 +317,27 @@ const NewCredCommApplication = ({
     getPreApplication();
   }
 
- 
+
 
   const approveView = async () => {
     const roleMap = {
-        'level-2': "Department Head",
-        'level-1': "Credentialing Committee",
-        'mac': "Advisory Committee",
-        'bod': "Board"
-      };
-      console.log("roleMap" + roleMap);
-      
+      'level-2': "Department Head",
+      'level-1': "Credentialing Committee",
+      'mac': "Advisory Committee",
+      'bod': "Board"
+    };
+    console.log("roleMap" + roleMap);
 
-      const role = roleMap[selectedTab];
-      console.log("roleeeeee1" + role);
-      
 
-        const { data: basicApproval } = await GET(
-          `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
-        );
-        setCredApproval(basicApproval)  
-        console.log("basicApproval" + JSON.stringify(credApproval));     
+    const role = roleMap[selectedTab];
+    console.log("roleeeeee1" + role);
+
+
+    const { data: basicApproval } = await GET(
+      `application-management-service/application/${applicationId}/approvalRequiredForms?role=${role}`
+    );
+    setCredApproval(basicApproval)
+    console.log("basicApproval" + JSON.stringify(credApproval));
   }
 
   const handleStepsVerify = async (formId) => {
@@ -397,10 +398,10 @@ const NewCredCommApplication = ({
     let role;
     let notes;
 
-    if(selectedTab === 'level-2') {
+    if (selectedTab === 'level-2') {
       role = "Department Head";
       notes = "Send"
-    } else if  (selectedTab === 'level-1') {
+    } else if (selectedTab === 'level-1') {
       role = "Credentialing Committee";
       notes = "Send"
     } else if (selectedTab === 'mac') {
@@ -413,11 +414,11 @@ const NewCredCommApplication = ({
       role = "Chief Of Staff";
       notes = "Send"
     }
-  console.log("selectedtabbbbbbbb"+toString.selectedTab);
-  
+    console.log("selectedtabbbbbbbb" + toString.selectedTab);
+
     let temp = {
-      role  : role,
-      notes : notes
+      role: role,
+      notes: notes
     };
 
     const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-1' || selectedTab === 'mac' || selectedTab === 'bod' ? true : false;
@@ -426,7 +427,7 @@ const NewCredCommApplication = ({
       .then(response => {
         console.log('success')
         onClose()
-      })  
+      })
       .catch((error) => {
         console.log(error)
       });
@@ -835,7 +836,7 @@ const NewCredCommApplication = ({
           <img
             src={CrossPink}
             alt="cross"
-            className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+            className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
             onClick={() => { onClose() }}
           />
         </div>
@@ -845,9 +846,13 @@ const NewCredCommApplication = ({
               <div className={`${style.spaceBetween}`}>
                 <div className={`${style.displayInRow}`} >
                   <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
-                    <div className={`${style.photoCardStyle}`}>
-                      <span>Photo</span>
-                    </div>
+
+                    <img
+                      src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                      alt="Profile Picture"
+                      className={style.profileImage}
+                    />
+
                   </div>
                   <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
                     <div className={`${style.marginTop10}`}>
@@ -918,13 +923,13 @@ const NewCredCommApplication = ({
 
             {/* //Table */}
             <div>
-                {/* <div className= {`${style.tableHeaderGridStyleCred}`}>
+              {/* <div className= {`${style.tableHeaderGridStyleCred}`}>
                 <div className={`${style.overallStatus}`}>Overall Status Of Application</div>
                 <div className={`${style.greenDotStyle} ${style.marginTop20} ${style.cursorPointer}`} 
                 // onClick={approveView}
                 ></div>
                 </div> */}
-                
+
               <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred} `}>
                 {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
                   <div className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}></div>
@@ -1123,37 +1128,38 @@ const NewCredCommApplication = ({
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.tableDataFontStyleCred}`}>{data?.description}</div>
                         </div>
-                       
+
                         {expand?.status && expand?.index === index + 1 && (
-                            <>
-                                {credApproval?.filter(
-                                (newData) =>{console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                   return newData.schemaId === data.id
-                                }
-                                )[0]?.approvalRequired === true ? (
-                                <>
-                                    {form?.forms[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                        <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                        >
-                                        Approve
-                                        </div>
+                          <>
+                            {credApproval?.filter(
+                              (newData) => {
+                                console.log("newData.schema:", newData.schemaId);
+                                console.log("data.id:", data.id);
+                                return newData.schemaId === data.id
+                              }
+                            )[0]?.approvalRequired === true ? (
+                              <>
+                                {form?.forms[index]?.status !== "APPROVED" ? (
+                                  <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                    <div
+                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                    >
+                                      Approve
                                     </div>
-                                    ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
+                                  </div>
+                                ) : (
+                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                      Approved
                                     </div>
-                                    )}
-                                </>
-                                ) : (""
+                                  </div>
                                 )}
-                            </>
+                              </>
+                            ) : (""
                             )}
+                          </>
+                        )}
                         <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                           <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                             {
@@ -1390,7 +1396,7 @@ const NewCredCommApplication = ({
                     <img
                       src={CrossPink}
                       alt="cross"
-                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft20} `}
+                      className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
                       onClick={() => { setShowDocVerifyDialog(false) }}
                     />
                   </div>

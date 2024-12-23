@@ -64,10 +64,11 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
     const [applicationData, setApplicationData] = useState();
     const [openIndex, setOpenIndex] = useState();
     const [selectedPrivilegeData, setSelectedprivilegeData] = useState([]);
-    const [isPrivilegeCategoryChanging, setIsPrivilegeCategoryChanging] = useState(false)
+    const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false)
     const [privilegeCategories, setPrivilegeCategories] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState('');
+    const [isUpdateClicked, setIsUpdateClicked] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const navigate = useNavigate()
     const [formIndex, setFormIndex] = useState();
@@ -230,7 +231,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
             .catch((error) => {
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        // if (isPrivilegeCategoryChanging) {
+        // if (isAdditionalPrivilegeCategoryChanging) {
         //     let data = basicForm;
         //     data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = privilegeCategories?.filter(data => data?.id === selectedPrivilegeCategory)[0]?.category
         //     data.basicDetails.departmentSpecialty.department = departmentList?.filter(data => data?.id === selectedDepartment)[0]?.departmentName?.name
@@ -708,7 +709,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
             </div> */}
             <div className={`${style.privilegeCard} ${style.marginTop}`}>
                 <div>
-                    <div className={style.privilegeHeading}><strong>ADDITIONAL PRIVILEGE REQUESTED</strong></div>
+                    <div className={style.privilegeHeading}><strong>ADDITIONAL PRIVILEGES REQUESTED</strong></div>
                     <div className={style.twoCol}>
                         <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
                             <div className={style.privilegeHeading}>Department / Division or specialty</div>
@@ -751,9 +752,9 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
             </div>
             <div className={`${style.cardTitle} ${style.marginTop}`}>
-                Do you want to update / change / request your additional privileges?
+                Do you want to update / change or request your additional privileges?
             </div>
-            {!isPrivilegeCategoryChanging && (
+            {!isAdditionalPrivilegeCategoryChanging && (
                 <>
                     {isEdit ? (
                         <div
@@ -761,7 +762,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         >
                             <div
                                 className={`${style.reappointmentButtonOutlined}`}
-                                onClick={() => setIsPrivilegeCategoryChanging(true)}
+                                onClick={() => setIsAdditionalPrivilegeCategoryChanging(true)}
                             >
                                 Yes
                             </div>
@@ -769,27 +770,59 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                 className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
                             >
-                                NO
+                                No
                             </div>
                         </div>
                     ) : (
                         <>
-                            <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as  <span className={style.noText}>No</span></strong> </div>
-                            <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
-                            >
-                                <div
-                                    className={`${style.reappointmentButtonEdit}`}
-                                    onClick={() => setIsEdit(true)}
-                                >
-                                    Edit
-                                </div>
-                            </div>
+                            {isUpdateClicked ? (
+                                <>
+                                    <div
+                                        className={`${style.markedAsText} ${style.marginTop}`}
+                                    >
+                                        <strong>
+                                            Marked as{" "}
+                                            <span className={style.yesText}>Yes</span>
+                                        </strong>{" "}
+                                    </div>
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonEdit}`}
+                                            onClick={() => setIsEdit(true)}
+                                        >
+                                            Edit
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div
+                                        className={`${style.markedAsText} ${style.marginTop}`}
+                                    >
+                                        <strong>
+                                            Marked as{" "}
+                                            <span className={style.noText}>No</span>
+                                        </strong>{" "}
+                                    </div>
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                                    >
+                                        <div
+                                            className={`${style.reappointmentButtonEdit}`}
+                                            onClick={() => setIsEdit(true)}
+                                        >
+                                            Edit
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
                 </>
             )}
-            {isPrivilegeCategoryChanging && (
+            {isAdditionalPrivilegeCategoryChanging && (
                 <div className={`${style.privilegeCard} ${style.marginTop}`}>
                     <>
                         <div className={style.marginTop}>
@@ -832,13 +865,13 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                     >
                         <div
                             className={`${style.reappointmentButton} ${style.marginLeft}`}
-                            onClick={() => { setIsPrivilegeCategoryChanging(false); handleSubmit() }}
+                            onClick={() => { setIsAdditionalPrivilegeCategoryChanging(false); handleSubmit() }}
                         >
                             UPDATE
                         </div>
                         <div
                             className={`${style.reappointmentButtonOutlined}`}
-                            onClick={() => setIsPrivilegeCategoryChanging(false)}
+                            onClick={() => setIsAdditionalPrivilegeCategoryChanging(false)}
                         >
                             CANCEL
                         </div>
@@ -850,10 +883,12 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                 </div>
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    <div className={`${style.stickyContainer}`}>
                     <div className={`${style.saveInProgress} ${style.marginTop}`}>SAVE IN PROGRESS</div>
                     <div className={style.twoColForButton}>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />

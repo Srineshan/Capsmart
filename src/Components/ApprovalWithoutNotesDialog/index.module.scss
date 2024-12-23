@@ -81,8 +81,8 @@
 
 
 .crossStyle {
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
 }
 
 .cursorPointer {
@@ -208,7 +208,7 @@
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
   letter-spacing: 0px;
-  color: #FEC106;
+  color: $statusyellow;
   opacity: 1;
 }
 
@@ -254,7 +254,7 @@
   text-align: left;
   font: normal normal bold 24px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   opacity: 1;
 }
 
@@ -262,7 +262,7 @@
   text-align: left;
   font: normal normal bold 24px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   opacity: 1;
   margin-left: 10px;
 }
@@ -271,7 +271,7 @@
   text-align: center;
   font: normal normal bold 14px/18px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   opacity: 0.8;
 }
 
@@ -279,7 +279,7 @@
   text-align: left;
   font: normal normal medium 20px/24px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   text-transform: uppercase;
   opacity: 0.9;
 }
@@ -300,7 +300,7 @@
   text-align: left;
   font: normal normal medium 20px/24px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   text-transform: capitalize;
   opacity: 1;
   margin-left: 15px;
@@ -309,7 +309,7 @@
 .notesBorderStyle {
   border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #173790 !important;
+  border: 0.4000000059604645px solid $primarycolor !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;
@@ -319,9 +319,9 @@
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal 600 22px/27px Proxima Nova;
+  font: normal normal normal 15px / 17px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: #171a1a;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -330,7 +330,7 @@
   text-align: left;
   font: normal normal medium 18px/25px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   opacity: 0.7;
   padding: 10px;
   line-height: 1.5;
@@ -364,7 +364,7 @@
 }
 
 // .reviewButton {
-//   background-color: #173790;
+//   background-color: $primarycolor;
 //   color: white;
 //   font-weight: 600;
 //   padding: 10px 20px;
@@ -395,7 +395,7 @@
 
 .customCheckboxLabel {
   font-size: 16px;
-  color: #0e5197;
+  color: $primarycolor;
   font-weight: bold;
   margin-left: 8px;
 }
@@ -422,10 +422,177 @@
   text-align: left;
   font: normal normal bold 22px/34px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textgrey;
   opacity: 1;
 }
 
 .editorcontainer {
   height: 300px;
+}
+
+.rejectionBorderStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D14;
+  border: 0.4px solid #52575D14;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.declineBorderStyle {
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #0F0B3129;
+  border-radius: 8px;
+  padding: 15px 0px;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+
+.displayInRowCenter {
+  align-items: center;
+}
+
+.rejectionHeadingTextStyle {
+  text-align: left;
+  font: normal normal bold 16px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.rejectionTextStyle {
+  text-align: left;
+  font: normal normal medium 18px/34px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.rejectionSubHeadingTextStyle {
+  text-align: left;
+  font: normal normal bold 16px Proxima Nova;
+  letter-spacing: 0px;
+  color: #454747;
+  opacity: 1;
+}
+
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.marginBottom10 {
+  margin-bottom: 10px !important;
+}
+
+.twoColumnGridInner {
+  display: grid;
+  grid-template-columns: 40% 40%;
+  grid-gap: 20px;
+  justify-items: start;
+}
+
+.rejectionTextStyle1 {
+  text-align: left;
+  font: normal normal medium 20px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginTop5 {
+  margin-top: 5px !important;
+}
+
+.alignCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.uploadBorderStyle {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
+.uploadTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: black;
+  opacity: 1;
+  padding: 5px;
+}
+
+.referenceCardStyle {
+  background: #dddddf 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 0.9;
+  padding: 10px;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20{
+  margin-bottom: 20px;
+}
+
+.marginLeft2{
+  margin-left: 4px;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
 }

@@ -29,6 +29,8 @@ import Speciality from "./Screens/ReferenceList/speciality/Speciality";
 import AcknowledgementReview from "./Screens/ApplicationForm/AcknowledgementReview";
 import ApplicantProcessingCheckList from "./Screens/ReferenceList/applicantCheckList/ApplicantProcessingCheckList";
 import { PrivilegeListManager } from "./Screens/ReferenceList/privilegeListManager/PrivilegeListManager";
+import PaymentList from "./Screens/ReferenceList/paymentList/paymentList";
+import SettingList from "./Screens/ReferenceList/setting/settingList";
 
 const ReportType = React.lazy(() => import("./Screens/Reports/reportType"));
 const ReportTypeOverview = React.lazy(() =>
@@ -257,12 +259,16 @@ const Thankyou = React.lazy(() =>
 );
 const ApplicationForm = React.lazy(() => import("./Screens/ApplicationForm"));
 const ReappointmentApplicationForm = React.lazy(() => import("./Screens/ReappointmentApplicationForm"));
+const LocumApplicationForm = React.lazy(() => import("./Screens/LocumApplicationForm"));
 const MedicalDirectivesAttest = React.lazy(() => import("./Screens/ReappointmentApplicationForm/MedicalDirectives/MedicalDirectivesAttest"));
 const ApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ApplicationForm/ApplicationFormRequirement")
 );
 const ReappointmentApplicationFormRequirement = React.lazy(() =>
   import("./Screens/ReappointmentApplicationForm/ReappointmentApplicationFormRequirement")
+);
+const LocumApplicationFormRequirement = React.lazy(() =>
+  import("./Screens/LocumApplicationForm/LocumApplicationFormRequirement")
 );
 const ApplicationRequest = React.lazy(() =>
   import("./Screens/ApplicationRequest")
@@ -288,7 +294,7 @@ const App = ({ props }) => {
   const sessionToken = getSessionToken();
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
-  const [title, setTitle] = useState("CAPSmart");
+  const [title, setTitle] = useState("CAPManager");
   const [entityId, setEntityId] = useState("");
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [entityDetails, setEntityDetails] = useState();
@@ -1108,6 +1114,14 @@ const App = ({ props }) => {
                   path="/referenceList/generalConfigurationForCustomers"
                   element={<GeneralConfigurationForCustomers />}
                 />
+                <Route
+                  path="/referenceList/paymentList"
+                  element={<PaymentList />}
+                />
+                <Route
+                  path="/referenceList/settingList"
+                  element={<SettingList />}
+                />
                 <Route path="/entitySitePortal" element={<Home />} />
                 <Route path="/thankyou" element={<Thankyou />} />
                 <Route path="/reportType" element={<ReportType />} />
@@ -1132,12 +1146,20 @@ const App = ({ props }) => {
                   element={<MedicalDirectivesAttest />}
                 />
                 <Route
+                  path="/locumApplicationForm/:applicationId/:section/:step"
+                  element={<LocumApplicationForm />}
+                />
+                <Route
                   path="/applicationForm/:applicationId"
                   element={<ApplicationFormRequirement />}
                 />
                 <Route
                   path="/reappointmentApplicationForm/:applicationId"
                   element={<ReappointmentApplicationFormRequirement />}
+                />
+                <Route
+                  path="/locumApplicationForm/:applicationId"
+                  element={<LocumApplicationFormRequirement />}
                 />
                 <Route
                   path="/applicationRequest"
@@ -1156,16 +1178,16 @@ const App = ({ props }) => {
                   element={<CreateStaffReapplication />}
                 />
                 <Route path="/loginPage" element={<DescopeLoginDialog />} />
-              </Routes>
+              </Routes >
             </>
           ) : (
             <Routes>
               <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
             </Routes>
           )}
-        </div>
-      </Suspense>
-    </BrowserRouter>
+        </div >
+      </Suspense >
+    </BrowserRouter >
   );
 };
 

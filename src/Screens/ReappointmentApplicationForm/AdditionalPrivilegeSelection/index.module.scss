@@ -22,6 +22,23 @@
     grid-gap: 20px;
 }
 
+.stickyContainer {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
+    bottom: 20px;
+    z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: #EDEDF3 0% 0% no-repeat padding-box;
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
+    // filter: blur(5px); 
+    // box-shadow: 0 0 10px 5px #06617A;
+}
+
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -387,7 +404,7 @@
 }
 
 .fileDisplayText {
-    font: normal normal normal 15px/20px proxima-nova;
+    font: normal normal normal $navbartext proxima-nova;
     color: #2C2C2C;
 }
 
@@ -512,7 +529,7 @@
 
 .markedAsText {
     text-align: left;
-    font: italic normal medium 16px/24px proxima-nova;
+    font: italic normal medium $tabledatatext2 proxima-nova;
     letter-spacing: 0px;
     color: #1D2437;
 }
@@ -531,4 +548,9 @@
 .noText {
     font: italic normal bold 18px/24px proxima-nova;
     color: #FF5555;
+}
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
 }

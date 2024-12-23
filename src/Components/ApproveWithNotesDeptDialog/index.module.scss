@@ -4,11 +4,9 @@
   text-align: left;
   font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: $primarycolor
-;
+  color: #06617A;
   text-transform: capitalize;
   opacity: 1;
-
 }
 
 .marginTop {
@@ -30,9 +28,8 @@
 
 .twoColumnGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr 1fr;
   grid-gap: 20px;
-  align-items: center;
 }
 
 .filterType {
@@ -51,7 +48,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 50% !important;
+  width: 80% !important;
 }
 
 .dialogBody {
@@ -63,6 +60,12 @@
 
 .fullWidth {
   width: 100% !important;
+  margin-top: -5px !important;
+}
+
+.fullWidth1 {
+  width: 100% !important;
+  // margin-top: 16px !important;
 }
 
 .eSignDialogBackground {
@@ -79,8 +82,8 @@
 
 
 .crossStyle {
-  height: 18px;
-  width: 18px;
+  height: 24px;
+  width: 24px;
 }
 
 .cursorPointer {
@@ -207,7 +210,7 @@ opacity: 1;
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
   letter-spacing: 0px;
-  color: #FEC106;
+  color: $statusyellow;
   opacity: 1;
 }
 
@@ -240,10 +243,10 @@ margin-top: 5px;
 
 .cardStyle{
 
-  border: 1px solid var(---7165e3);
+border: 1px solid var(---7165e3);
 background: #DBD8FA 0% 0% no-repeat padding-box;
 box-shadow: 0px 3px 18px #0F0B3129;
-border: 1px solid #173790;
+border: 1px solid $primarycolor;
 border-radius: 8px;
 opacity: 0.5;
 }
@@ -309,7 +312,7 @@ opacity: 0.5;
 .notesBorderStyle{
   border: 0.4px solid var(---7165e3) ;
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #173790 !important;
+  border: 0.4000000059604645px solid $primarycolor !important;
   border-radius: 4px;
   opacity: 1;
   width: 100%;
@@ -319,11 +322,10 @@ opacity: 0.5;
 .commentsNotesHeadingFontStyle{
 
   text-align: left;
-font: normal normal 600 22px/27px Proxima Nova;
-letter-spacing: 0px;
-color: #52575D;
-text-transform: capitalize;
-opacity: 1;
+  font: normal normal normal 15px / 17px proxima-nova;
+  letter-spacing: 0px;
+  color: #171a1a;
+  opacity: 1;
 }
 
 .commentsNotesFontStyle{
@@ -363,8 +365,11 @@ text-align: center;
   opacity: 1;
 }
 
+.fullWidth {
+  width: 100%;
+}
 // .reviewButton {
-//   background-color: #173790;
+//   background-color: $primarycolor;
 //   color: white;
 //   font-weight: 600;
 //   padding: 10px 20px;
@@ -395,7 +400,7 @@ text-align: center;
 
 .customCheckboxLabel {
   font-size: 16px;
-  color: #0e5197;
+  color: $primarycolor;
   font-weight: bold;
   margin-left: 8px;
 }
@@ -424,4 +429,85 @@ font: normal normal bold 22px/34px Proxima Nova;
 letter-spacing: 0px;
 color: #52575D;
 opacity: 1;
+}
+
+.uploadBorderStyle {
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
+.uploadTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: black;
+  opacity: 1;
+  padding: 5px;
+}
+
+.referenceCardStyle {
+  border: 1px solid var(---7165e3);
+  background: #F5F5F8 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 0.9;
+  padding: 10px;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20{
+  margin-bottom: 20px;
+}
+
+.marginLeft2{
+  margin-left: 2px;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
 }

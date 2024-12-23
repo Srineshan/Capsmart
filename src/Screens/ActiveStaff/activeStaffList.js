@@ -8,7 +8,7 @@ import React, {
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import TextSnippetOutlinedIcon from "@mui/icons-material/TextSnippetOutlined";
 import NoteAltOutlinedIcon from "@mui/icons-material/NoteAltOutlined";
-import CapSmartTransparent from "./../../images/capSmartTransparent.png";
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import ActionStaffTiles from "./activeStaffTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -55,7 +55,7 @@ const ActiveStaffList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [sortField, setSortField] = useState("DEFAULT");
-  const [sortValue, setSortValue] = useState("ASCENDING");
+  const [sortValue, setSortValue] = useState("DESCENDING");
 
   const permanentHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "Docs", "Notes", "Last Updated", "Action"];
   const locumHeaderValues = ["", "Staff Name", "Staff ID", "Staff Type", "CR", "COS", "CC", "CC Date", "Last Updated", "Action"];
@@ -73,6 +73,8 @@ const ActiveStaffList = ({
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
     useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   const getApplicationRejectionDialog = (value) => {
     setShowApplicationRejectionDialog(value);
@@ -96,11 +98,16 @@ const ActiveStaffList = ({
 
   useEffect(() => {
     getActiveUserData(selectedTab);
-  }, [selectedTab]);
+  }, [selectedTab,sortField, sortValue,page,totalCount]);
 
   const getReFetchMetaData = (value) => {
     setReFetchMetaData(value);
   };
+
+  const getSelectedPage = (value) => {
+    setPage(value);
+}
+
 
   const reappointmentApplication = async (id) => {
     await POST(`application-management-service/staff/${id}/reappoint`)
@@ -121,10 +128,11 @@ const ActiveStaffList = ({
       const response = await GET(
         // `application-management-service/application/workflowUser?tab=${selectedTab}`
         //  `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=REAPPOINTMENT`
-        `application-management-service/staff?type=${selectedTab}&status=ACTIVE`
+        `application-management-service/staff?type=${selectedTab}&status=ACTIVE&limit=${10}&offset=${page - 1}`
       );
-      console.log("Application data", response?.data);
-      setTableData(response?.data);
+      console.log("Application data", response?.data?.staffs);
+      setTableData(response?.data?.staffs);
+      setTotalCount(response?.data?.numberOfElements);
       return response?.data || [];
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -348,14 +356,14 @@ const ActiveStaffList = ({
       // );
 
       // if (data?.documents?.verifiedCount === data?.documents?.uploadedCount) {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#00C07F` }}/>);
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#14B15A` }}/>);
       // } else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }}/>);
       // } else {
-      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }}/>);
+      //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }}/>);
       // }
       docsIcon.push(
-        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FEC106` }} />
+        <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#FFCA27` }} />
       );
       // dataStatus.push(data?.dataStatus || "green");
       // dataStatus.push(data?.dataStatus === "REVIEW_INPROGRESS"
@@ -381,11 +389,11 @@ const ActiveStaffList = ({
       // notesHoverText.push(notesHoverTextArray);
 
       // if (data?.tasks?.completedCount === data?.tasks?.totalCount) {
-      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#00C07F` }}/>);
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#14B15A` }}/>);
       // } else if (data?.tasks?.completedCount === 0) {
       //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }}/>);
       // } else {
-      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }}/>);
+      //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FFCA27` }}/>);
       // }
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
@@ -765,12 +773,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardAppointment ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardAppointment(!showCardAppointment)} />
@@ -783,13 +791,13 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #14B15A",
                           color: "#14B15A"
                         }}> +1 Day</span> </p> <span>
-                        <PermIdentityIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PermIdentityIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -800,13 +808,13 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Dave FILIP <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
-                          border: "0.4px solid #FEC106",
-                          color: "#FEC106"
+                          border: "0.4px solid #FFCA27",
+                          color: "#FFCA27"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -817,13 +825,13 @@ const ActiveStaffList = ({
                     <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginRight10}`}>
                       <p className={style.staffPragraphStyle}>Anna KARIN <span style={{
                         color: "#2C2C2C",
-                        font: "normal normal bold 16px/24px proxima-nova"
+                        font: "normal normal bold $tabledatatext2 proxima-nova"
                       }}> (Doctor) </span> <span className={style.dayTextStyle}
                         style={{
                           border: "0.4px solid #F94848",
                           color: "#F94848"
                         }}> +1 Day</span> </p> <span>
-                        <PublicIcon sx={{ fontSize: 20, color: '#0e5197
+                        <PublicIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', marginRight: "5px" }} />
@@ -841,12 +849,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardCompletion ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardCompletion(!showCardCompletion)} />
@@ -863,7 +871,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 15 Days</p>
                       </div>
-                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={6} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -880,7 +888,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Jane DOE</div> <span className={style.textStyleProgress}> (Nurse) </span></div>
                         <p className={style.progressTopText}>Due in 2 Days</p>
                       </div>
-                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={100} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -897,7 +905,7 @@ const ActiveStaffList = ({
                           <div className={style.marginLeft10}>Kate SLATE</div> <span className={style.textStyleProgress}> (Doctor) </span></div>
                         <p className={style.progressTopText}>Due in 7 Days</p>
                       </div>
-                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#0e5197
+                      <ProgressBar completed={60} isLabelVisible={false} height='5px' bgColor='#06617A
 
 
 ' baseBgColor="#E9E9F0" className={style.marginLeft20} />
@@ -915,12 +923,12 @@ const ActiveStaffList = ({
                 </div>
                 <div className={`${style.marginLeft10} `} >
                   {!showCardDetails ? (
-                    <AddIcon sx={{ fontSize: 20, color: '#0e5197
+                    <AddIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
                   ) : (
-                    <RemoveIcon sx={{ fontSize: 20, color: '#0e5197
+                    <RemoveIcon sx={{ fontSize: 20, color: '#06617A
 
 
 ', cursor: 'pointer' }} onClick={() => setShowCardDetails(!showCardDetails)} />
@@ -966,7 +974,7 @@ const ActiveStaffList = ({
                 <SearchOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -977,7 +985,7 @@ const ActiveStaffList = ({
                 <PrintOutlinedIcon
                   sx={{
                     fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#0e5197",
+                    color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
               </div>
@@ -989,7 +997,7 @@ const ActiveStaffList = ({
               <div
                 className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
               >
-                <CircularProgress sx={{ color: "#0e5197" }} />
+                <CircularProgress sx={{ color: "#06617A" }} />
               </div>
             ) : (
               <div ref={componentRef}>
@@ -1009,6 +1017,9 @@ const ActiveStaffList = ({
                     onClickFunction={() => { }}
                     getHandleSort={getHandleSort}
                     sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                    getSelectedPage={getSelectedPage}
+                    totalCount={totalCount}
+                    page={page}
                   />
                 </div>
               </div>
@@ -1018,16 +1029,16 @@ const ActiveStaffList = ({
       </div>
       <div className={style.spaceBetween}>
         <div className={`${style.displayInRow}`}>
-          <p className={`${style.poweredBy} ${style.marginTop10}`}>
+          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by
-          </p>
+          </p> */}
           <img
-            src={CapSmartTransparent}
+            src={HapiCare}
             alt="footer"
             className={`${style.footerIconStyle} ${style.marginLeft10}`}
           />
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} Hapicare</p>
+        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
       </div>
     </div>
   );

@@ -210,15 +210,15 @@ body {
 }
 
 .green {
-    color: #00C07F;
+    color: $statusgreen;
 }
 
 .yellow {
-    color: #FEC106;
+    color: $statusyellow;
 }
 
 .red {
-    color: #FF6562;
+    color: $statusred;
 }
 
 .blue {
@@ -344,7 +344,7 @@ body {
 }
 
 .blockedButton {
-    background: #FF6562 0% 0% no-repeat padding-box !important;
+    background: $statusred 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid #B3B8BD;
     border-radius: 6px;
     opacity: 0.75;
@@ -530,7 +530,7 @@ body {
 }
 
 .tableHeaderFontStyle {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -540,7 +540,7 @@ body {
 }
 
 .multipleContractorTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -552,7 +552,7 @@ body {
 }
 
 .documentProofTextWidth {
-    font: normal normal bold 13px/17px proxima-nova;
+    font: normal normal bold $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -563,7 +563,7 @@ body {
 }
 
 .tableDataFontStyle {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -573,7 +573,7 @@ body {
 }
 
 .multipleDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -584,7 +584,7 @@ body {
 }
 
 .documentProofDataTextWidth {
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
@@ -598,7 +598,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #00C07F;
+    background-color: $statusgreen;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -607,7 +607,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FEC106;
+    background-color: $statusyellow;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -616,7 +616,7 @@ body {
     height: 6px;
     width: 6px;
     border-radius: 50%;
-    background-color: #FF6562;
+    background-color: $statusred;
     margin-top: 6px;
     margin-right: 5px;
 }
@@ -704,7 +704,7 @@ body {
 
 .extensionStyle {
     text-align: left;
-    font: normal normal bold 15px/13px proxima-nova;
+    font: normal normal bold $usernametext proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
 }
@@ -716,7 +716,7 @@ body {
 
 .extensionOptionsStyle {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -797,7 +797,7 @@ body {
 
 .contractId {
     text-align: left;
-    font: normal normal medium 15px/13px proxima-nova;
+    font: normal normal medium $usernametext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: uppercase;
@@ -859,7 +859,7 @@ body {
 
 .extentionLableStyle {
     text-align: left;
-    font: normal normal normal 13px/17px proxima-nova;
+    font: normal normal normal $tabledatatext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -946,13 +946,13 @@ body {
 }
 
 .crossStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     margin-bottom: 15px;
     cursor: pointer;
 }
 
 .trashStyle {
-    color: linear-gradient($primarycolor, #FF6562) !important;
+    color: linear-gradient($primarycolor, $statusred) !important;
     cursor: pointer;
     position: relative;
     bottom: -20px;
@@ -1020,7 +1020,7 @@ select {
 .contractCards:hover {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }
@@ -1051,7 +1051,7 @@ select {
 .selectedContractCard {
     background:
         linear-gradient(white, white) padding-box,
-        linear-gradient(to bottom, $primarycolor, #FF6562) border-box;
+        linear-gradient(to bottom, $primarycolor, $statusred) border-box;
     border-radius: 20px;
     border: 2px solid transparent;
 }

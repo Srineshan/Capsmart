@@ -10,6 +10,10 @@
     width: 85% !important;
 }
 
+.padding {
+    padding: 20px;
+}
+
 .loginDialogBackground {
     background: $primarycolor 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
@@ -102,7 +106,6 @@
     font: normal normal normal 20px/26px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
-    padding: 0 60px 0 0;
 }
 
 .loginDescription {

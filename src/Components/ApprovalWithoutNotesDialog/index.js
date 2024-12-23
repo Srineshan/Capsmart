@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT ,POST, TenantID} from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -12,13 +12,19 @@ import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import Dropzone from "react-dropzone";
+import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import DescriptionIcon from '@mui/icons-material/Description';
+import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import LoadingScreen from "../LoadingScreen";
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
+  const [logDetails, setLogDetails] = useState([]);
   const [userRoleComments, setUserRoleComments] = useState('');
   const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false });
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -35,18 +41,80 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
-
+  const [entity, setEntity] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [uploadFileData, setUploadFileData]= useState('');
+  const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  };
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
   //   }
   // }, [dateFormat]);
 
+  useEffect(() => {
+      getApplicationEntity();
+      getLog();;
+    }, [applicationType]);
+
   const onClicksignFunction = () => {
     setTodayDate();
     handleSignatureClick();
   };
 
+    const changeHandler = async (event) => {
+        console.log("Event received:", event);
+        setIsLoading(true);
+        const filesArray = Array.from(event);
+        console.log("Converted files array:", filesArray);
+        setFiles(filesArray);
+      
+        const formData = new FormData();
+        let fileNameArray = [];
+      
+        filesArray.forEach(file => {
+          const fileInfo = {
+            "filePath": file.path || '', 
+            "fileName": file.name,
+            "fileURL": "",  
+            "fileType": file.type,
+            "classification": "",  
+            "verified": true,     
+            "valid": true         
+          };
+          fileNameArray.push(fileInfo);
+          formData.append('documents', file);
+        });
+      
+        const blob = new Blob([JSON.stringify(fileNameArray)], {
+          type: "application/json"
+        });
+        formData.append('files', blob);
+      
+        try {
+          const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+          console.log("API Response:", response);
+          SuccessToaster('File Uploaded Successfully');
+          console.log("Response data:", response?.data);
+          setUploadFileData(response?.data)
+      
+          setIsLoading(false);
+          return response?.data;
+        } catch (error) {
+          ErrorToaster('File Upload Failed');
+          console.error("Error:", error);
+          setIsLoading(false);
+          return null;
+        }
+      };  
 
   const setTodayDate = () => {
     const today = new Date();
@@ -89,10 +157,17 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     setName(`${userData?.name?.firstName} ${userData?.name?.lastName}`);
   }
 
+  const getApplicationEntity = async () => {
+    const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
+    setEntity(basicFormEntity);
+  };
+
   const getApplication = async () => {
     try {
+      setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${id}`);
       setFormDetails(basicForm);
+      setIsLoadingImage(false);
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -116,7 +191,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     if (userRole.includes('Chief Of Staff')) {
       setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && isSigned);
-    } else if (userRole.includes('Credentialing Committee')) {
+    } else  {
       setIsApproveEnabled(isChecked.isChecked2 && isSigned);
     }
   };
@@ -130,53 +205,108 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     getApplicationMoveToNext(true);
   }
 
-  const handleApplicationApprove = async () => {
-    let role;
-    let notes = { userRoleComments }
-    let isDelegate = true; // Default value for isDelegate
-    // notes = { userRoleComments }
-
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Credentialing Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
-      role = "Advisory Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
-      role = "Board";
-      // notes = { userRoleComments };
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
-      role = "Board";
-      // notes = { userRoleComments };
-    }
-
-    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
-      isDelegate = false;
-    }
-    else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
-      isDelegate = false;
-    }
-    else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
-      isDelegate = false;
-    } else {
-      notes = { userRoleComments: '' }
-    }
-
-    let temp = {
-      role: isDelegate ? role : "",
-      notes: notes,
+   const getLog = async () => {
+      const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+      setLogDetails(basicLog);
+      console.log("basicLog" +JSON.stringify(basicLog));
+      
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}`, temp)
+  const handleApplicationApprove = async () => {
+    // let role;
+    // let notes = { userRoleComments }
+    // let isDelegate = true; // Default value for isDelegate
+    // // notes = { userRoleComments }
+
+    // if (selectedTab === 'level-2' && applicationType === "NEW") {
+    //   role = "Department Head";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+    //   role = "Credentialing Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+    //   role = "Credentialing Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    //   role = "Advisory Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+    //   role = "Advisory Committee";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    //   role = "Board";
+    //   // notes = { userRoleComments };
+    // } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    //   role = "Board";
+    //   // notes = { userRoleComments };
+    // }
+
+    // if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+    //   isDelegate = false;
+    // }
+    // else if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    //   isDelegate = false;
+    // }
+    // else if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    //   isDelegate = false;
+    // } else {
+    //   notes = { userRoleComments: '' }
+    // }
+
+    // let temp = {
+    //   role: isDelegate ? role : "",
+    //   notes: notes,
+    // };
+    let role;
+    let title;
+    let files = uploadFileData || [];
+    let notesComments = userRoleComments || "";
+    let isDelegate = true;
+
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+      } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (userRole?.includes("chief of staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+        title = "Chief Of Staff Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+    }
+
+    // Prepare the payload
+    let temp = {
+      role: isDelegate ? role : "",
+      notes: {
+        notes: notesComments
+      },
+      approvedDate: new Date().toISOString(),
+      title: title,
+      files: files
+    };
+
+
+    await PUT(`application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
       .then(response => {
         console.log('success');
         onClose();
@@ -188,48 +318,96 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplicationMoveToNext = async () => {
 
+    // let role;
+    // let notes;
+    // let isDelegate = true; // Default value for isDelegate
+
+    // // Determine role based on selectedTab and applicationType
+    // if (selectedTab === 'level-2' && applicationType === "NEW") {
+    //   role = "Department Head";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
+    //   role = "Credentialing Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-3' && applicationType === "NEW") {
+    //   role = "Credentialing Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    //   role = "Advisory Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-4' && applicationType === "NEW") {
+    //   role = "Advisory Committee";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+    //   role = "Board";
+    //   // notes = {userRoleComments};
+    // } else if (selectedTab === 'level-5' && applicationType === "NEW") {
+    //   role = "Board";
+    //   // notes = {userRoleComments};
+    // }
+
+    // // Override isDelegate logic for specific conditions
+    // if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
+    //   isDelegate = false;
+    // }
+    // if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
+    //   isDelegate = false;
+    // }
+    // if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
+    //   isDelegate = false;
+    // }
+
+    // let temp = {
+    //   role: isDelegate ? role : " ",
+    //   notes: notes,
+    // };
+
     let role;
-    let notes;
-    let isDelegate = true; // Default value for isDelegate
+    let title;
+    let files = uploadFileData || [];
+    let notesComments = userRoleComments || "";
+    let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2' && applicationType === "NEW") {
-      role = "Department Head";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
-      role = "Credentialing Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-3' && applicationType === "NEW") {
-      role = "Credentialing Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+    if (selectedTab === 'level-2') {
+      if (userRole?.includes("Department Head")) {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+      } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+      }
+     }else if (selectedTab === 'level-3') {
+      if (userRole?.includes("Credentialing Committee")) {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (userRole?.includes("chief of staff")) {
+        role = "Chief Of Staff";
+        isDelegate = false;
+        title = "Chief Of Staff Review";
+      }
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-4' && applicationType === "NEW") {
-      role = "Advisory Committee";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
       role = "Board";
-      // notes = {userRoleComments};
-    } else if (selectedTab === 'level-5' && applicationType === "NEW") {
-      role = "Board";
-      // notes = {userRoleComments};
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
     }
 
-    // Override isDelegate logic for specific conditions
-    if (selectedTab === 'level-2' && userRole?.includes("Credentialing Committee")) {
-      isDelegate = false;
-    }
-    if (selectedTab === 'level-1' && userRole?.includes("Staff Manager")) {
-      isDelegate = false;
-    }
-    if (selectedTab === 'level-3' && userRole?.includes("Credentialing Committee") && applicationType === "NEW") {
-      isDelegate = false;
-    }
-
+    // Prepare the payload
     let temp = {
-      role: isDelegate ? role : " ",
-      notes: notes,
+      role: isDelegate ? role : "",
+      notes: {
+        notes: notesComments
+      },
+      approvedDate: new Date().toISOString(),
+      title: title,
+      files: files
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
@@ -241,6 +419,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         console.log(error);
       });
   };
+  
 
   const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {
@@ -258,32 +437,51 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const formatLabel = (template, values) =>
     template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
 
-  const getUserRole = (selectedTab, applicationType) => {
-    if (applicationType === "REAPPOINTMENT") {
-      switch (selectedTab) {
-        case "level-1":
-          return "Staff Manager";
-        case "level-2":
+  const getUserRole = (selectedTab) => {
+    switch (selectedTab) {
+      case "level-1":
+        return "Staff Manager";
+      case "level-2":
+        return "Department Head";
+      case "level-3":
+        if (userRole?.includes("Credentialing Committee")) {
           return "Credentialing Committee";
-        case "level-3":
-          return "Advisory Committee";
-        case "level-4":
-          return "Board";
-        default:
-          return "";
-      }
+        }
+        if (userRole?.includes("Chief Of Staff")) {
+          return "Chief Of Staff";
+        }
+        return "Credentialing Committee";
+      case "level-4":
+        return "Advisory Committee";
+      case "level-5":
+        return "Board";
+      default:
+        return "";
     }
-    return "";
   };
 
-  const userRoleTab = getUserRole(selectedTab, applicationType);
-
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
+  const userRoleTab = getUserRole(selectedTab);
+  const lastModifiedDate = formDetails?.lastModifiedDate;
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
     return null;
   }
 
   return (
+<>
+ {isLoadingImage && (
+      // <div
+      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+      // >
+      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      // </div>
+      <LoadingScreen />
+    )}
 
+ {!isLoadingImage && (
 
     <Dialog
       isOpen={getIsOpen}
@@ -296,7 +494,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              {userRoleTab} Review & Approval
+              {/* {userRoleTab} Review & Approval */}
+              Staff Recommended for Reappointment
             </div>
             <div className={style.displayInRow}>
               <img
@@ -310,7 +509,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             </div>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
-            <div className={`${style.cardStyle} ${style.marginTop10}`}>
+            {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.namefontstyle} ${style.marginTop10}`}>
                   {formDetails?.basicDetails?.applicant?.name?.firstName
@@ -324,18 +523,90 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 </div>
                 <div className={`${style.displayIdFontStyle} ${style.marginBoth}`}>({`${formDetails?.displayId}` || "-"})</div>
               </div>
-              {/* <div className={`${style.grid}`}>
-                <div> */}
+             
                   <div className={`${style.marginBothText}`}>Department:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span></div>
                   <div className={`${style.marginBothText}`}>Division Or Specialty:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span></div>
-                {/* </div>
-                <div> */}
+                
                   <div className={`${style.marginBothText} ${style.marginBottom}`}>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
+              
+            </div> */}
+            <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
+                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
+                  </span>
+                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+                </div>
+                <div>
+                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                </div>
+              </div>
+              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
+              <div className={style.marginTop10}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId|| "-"}</span>
+                  </div>
                 {/* </div>
-              </div> */}
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                  </div>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>Only If Multisite</span>
+                  </div> */}
+                  {
+                    entity?.multiSiteEntity && (
+                        <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>
+                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                        </span>
+                        </div>
+                    )
+                    }
+                {/* </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-              Comments
+            Enter your Notes / Comments (Optional)
             </div>
             {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
@@ -352,7 +623,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   setUserRoleComments(data);
                 }}
                 config={{
-                  placeholder: "Enter comments and notes here",
+                  placeholder: "Enter comments / notes ",
                 }}
                 onReady={(editor) => {
                   editor.editing.view.change((writer) => {
@@ -365,6 +636,48 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 }}
               />
             </div>
+            <div className={`${style.marginTop} ${style.cursorPointer}`}>
+
+                    <>
+
+                      <Dropzone
+                        style={dropzoneStyle}
+                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                        accept={{
+                          'image/jpeg': [],
+                          'image/png': [],
+                          'image/jpg': [],
+                          'application/pdf': []
+                        }}
+                      >
+                        {({ getRootProps, getInputProps }) => (
+                          <section>
+                            <div {...getRootProps()}>
+                              <input {...getInputProps()} />
+                              <div className={style.uploadBorderStyle}>
+                                <p className={style.uploadTextStyle}>
+                                  Upload any supporting documents
+                                </p>
+                              </div>
+                            </div>
+                          </section>
+                        )}
+                      </Dropzone>
+                    </>
+
+                  </div>
+                  {files.length > 0 && (
+                    <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
+                      <DescriptionIcon className={`${style.docsIcon}`} />
+                      {files.length > 0 ? (
+                        files.map((file, index) => (
+                          <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                        ))
+                      ) : (
+                        <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                      )}
+                    </div>
+                  )}
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
               <CommonCheckBox
@@ -374,14 +687,14 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 onChange={handleCheckboxChange('isChecked1')}
               />
             )}
-            {userRole.includes('Credentialing Committee') && (
+            {/* {userRole.includes('Credentialing Committee') && ( */}
               <>
-                <CommonCheckBox
+                {/* <CommonCheckBox
                   className={`${style.marginTop}`}
                   label={formatLabel("The undersigned medical staff committee hereby approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
                   checked={isChecked.isChecked2}
                   onChange={handleCheckboxChange('isChecked2')}
-                />
+                /> */}
                 {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
                 {/* <CommonCheckBox
                 className={`${style.marginTop10}`}
@@ -390,10 +703,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 onChange={handleCheckboxChange('isChecked3')}
                 /> */}
               </>
-            )}
+            {/* )} */}
             {/* <ESignature/> */}
             {/* {formDetails?.esignatureRequired && ( */}
-            <div className={style.twoCol}>
+            {/* <div className={style.twoCol}>
               <div
                 onClick={!checkRequirements() ? () => { } : onClicksignFunction}
                 className={!checkRequirements() ? style.disabled : style.signatureContainer}
@@ -415,32 +728,34 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* )}  */}
-            <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
-              <div onClick={() => getIsOpen(false)}>
+            {/* <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}> */}
+            <div className={`${style.marginTop} ${style.alignCenter} ${style.cursorPointer}`}>
+              {/* <div onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
-              </div>
-              {/* <div 
-                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`} 
-                onClick= {handleApplicationApprove}
-              >
-                <div className={style.reviewButton}>APPROVE</div>
               </div> */}
-              <div
+              <div 
+                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${style.cursorPointer}`} 
+                onClick= {onClickApproveMoveFunction}
+              >
+                <div className={style.reviewButton}>RECOMMEND STAFF</div>
+              </div>
+              {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
                 onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
                 <div className={style.reviewButton}>SUBMIT</div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </div>
     </Dialog>
-
+)}
+</>
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default ApprovalWithoutNotesDialog;

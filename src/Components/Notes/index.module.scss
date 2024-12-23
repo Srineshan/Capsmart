@@ -1,3 +1,6 @@
+@import '../../styles/mixins.scss';
+@import "../../index.scss";
+
 .notesContainer {
     width: 20vw;
 }
@@ -23,7 +26,7 @@
 
 .notesTextColor {
     text-align: left;
-    font: normal normal medium 15px/20px proxima-nova;
+    font: normal normal medium $navbartext proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }

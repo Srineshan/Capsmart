@@ -49,7 +49,7 @@ const MedicalDirectivesAttest = () => {
     }, [applicationId])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
     useEffect(() => {
@@ -201,7 +201,7 @@ const MedicalDirectivesAttest = () => {
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
                                         <div className={` ${style.marginTop} ${style.leftAlign} ${style.disabled}`}>
-                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directive assigned to me and have a good understanding of them.'} />
+                                            <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                         </div>
                                         <div className={style.disabled}>
                                             <div
@@ -227,7 +227,7 @@ const MedicalDirectivesAttest = () => {
                             ) : (
                                 <>
                                     <div className={` ${style.marginTop} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I certify that I have read the Medical Directive assigned to me and have a good understanding of them.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
+                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
                                     </div>
                                     <div>
                                         <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}

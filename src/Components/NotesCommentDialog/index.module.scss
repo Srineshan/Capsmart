@@ -4,7 +4,7 @@
   text-align: left;
   font: normal normal bold 24px Proxima Nova;
   letter-spacing: 0px;
-  color: $primarycolor;
+  color: #06617A;
   text-transform: capitalize;
   opacity: 1;
 
@@ -59,6 +59,10 @@
 .displayInRow {
   display: flex;
   flex-direction: row;
+}
+
+.displayInRowCenter {
+  align-items: center;
 }
 
 
@@ -190,7 +194,7 @@
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
   letter-spacing: 0px;
-  color: #FEC106;
+  color: $statusyellow;
   opacity: 1;
 }
 
@@ -226,7 +230,7 @@
   border: 1px solid var(---7165e3);
   background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
-  border: 1px solid #173790;
+  border: 1px solid $primarycolor;
   border-radius: 8px;
   opacity: 0.5;
 }
@@ -292,7 +296,7 @@
 .notesBorderStyle {
   border: 0.4px solid var(---7165e3);
   background: #FFFFFF 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #173790;
+  border: 0.4000000059604645px solid $primarycolor;
   border-radius: 4px;
   opacity: 1;
 }
@@ -300,9 +304,9 @@
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
-  font: normal normal 600 22px/27px Proxima Nova;
+  font: normal normal normal 15px / 17px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: #171a1a;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -313,7 +317,7 @@
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 0.7;
-  padding: 10px;
+  // padding: 10px;
   line-height: 1.5;
 }
 
@@ -328,7 +332,7 @@
 }
 
 .reviewButton {
-  background-color: #173790;
+  background-color: $primarycolor;
   color: white;
   font-weight: 600;
   padding: 10px 20px;
@@ -348,7 +352,7 @@
 }
 
 .declineBorderStyle {
-  background: #DBD8FA 0% 0% no-repeat padding-box;
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
@@ -361,11 +365,10 @@
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal medium 14px/22px proxima-nova;
+  font: normal normal bold 16px Proxima Nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
-  text-transform: capitalize;
-  opacity: 0.5;
+  color: #454747;
+  opacity: 1;
 }
 
 .marginLeft20 {
@@ -379,7 +382,7 @@
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+  grid-gap: 10px;
 }
 
 .marginBottom10 {
@@ -388,7 +391,7 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 28% 21%;
+  grid-template-columns: 40% 40%;
   grid-gap: 20px;
   justify-items: start;
 }
@@ -398,6 +401,15 @@
   font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.rejectionTextStyle1 {
+  text-align: left;
+  font: normal normal medium 20px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #171A1A;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -413,9 +425,51 @@
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px proxima-nova;
+  font: normal normal bold 16px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.credDateTextStyle{
+  font: normal normal 600 18px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginLeft2{
+  margin-left: 4px;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
 }

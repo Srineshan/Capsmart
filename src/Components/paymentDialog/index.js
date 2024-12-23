@@ -11,7 +11,7 @@ import { GET } from '../../Screens/dataSaver';
 const stripePromise = loadStripe('pk_test_51OPIp6SJfzua1uDJrMdrq3o5Sfq9wWdv7y3Ev62RkNJEHGrHdMRcrLrxzNMMXiQTCvi9eR3QuvzxqY1OTMPv9mnp003pgscIaj');
 
 
-const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
+const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
     const [formIndex, setFormIndex] = useState();
     const [isContinue, setIsContinue] = useState(false);
     const [showThirdPartyDialog, setShowThirdPartyDialog] = useState(false);
@@ -49,14 +49,14 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
             }],
             mode: 'payment',
             // successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${basicForm?.forms?.[formIndex + 1]?.schemaCategory}`,
-            successUrl: `${window.location.origin}/reappointmentApplicationForm/${applicationId}/Form/UploadYourDoc?session_id={CHECKOUT_SESSION_ID}`,
-            cancelUrl: `${window.location.origin}/reappointmentApplicationForm/${applicationId}/${section}/${step}`,
+            successUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/Form/${btoa(`UploadYourDoc`)}?session_id={CHECKOUT_SESSION_ID}`,
+            cancelUrl: `${window.location.origin}/app/reappointmentApplicationForm/${applicationId}/${section}/${btoa(step)}`,
         });
         // If `redirectToCheckout` fails due to a browser or network
         // error, display the localized error message to your customer
         // using `error.message`.
     };
-
+    console.log(paymentListData)
 
     return (
         <>
@@ -74,7 +74,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                                 />
                             </div>
                         </div>
-                        <p className={`${style.description} ${style.marginTop}`}>For the Privilege category you have selected for your reappointment there is an application processing fee of CA $50.</p>
+                        <p className={`${style.description} ${style.marginTop}`}>{`For the Privilege category you have selected for your reappointment there is an application processing fee of CA ${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}.`}</p>
                         <p className={`${style.description} ${style.marginTop}`}>Payment is required before you can complete the rest of your application.</p>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop}`}>Your Purchase</div>
@@ -82,14 +82,14 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                         </div>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop10}`}>Amount</div>
-                            <div className={`${style.description} ${style.marginTop10}`}><strong>CA $50</strong></div>
+                            <div className={`${style.description} ${style.marginTop10}`}><strong>{`CA ${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}`}</strong></div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
-                                // getIsOpen(true); setShowThirdPartyDialog(true)
-                                handleClick()
+                                getIsOpen(true); setShowThirdPartyDialog(true)
+                                // handleClick()
                             }}>CONTINUE</div>
                         </div>
                     </div>
@@ -97,7 +97,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc }) => {
                 </div>
             </Dialog >
             {showThirdPartyDialog && (
-                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} />
+                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} paymentListData={paymentListData} />
             )}
         </>
     )
