@@ -536,7 +536,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                    )}
             <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
               <div>
-                <CommonDateField
+              <CommonDateField
                 className={style.fullWidth}
                 onChange={(date) => handleDateChange(date, 'MAC')}
                 open={calendarStart}

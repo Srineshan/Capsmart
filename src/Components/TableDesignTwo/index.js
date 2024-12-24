@@ -57,6 +57,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const openDept = Boolean(anchorElDept);
     const popoverAnchorDept = useRef(null);
     const [clickedIndex, setClickedIndex] = useState(null);
+    const [applicationType, setApplicationType] = useState(() =>
+        sessionStorage.getItem('applicationCreationType') || 'NEW'
+      );
 
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
@@ -94,9 +97,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const isInitialLoad = useRef(true);
 
     const availableSortValue = {
-        APPLICANT_NAME: 'Applicant Name',
+        // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
+        APPLICANT_NAME: "Applicant Name",
+        APPLICANT_NAME: "Staff for Reappointment",
         STAFF_NAME: 'Staff Name',
         APPLICANT_TYPE: 'Applicant Type',
+        APPLICANT_TYPE: 'Staff Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
         APPLICANT_ID: 'Applicant ID',
@@ -105,8 +111,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_NAME',
+        'Staff for Reappointment': 'APPLICANT_NAME',
         'Staff Name': 'STAFF_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
+        'Staff Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
         'Applicant ID': 'APPLICANT_ID',

@@ -78,7 +78,7 @@ const StaffApplicationList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [declineListData, setDeclineListData] = useState([]);
-  const [sortField, setSortField] = useState('LAST_UPDATED');
+  const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('DESCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -128,7 +128,7 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
-    "Dept / Division&Specialty",
+    "Dept / Division & Specialty",
     // "Department",
     "Docs",
     // "Data & Disclosures",
@@ -144,7 +144,7 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
-   "Dept / Division&Specialty",
+   "Dept / Division & Specialty",
     "Docs",
     "CRs",
     "Notes",
@@ -173,7 +173,7 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
-    "Dept / Division&Specialty",
+    "Dept / Division & Specialty",
     // "Commitee",
     // "Board",
     // "CEO",
@@ -204,7 +204,7 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
-    "Dept / Division&Specialty",
+    "Dept / Division & Specialty",
     // "Ref",
     "Docs",
     "CRs",
@@ -232,7 +232,7 @@ const StaffApplicationList = ({
       applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
       // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
       applicationType === "NEW" ? "Applicant Type" : "Staff Type",
-      "Dept / Division&Specialty",
+      "Dept / Division & Specialty",
       "Docs",
       // "Ref",
       "CRs",

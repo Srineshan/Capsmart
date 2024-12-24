@@ -62,6 +62,8 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useNavigate, useParams } from "react-router-dom";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -262,6 +264,12 @@ const NewActiveApplication = ({
     setCalendarStart(false);
     setIsButtonDisabled(false);
 
+  };
+
+  const getJune30thOfCurrentYear = () => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() + 1;
+    return new Date(currentYear, 5, 30); 
   };
 
   useEffect(() => {
@@ -1251,16 +1259,16 @@ useEffect(() => {
           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
         } else if (data === "verified") {
           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
-        } else {
+        }  else {
           temp.push({
               "type": "text",
-              "value": array?.map(innerData => innerData[data] && typeof innerData[data] === 'object' && innerData[data]?.fileURL ?
-                  <span onClick={() => { window.open(innerData[data]?.fileURL, '_blank'); }} style={{ cursor: 'pointer', textDecoration: 'underline', color: 'blue' }}>
-                      {innerData[data]?.fileName || 'View File'}
-                  </span>
-                  : innerData[data])
+              "value": array.map(innerData => 
+                  <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                      {innerData[data]}
+                  </div>
+              )
           });
-      }
+        }
       }
       // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
       //   // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
@@ -9284,7 +9292,8 @@ useEffect(() => {
                           onOpen={() => setCalendarStart(true)}
                           onClose={() => setCalendarStart(false)}
                           minDate={sub(new Date(), { years: 3 })}
-                          maxDate={add(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
                           value={selectedDateForMac}
                           renderInput={(params) => (
                             <TextField
@@ -9341,7 +9350,8 @@ useEffect(() => {
                           onClose={() => setCalendarStart(false)}
 
                           minDate={sub(new Date(), { years: 3 })}
-                          maxDate={add(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
                           value={selectedDateForBod}
                           renderInput={(params) => (
                             <TextField
@@ -9981,22 +9991,43 @@ useEffect(() => {
 
                             // </>
                             <>
-                         {form?.notesDetails
-                          ?.filter(log => log.notes.notes)
-                          .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate))
-                          .map((log, index) => (
-                            <div key={index}>
-                              <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                {log.title}
+                        {form?.notesDetails
+                            ?.filter(log => log.notes.notes)
+                            .reverse()
+                            .map((log, index) => (
+                              <div key={index}>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                  {log.title}
+                                </div>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                  {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
+                                </div>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
+                                  <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                </div>
+
+                                {/* Check if there are files */}
+                                {log.files && log.files.length > 0 && (
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                    {/* Display Material UI PDF icon and link */}
+                                    <div className={style.displayInRow}>
+                                    <div className={style.cursorPointer} onclick={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
+                                      <DescriptionRoundedIcon className={style.docsIcon} style={{ marginRight: '8px' }} />
+                                    </div>
+                                    <a className={`${style.cursorPointer} ${style.docsIcon}`} href={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
+                                    View DOCUMENT</a>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Optional description */}
+                                {log.files && log.files[0] && log.files[0].description && (
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                    <div>{log.files[0].description}</div>
+                                  </div>
+                                )}
                               </div>
-                              <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
-                              </div>
-                              <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                                <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                              </div>
-                            </div>
-                          ))}
+                            ))}
                             </>
                           )}
                         </div>

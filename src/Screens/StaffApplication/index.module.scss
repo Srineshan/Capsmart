@@ -85,6 +85,10 @@ body::-webkit-scrollbar {
   margin-bottom: 20px !important;
 }
 
+.marginBottom0{
+  margin-bottom: -10px !important;
+}
+
 .grid {
   display: grid;
 }
@@ -4494,9 +4498,9 @@ input[type="number"] {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid $primarycolor;
-  border-radius: 8px;
+  border-radius: 4px;
   opacity: 0.9;
-  padding: 10px;
+  padding: 5px;
 }
 
 .sideHeadingFontStyle {
@@ -5180,4 +5184,13 @@ input[type="number"] {
 
 .calcHeight{
   height: calc(100vh - 80px);
+}
+
+.referenceCardStyleDescription {
+  // background: #dddddf 0% 0% no-repeat padding-box;
+  // box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 4px;
+  opacity: 0.9;
+  // padding: 3px;
 }

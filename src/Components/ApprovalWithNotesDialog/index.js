@@ -17,6 +17,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import CommonInputField from "../CommonFields/CommonInputField";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -45,6 +46,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadFileData, setUploadFileData] = useState('');
+  const [documentDesc, setDocumentDesc] = useState("");
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -266,7 +268,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const handleApplicationApprove = async () => {
     let role;
     let title;
-    let files = uploadFileData || [];
+    let files = (uploadFileData || []).map(file => ({
+      ...file,              
+      description: documentDesc || "", 
+    }));
     let notesComments = userRoleComments;
     let isDelegate = true;
 
@@ -381,7 +386,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const getApplicationMoveToNext = async () => {
     let role;
     let title;
-    let files = uploadFileData || [];
+    let files = (uploadFileData || []).map(file => ({
+      ...file,              
+      description: documentDesc || "", 
+    }));
     let notesComments = userRoleComments;
     let isDelegate = true;
 
@@ -672,7 +680,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                           {formDetails?.basicDetails?.applicant?.name?.firstName
                             ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                             formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                            : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                            : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                         </span>
                       </div>
                     </div>
@@ -697,6 +705,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                     }}
                     config={{
                       placeholder: "Enter comments / notes",
+                      toolbar: {
+                        shouldNotGroupWhenFull: true,
+                        sticky: true
+                      },
+                      autoGrow: false,
                     }}
                     onReady={(editor) => {
                       editor.editing.view.change((writer) => {
@@ -747,17 +760,28 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
                 </div>
                 {files.length > 0 && (
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                <div className={style.twoColumnGrid}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10}`}>
+                        <DescriptionIcon className={`${style.docsIcon}`} />
+                        {files.length > 0 ? (
+                          files.map((file, index) => (
+                            <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                          ))
+                        ) : (
+                          <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                        )}
+                      </div>
+                      <div className={style.marginTop10}>
+                      <CommonInputField
+                            value={documentDesc}
+                            onChange={(e) => setDocumentDesc(e.target.value)}
+                            type="text"
+                            placeholder="Description (Optional)"
+                            className={`${style.referenceCardStyleDescription}`}
+                      />
+                      </div>
+                      </div>
                     )}
-                  </div>
-                )}
                 {/* </div> */}
                 {userRole.includes('Chief Of Staff') && (
                   <CommonCheckBox

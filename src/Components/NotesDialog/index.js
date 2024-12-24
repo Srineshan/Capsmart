@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT , TenantID } from "../../Screens/dataSaver";
+import { GET, PUT ,POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -10,6 +10,10 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import Dropzone from "react-dropzone";
+import DescriptionIcon from '@mui/icons-material/Description';
+import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import CommonInputField from "../CommonFields/CommonInputField";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -31,6 +35,18 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [uploadFileData, setUploadFileData]= useState('');
+   const [documentDesc, setDocumentDesc] = useState("");
+  const dropzoneStyle = {
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  };
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -43,15 +59,61 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     checkApproveEnabled();
   }, [userNotes]);
 
-  useEffect(() => {
-    getActiveApplicationView(true);
-    // getApplication();
-  }, [userNotes]);
+  // useEffect(() => {
+  //   getActiveApplicationView();
+  //   getApplication();
+  // }, []);
 
 
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
+
+   const changeHandler = async (event) => {
+          console.log("Event received:", event);
+          setIsLoading(true);
+          const filesArray = Array.from(event);
+          console.log("Converted files array:", filesArray);
+          setFiles(filesArray);
+        
+          const formData = new FormData();
+          let fileNameArray = [];
+        
+          filesArray.forEach(file => {
+            const fileInfo = {
+              "filePath": file.path || '', 
+              "fileName": file.name,
+              "fileURL": "",  
+              "fileType": file.type,
+              "classification": "",  
+              "verified": true,     
+              "valid": true ,     
+            };
+            fileNameArray.push(fileInfo);
+            formData.append('documents', file);
+          });
+        
+          const blob = new Blob([JSON.stringify(fileNameArray)], {
+            type: "application/json"
+          });
+          formData.append('files', blob);
+        
+          try {
+            const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+            console.log("API Response:", response);
+            SuccessToaster('File Uploaded Successfully');
+            console.log("Response data:", response?.data);
+            setUploadFileData(response?.data)
+        
+            setIsLoading(false);
+            return response?.data;
+          } catch (error) {
+            ErrorToaster('File Upload Failed');
+            console.error("Error:", error);
+            setIsLoading(false);
+            return null;
+          }
+        };  
 
   const getApplicationEntity = async () => {
       const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
@@ -95,9 +157,15 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   };
 
   const getApplicationNotes = async () => {
+
+    const files = (uploadFileData || []).map(file => ({
+      ...file,              
+      description: documentDesc || "", 
+    }));
    
     let temp = {
       notes: userNotes,
+      files: files
     };
     const title = `${userRole}${" "}Notes/Comments`
 
@@ -222,7 +290,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                       {formDetails?.basicDetails?.applicant?.name?.firstName
                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                     </span>
                   </div>
                 </div>
@@ -238,18 +306,82 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 }}
                 config={{
                   placeholder: "Enter comments / notes",
+                  toolbar: {
+                    shouldNotGroupWhenFull: true,
+                    sticky: true
+                  },
+                  autoGrow: false,
                 }}
                 onReady={(editor) => {
-                  editor.editing.view.change((writer) => {
-                    writer.setStyle(
-                      "height",
-                      "150px",
-                      editor.editing.view.document.getRoot()
-                    );
-                  });
+                  const editorElement = editor.editing.view.document.getRoot();
+                    editor.editing.view.change(writer => {
+                      writer.setStyle(
+                        'min-height',
+                        '150px',
+                        editorElement
+                      );
+                    });
                 }}
               />
             </div>
+            <div className={`${style.marginTop} ${style.cursorPointer}`}>
+
+              <>
+
+                <Dropzone
+                  style={dropzoneStyle}
+                  onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                  accept={{
+                    'image/jpeg': [],
+                    'image/png': [],
+                    'image/jpg': [],
+                    'application/pdf': []
+                  }}
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <section>
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        <div className={style.uploadBorderStyle}>
+                        <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                          <div className={style.uploadTextStyle}>
+                            Upload any supporting documents
+                          </div>
+                          <div className={`${style.marginLeftRight20}`}>
+                            click to upload
+                          </div>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+                </Dropzone>
+              </>
+
+              </div>
+              {files.length > 0 && (
+                <div className={style.twoColumnGrid}>
+              <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10}`}>
+                <DescriptionIcon className={`${style.docsIcon}`} />
+                {files.length > 0 ? (
+                  files.map((file, index) => (
+                    <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                  ))
+                ) : (
+                  <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                )}
+              </div>
+              <div className={style.marginTop10}>
+              <CommonInputField
+                    value={documentDesc}
+                    onChange={(e) => setDocumentDesc(e.target.value)}
+                    type="text"
+                    placeholder="Description (Optional)"
+                    className={`${style.referenceCardStyleDescription}`}
+              />
+              </div>
+              </div>
+              )}
         </div>
         <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
             <div  onClick={() => getIsOpen(false)}>

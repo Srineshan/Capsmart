@@ -87,7 +87,7 @@ import DeclineMailTemplate from './declineMailTemplate';
 import { GET, PUT,POST,TenantID } from "../../Screens/dataSaver";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import ESignature from '../../Components/ESignature';
 import CryptoJS from 'crypto-js';
 import Cookie from 'universal-cookie';
@@ -122,7 +122,8 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [entity, setEntity] = useState([]);
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-   const [uploadFileData, setUploadFileData]= useState('');
+  const [uploadFileData, setUploadFileData]= useState('');
+  const [documentDesc, setDocumentDesc] = useState("");
     const dropzoneStyle = {
         width: "100%",
         height: "auto",
@@ -252,12 +253,16 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const handleApplicationReject = async () => {
     try {
+      let files = (uploadFileData || []).map(file => ({
+        ...file,              
+        description: documentDesc || "", 
+      }));
       const payload = {
         notes: {
             notes: notes
                },
         approvedDate: new Date().toISOString(),
-        files: uploadFileData || []
+        files: files
       };
 
       await PUT(
@@ -455,7 +460,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                       {formDetails?.basicDetails?.applicant?.name?.firstName
                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                     </span>
                   </div>
                 </div>
@@ -481,6 +486,11 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                     }}
                     config={{
                       placeholder: "Enter comments / notes ",
+                      toolbar: {
+                        shouldNotGroupWhenFull: true,
+                        sticky: true
+                      },
+                      autoGrow: false,
                     }}
                     onReady={(editor) => {
                       editor.editing.view.change((writer) => {
@@ -527,17 +537,28 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                   </>
                   </div>
                   {files.length > 0 && (
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle1} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                <div className={style.twoColumnGrid}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle1} ${style.alignItem} ${style.marginTop10} ${style.marginBottom10}`}>
+                        <DescriptionIcon className={`${style.docsIcon}`} />
+                        {files.length > 0 ? (
+                          files.map((file, index) => (
+                            <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                          ))
+                        ) : (
+                          <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                        )}
+                      </div>
+                      <div className={style.marginTop10}>
+                      <CommonInputField
+                            value={documentDesc}
+                            onChange={(e) => setDocumentDesc(e.target.value)}
+                            type="text"
+                            placeholder="Description (Optional)"
+                            className={`${style.referenceCardStyleDescription}`}
+                      />
+                      </div>
+                      </div>
                     )}
-                  </div>
-                  )}
               {/* <div className={`${style.marginTop10}`}>
               <CommonCheckBox
                   className={`${style.marginTop}`}
