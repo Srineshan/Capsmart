@@ -495,7 +495,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
             </div>
           )} */}
           <Descope
-            flowId={window.location.hostname?.split('.')?.length === 3 ? `new-flow` : `new-flow-copy`}
+            flowId={window.location.hostname?.split('.')?.length === 3 ? `sign-in-with-magic-link-and-set-password` : `applicant-sign-in-with-magic-link`}
             theme="light"
             onSuccess={(e) => {
               handleSession(e.detail.sessionJwt)

@@ -318,6 +318,7 @@ const App = ({ props }) => {
     if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
       login(entityId);
     }
+    console.log(isAuthenticated, 'isAuthenticated')
   }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo])
 
   useEffect(() => {
@@ -336,6 +337,14 @@ const App = ({ props }) => {
       }
       if (isSessionTokenExpired()) {
         cookie.set('authorization', token, { path: '/' });
+      }
+      const decodedToken = jwt(sessionToken);
+      if (Date.now() > decodedToken.exp * 1000) {
+        console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
+        cookie.remove("authorization", { path: "/" });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout()
       }
     }
   }, [sessionToken])
@@ -410,7 +419,7 @@ const App = ({ props }) => {
     },
     (error) => {
       logError(error);
-      console.log("response error", error);
+      console.log("response error", error, error.status);
       return error;
     }
   );
@@ -789,7 +798,7 @@ const App = ({ props }) => {
   // }
 
   const LoginRoute = () => {
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     const fetchData = () => {
       console.log('login route', Auth())
       if (Auth()) {
@@ -807,30 +816,31 @@ const App = ({ props }) => {
           roles?.includes("Distributor Admin");
         let isStaffManager = roles?.includes("Staff Manager");
         let isApplicant = roles?.includes("Applicant");
-
+        console.log('login route', roles)
         if (isAppUser) {
-          // window.location.href = "/";
-          navigate("/");
+          window.location.href = "/";
+          // navigate("/");
           return <Login />;
         } else if (isContractManager) {
-          // window.location.pathname = "/contracts";
-          navigate("/contracts");
+          window.location.pathname = "/contracts";
+          // navigate("/contracts");
           // window.location.reload();
           return <ActiveContracts />;
         } else if (isEntityLevelAdmin) {
-          // window.location.pathname = "/entitySitePortal";
-          navigate("/entitySitePortal");
+          window.location.pathname = "/entitySitePortal";
+          // navigate("/entitySitePortal");
           // window.location.reload();
           return <Home />;
         } else if (isStaffManager) {
-          // window.location.pathname = "/applications";
-          navigate("/applications");
+          console.log('login route', roles, isStaffManager)
+          window.location.pathname = "/applications";
+          // navigate("/applications");
         } else if (isApplicant) {
-          // window.location.pathname = "/applicant";
-          navigate("/applicant");
+          window.location.pathname = "/applicant";
+          // navigate("/applicant");
         } else {
-          // window.location.pathname = "/entitySitePortal";
-          navigate("/entitySitePortal");
+          window.location.pathname = "/entitySitePortal";
+          // navigate("/entitySitePortal");
           // window.location.reload();
           return <Home />;
         }
