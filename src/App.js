@@ -300,11 +300,26 @@ const App = ({ props }) => {
   const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
   const [loggedInUser, setLoggedInUser] = useState();
+  const [visibilityState, setVisibilityState] = useState(document.visibilityState);
   let authorization = cookie.get("authorization");
   let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
   console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setVisibilityState(document.visibilityState); // Update state on visibility change
+    };
+
+    // Add event listener
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
@@ -330,15 +345,19 @@ const App = ({ props }) => {
   useEffect(() => {
     if (sessionToken) {
       let token = sessionToken
-      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(), JSON.parse(atob(sessionToken.split('.')[1])))
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
       if (typeof token !== 'string') {
         // If the token is not a string, make sure to convert it into a string
         token = JSON.stringify(token);
       }
-      if (isSessionTokenExpired()) {
-        cookie.set('authorization', token, { path: '/' });
+      if (isSessionTokenExpired(cookie.get("authorization"))) {
+        cookie.remove("authorization", { path: "/" });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout()
       }
-      const decodedToken = jwt(sessionToken);
+      const decodedToken = jwt(cookie.get("authorization"));
+      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, sessionToken)
       if (Date.now() > decodedToken.exp * 1000) {
         console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
         cookie.remove("authorization", { path: "/" });
@@ -347,7 +366,7 @@ const App = ({ props }) => {
         logout()
       }
     }
-  }, [sessionToken])
+  }, [cookie.get("authorization"), visibilityState])
 
   // useEffect(() => {
   //   startTokenRefreshInterval();
@@ -661,10 +680,10 @@ const App = ({ props }) => {
     console.log('entered')
     const currentTime = Date.now() / 1000; // Current time in seconds
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
-    console.log(timeToExpiry, currentTime, 'exp', sessionToken)
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
 
     // Schedule the refresh 0.5 minute before expiration
-    console.log(timeToExpiry, currentTime, 'exp', sessionToken)
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
     setTimeout(() => {
       refreshToken();
     }, (timeToExpiry - 30) * 1000);
