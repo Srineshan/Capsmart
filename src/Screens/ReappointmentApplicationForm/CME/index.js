@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import VerifiedImage from "./../../../images/verifiedImage.png";
 import ValidationDialog from '../../../Components/validationDialog';
 import CryptoJS from 'crypto-js';
 import style from './index.module.scss';
@@ -199,7 +200,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: basicForm?.forms?.[formIndex]?.data,
             unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
-            acknowledged: true
+            acknowledged: true,
+            esign: basicForm?.forms?.[formIndex]?.esign !== null ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -246,6 +248,26 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
                         )}
+                        {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.file?.fileName !== undefined && (
+                            <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
+                                <div><strong>CME / CEU Transcript</strong></div>
+                                <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.file?.fileName}</div>
+                                <img
+                                    src={VerifiedImage}
+                                    alt=""
+                                    className={`${style.imgIcon} ${style.cursorPointer}`}
+                                // onClick={() => {
+                                //     setShowFileDisplayDialog(true); setselectedFile(
+                                //         getValueByPath(
+                                //             basicForm,
+                                //             `${basicpath}.${baseKey}.${fieldKey}`
+                                //         )
+                                //     );
+                                // }
+                                // }
+                                />
+                            </div>
+                        )}
                         <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
                             <div>
                                 <div className={style.cmeCard}>
@@ -253,8 +275,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div className={`${style.twoCol} ${style.marginTop}`}>
                                         <div className={style.cmeHourCard}>
                                             <div className={style.totalText}>Your Total</div>
-                                            <div className={style.hourText}>38 Hours</div>
-                                            <div className={style.hourRemainingText}>2 more needed</div>
+                                            <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} Hours</div>
+                                            {(40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours) > 0 && (
+                                                <div className={style.hourRemainingText}>{40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} more needed</div>
+                                            )}
                                         </div>
                                         <div className={style.cmeHourCard}>
                                             <div className={style.totalText}>Required</div>
@@ -275,8 +299,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     />
                                 </div>
                                 {formSchemaWholeObject?.esignatureRequired && (
-                                    <div className={style.twoCol}>
-                                        <div onClick={() => { setIsSigned(!isSigned); setIsEdited(true) }}
+                                    <div className={style.eSignGrid}>
+                                        <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
                                         >
                                             <ESignature
                                                 userName={isSigned ? name : ""}
