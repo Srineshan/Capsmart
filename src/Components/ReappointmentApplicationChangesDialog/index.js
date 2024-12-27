@@ -309,7 +309,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                 </span>
@@ -372,7 +372,7 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
                       {formDetails?.basicDetails?.applicant?.name?.firstName
                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                     </span>
                   </div>
                 </div>

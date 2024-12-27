@@ -67,6 +67,9 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                             <div className={style.loginStatus}>
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                             </div>
+                            <div className={style.loginStatus}>
+                                {`${currentUserDetails?.roles[0]?.roleName}`}
+                            </div>
                         </div>
                     </Link>
 

@@ -55,7 +55,7 @@ const ApplicationReferenceDocuments = () => {
           const docIcon =
             document?.fileType === "application/pdf"
               ? PDFDocs
-              : document?.fileType.startsWith("image/")
+              : document?.fileType?.startsWith("image/")
                 ? imgDocs
                 : null;
 

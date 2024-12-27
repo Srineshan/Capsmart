@@ -236,15 +236,16 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
       reappointment.push(
-        <>
-          {data?.reAppointmentInitiated !== undefined && (
-            data.reAppointmentInitiated ? (
-              <span>Sent</span>
-            ) : (
-              <span>Not Sent</span>
-            )
-          )}
-        </>
+        // <>
+        //   {data?.reAppointmentInitiated !== undefined && (
+        //     data.reAppointmentInitiated ? (
+        //       <span>Sent</span>
+        //     ) : (
+        //       <span>Not Sent</span>
+        //     )
+        //   )}
+        // </>
+        `${data?.reappointmentStatus}`
       );
     });
 

@@ -1187,7 +1187,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                   </span>
@@ -1249,7 +1249,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                       {formDetails?.basicDetails?.applicant?.name?.firstName
                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                     </span>
                   </div>
                 </div>
@@ -1287,7 +1287,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                         .find(workflow => workflow.role === "Credentialing Committee")
                         ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
                         .find(workflow => workflow.role === "Credentialing Committee")
-                        ?.approverDetail?.name?.lastName}`
+                        ?.approverDetail?.name?.lastName}, Credentialing Committee`
                     : "No approver found"
                 }
                </div>

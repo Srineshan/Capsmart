@@ -3958,6 +3958,16 @@
     "@webassemblyjs/ast" "1.14.1"
     "@xtuc/long" "4.2.2"
 
+"@webspellchecker/wproofreader-ckeditor5@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@webspellchecker/wproofreader-ckeditor5/-/wproofreader-ckeditor5-3.1.2.tgz#5c750ff5cdfbf114b6995bd94683d53c30ace63a"
+  integrity sha512-sdyTUnsIFoY5x3+Fq9HZaXI6iNxQ3bXaApU/uzg7OTz8hIH9t9USISSSRGotjWPBZfJ0gPgQgHrJWlUH9ovRBA==
+
+"@webspellchecker/wproofreader-sdk-js@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@webspellchecker/wproofreader-sdk-js/-/wproofreader-sdk-js-1.1.1.tgz#52d0ebdc62f9bcedec49a7326a7b93a9f79c2365"
+  integrity sha512-7xVhIN/mFAVuKu5w2AiJTGRTM65fFCNSziR+GQ2i796Mm+KY3vy9HrhRQGhQW6KfY2Jm2LPwqjh7QBAf3le0KQ==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"

@@ -6,6 +6,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import CommonTextField from "../CommonFields/CommonTextField";
+import CommonInputField from "../CommonFields/CommonInputField";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
 import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
@@ -45,6 +46,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
   const [uploadFileData, setUploadFileData]= useState('');
+  const [documentDesc, setDocumentDesc] = useState("");
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -259,7 +261,10 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
     let role;
     let title;
-    let files = uploadFileData || [];
+    let files = (uploadFileData || []).map(file => ({
+      ...file,              
+      description: documentDesc || "", 
+    }));
     let notesComments = userRoleComments || "";
     let isDelegate = true;
 
@@ -364,7 +369,10 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
     let role;
     let title;
-    let files = uploadFileData || [];
+    let files = (uploadFileData || []).map(file => ({
+      ...file,              
+      description: documentDesc || "", 
+    }));
     let notesComments = userRoleComments || "";
     let isDelegate = true;
 
@@ -466,9 +474,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
-    return null;
-  }
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+  //   return null;
+  // }
 
   return (
 <>
@@ -537,7 +545,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  : ""}{" "}
                   {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
                   </span>
@@ -599,7 +607,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                       {formDetails?.basicDetails?.applicant?.name?.firstName
                       ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
                       formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
                     </span>
                   </div>
                 </div>
@@ -624,6 +632,11 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                 }}
                 config={{
                   placeholder: "Enter comments / notes ",
+                  toolbar: {
+                    shouldNotGroupWhenFull: true,
+                    sticky: true
+                  },
+                  autoGrow: false,
                 }}
                 onReady={(editor) => {
                   editor.editing.view.change((writer) => {
@@ -655,9 +668,14 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                             <div {...getRootProps()}>
                               <input {...getInputProps()} />
                               <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
+                              <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                                <div className={style.uploadTextStyle}>
                                   Upload any supporting documents
-                                </p>
+                                </div>
+                                <div className={`${style.marginLeftRight20}`}>
+                                  click to upload
+                                </div>
+                                </div>
                               </div>
                             </div>
                           </section>
@@ -667,17 +685,28 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
                   </div>
                   {files.length > 0 && (
-                    <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10} ${style.marginBottom20}`}>
-                      <DescriptionIcon className={`${style.docsIcon}`} />
-                      {files.length > 0 ? (
-                        files.map((file, index) => (
-                          <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                        ))
-                      ) : (
-                        <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                      )}
-                    </div>
-                  )}
+                <div className={style.twoColumnGrid}>
+              <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10}`}>
+                <DescriptionIcon className={`${style.docsIcon}`} />
+                {files.length > 0 ? (
+                  files.map((file, index) => (
+                    <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                  ))
+                ) : (
+                  <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                )}
+              </div>
+              <div className={style.marginTop10}>
+              <CommonInputField
+                    value={documentDesc}
+                    onChange={(e) => setDocumentDesc(e.target.value)}
+                    type="text"
+                    placeholder="Description (Optional)"
+                    className={`${style.referenceCardStyleDescription}`}
+              />
+              </div>
+              </div>
+              )}
             {/* </div> */}
             {userRole.includes('Chief Of Staff') && (
               <CommonCheckBox

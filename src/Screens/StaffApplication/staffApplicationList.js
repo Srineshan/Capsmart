@@ -78,7 +78,7 @@ const StaffApplicationList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [declineListData, setDeclineListData] = useState([]);
-  const [sortField, setSortField] = useState('LAST_UPDATED');
+  const [sortField, setSortField] = useState('DEFAULT');
   const [sortValue, setSortValue] = useState('DESCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -128,6 +128,7 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    "Dept / Division & Specialty",
     // "Department",
     "Docs",
     // "Data & Disclosures",
@@ -135,19 +136,20 @@ const StaffApplicationList = ({
     "Notes",
     // "Task list",
     "Submitted",
-    "Last Updated",
+    // "Last Updated",
     "",
   ]
   const departmentHeadHeaderValues = [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
-    applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
+    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+   "Dept / Division & Specialty",
     "Docs",
     "CRs",
     "Notes",
     // "Task list",
-    "Last Updated",
+    // "Last Updated",
     ""
   ];
 
@@ -171,15 +173,16 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
-    // "Department",
+    "Dept / Division & Specialty",
     // "Commitee",
     // "Board",
     // "CEO",
+    "Docs",
     "CRs",
     "Notes",
     // "Dept. Head",
-    "Submitted",
-    "Last Updated",
+    // "Submitted",
+    // "Last Updated",
     "",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
@@ -197,9 +200,11 @@ const StaffApplicationList = ({
     //   checked={checkedIds.length === tableData.length}
     //   onChange={handleSelectAllClick}
     // />,
+    " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    "Dept / Division & Specialty",
     // "Ref",
     "Docs",
     "CRs",
@@ -223,9 +228,12 @@ const StaffApplicationList = ({
       //   checked={checkedIds.length === tableData.length}
       //   onChange={handleSelectAllClick}
       // />,
+      " ",
       applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
       // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
       applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+      "Dept / Division & Specialty",
+      "Docs",
       // "Ref",
       "CRs",
       "Notes",
@@ -311,7 +319,7 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    true,
+    false,
     false
   ]
 
@@ -324,7 +332,7 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    true,
+    false,
     false
   ]
   const applicationColSortValues = applicationType === "NEW" ? [
@@ -347,8 +355,8 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    true,
-    true,
+    false,
+    false,
     false
   ];
   const macColSortValues = applicationType === "NEW" ? [
@@ -361,7 +369,7 @@ const StaffApplicationList = ({
     true,
     false
   ] : [
-    // false,
+    false,
     true,
     // true,
     true,
@@ -381,7 +389,7 @@ const StaffApplicationList = ({
     true,
     false,
   ] : [
-    // false,
+    false,
     true,
     // true,
     true,
@@ -1228,14 +1236,14 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
-      // );
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
@@ -1299,10 +1307,10 @@ const StaffApplicationList = ({
           submitted.push(format(new Date(log?.lastModifiedDate), "MMM dd, yyyy"));
         }
       });
-      lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
-      );
-      lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
+      // lastUpdated.push(
+      //   format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      // );
+      // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -1316,7 +1324,7 @@ const StaffApplicationList = ({
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      // { type: "text", value: department },
+      { type: "text", value: department },
       {
         type: "iconWithCount",
         value: docs,
@@ -1351,12 +1359,12 @@ const StaffApplicationList = ({
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
       },
-      {
-        type: "iconWithCount",
-        value: lastUpdated,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: lastUpdated,
+      //   hoverText: lastUpdatedBy,
+      //   isShowHoverText: true,
+      // },
       { type: "action", value: action },
     ];
   }
@@ -1414,9 +1422,9 @@ const StaffApplicationList = ({
       );
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
-      // );
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
@@ -1463,11 +1471,11 @@ const StaffApplicationList = ({
       // }
 
       // taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
-      lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
-      );
-      // lastUpdatedBy.push(["-"]);
-      lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
+      // lastUpdated.push(
+      //   format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+      // );
+      // // lastUpdatedBy.push(["-"]);
+      // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
       // lastUpdated.push(isNaN(lastUpdatedDate.getTime()) ? 'Invalid Date' : format(lastUpdatedDate, 'MM-dd-yyyy'));
       // capManager.push(data?.interviewDetails?.interviewedBy || '- ');
@@ -1481,7 +1489,7 @@ const StaffApplicationList = ({
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
-      // { type: "text", value: department },
+      { type: "text", value: department },
       {
         type: "iconWithCount",
         value: docs,
@@ -1510,12 +1518,12 @@ const StaffApplicationList = ({
       //   icon: taskListDotColor
       // },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
-      {
-        type: "iconWithCount",
-        value: lastUpdated,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: lastUpdated,
+      //   hoverText: lastUpdatedBy,
+      //   isShowHoverText: true,
+      // },
       { type: "action", value: action },
     ];
   }
@@ -1564,9 +1572,29 @@ const StaffApplicationList = ({
       );
       applicantType.push(data?.providerType.serviceProviderType);
       // applicantId.push(data?.displayId);
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+       department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      docsHoverText.push(docHoverTextArray);
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
+      //   />
       // );
+
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // commiteeStatus.push(data?.commiteeStatus || "yellow");
       // boardStatus.push(data?.boardStatus || "green");
       // ceoStatus.push(data?.ceoStatus || "grey");
@@ -1644,10 +1672,13 @@ const StaffApplicationList = ({
     applicantName = [];
     applicantType = [];
     applicantId = [];
-    // department = [];
     // commiteeStatus = [];
     // boardStatus = [];
     // ceoStatus = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
     crs = [];
     notes = [];
     docsHoverText = [];
@@ -1690,9 +1721,29 @@ const StaffApplicationList = ({
       );
       applicantType.push(data?.providerType.serviceProviderType);
       // applicantId.push(data?.displayId);
-      // department.push(
-      //   data?.basicDetails?.departmentSpecialty?.department || "-"
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      docsHoverText.push(docHoverTextArray);
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
+      //   />
       // );
+
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // commiteeStatus.push(data?.commiteeStatus || "yellow");
       // boardStatus.push(data?.boardStatus || "green");
       // ceoStatus.push(data?.ceoStatus || "grey");
@@ -1775,7 +1826,14 @@ const StaffApplicationList = ({
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
 
-      // { type: "text", value: department },
+      { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
       // { type: "dot", value: commiteeStatus },
       // { type: "dot", value: boardStatus },
       // { type: "dot", value: ceoStatus },
@@ -1801,18 +1859,18 @@ const StaffApplicationList = ({
       //   // hoverText: lastUpdatedBy,
       //   // isShowHoverText: true,
       // },
-      {
-        type: "iconWithCount",
-        value: submitted,
-        // hoverText: lastUpdatedBy,
-        // isShowHoverText: true,
-      },
-      {
-        type: "iconWithCount",
-        value: lastUpdatedOn,
-        hoverText: lastUpdatedBy,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: submitted,
+      //   // hoverText: lastUpdatedBy,
+      //   // isShowHoverText: true,
+      // },
+      // {
+      //   type: "iconWithCount",
+      //   value: lastUpdatedOn,
+      //   hoverText: lastUpdatedBy,
+      //   isShowHoverText: true,
+      // },
       { type: "action", value: action },
     ]
   };
@@ -1881,9 +1939,11 @@ const StaffApplicationList = ({
     ];
   } : () => {
     // checkbox= [];
+    dot = [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
+    department = [];
     docs = [];
     docsHoverText = [];
     docsIcon = [];
@@ -1908,12 +1968,27 @@ const StaffApplicationList = ({
       //     inputProps={{ 'aria-label': `Select ${data.name}` }}
       //   />
       // );
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Advisory Committee"));
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
       // ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
@@ -1999,9 +2074,11 @@ const StaffApplicationList = ({
 
     return [
       // { type: "checkbox", value: checkbox },
+      { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
+      { type: "text", value: department },
       {
         type: "iconWithCount",
         value: docs,
@@ -2086,9 +2163,14 @@ const StaffApplicationList = ({
     ];
   }: () => {
     // checkbox= [];
+    dot = [];
     applicantName = [];
     applicantId = [];
     applicantType = [];
+    department = [];
+    docs = [];
+    docsHoverText = [];
+    docsIcon = [];
     crs = [];
     crsHoverText = [];
     notes = [];
@@ -2112,12 +2194,47 @@ const StaffApplicationList = ({
       //     inputProps={{ 'aria-label': `Select ${data.name}` }}
       //   />
       // );
+      const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Board"));
+      if (workflow) {
+        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+            : "grey";
+        dot.push(color);
+        console.log("Matching workflow found:", {
+          role: workflow.role,
+          status: workflow.currentLevelStatus,
+          assignedColor: color
+        });
+      }
       applicantName.push(
         `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
       applicantType.push(data?.providerType?.serviceProviderType);
+      department.push(
+        `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+      );
+      docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
+      // docsHoverText.push([
+      //   "Immunization History Verification From PCP pending",
+      // ]);
+      const documentDetails = data?.documents?.documentDetails || [];
+      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      docsHoverText.push(docHoverTextArray);
+      // docsIcon.push(
+      //   <TextSnippetOutlinedIcon
+      //     style={{ fontSize: 20, color: `#2C2C2C` }}
+      //   />
+      // );
+
+      if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
+      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
+      } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
+        docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
+      }
       // ccapproval.push(data?.ccapproval || "05/05/2024");
       // ccapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
@@ -2202,9 +2319,18 @@ const StaffApplicationList = ({
 
     return [
       // { type: "checkbox", value: checkbox },
+      { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
+      { type: "text", value: department },
+      {
+        type: "iconWithCount",
+        value: docs,
+        hoverText: docsHoverText,
+        isShowHoverText: true,
+        icon: docsIcon,
+      },
       {
         type: "countWithHover",
         value: crs,
@@ -2510,6 +2636,7 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog,hideForRoles: "Staff Manager" },
     // {
     //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
     //   requiredValue: "boolean",
@@ -2663,11 +2790,11 @@ const StaffApplicationList = ({
     // { data: "MAC Approval", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ]:[
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
@@ -2935,7 +3062,7 @@ const StaffApplicationList = ({
                   </div>
                 </div>
               ) : null}
-               <div className={`${style.searchContainer}`}>
+               {/* <div className={`${style.searchContainer}`}>
                   <SearchOutlinedIcon className={`${style.searchIcon}`} 
                     sx={{
                       fontSize: 25,
@@ -2947,7 +3074,59 @@ const StaffApplicationList = ({
                     placeholder="Search By Staff Name"
                     className={`${style.searchInput}`}
                   />
-                </div>
+                </div> */}
+
+                  {(applicationType === "REAPPOINTMENT" && (userRole?.includes("Staff Manager") || userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee"))) ? (
+                    <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                      <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                        <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                          Reappointments Status Tracker
+                          {/* (
+                          {totalCountDept || 0}) */}
+                          {/* <span
+                            className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                          >
+                            {sentCompletion?.totalApplicationsSent || 0}
+                          </span> */}
+                        </div>
+                        {/* <div className={`${style.marginLeft10}`}>
+                          <RemoveIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
+                          />
+                        </div> */}
+                      </div>
+
+                      <div
+                        style={{
+                          maxHeight: "200px",
+                          overflowY: "auto",
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "gray transparent",
+                        }}
+                      >
+                        <div
+                          className={`${style.displayInCol} ${style.marginTop}`}
+                          onClick={() => onClickDepttrackerDialog()}
+                        >
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.DepartmentHeadingTextStyle}>
+                                  All Department
+                                  {/* (
+                                  {totalCountDept || 0}) */}
+                                </div>
+                                <KeyboardArrowRightIcon
+                                  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
 
               {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
                 <div
@@ -3040,67 +3219,6 @@ const StaffApplicationList = ({
                           </div>
                         </div>
                       ))}
-                    </div>
-                  )}
-                </div>
-              ) : null}
-              {(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee"))) ? (
-              <div
-                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-                >
-                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                    <div
-                      className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
-                    >
-                      Reappointments Status Tracker 
-                      {/* (
-                      {totalCountDept || 0}) */}
-                      {/* <span
-                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
-                      >
-                        {sentCompletion?.totalApplicationsSent || 0}
-                      </span> */}
-                    </div>
-                    <div className={`${style.marginLeft10} `}>
-                      {!showDepartmentCardStatus ? (
-                        <AddIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
-                        />
-                      ) : (
-                        <RemoveIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {showDepartmentCardStatus && (
-                    <div
-                      style={{
-                        maxHeight: "200px",
-                        overflowY: "auto",
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "gray transparent",
-                      }}
-                    >
-                        <div className={`${style.displayInCol} ${style.marginTop}`}  onClick={() =>
-                       onClickDepttrackerDialog()
-                      }>
-                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                            <div className={style.progressbarStyle}>
-                              <div className={style.spaceBetween} >
-                                <div className={style.DepartmentHeadingTextStyle}>
-                                  All Department
-                                  {/* (
-                                    {totalCountDept || 0}) */}
-                                </div>
-                                <KeyboardArrowRightIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                     </div>
                   )}
                 </div>

@@ -6,6 +6,7 @@ import WritingFile from "./../../images/writingFile.png";
 import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
+import CircleRoundedIcon from '@mui/icons-material/CircleRounded';
 import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
 import CrossPink from "./../../images/crossPink.png";
@@ -61,6 +62,8 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useNavigate, useParams } from "react-router-dom";
+import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -261,6 +264,12 @@ const NewActiveApplication = ({
     setCalendarStart(false);
     setIsButtonDisabled(false);
 
+  };
+
+  const getJune30thOfCurrentYear = () => {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear() + 1;
+    return new Date(currentYear, 5, 30); 
   };
 
   useEffect(() => {
@@ -488,6 +497,12 @@ useEffect(() => {
     );
     if (contractData) {
       setPrevContractData(contractData);
+    }
+  };
+
+  const sendEmail = (email) => {
+    if (email) {
+      window.location.href = `mailto:${email}`;
     }
   };
 
@@ -1244,8 +1259,15 @@ useEffect(() => {
           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
         } else if (data === "verified") {
           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
-        } else {
-          temp.push({ "type": "text", "value": array?.map(innerData => innerData[data]) });
+        }  else {
+          temp.push({
+              "type": "text",
+              "value": array.map(innerData => 
+                  <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                      {innerData[data]}
+                  </div>
+              )
+          });
         }
       }
       // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
@@ -1355,8 +1377,8 @@ useEffect(() => {
   const approvalFromDate = logDetails?.logs?.map((log) => {
     try {
       // Safely format each log's approved date
-      return log?.approvedDate
-        ? format(new Date(log.approvedDate), "MMM dd, yyyy")
+      return log?.createdDate
+        ? format(new Date(log.createdDate), "MMM dd, yyyy, H.mm")
         : "-";
     } catch (error) {
       console.error("Error formatting date:", error);
@@ -3422,7 +3444,7 @@ useEffect(() => {
                     </div>
                     {additionalPrivilegeChangeYesOrNo !== '' && (
                       <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                        <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                        <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Additional Privileges Requested' : 'Change for Reappointment'}</div>
                         {additionalPrivilegeChangeYesOrNo === 'No' ? (
                           <div className={`${style.privilegeHeading}`}>None</div>
                         ) : (
@@ -3553,7 +3575,7 @@ useEffect(() => {
                                   {form?.basicDetails?.applicant?.name?.firstName
                                     ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                     form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                    : ""}{", "}
+                                    : ""}{" "}
                                   {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
@@ -3562,7 +3584,7 @@ useEffect(() => {
                                   {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                                 </span>
                               </div>
-                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Reappointment Date:
                                 </span>
@@ -3580,7 +3602,7 @@ useEffect(() => {
                                   ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
                                   : ""}
                               </div>
-                              <div className={`${style.twoColumnGridInner1}`}>
+                              <div className={`${style.twoColumnGridInner2}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Application Submitted:
                                 </span>
@@ -3592,7 +3614,7 @@ useEffect(() => {
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`}>
+                              <div className={`${style.emailTextBoldStyle}`}  onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}  style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
@@ -3670,7 +3692,7 @@ useEffect(() => {
                                   {form?.basicDetails?.applicant?.name?.firstName
                                     ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                     form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                    : ""}{", "}
+                                    : ""}{" "}
                                   {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
@@ -3709,7 +3731,7 @@ useEffect(() => {
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`}>
+                              <div className={`${style.emailTextBoldStyle}`}  onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}  style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
@@ -3781,7 +3803,7 @@ useEffect(() => {
                             <div
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
-                              <div className={`${style.tableHeaderTextStyle}`}>
+                              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft30}`}>
                                 Required Data & POD Verification
                               </div>
                             </div>
@@ -4160,7 +4182,7 @@ useEffect(() => {
                                       </>
                                     </div>
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft30}`}
                                     >
                                       <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
                                         {data?.title}
@@ -9170,11 +9192,12 @@ useEffect(() => {
                   )} */}
 
                 {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
-                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.twoColumnGrid}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
+                    {/* <div className={`${style.twoColumnGrid}`}> */}
+                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                       <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                           onClick={() => {
                             onClose();
                           }}
@@ -9183,10 +9206,11 @@ useEffect(() => {
                         </div>
                       </div>
                       <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
                       >
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
                           // onClick={() => {
                           //   setShowApplicationDeclineDialog(true);
                           // }}
@@ -9197,11 +9221,12 @@ useEffect(() => {
                           NOT RECOMMENDED
                         </div>
                       </div>
-                    </div>
+                    {/* </div> */}
                     <div className={`${style.marginTop20}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
                           // onClick={onClickApproveFunction}
                           onClick={() => {
                             onClickApprovalFunction();
@@ -9210,9 +9235,10 @@ useEffect(() => {
                           RECOMMENDED WITH COMMENTS
                         </div>
                       </div>
-                      <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                         <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
                           onClick={onClickApprovalwithoutnotesFunction}
                         >
                           RECOMMEND
@@ -9266,7 +9292,8 @@ useEffect(() => {
                           onOpen={() => setCalendarStart(true)}
                           onClose={() => setCalendarStart(false)}
                           minDate={sub(new Date(), { years: 3 })}
-                          maxDate={add(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
                           value={selectedDateForMac}
                           renderInput={(params) => (
                             <TextField
@@ -9274,6 +9301,7 @@ useEffect(() => {
                               inputProps={{
                                 ...params.inputProps,
                                 placeholder: 'Enter MAC Meeting Date To Continue',
+                                readOnly: true
                               }}
                               variant="outlined"
                               margin="normal"
@@ -9282,23 +9310,6 @@ useEffect(() => {
                           )}
                         />
                       </div>
-                      {taskCount > 0 ? (
-                        <>
-                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                            <WarningIcon className={style.warning} />
-                            <div className={`${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
-                          </div>
-
-                        </>
-                      ) : (
-                        <>
-                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                            <TaskAltIcon className={style.correcticon} />
-                            <div className={`${style.marginLeft10} ${style.alignItem}`}>Checklist Items Pending Completion</div>
-                          </div>
-                        </>
-                      )}
-                      <div className={style.marginBottom20}></div>
                       <div>
                         <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
@@ -9309,7 +9320,7 @@ useEffect(() => {
                         <div
                           className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                           style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          onClick={isButtonDisabled ? undefined : onClickApproveMoveMacFunction}
+                          onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesFunction}
                         >
                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                             RECOMMENDED BY MAC
@@ -9339,7 +9350,8 @@ useEffect(() => {
                           onClose={() => setCalendarStart(false)}
 
                           minDate={sub(new Date(), { years: 3 })}
-                          maxDate={add(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
                           value={selectedDateForBod}
                           renderInput={(params) => (
                             <TextField
@@ -9347,6 +9359,7 @@ useEffect(() => {
                               inputProps={{
                                 ...params.inputProps,
                                 placeholder: 'Enter BOD Approval Date To Continue',
+                                readOnly: true
                               }}
                               variant="outlined"
                               margin="normal"
@@ -9355,23 +9368,6 @@ useEffect(() => {
                           )}
                         />
                       </div>
-                      {taskCount > 0 ? (
-                        <>
-                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                            <WarningIcon className={style.warning} />
-                            <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
-                          </div>
-
-                        </>
-                      ) : (
-                        <>
-                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                            <TaskAltIcon className={style.correcticon} />
-                            <div className={`${style.marginLeft10} ${style.alignItem}`}>Checklist Items Pending Completion</div>
-                          </div>
-                        </>
-                      )}
-                      <div className={style.marginBottom20}></div>
                       <>
                         <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
@@ -9898,7 +9894,7 @@ useEffect(() => {
                                   ?.filter((log) =>
                                     log?.workflowStatus !== "SUBMITTED"
                                     && !(log?.approvalType === null || log?.approvalType === "")
-                                  )
+                                  ).reverse() 
                                   .map((log, index) => (
                                     <div key={index}>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
@@ -9908,8 +9904,13 @@ useEffect(() => {
                                         className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${log?.approvalType === 'RECOMMENDED_WITH_NOTES' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
                                           }`}
                                       >
-                                        {log?.approvalType || "-"}
+                                        {log?.approvalType ? log.approvalType.replace(/_/g, ' ') : "-"}
                                       </div>
+                                      {log?.approvalType === "RECOMMENDED_WITH_NOTES" && log?.notes && (
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                          <div dangerouslySetInnerHTML={{ __html: log.notes }} />
+                                        </div>
+                                      )}
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
                                         {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]}
                                       </div>
@@ -9935,12 +9936,12 @@ useEffect(() => {
                               <div
                                 className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
                               >
-                                {/* <img
-                                  src={EditBlue}
-                                  alt="EditBlue"
-                                  className={style.colorFileStyle}
-                                /> */}
-                                <CreateOutlinedIcon className={`${style.notesIcon} ${style.cursorPointer}`} onClick={onClickNotesFunction} />
+                               <Tooltip title="Create a note" arrow>
+                                  <CreateOutlinedIcon
+                                    className={`${style.notesIcon} ${style.cursorPointer}`}
+                                    onClick={onClickNotesFunction}
+                                  />
+                                </Tooltip>
                               </div>
                             </div>
                             <div
@@ -9990,17 +9991,41 @@ useEffect(() => {
 
                             // </>
                             <>
-                          {form?.notesDetails?.filter(log => log.notes.notes).map((log, index) => (
+                        {form?.notesDetails
+                            ?.filter(log => log.notes.notes)
+                            .reverse()
+                            .map((log, index) => (
                               <div key={index}>
                                 <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
                                   {log.title}
                                 </div>
                                 <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                  {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy')}
+                                  {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
                                 </div>
-                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                   <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                 </div>
+
+                                {/* Check if there are files */}
+                                {log.files && log.files.length > 0 && (
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                    {/* Display Material UI PDF icon and link */}
+                                    <div className={style.displayInRow}>
+                                    <div className={style.cursorPointer} onclick={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
+                                      <DescriptionRoundedIcon className={style.docsIcon} style={{ marginRight: '8px' }} />
+                                    </div>
+                                    <a className={`${style.cursorPointer} ${style.docsIcon}`} href={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
+                                    View DOCUMENT</a>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Optional description */}
+                                {log.files && log.files[0] && log.files[0].description && (
+                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                    <div>{log.files[0].description}</div>
+                                  </div>
+                                )}
                               </div>
                             ))}
                             </>
@@ -10120,60 +10145,6 @@ useEffect(() => {
                     </>
                   ) : (" ")}
 
-                  {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
-                    // <div className={`${style.fixedBottom}`}>
-                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                      <div className={`${style.twoColumnGrid}`}>
-                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              onClose();
-                            }}
-                          >
-                            SAVE IN PROGRESS
-                          </div>
-                        </div>
-                        <div
-                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                        >
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            // onClick={() => {
-                            //   setShowApplicationDeclineDialog(true);
-                            // }}
-                            onClick={() => {
-                              setShowApplicationDeclineDialog(true);
-                            }}
-                          >
-                            NOT RECOMMENDED
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`${style.marginTop20}`}>
-                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                            // onClick={onClickApproveFunction}
-                            onClick={() => {
-                              onClickApprovalFunction();
-                            }}
-                          >
-                            RECOMMENDED WITH COMMENTS
-                          </div>
-                        </div>
-                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                          <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            onClick={onClickApprovalwithoutnotesFunction}
-                          >
-                            RECOMMEND
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    // </div>
-                  ) : (" ")}
                 </>
               </>
             ) : null
