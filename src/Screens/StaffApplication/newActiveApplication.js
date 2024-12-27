@@ -57,6 +57,7 @@ import Dropzone from "react-dropzone";
 import TableTwo from "../../Components/TableDesignTwo";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import FileVerifyDialog from "../../Components/fileVerifyDialog";
 import CommonRadio from "../../Components/CommonFields/CommonRadio";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -130,6 +131,7 @@ const NewActiveApplication = ({
   const [helpTextData, setHelpTextData] = useState();
   const [form1, setForm1] = useState();
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+  const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
   const [selectedFile, setselectedFile] = useState(false);
   const [medicalDirectives, setMedicalDirectives] = useState([])
   const [selectedField, setSelectedField] = useState({
@@ -205,6 +207,8 @@ const NewActiveApplication = ({
   const [additionalPrivilegeChangeYesOrNo, setAdditionalPrivilegeChangeYesOrNo] = useState("");
   const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
   const [formIndex, setFormIndex] = useState();
+  const [selectedFileIndex, setSelectedFileIndex] = useState(0);
+  const [fileArray, setFileArray] = useState([]);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -271,6 +275,16 @@ const NewActiveApplication = ({
     const currentYear = currentDate.getFullYear() + 1;
     return new Date(currentYear, 5, 30); 
   };
+
+  const handleVerifyClickDocs = (files, index) => {
+    setFileArray(files);
+    setSelectedFileIndex(index);
+    setShowFileVerifyDialog(true);
+    setSelectedRow(files);
+    setSelectedRowTableName("table");
+    setSelectedFormId(form?.forms?.[1]?.id);
+};
+
 
   useEffect(() => {
     if (canadaData) {
@@ -1144,6 +1158,10 @@ useEffect(() => {
     setShowFileDisplayDialog(value);
   }
 
+  const getIsShowFileVerifyDialog = (value) => {
+    setShowFileVerifyDialog(value);
+  }
+
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
     console.log(
@@ -1245,7 +1263,7 @@ useEffect(() => {
   const getApplicantValues = (array, index) => {
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
-    console.log(array, 'array')
+    console.log(array, 'arrayyyyyy')
     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
       if (data === "file") {
         temp.push({
@@ -1258,8 +1276,32 @@ useEffect(() => {
         if (data === "valid") {
           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
         } else if (data === "verified") {
-          temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
-        }  else {
+          temp.push({
+            "type": "icon",
+            "icon": array?.map((innerData, index) => (
+                innerData?.isVerified === true 
+                ? (
+                    <div className={`${style.greenButton} ${style.cursorPointer}`}> 
+                        <div
+                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            // onClick={() => handleVerifyClickDocs(array, index)}
+                        >
+                            Verified 
+                        </div>
+                    </div>
+                ) : (
+                    <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
+                        <div
+                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            onClick={() => handleVerifyClickDocs(array, index)}
+                        >
+                            Verify 
+                        </div>
+                    </div>
+                )
+            ))
+        });        
+      }  else {
           temp.push({
               "type": "text",
               "value": array.map(innerData => 
@@ -1364,6 +1406,20 @@ useEffect(() => {
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
+  const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
+
+  const buttonStyle = isUploadYourDoc && !allVerified ? { opacity: 0.5, pointerEvents: 'none' } : {};
+
+  
+  const getButtonStyle = () => {
+    if (isUploadYourDoc && !allVerified) {
+      return { opacity: 0.5, pointerEvents: 'none' };
+    }
+    return {};
+  };
+  
+  // const buttonStyle = getButtonStyle();
   // const approvalDate = logDetails?.approvedDate;
   // const approvalDateLog = logDetails?.logs?.map((log,index) => log.approvedDate);
   // console.log("approvalDate" + approvalDateLog);
@@ -3349,13 +3405,14 @@ useEffect(() => {
                       <>
                         {form?.privileges?.obligatedPrivileges?.map(
                           (data) => (
-                            <div className={style.privilegeHeading}
-                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                            // onClick={() => {
-                            //   setShowCurrentPrivileges(true);
-                            //   setCurrentPrivilegesCategory('Basic')
-                            //   handleChange(data?.id);
-                            // }}
+                            <div 
+                            // className={style.privilegeHeading}
+                            className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                            onClick={() => {
+                              setShowCurrentPrivileges(true);
+                              setCurrentPrivilegesCategory('Basic')
+                              handleChange(data?.id);
+                            }}
                             >
                               {data?.privilegeSetTitle}
                             </div>
@@ -3366,13 +3423,14 @@ useEffect(() => {
                       <>
                         {form?.privileges?.priorObligatedPrivileges?.map(
                           (data) => (
-                            <div className={style.privilegeHeading}
-                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                            // onClick={() => {
-                            //   setShowCurrentPrivileges(true);
-                            //   setCurrentPrivilegesCategory('Basic')
-                            //   handleChange(data?.id);
-                            // }}
+                            <div 
+                            // className={style.privilegeHeading}
+                            className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                            onClick={() => {
+                              setShowCurrentPrivileges(true);
+                              setCurrentPrivilegesCategory('Basic')
+                              handleChange(data?.id);
+                            }}
                             >
                               {data?.privilegeSetTitle}
                             </div>
@@ -3396,13 +3454,14 @@ useEffect(() => {
                         <>
                           {form?.privileges?.obligatedPrivileges?.map(
                             (data) => (
-                              <div className={style.privilegeHeading}
-                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                              // onClick={() => {
-                              //   setShowCurrentPrivileges(true);
-                              //   setCurrentPrivilegesCategory('Basic')
-                              //   handleChange(data?.id);
-                              // }}
+                              <div 
+                              // className={style.privilegeHeading}
+                              className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                setShowCurrentPrivileges(true);
+                                setCurrentPrivilegesCategory('Basic')
+                                handleChange(data?.id);
+                              }}
                               >
                                 {data?.privilegeSetTitle}
                               </div>
@@ -4676,56 +4735,65 @@ useEffect(() => {
                                     </>
                                   ) : (
                                     <>
-                                      {credApproval?.some((newData) => {
-                                        console.log("newData.approvalRequired:", newData.approvalRequired);
-                                        return newData.schemaId === data.id && newData.approvalRequired;
-                                      }) ? (
-                                        <>
-                                          {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                            (() => {
-                                              const isMatch = logDetails.logs.some((log) => {
-                                                if (log.form && log.form.id) {
-                                                  const match = log.form.id === form?.forms[index]?.id;
-                                                  console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                  if (match) {
-                                                    let Match = false;
-
-                                                    // Check if userRole includes log.role
-                                                    if (userRole?.includes(log.role)) {
-                                                      console.log("Role matches user role: " + log.role);
-                                                      Match = true;
-                                                    }
-
-                                                    // Determine selectedTabRole based on selectedTab
-                                                    let selectedTabRole;
-                                                    if (selectedTab === 'level-2') {
-                                                      selectedTabRole = "Department Head";
-                                                    } else if (selectedTab === 'level-3') {
-                                                      selectedTabRole = "Chief Of Staff";
-                                                    } else if (selectedTab === 'level-4') {
-                                                      selectedTabRole = "Advisory Committee";
-                                                    } else if (selectedTab === 'level-5') {
-                                                      selectedTabRole = "Board";
-                                                    } else if (selectedTab === 'level-1') {
-                                                      selectedTabRole = "Staff Manager";
-                                                    }
-
-                                                    // Check if selectedTabRole matches log.role
-                                                    if (selectedTabRole === log.role) {
-                                                      console.log("Selected tab role matches log role: " + log.role);
-                                                      Match = true;
-                                                    }
-
-                                                    return Match;
+                                    {credApproval?.some((newData) => {
+                                      console.log("newData.approvalRequired:", newData.approvalRequired);
+                                      return newData.schemaId === data.id && newData.approvalRequired;
+                                    }) ? (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                          (() => {
+                                            const isMatch = logDetails.logs.some((log) => {
+                                              if (log.form && log.form.id) {
+                                                const match = log.form.id === form?.forms[index]?.id;
+                                                console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                  
+                                                if (match) {
+                                                  let Match = false;
+                                  
+                                                  // Check if userRole includes log.role
+                                                  if (userRole?.includes(log.role)) {
+                                                    console.log("Role matches user role: " + log.role);
+                                                    Match = true;
                                                   }
+                                  
+                                                  // Determine selectedTabRole based on selectedTab
+                                                  let selectedTabRole;
+                                                  switch (selectedTab) {
+                                                    case 'level-2':
+                                                      selectedTabRole = "Department Head";
+                                                      break;
+                                                    case 'level-3':
+                                                      selectedTabRole = "Chief Of Staff";
+                                                      break;
+                                                    case 'level-4':
+                                                      selectedTabRole = "Advisory Committee";
+                                                      break;
+                                                    case 'level-5':
+                                                      selectedTabRole = "Board";
+                                                      break;
+                                                    case 'level-1':
+                                                      selectedTabRole = "Staff Manager";
+                                                      break;
+                                                    default:
+                                                      selectedTabRole = null;
+                                                  }
+                                  
+                                                  // Check if selectedTabRole matches log.role
+                                                  if (selectedTabRole === log.role) {
+                                                    console.log("Selected tab role matches log role: " + log.role);
+                                                    Match = true;
+                                                  }
+                                  
+                                                  return Match;
                                                 }
-                                                return false;
-                                              });
-
-                                              return (
-                                                <div>
-                                                  {isMatch ? (
+                                              }
+                                              return false;
+                                            });
+                                  
+                                            return (
+                                              <div>
+                                                {form?.forms[index]?.schemaCategory !== 'UploadYourDoc' ? (
+                                                  isMatch ? (
                                                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                       <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                         Verified
@@ -4736,7 +4804,11 @@ useEffect(() => {
                                                       <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                         <div
                                                           className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                          onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                          onClick={() => {
+                                                            if (!(isUploadYourDoc && !allVerified)) {
+                                                              handleStepsVerify(form?.forms[index]?.id);
+                                                            }
+                                                          }}
                                                         >
                                                           Verify
                                                         </div>
@@ -4748,20 +4820,43 @@ useEffect(() => {
                                                         </div>
                                                       </div>
                                                     )
-                                                  )}
-                                                </div>
-                                              );
-                                            })()
-                                          )}
-                                        </>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Verified
-                                          </div>
+                                                  )
+                                                ) : (
+                                                  form?.forms[index]?.status !== "APPROVED" ? (
+                                                    <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
+                                                      <div
+                                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                        onClick={() => {
+                                                          if (!(isUploadYourDoc && !allVerified)) {
+                                                            handleStepsVerify(form?.forms[index]?.id);
+                                                          }
+                                                        }}
+                                                      >
+                                                        Verify
+                                                      </div>
+                                                    </div>
+                                                  ) : (
+                                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                        Verified
+                                                      </div>
+                                                    </div>
+                                                  )
+                                                )
+                                                }
+                                              </div>
+                                            );
+                                          })()
+                                        )}
+                                      </>
+                                    ) : (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Verified
                                         </div>
-                                      )}
-                                    </>
+                                      </div>
+                                    )}
+                                  </>                                  
                                   )}
                                 </div>))}
                             {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
@@ -9995,38 +10090,69 @@ useEffect(() => {
                             ?.filter(log => log.notes.notes)
                             .reverse()
                             .map((log, index) => (
-                              <div key={index}>
-                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                  {log.title}
-                                </div>
-                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                  {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
-                                </div>
-                                <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
-                                  <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                                </div>
-
-                                {/* Check if there are files */}
-                                {log.files && log.files.length > 0 && (
-                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                    {/* Display Material UI PDF icon and link */}
-                                    <div className={style.displayInRow}>
-                                    <div className={style.cursorPointer} onclick={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
-                                      <DescriptionRoundedIcon className={style.docsIcon} style={{ marginRight: '8px' }} />
+                                <div key={index}>
+                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                        {log.title}
                                     </div>
-                                    <a className={`${style.cursorPointer} ${style.docsIcon}`} href={log.files[0].fileURL} target="_blank" rel="noopener noreferrer">
-                                    View DOCUMENT</a>
+                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                        {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
                                     </div>
-                                  </div>
-                                )}
+                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
+                                        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                    </div>
 
-                                {/* Optional description */}
-                                {log.files && log.files[0] && log.files[0].description && (
-                                  <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                    <div>{log.files[0].description}</div>
-                                  </div>
-                                )}
-                              </div>
+                                    {/* Check if there are files */}
+                                    {log.files && log.files.length > 0 && (
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                            {log.files.map((file, fileIndex) => {
+                                              // let innerData = log?.files[0];
+                                              return (
+                                                <div key={fileIndex}>
+                                                  <div className={style.displayInRow}>
+                                                    {/* Display Material UI PDF icon and link */}
+                                                    <div
+                                                      className={style.cursorPointer}
+                                                      onClick={() => {
+                                                        setShowFileDisplayDialog(true);
+                                                        setselectedFile(file);
+                                                      }}
+                                                    >
+                                                      <DescriptionRoundedIcon
+                                                        className={style.docsIcon}
+                                                        style={{ marginRight: '8px' }}
+                                                      />
+                                                    </div>
+                                                    <div
+                                                      className={`${style.cursorPointer} ${style.docsIcon}`}
+                                                      onClick={() => {
+                                                        setShowFileDisplayDialog(true);
+                                                        setselectedFile(file);
+                                                      }}
+                                                    >
+                                                      {file?.fileName}
+                                                    </div>
+                                                  </div>
+                                                  {file?.title && (
+                                                    <div
+                                                      className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                                                    >
+                                                      <div>{file?.title}</div>
+                                                    </div>
+                                                  )}
+                                                  {/* Optional description */}
+                                                  {file?.description && (
+                                                    <div
+                                                      className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                                                    >
+                                                      <div>{file?.description}</div>
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              );
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
                             ))}
                             </>
                           )}
@@ -10526,6 +10652,20 @@ useEffect(() => {
             />
           )
         }
+           {showFileVerifyDialog && (
+                <FileVerifyDialog
+                    getIsOpen={setShowFileVerifyDialog}
+                    file={fileArray[selectedFileIndex]}
+                    fileArray={fileArray}
+                    setFileArray={setFileArray}
+                    selectedFileIndex={selectedFileIndex}
+                    setSelectedFileIndex={setSelectedFileIndex}
+                    selectedRow = {selectedRow}
+                    selectedRowTableName = {selectedRowTableName}
+                    selectedFormId = {selectedFormId}
+                    setForm = {setForm}
+                />
+            )}
         {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>

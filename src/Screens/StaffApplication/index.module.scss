@@ -237,6 +237,15 @@ body::-webkit-scrollbar {
   opacity: 1
 }
 
+.docsTitleTextStyle{
+  text-align: left;
+  font: normal normal medium 18px/34px Proxima Nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
 .buttonGreyTextStyleSmall {
   text-align: center;
   font: normal normal bold 14px/20px proxima-nova;
@@ -3273,6 +3282,12 @@ input[type="number"] {
   grid-gap: 10px;
 }
 
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
 .twoColumnGrid1 {
   display: grid;
   grid-template-columns: 42% 43%;
@@ -4494,13 +4509,13 @@ input[type="number"] {
 
 }
 
-.referenceCardStyle1 {
+.referenceCardStyleDocs {
   background: #dddddf 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid $primarycolor;
   border-radius: 4px;
   opacity: 0.9;
-  padding: 5px;
+  padding: 3px;
 }
 
 .sideHeadingFontStyle {

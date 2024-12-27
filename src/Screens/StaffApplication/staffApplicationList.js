@@ -1281,7 +1281,7 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
-        })
+        }) .reverse()
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // if (data?.tasks?.completedCount === 0) {
@@ -1451,7 +1451,7 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
-        })
+        }).reverse()
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // if (data?.tasks?.completedCount === 0) {
@@ -1752,7 +1752,7 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
-        })
+        }).reverse()
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
@@ -2016,7 +2016,7 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
-        })
+        }).reverse()
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
@@ -2250,7 +2250,7 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate),"MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
-        })
+        }).reverse()
       : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
