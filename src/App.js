@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
@@ -863,6 +863,8 @@ const App = ({ props }) => {
           // window.location.reload();
           return <Home />;
         }
+      } else {
+        window.location.pathname = "/loginPage";
       }
     }
     if (!Auth()) {
@@ -874,6 +876,10 @@ const App = ({ props }) => {
       console.log('login route', Auth())
       fetchData();
     }
+  };
+
+  const ProtectedRoute = ({ children }) => {
+    return (cookie.get("authorization") !== undefined && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
   if (isSessionLoading) {
@@ -889,342 +895,347 @@ const App = ({ props }) => {
         )}
         <div className="App">
           {/* {(accessToken !== false && accessToken !== undefined) ? ( */}
-          {isAuthenticated ? (
-            <>
-              <Routes>
-                <Route path="/" element={<LoginRoute />} />
-                <Route path="/contracts" element={<ActiveContracts />} />
-                <Route path="/staffs" element={<StaffManager />} />
-                <Route path="/applications" element={<StaffApplication />} />
-                <Route path="/activeStaff" element={<ActiveStaff />} />
-                {/* <Route
+          {/* {isAuthenticated ? ( */}
+          <>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<LoginRoute />} />
+              <Route path="/loginPage" element={<DescopeLoginDialog />} />
+
+              {/* Private Routes */}
+              <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
+              <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
+              <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+              <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
+              {/* <Route
                 path="/privilegeListManager"
                 element={<PrivilegeListMaster />}
               /> */}
-                <Route
-                  path="/referenceList/privilegeListMaster"
-                  element={<PrivilegeListMaster />}
-                />
-                <Route
-                  path="/referenceList/privilegeListManager"
-                  element={<PrivilegeListManager />}
-                />
+              <Route
+                path="/referenceList/privilegeListMaster"
+                element={<ProtectedRoute><PrivilegeListMaster /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/privilegeListManager"
+                element={<ProtectedRoute><PrivilegeListManager /></ProtectedRoute>}
+              />
 
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/notifyUser" element={<Notify />} />
-                <Route path="/applicant" element={<Applicant />} />
-                <Route
-                  path="/trackContracts/:trackType"
-                  element={<TrackYourContracts />}
-                />
-                <Route path="/contracts/moveToDraft" element={<MoveToDraft />} />
-                <Route
-                  path="/remindContractors"
-                  element={<RemindContractors />}
-                />
-                <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
-                {/* <Route path="/user" element={<Users />} /> */}
-                <Route path="/pages" element={<EntryPage />} />
-                <Route path="/user/ssoId/:userId" element={<GetSSOId />} />
-                <Route path="/setPassword/:randomId" element={<SetPassword />} />
-                <Route
-                  path="/activateAccess/:randomId"
-                  element={<ActivateAccess />}
-                />
-                <Route
-                  path="/setPassword"
-                  element={<SetPasswordWithoutEmail />}
-                />
-                <Route
-                  path="/applicationForm/applicationSummary"
-                  element={<ApplicationSummary />}
-                />
-                <Route
-                  path="/applicationForm/applicationAcknowledgement"
-                  element={<ApplicationAcknowledgement />}
-                />
-                <Route
-                  path="/applicationForm/acknowledgementReview"
-                  element={<AcknowledgementReview />}
-                />
-                <Route path="/applicationForm/podcheck" element={<PODCheck />} />
-                <Route path="/welcome" element={<Welcome />} />
-                <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
-                <Route
-                  path="/entitySystemAdmin"
-                  element={<EntitySystemAdmin />}
-                />
-                <Route path="/siteInformation" element={<SiteInformation />} />
-                <Route path="/siteUsers" element={<SiteUsers />} />
-                <Route path="/appSubscription" element={<AppSubscription />} />
-                <Route path="/setupComplete" element={<SetupComplete />} />
-                <Route path="/otpPage" element={<OTPPage />} />
-                <Route
-                  path="/welcomeToDashboard"
-                  element={<WelcomeToDashboard />}
-                />
-                <Route path="/tasks" element={<ReportsHome />} />
-                <Route
-                  path="/reports/:reportType"
-                  element={<TimeSheetReportsBase />}
-                />
-                <Route path="/chart" element={<ChartPage />} />
-                <Route path="/help" element={<HelpHome />} />
-                <Route path="/partnerPortal" element={<TasksAndAlerts />} />
-                <Route path="/activeCustomers" element={<CustomerManagement />} />
-                <Route path="/customerSetup" element={<CustomerSetup />} />
-                <Route path="/referenceList" element={<ReferenceList />} />
-                <Route path="/applicationSetup" element={<ApplicationSetup />} />
-                <Route
-                  path="/Screens/ReferenceList/superAdminDashboard"
-                  element={<SuperAdminDashboard />}
-                />
-                <Route
-                  path="/Screens/ReferenceList/customerAdminDashboard"
-                  element={<ClientAdminDashboard />}
-                />
-                <Route
-                  path="/referenceList/industriesWithEntityTypes"
-                  element={<IndustriesWithEntityTypes />}
-                />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/notifyUser" element={<ProtectedRoute><Notify /></ProtectedRoute>} />
+              <Route path="/applicant" element={<ProtectedRoute><Applicant /></ProtectedRoute>} />
+              <Route
+                path="/trackContracts/:trackType"
+                element={<ProtectedRoute><TrackYourContracts /></ProtectedRoute>}
+              />
+              <Route path="/contracts/moveToDraft" element={<ProtectedRoute><MoveToDraft /></ProtectedRoute>} />
+              <Route
+                path="/remindContractors"
+                element={<ProtectedRoute><RemindContractors /></ProtectedRoute>}
+              />
+              <Route path="notifyEntityUser" element={<ProtectedRoute><NotifyEntityUser /></ProtectedRoute>} />
+              {/* <Route path="/user" element={<Users />} /> */}
+              <Route path="/pages" element={<ProtectedRoute><EntryPage /></ProtectedRoute>} />
+              <Route path="/user/ssoId/:userId" element={<ProtectedRoute><GetSSOId /></ProtectedRoute>} />
+              <Route path="/setPassword/:randomId" element={<ProtectedRoute><SetPassword /></ProtectedRoute>} />
+              <Route
+                path="/activateAccess/:randomId"
+                element={<ProtectedRoute><ActivateAccess /></ProtectedRoute>}
+              />
+              <Route
+                path="/setPassword"
+                element={<ProtectedRoute><SetPasswordWithoutEmail /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationForm/applicationSummary"
+                element={<ProtectedRoute><ApplicationSummary /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationForm/applicationAcknowledgement"
+                element={<ProtectedRoute><ApplicationAcknowledgement /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationForm/acknowledgementReview"
+                element={<ProtectedRoute><AcknowledgementReview /></ProtectedRoute>}
+              />
+              <Route path="/applicationForm/podcheck" element={<ProtectedRoute><PODCheck /></ProtectedRoute>} />
+              <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+              <Route path="/entitySetup/:id/:page" element={<ProtectedRoute><EntitySetup /></ProtectedRoute>} />
+              <Route
+                path="/entitySystemAdmin"
+                element={<ProtectedRoute><EntitySystemAdmin /></ProtectedRoute>}
+              />
+              <Route path="/siteInformation" element={<ProtectedRoute><SiteInformation /></ProtectedRoute>} />
+              <Route path="/siteUsers" element={<ProtectedRoute><SiteUsers /></ProtectedRoute>} />
+              <Route path="/appSubscription" element={<ProtectedRoute><AppSubscription /></ProtectedRoute>} />
+              <Route path="/setupComplete" element={<ProtectedRoute><SetupComplete /></ProtectedRoute>} />
+              <Route path="/otpPage" element={<ProtectedRoute><OTPPage /></ProtectedRoute>} />
+              <Route
+                path="/welcomeToDashboard"
+                element={<ProtectedRoute><WelcomeToDashboard /></ProtectedRoute>}
+              />
+              <Route path="/tasks" element={<ProtectedRoute><ReportsHome /></ProtectedRoute>} />
+              <Route
+                path="/reports/:reportType"
+                element={<ProtectedRoute><TimeSheetReportsBase /></ProtectedRoute>}
+              />
+              <Route path="/chart" element={<ProtectedRoute><ChartPage /></ProtectedRoute>} />
+              <Route path="/help" element={<ProtectedRoute><HelpHome /></ProtectedRoute>} />
+              <Route path="/partnerPortal" element={<ProtectedRoute><TasksAndAlerts /></ProtectedRoute>} />
+              <Route path="/activeCustomers" element={<ProtectedRoute><CustomerManagement /></ProtectedRoute>} />
+              <Route path="/customerSetup" element={<ProtectedRoute><CustomerSetup /></ProtectedRoute>} />
+              <Route path="/referenceList" element={<ProtectedRoute><ReferenceList /></ProtectedRoute>} />
+              <Route path="/applicationSetup" element={<ProtectedRoute><ApplicationSetup /></ProtectedRoute>} />
+              <Route
+                path="/Screens/ReferenceList/superAdminDashboard"
+                element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/Screens/ReferenceList/customerAdminDashboard"
+                element={<ProtectedRoute><ClientAdminDashboard /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/industriesWithEntityTypes"
+                element={<ProtectedRoute><IndustriesWithEntityTypes /></ProtectedRoute>}
+              />
 
-                <Route
-                  path="/referenceList/departmentsByEntityTypes"
-                  element={<DepartmentsByEntityTypes />}
-                />
-                {/* <Route
+              <Route
+                path="/referenceList/departmentsByEntityTypes"
+                element={<ProtectedRoute><DepartmentsByEntityTypes /></ProtectedRoute>}
+              />
+              {/* <Route
                 path="/referenceList/acknowledgementForms"
                 element={<AcknowledgementForm />}
               /> */}
-                <Route
-                  path="/referenceList/functionalTitles"
-                  element={<FunctionalTitles />}
-                />
-                <Route
-                  path="/referenceList/boardCertification"
-                  element={<BoardCertification />}
-                />
-                <Route
-                  path="/referenceList/holidayListByIndustries"
-                  element={<HolidayListByIndustries />}
-                />
-                <Route
-                  path="/referenceList/terminationReasons"
-                  element={<TerminationReasons />}
-                />
-                <Route
-                  path="/referenceList/absenseReasonsByIndustries"
-                  element={<AbsenseReasonsByIndustries />}
-                />
-                <Route
-                  path="/referenceList/suffixByIndustries"
-                  element={<SuffixByIndustries />}
-                />
-                <Route
-                  path="/referenceList/contractByIndustries"
-                  element={<ContractByIndustries />}
-                />
-                <Route
-                  path="/referenceList/disclosureByIndustries/disclosureIndustries"
-                  element={<DisclosureIndustries />}
-                />
-                <Route
-                  path="/referenceList/contractedServiceProviderByIndustries"
-                  element={<ContractedServiceProvidedByIndustries />}
-                />
-                <Route
-                  path="/referenceList/proofOfDocumentByEntity"
-                  element={<ProofOfDocumentationByEntity />}
-                />
-                <Route
-                  path="/referenceList/ProofOfDocumentByApplicantType"
-                  element={<ProofOfDocumentByIndustries />}
-                />
-                <Route
-                  path="/referenceList/contractDoumentTypeForUpload"
-                  element={<ContractDocumentTypeForUpload />}
-                />
-                <Route
-                  path="/referenceList/holidayScheduleForCustomers"
-                  element={<HolidayScheduleForCustomers />}
-                />
-                <Route
-                  path="/referenceList/countriesSupportedWithStates"
-                  element={<CountriesSupportedWithStates />}
-                />
-                <Route
-                  path="/referenceList/countryWithStatesEntity"
-                  element={<CountriesWithStatesEntity />}
-                />
-                {/* <Route
+              <Route
+                path="/referenceList/functionalTitles"
+                element={<ProtectedRoute><FunctionalTitles /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/boardCertification"
+                element={<ProtectedRoute><BoardCertification /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/holidayListByIndustries"
+                element={<ProtectedRoute><HolidayListByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/terminationReasons"
+                element={<ProtectedRoute><TerminationReasons /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/absenseReasonsByIndustries"
+                element={<ProtectedRoute><AbsenseReasonsByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/suffixByIndustries"
+                element={<ProtectedRoute><SuffixByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractByIndustries"
+                element={<ProtectedRoute><ContractByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/disclosureByIndustries/disclosureIndustries"
+                element={<ProtectedRoute><DisclosureIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractedServiceProviderByIndustries"
+                element={<ProtectedRoute><ContractedServiceProvidedByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/proofOfDocumentByEntity"
+                element={<ProtectedRoute><ProofOfDocumentationByEntity /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/ProofOfDocumentByApplicantType"
+                element={<ProtectedRoute><ProofOfDocumentByIndustries /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractDoumentTypeForUpload"
+                element={<ProtectedRoute><ContractDocumentTypeForUpload /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/holidayScheduleForCustomers"
+                element={<ProtectedRoute><HolidayScheduleForCustomers /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/countriesSupportedWithStates"
+                element={<ProtectedRoute><CountriesSupportedWithStates /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/countryWithStatesEntity"
+                element={<ProtectedRoute><CountriesWithStatesEntity /></ProtectedRoute>}
+              />
+              {/* <Route
                 path="/referenceList/countryWithStatesEntity"
                 element={<CountryWithStatesEntity />}
               /> */}
-                <Route
-                  path="/referenceList/applicantTypesByEntity/applicantTypesByEntity"
-                  element={<ApplicantTypesByEntity />}
-                />
-                {/* <Route
+              <Route
+                path="/referenceList/applicantTypesByEntity/applicantTypesByEntity"
+                element={<ProtectedRoute><ApplicantTypesByEntity /></ProtectedRoute>}
+              />
+              {/* <Route
                 path="/referenceList/departmentsForCustomers"
                 element={<DepartmentsForCustomers />}
               /> */}
-                <Route
-                  path="/referenceList/departmentsForCustomerMultiSite"
-                  element={<DepartmentsForCustomersMultiSite />}
-                />
-                <Route
-                  path="/referenceList/absenceReasonsForCustomer"
-                  element={<AbsenceReasonsForCustomer />}
-                />
-                <Route
-                  path="/referenceList/suffixByCustomer"
-                  element={<SuffixByCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractDocumentTypeUploadForCustomer"
-                  element={<ContractDocumentUploadForCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractedServicesByEntityType"
-                  element={<ContractServicesByEntityType />}
-                />
-                <Route
-                  path="/referenceList/contractTypeForCustomer"
-                  element={<ContractTypeForCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractServiceProviderBySiteType"
-                  element={<ContractServiceProviderBySiteType />}
-                />
-                <Route
-                  path="/referenceList/contractServiceProviderMultiSite"
-                  element={<ContractServiceProviderForMultiSite />}
-                />
-                <Route
-                  path="/referenceList/functionalTitleForCustomer"
-                  element={<FunctionalTitleForCustomer />}
-                />
-                <Route
-                  path="/referenceList/functionalTitleMultiSitesForCustomer"
-                  element={<FunctionalTitleMultiSitesForCustomer />}
-                />
-                <Route
-                  path="/referenceList/contractTerminationReasonForCustomer"
-                  element={<TerminationReasonForCustomer />}
-                />
-                <Route
-                  path="/referenceList/holidayScheduleForCustomers"
-                  element={<HolidayScheduleForCustomers />}
-                />
-                <Route
-                  path="/referenceList/organizationCostCenters"
-                  element={<CostCenterAndLocations />}
-                />
-                <Route
-                  path="/referenceList/departmentsForCustomers"
-                  element={<DepartmentsForCustomers />}
-                />
-                <Route
-                  path="/referenceList/department/department"
-                  element={<Departments />}
-                />
-                <Route
-                  path="/referenceList/staffPrivilegesByDepartment"
-                  element={<StaffPrivilegesByDepartment />}
-                />
-                <Route
-                  path="/referenceList/applicantCheckList/applicantProcessingCheckList"
-                  element={<ApplicantProcessingCheckList />}
-                />
+              <Route
+                path="/referenceList/departmentsForCustomerMultiSite"
+                element={<ProtectedRoute><DepartmentsForCustomersMultiSite /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/absenceReasonsForCustomer"
+                element={<ProtectedRoute><AbsenceReasonsForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/suffixByCustomer"
+                element={<ProtectedRoute><SuffixByCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractDocumentTypeUploadForCustomer"
+                element={<ProtectedRoute><ContractDocumentUploadForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractedServicesByEntityType"
+                element={<ProtectedRoute><ContractServicesByEntityType /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractTypeForCustomer"
+                element={<ProtectedRoute><ContractTypeForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractServiceProviderBySiteType"
+                element={<ProtectedRoute><ContractServiceProviderBySiteType /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractServiceProviderMultiSite"
+                element={<ProtectedRoute><ContractServiceProviderForMultiSite /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/functionalTitleForCustomer"
+                element={<ProtectedRoute><FunctionalTitleForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/functionalTitleMultiSitesForCustomer"
+                element={<ProtectedRoute><FunctionalTitleMultiSitesForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/contractTerminationReasonForCustomer"
+                element={<ProtectedRoute><TerminationReasonForCustomer /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/holidayScheduleForCustomers"
+                element={<ProtectedRoute><HolidayScheduleForCustomers /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/organizationCostCenters"
+                element={<ProtectedRoute><CostCenterAndLocations /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/departmentsForCustomers"
+                element={<ProtectedRoute><DepartmentsForCustomers /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/department/department"
+                element={<ProtectedRoute><Departments /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/staffPrivilegesByDepartment"
+                element={<ProtectedRoute><StaffPrivilegesByDepartment /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/applicantCheckList/applicantProcessingCheckList"
+                element={<ProtectedRoute><ApplicantProcessingCheckList /></ProtectedRoute>}
+              />
 
-                <Route
-                  path="/referenceList/speciality/Speciality"
-                  element={<Speciality />}
-                />
-                <Route
-                  path="/referenceList/acknowledgementForms"
-                  element={<AcknowledgementForm />}
-                />
-                <Route path="/referenceList/consents" element={<Consent />} />
-                <Route
-                  path="/referenceList/mileageRateForCustomers"
-                  element={<MileageRateForCustomers />}
-                />
-                <Route
-                  path="/referenceList/generalConfigurationForCustomers"
-                  element={<GeneralConfigurationForCustomers />}
-                />
-                <Route
-                  path="/referenceList/paymentList"
-                  element={<PaymentList />}
-                />
-                <Route
-                  path="/referenceList/settingList"
-                  element={<SettingList />}
-                />
-                <Route path="/entitySitePortal" element={<Home />} />
-                <Route path="/thankyou" element={<Thankyou />} />
-                <Route path="/reportType" element={<ReportType />} />
-                <Route
-                  path="/reportTypeOverview/:reportType"
-                  element={<ReportTypeOverview />}
-                />
-                <Route
-                  path="/myReport/:reportType"
-                  element={<ReportTypeOverview />}
-                />
-                <Route
-                  path="/applicationForm/:applicationId/:section/:step"
-                  element={<ApplicationForm />}
-                />
-                <Route
-                  path="/reappointmentApplicationForm/:applicationId/:section/:step"
-                  element={<ReappointmentApplicationForm />}
-                />
-                <Route
-                  path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
-                  element={<MedicalDirectivesAttest />}
-                />
-                <Route
-                  path="/locumApplicationForm/:applicationId/:section/:step"
-                  element={<LocumApplicationForm />}
-                />
-                <Route
-                  path="/applicationForm/:applicationId"
-                  element={<ApplicationFormRequirement />}
-                />
-                <Route
-                  path="/reappointmentApplicationForm/:applicationId"
-                  element={<ReappointmentApplicationFormRequirement />}
-                />
-                <Route
-                  path="/locumApplicationForm/:applicationId"
-                  element={<LocumApplicationFormRequirement />}
-                />
-                <Route
-                  path="/applicationRequest"
-                  element={<ApplicationRequest />}
-                />
-                <Route
-                  path="/completeApplicationRequest"
-                  element={<CompleteApplicationRequest />}
-                />
-                <Route
-                  path="/createStaffMemberApplication"
-                  element={<CreateStaffMemberApplication />}
-                />
-                <Route
-                  path="/createStaffReapplication"
-                  element={<CreateStaffReapplication />}
-                />
-                <Route path="/loginPage" element={<DescopeLoginDialog />} />
-              </Routes >
-            </>
-          ) : (
-            <Routes>
+              <Route
+                path="/referenceList/speciality/Speciality"
+                element={<ProtectedRoute><Speciality /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/acknowledgementForms"
+                element={<ProtectedRoute><AcknowledgementForm /></ProtectedRoute>}
+              />
+              <Route path="/referenceList/consents" element={<ProtectedRoute><Consent /></ProtectedRoute>} />
+              <Route
+                path="/referenceList/mileageRateForCustomers"
+                element={<ProtectedRoute><MileageRateForCustomers /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/generalConfigurationForCustomers"
+                element={<ProtectedRoute><GeneralConfigurationForCustomers /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/paymentList"
+                element={<ProtectedRoute><PaymentList /></ProtectedRoute>}
+              />
+              <Route
+                path="/referenceList/settingList"
+                element={<ProtectedRoute><SettingList /></ProtectedRoute>}
+              />
+              <Route path="/entitySitePortal" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
+              <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
+              <Route
+                path="/reportTypeOverview/:reportType"
+                element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+              />
+              <Route
+                path="/myReport/:reportType"
+                element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationForm/:applicationId/:section/:step"
+                element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId/:section/:step"
+                element={<ProtectedRoute><ReappointmentApplicationForm /></ProtectedRoute>}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
+                element={<ProtectedRoute><MedicalDirectivesAttest /></ProtectedRoute>}
+              />
+              <Route
+                path="/locumApplicationForm/:applicationId/:section/:step"
+                element={<ProtectedRoute><LocumApplicationForm /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationForm/:applicationId"
+                element={<ProtectedRoute><ApplicationFormRequirement /></ProtectedRoute>}
+              />
+              <Route
+                path="/reappointmentApplicationForm/:applicationId"
+                element={<ProtectedRoute><ReappointmentApplicationFormRequirement /></ProtectedRoute>}
+              />
+              <Route
+                path="/locumApplicationForm/:applicationId"
+                element={<ProtectedRoute><LocumApplicationFormRequirement /></ProtectedRoute>}
+              />
+              <Route
+                path="/applicationRequest"
+                element={<ProtectedRoute><ApplicationRequest /></ProtectedRoute>}
+              />
+              <Route
+                path="/completeApplicationRequest"
+                element={<ProtectedRoute><CompleteApplicationRequest /></ProtectedRoute>}
+              />
+              <Route
+                path="/createStaffMemberApplication"
+                element={<ProtectedRoute><CreateStaffMemberApplication /></ProtectedRoute>}
+              />
+              <Route
+                path="/createStaffReapplication"
+                element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+              />
               <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
-            </Routes>
-          )}
+
+            </Routes >
+          </>
+          {/* ) : (
+            <Routes>
+               <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
+             </Routes>
+           )} */}
         </div >
       </Suspense >
     </BrowserRouter >
