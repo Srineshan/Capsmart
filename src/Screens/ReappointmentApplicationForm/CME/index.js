@@ -248,10 +248,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
                                 subHeading2={'You will not be able to submit your application if this is not provided.'} />
                         )}
-                        {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.file?.fileName !== undefined && (
+                        {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName !== undefined && (
                             <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
                                 <div><strong>CME / CEU Transcript</strong></div>
-                                <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.file?.fileName}</div>
+                                <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName}</div>
                                 <img
                                     src={VerifiedImage}
                                     alt=""
