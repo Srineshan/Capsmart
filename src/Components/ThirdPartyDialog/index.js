@@ -7,6 +7,9 @@ import style from "./index.module.scss";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { TextField } from "@mui/material";
 import { formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
+import { PUT } from "../../Screens/dataSaver";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
 
 const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   const [state, setState] = useState({
@@ -16,6 +19,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     name: '',
     focus: '',
   });
+  const { applicationId, section, step } = useParams()
   const merchantId = "383612842";
   const apiPasscode = "c3c57e781e63444fB66d87caDeC54AC5";
   const base64ApiKey = btoa(`${merchantId}:${apiPasscode}`);
@@ -89,27 +93,34 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
           "middleName": "string"
         },
         "email": {
-          "officialEmail": "string"
+          "officialEmail": data?.shipping?.email_address
         },
-        "mobileNumber": "string",
+        "mobileNumber": data?.shipping?.phone_number,
         "address": {
-          "streetName": "string",
-          "city": "string",
-          "province": "string",
-          "pinCode": "string"
+          "streetName": data?.shipping?.address_line1,
+          "city": data?.shipping?.city,
+          "province": data?.shipping?.province,
+          "pinCode": data?.shipping?.postal_code
         }
       },
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
+      "currency": paymentListData?.[0]?.currencyType,
+      "quantity": 1,
+      "product": "Reappointment Application Fee",
+      "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paymentMethod": data?.payment_method,
+      "cardNumber": data?.card?.last_four,
+      "receiptId": data?.order_number,
+      "paymentApplicable": true,
       "paymentCompleted": true
+    };
+    try {
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+    } catch (error) {
+      console.log(error);
     }
-    // try {
-    //   await PUT(`application-management-service/application/${applicationId}/payment`, temp);
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   }
 
   const getPaymentTransaction = async (id) => {
