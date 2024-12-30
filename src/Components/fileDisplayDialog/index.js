@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, createRef } from 'react';
+import React, { useState, useCallback, useRef, createRef ,useEffect} from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
@@ -14,6 +14,11 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
     const [isPrintClicked, setIsPrintClicked] = useState(false);
     const componentRef = useRef(null);
     const PDFRef = createRef();
+
+      useEffect(() => {
+        console.log("filesssssssssssssssss" ,file);
+        // getPreApplicationTask();
+      }, []);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);

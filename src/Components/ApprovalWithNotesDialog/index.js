@@ -47,6 +47,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [isLoading, setIsLoading] = useState(false);
   const [uploadFileData, setUploadFileData] = useState('');
   const [documentDesc, setDocumentDesc] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -56,7 +57,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     borderRadius: 5,
   };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
-
+  const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
@@ -154,51 +155,53 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //     }
   //   };
 
-  const changeHandler = async (event) => {
-    console.log("Event received:", event);
-    setIsLoading(true);
-    const filesArray = Array.from(event);
-    console.log("Converted files array:", filesArray);
-    setFiles(filesArray);
-
-    const formData = new FormData();
-    let fileNameArray = [];
-
-    filesArray.forEach(file => {
-      const fileInfo = {
-        "filePath": file.path || '',
-        "fileName": file.name,
-        "fileURL": "",
-        "fileType": file.type,
-        "classification": "",
-        "verified": true,
-        "valid": true
-      };
-      fileNameArray.push(fileInfo);
-      formData.append('documents', file);
-    });
-
-    const blob = new Blob([JSON.stringify(fileNameArray)], {
-      type: "application/json"
-    });
-    formData.append('files', blob);
-
-    try {
-      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-      console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
-      console.log("Response data:", response?.data);
-      setUploadFileData(response?.data)
-
-      setIsLoading(false);
-      return response?.data;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error("Error:", error);
-      setIsLoading(false);
-      return null;
-    }
-  };
+   const changeHandler = async (event) => {
+            console.log("Event received:", event);
+            const filesArray = Array.from(event);
+            console.log("Converted files array:", filesArray);
+            setFiles(filesArray);
+          
+            const formData = new FormData();
+            let fileNameArray = [];
+          
+            filesArray.forEach(file => {
+              const fileInfo = {
+                "filePath": file.path || '', 
+                "fileName": file.name,
+                "fileURL": "",  
+                "fileType": file.type,
+                "classification": "",  
+                "verified": true,     
+                "valid": true ,     
+              };
+              fileNameArray.push(fileInfo);
+              formData.append('documents', file);
+            });
+          
+            const blob = new Blob([JSON.stringify(fileNameArray)], {
+              type: "application/json"
+            });
+            formData.append('files', blob);
+          
+            try {
+              setIsLoadingImageDocs(true);
+              const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+              console.log("API Response:", response);
+              SuccessToaster('File Uploaded Successfully');
+              console.log("Response data:", response?.data);
+              setUploadFileData(prevData => {
+                // Merge previous data with new data
+                return [...(prevData || []), ...(response?.data || [])];
+              });
+              setIsLoadingImageDocs(false);
+              return response?.data;
+            } catch (error) {
+              ErrorToaster('File Upload Failed');
+              console.error("Error:", error);
+              setIsLoading(false);
+              return null;
+            }
+          };  
 
 
   const setUserDetails = async () => {
@@ -268,9 +271,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const handleApplicationApprove = async () => {
     let role;
     let title;
-    let files = (uploadFileData || []).map(file => ({
+    const files = (uploadFileData || []).map((file, index) => ({
       ...file,              
-      description: documentDesc || "", 
+      description: documentDesc[index] || "",
+      title: documentTitle[index] || "", 
     }));
     let notesComments = userRoleComments;
     let isDelegate = true;
@@ -386,9 +390,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const getApplicationMoveToNext = async () => {
     let role;
     let title;
-    let files = (uploadFileData || []).map(file => ({
+    const files = (uploadFileData || []).map((file, index) => ({
       ...file,              
-      description: documentDesc || "", 
+      description: documentDesc[index] || "",
+      title: documentTitle[index] || "", 
     }));
     let notesComments = userRoleComments;
     let isDelegate = true;
@@ -555,6 +560,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   return (
     <>
+    {isLoadingImageDocs && (
+        <div
+          className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+        >
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+        </div>
+      )}
       {isLoadingImage && (
         // <div
         //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
@@ -747,7 +759,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                                     Upload any supporting documents
                                   </div>
                                   <div className={`${style.marginLeftRight20}`}>
-                                    click to upload
+                                    Click To Upload
                                   </div>
                                 </div>
                               </div>
@@ -759,29 +771,46 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   </>
 
                 </div>
-                {files.length > 0 && (
-                <div className={style.twoColumnGrid}>
-                      <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10}`}>
-                        <DescriptionIcon className={`${style.docsIcon}`} />
-                        {files.length > 0 ? (
-                          files.map((file, index) => (
-                            <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                          ))
-                        ) : (
-                          <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                        )}
+                {uploadFileData.length > 0 && (
+                <div>
+                  {uploadFileData.map((file, index) => (
+                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                      <div className={`${style.threeColumnGrid}`}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <div className={style.marginLeft20}>{file.fileName}</div>
                       </div>
-                      <div className={style.marginTop10}>
+                      <div>
                       <CommonInputField
-                            value={documentDesc}
-                            onChange={(e) => setDocumentDesc(e.target.value)}
-                            type="text"
-                            placeholder="Description (Optional)"
-                            className={`${style.referenceCardStyleDescription}`}
+                        value={documentTitle[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentTitle = [...documentTitle];
+                          newDocumentTitle[index] = e.target.value;
+                          setDocumentTitle(newDocumentTitle);
+                        }}
+                        type="text"
+                        placeholder="Title*"
+                        className={style.referenceCardStyleDescription}
                       />
                       </div>
+                      <div>
+                      <CommonInputField
+                        value={documentDesc[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentDesc = [...documentDesc];
+                          newDocumentDesc[index] = e.target.value;
+                          setDocumentDesc(newDocumentDesc);
+                        }}
+                        type="text"
+                        placeholder="Description (Optional)"
+                        className={style.referenceCardStyleDescription}
+                      />
                       </div>
-                    )}
+                    </div>
+                    </div>
+                  ))}
+                </div>
+              )}
                 {/* </div> */}
                 {userRole.includes('Chief Of Staff') && (
                   <CommonCheckBox

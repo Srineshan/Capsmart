@@ -13,7 +13,7 @@ import CrossPink from "./../../images/crossPink.png";
 import ToBeVerified from "./../../images/toBeVerifiedImage.png";
 import DeleteIcon from "./../../images/deleteHcRow.png";
 import Tooltip from "@mui/material/Tooltip";
-import { DELETE, TenantID, GET, PUT, POST } from "./../dataSaver";
+import { DELETE, TenantID, GET, PUT, POST } from "../../Screens/dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
@@ -39,7 +39,7 @@ import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import ApplicationDecline from "./applicationDeclineDialog";
+import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import ApplicationFieldCard from "../../Components/ApplicationFieldCard";
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
@@ -88,7 +88,8 @@ const NewActiveApplication = ({
   approvalnotesCommentsBox,
   reappointmentChangesCommentsBox,
   notesCommentsBox,
-  getNotesDialog
+  getNotesDialog,
+  staffView
 
 
 }) => {
@@ -244,6 +245,7 @@ const NewActiveApplication = ({
   useEffect(() => {
     getPreApplication();
     // getPreApplicationTask();
+    console.log("staffview",staffView)
   }, []);
 
   useEffect(() => {
@@ -362,7 +364,7 @@ useEffect(() => {
         form?.forms[index]?.status === "APPROVED"
       );
 
-      setIsApproved(areAllFormsApproved);
+    //   setIsApproved(areAllFormsApproved);
 
       console.log("areAllFormsApproved" + areAllFormsApproved)
 
@@ -384,11 +386,21 @@ useEffect(() => {
 
       if (hasAllApproved) {
         setStatusStyle(style.greenBigDotStyle);
-        setIsApproved(hasAllApproved)
+        // setIsApproved(hasAllApproved)
       } else if (hasAnyApproved) {
         setStatusStyle(style.yellowBigDotStyle);
       } else {
         setStatusStyle(style.greyBigDotStyle);
+      }
+    }
+  }, [form]);
+
+  useEffect(() => {
+    if (form?.completedWorkflows) {
+      const staffManagerWorkflow = form.completedWorkflows.find(workflow => workflow.role === "Staff Manager");
+  
+      if (staffManagerWorkflow?.allFormsApproved) {
+        setIsApproved(true);
       }
     }
   }, [form]);
@@ -1260,69 +1272,147 @@ useEffect(() => {
     }
   }
 
-  const getApplicantValues = (array, index) => {
+//   const getApplicantValues = (array, index,staffView) => {
+//     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
+//     let temp = [];
+//     console.log(array, 'arrayyyyyy')
+//     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+//       if (data === "file") {
+//         temp.push({
+//           "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+//             <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+//             : innerData?.fileType?.startsWith("image/") ?
+//               <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+//         });
+//       } else {
+//         if (data === "valid") {
+//           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+//         } else if (data === "verified") {
+//           temp.push({
+//             "type": "icon",
+//             "icon": array?.map((innerData, index) => (
+//                 innerData?.isVerified === true 
+//                 ? (
+//                     <div className={`${style.greenButton} ${style.cursorPointer}`}> 
+//                         <div
+//                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+//                             // onClick={() => handleVerifyClickDocs(array, index)}
+//                         >
+//                             Verified 
+//                         </div>
+//                     </div>
+//                 ) : (
+//                     <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
+//                         <div
+//                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+//                             onClick={() => handleVerifyClickDocs(array, index)}
+//                         >
+//                             Verify 
+//                         </div>
+//                     </div>
+//                 )
+//             ))
+//         });        
+//       }  else {
+//           temp.push({
+//               "type": "text",
+//               "value": array.map(innerData => 
+//                   <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+//                       {innerData[data]}
+//                   </div>
+//               )
+//           });
+//         }
+//       }
+//       // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+//       //   // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+//       //   temp.push({
+//       //     "type": "icon", "icon": array?.map(innerData =>
+//       //       <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+//       //     ), 'isShowHoverText': false
+//       //   });
+//       // }
+//     })
+//     return temp;
+//   }
+
+const getApplicantValues = (array, index) => {
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-      if (data === "file") {
-        temp.push({
-          "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-            : innerData?.fileType?.startsWith("image/") ?
-              <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
-        });
-      } else {
-        if (data === "valid") {
-          temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
-        } else if (data === "verified") {
-          temp.push({
-            "type": "icon",
-            "icon": array?.map((innerData, index) => (
-                innerData?.isVerified === true 
-                ? (
-                    <div className={`${style.greenButton} ${style.cursorPointer}`}> 
-                        <div
-                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                            // onClick={() => handleVerifyClickDocs(array, index)}
-                        >
-                            Verified 
+        if (data === "file") {
+            temp.push({
+                "type": "icon", 
+                "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+                    <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+                    : innerData?.fileType?.startsWith("image/") ?
+                        <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> 
+                        : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 
+                'isShowHoverText': false
+            });
+        } else {
+            if (data === "valid") {
+                temp.push({ 
+                    "type": "icon", 
+                    "icon": array?.map(innerData => innerData[data] ? 
+                        <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> 
+                        : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 
+                    'isShowHoverText': false 
+                });
+            } else if (data === "verified") {
+                // Check if staffView is true
+                if (!staffView) {
+                    console.log("staffView is true");
+                    console.log("StaffView" , staffView)
+                  // If staffView is true, push the CheckCircleRoundedIcon
+                  temp.push({
+                    "type": "icon",
+                    "icon": array?.map((innerData, index) => (
+                      innerData?.isVerified === true 
+                      ? (
+                          <div className={`${style.greenButton} ${style.cursorPointer}`}> 
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                  Verified 
+                              </div>
+                          </div>
+                      ) : (
+                          <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  onClick={() => handleVerifyClickDocs(array, index)}
+                              >
+                                  Verify 
+                              </div>
+                          </div>
+                      )
+                    ))
+                  });
+
+                } 
+                else {
+                      temp.push({
+                    "type": "icon",
+                    "icon": array?.map((innerData, index) => (
+                        <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+                    )),
+                    'isShowHoverText': false
+                });
+                }
+              }
+               else {
+                temp.push({
+                    "type": "text",
+                    "value": array.map(innerData => 
+                        <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                            {innerData[data]}
                         </div>
-                    </div>
-                ) : (
-                    <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
-                        <div
-                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                            onClick={() => handleVerifyClickDocs(array, index)}
-                        >
-                            Verify 
-                        </div>
-                    </div>
-                )
-            ))
-        });        
-      }  else {
-          temp.push({
-              "type": "text",
-              "value": array.map(innerData => 
-                  <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-                      {innerData[data]}
-                  </div>
-              )
-          });
+                    )
+                });
+            }
         }
-      }
-      // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-      //   // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-      //   temp.push({
-      //     "type": "icon", "icon": array?.map(innerData =>
-      //       <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
-      //     ), 'isShowHoverText': false
-      //   });
-      // }
     })
     return temp;
-  }
+}
 
   const getMedicalDirectiveTable = () => {
     let temp = [];
@@ -5669,6 +5759,7 @@ useEffect(() => {
                                           ) : ''}
                                         </div> */}
                                       </div>
+                                      
                                       {applicationType === "NEW" ? (
                                         <>
                                           {expand?.status && expand?.index === index + 1 &&
@@ -5858,11 +5949,15 @@ useEffect(() => {
                                               )}
                                             </>
                                           ) : (
+                                            <>
+                                            {!staffView && (
                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                 Verified
                                               </div>
                                             </div>
+                                            )}
+                                            </>
                                           )}
                                         </>
                                       )}

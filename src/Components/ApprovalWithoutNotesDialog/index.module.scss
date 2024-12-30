@@ -486,6 +486,12 @@
   grid-gap: 10px;
 }
 
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
 .marginBottom10 {
   margin-bottom: 10px !important;
 }
@@ -540,7 +546,7 @@
   border: 1px solid $primarycolor;
   border-radius: 4px;
   opacity: 0.9;
-  padding: 5px;
+  padding: 3px;
 }
 
 .alignItem {
