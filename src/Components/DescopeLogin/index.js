@@ -15,6 +15,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import Cookie from "universal-cookie";
 import "./login.css";
+import { format } from "date-fns";
 
 const DescopeLoginDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
@@ -229,7 +230,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
                 <span className={style.bold}>CAP</span>Manager
               </p>
             </div>
-            <Slider {...settings}>
+            {/* <Slider {...settings}>
               <div>
                 <div className={`${style.alignCenter} ${style.marginTop}`}>
                   <div className={style.descriptionContainer}>
@@ -280,19 +281,16 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
                   </div>
                 </div>
               </div>
-            </Slider>
-
+            </Slider> */}
+            <div className={`${style.alignCenter} ${style.marginTop}`}>
+              <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/opening_Keycloak.gif'} alt="" className={style.descriptionContainer} />
+            </div>
             <div className={`${style.alignCenter} ${style.marginTop}`}>
               <div>
                 <div
                   className={`${style.loginDescription} ${style.textAlignCenter}`}
                 >
-                  Track Application Process
-                </div>
-                <div className={`${style.helpText} ${style.marginTop10}`}>
-                  Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed
-                  diam nonumy eirmod tempor invidunt ut labore et dolore
-                  magna.
+                  © Copyright {format(new Date(), 'yyyy')}. Hapicare, Inc. All Rights Reserved.
                 </div>
               </div>
             </div>
