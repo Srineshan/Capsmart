@@ -230,9 +230,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     fetchPaymentListData();
   }, [basicForm, step]);
 
-  useEffect(() => {
-    sessionStorage.removeItem("hasReloaded");
-  }, []);
+  // useEffect(() => {
+  //   sessionStorage.removeItem("hasReloaded");
+  // }, []);
 
   const getSelectedPrivilegeList = (value) => {
     let temp = selectedAdditionalPrivilegeForDisplay;

@@ -307,19 +307,19 @@ const App = ({ props }) => {
   let errorInfo = sessionStorage.getItem('errorInfo');
   console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
 
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      setVisibilityState(document.visibilityState); // Update state on visibility change
-    };
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     setVisibilityState(document.visibilityState); // Update state on visibility change
+  //   };
 
-    // Add event listener
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   // Add event listener
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    // Cleanup listener on unmount
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, []);
+  //   // Cleanup listener on unmount
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
@@ -343,7 +343,7 @@ const App = ({ props }) => {
   }, [userFromCookie])
 
   useEffect(() => {
-    if (sessionToken) {
+    if (sessionToken && cookie.get("authorization") !== undefined) {
       let token = sessionToken
       console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
       if (typeof token !== 'string') {
@@ -366,7 +366,7 @@ const App = ({ props }) => {
         logout()
       }
     }
-  }, [cookie.get("authorization"), visibilityState])
+  }, [cookie.get("authorization")])
 
   // useEffect(() => {
   //   startTokenRefreshInterval();
@@ -879,7 +879,7 @@ const App = ({ props }) => {
   };
 
   const ProtectedRoute = ({ children }) => {
-    return (cookie.get("authorization") !== undefined && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
+    return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
   if (isSessionLoading) {

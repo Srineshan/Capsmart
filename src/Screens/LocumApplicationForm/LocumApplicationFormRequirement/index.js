@@ -69,14 +69,14 @@ const LocumApplicationFormRequirement = () => {
 
     console.log(basicForm)
 
-    useEffect(() => {
-        const hasReloaded = sessionStorage.getItem('hasReloaded');
+    // useEffect(() => {
+    //     const hasReloaded = sessionStorage.getItem('hasReloaded');
 
-        if (!hasReloaded) {
-            sessionStorage.setItem('hasReloaded', 'true');
-            window.location.reload();
-        }
-    }, []);
+    //     if (!hasReloaded) {
+    //         sessionStorage.setItem('hasReloaded', 'true');
+    //         window.location.reload();
+    //     }
+    // }, []);
 
     useEffect(() => {
         // getBasicForm();
