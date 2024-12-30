@@ -686,7 +686,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                                   Upload any supporting documents
                                 </div>
                                 <div className={`${style.marginLeftRight20}`}>
-                                  click to upload
+                                  Click To Upload
                                 </div>
                                 </div>
                               </div>
@@ -715,7 +715,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                           setDocumentTitle(newDocumentTitle);
                         }}
                         type="text"
-                        placeholder="Title (Optional)"
+                        placeholder="Title*"
                         className={style.referenceCardStyleDescription}
                       />
                       </div>

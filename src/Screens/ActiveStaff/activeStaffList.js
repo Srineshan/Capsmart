@@ -33,6 +33,9 @@ const ActiveStaffList = ({
   getSelectedTab,
   selectedTab,
   getTitleCounts,
+  getActiveApplicationView,
+  getStaffView
+  
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -84,6 +87,13 @@ const ActiveStaffList = ({
   // const onClickViewAndVerifyFunction = (data) => {
   //   getActiveApplicationView(true);
   // }
+
+  const onClickViewAndVerifyFunction = (data) => {
+    getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+    console.log("id",data?.currentApplication?.id)
+    getStaffView(true);
+  };
 
   const onClickReappointmentFunction = (data) => {
     reappointmentApplication(data?.id);
@@ -665,9 +675,9 @@ const ActiveStaffList = ({
 
   const permanentActionsData = [
     {
-      data: "Create Reappointment Application",
+      data: "View",
       requiredValue: "boolean",
-      onClick: onClickReappointmentFunction,
+      onClick: onClickViewAndVerifyFunction,
     },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },
@@ -681,7 +691,7 @@ const ActiveStaffList = ({
     {
       data: "Add as active staff",
       requiredValue: "boolean",
-      onClick: onClickReappointmentFunction,
+      // onClick: onClickReappointmentFunction,
     },
     {
       data: "Send follow up disclosures",
@@ -692,9 +702,9 @@ const ActiveStaffList = ({
 
   const locumActionsData = [
     {
-      data: "Create Reappointment Application",
+      data: "View",
       requiredValue: "boolean",
-      onClick: onClickReappointmentFunction,
+      onClick: onClickViewAndVerifyFunction,
     },
     // { 'data': 'Send for Committee Review', 'requiredValue': 'boolean', "onClick": '' },
     // { 'data': 'Send Reminder for Required Documents', 'requiredValue': 'boolean', "onClick": '' },

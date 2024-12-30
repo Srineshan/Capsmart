@@ -55,7 +55,7 @@ const StaffApplicationList = ({
   getReappointmentChangesCommentBox,
   getTitleCounts,
   showNotesDialog,
-  getDeptTrackerDialog
+  getDeptTrackerDialog,
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();

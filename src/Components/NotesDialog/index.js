@@ -60,7 +60,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [userNotes,documentTitle]);
+  }, [userNotes, documentTitle, uploadFileData]);
 
   // useEffect(() => {
   //   getActiveApplicationView();
@@ -151,11 +151,22 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
         setIsLoadingImage(false)
       };
 
-  const checkApproveEnabled = () => {
-    const hasValidComments = userNotes.trim() !== '';
-    // const hasValidTitle = documentTitle !== '';
-      setIsApproveEnabled(hasValidComments);
-  };
+      const checkApproveEnabled = () => {
+        const hasValidComments = userNotes.trim() !== '';
+        
+        // Check if there are any uploaded files
+        if (uploadFileData.length > 0) {
+          // For files, check if all documents have titles
+          const allFilesHaveTitles = uploadFileData.every((_, index) => 
+            documentTitle[index] && documentTitle[index].trim() !== ''
+          );
+          
+          setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+        } else {
+          // If no files are uploaded, only check for valid comments
+          setIsApproveEnabled(hasValidComments);
+        }
+      };
 
   const onClose = () => {
     // getActiveApplicationView(false);
@@ -364,10 +375,10 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                         <div className={style.uploadBorderStyle}>
                         <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
                           <div className={style.uploadTextStyle}>
-                            Upload any supporting documents
+                            Upload any Supporting Documents
                           </div>
                           <div className={`${style.marginLeftRight20}`}>
-                            click to upload
+                            Click To Upload
                           </div>
                           </div>
                         </div>
@@ -396,7 +407,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                           setDocumentTitle(newDocumentTitle);
                         }}
                         type="text"
-                        placeholder="Title (Optional)"
+                        placeholder="Title*"
                         className={style.referenceCardStyleDescription}
                       />
                       </div>

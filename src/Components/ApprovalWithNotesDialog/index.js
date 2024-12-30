@@ -759,7 +759,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                                     Upload any supporting documents
                                   </div>
                                   <div className={`${style.marginLeftRight20}`}>
-                                    click to upload
+                                    Click To Upload
                                   </div>
                                 </div>
                               </div>
@@ -789,7 +789,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                           setDocumentTitle(newDocumentTitle);
                         }}
                         type="text"
-                        placeholder="Title (Optional)"
+                        placeholder="Title*"
                         className={style.referenceCardStyleDescription}
                       />
                       </div>
