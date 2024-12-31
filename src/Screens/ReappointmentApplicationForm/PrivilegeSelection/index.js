@@ -614,7 +614,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
         console.log(response);
         setBasicForm(response?.data);
         SuccessToaster("Application Updated Successfully");
-        if (paymentListData?.length === 0) {
+        if (paymentListData?.length === 0 || basicForm?.payment?.paymentCompleted) {
           handleContinue();
         }
       })
@@ -628,12 +628,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     if (sessionStorage.getItem("fromSummary") === "true") {
       navigate(-1);
     } else {
+      getPreApplication();
       navigate(navigateURL);
     }
   };
 
   const handleContinueClick = () => {
-    if (paymentListData?.length !== 0) {
+    if (paymentListData?.length !== 0 && !basicForm?.payment?.paymentCompleted) {
       setShowPaymentDialog(true);
     }
     handleSubmitAcknowledgement();
