@@ -23,7 +23,7 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
     }
   }, [basicForm])
 
-  console.log(priorData?.disclosures, disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required)
+  console.log(priorData?.disclosures, disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required, priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]])
 
   const handleIssueResolvedClick = () => {
     setIsCKEditorOpen(true);
@@ -32,6 +32,14 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
   const handleSaveClick = () => {
     setBasicForm((prevData) => {
       let tempBasicForm = { ...prevData };
+      console.log(tempBasicForm.forms[formIndex].data, disclosureBaseKey)
+      if (tempBasicForm.forms[formIndex].data === null) {
+        tempBasicForm.forms[formIndex].data = {}
+        tempBasicForm.forms[formIndex].data.disclosures = {}
+      }
+      if (tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey] === undefined) {
+        tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey] = {}
+      }
       tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[2]] = explanationText;
       return tempBasicForm;
     });
@@ -47,9 +55,22 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
   const handleCopy = () => {
     setBasicForm((prevData) => {
       let tempBasicForm = { ...prevData };
-      tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosureFieldKey] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosureFieldKey];
-      tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]];
-      tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[1]] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[1]];
+      if (tempBasicForm.forms[formIndex].data === null) {
+        tempBasicForm.forms[formIndex].data = {}
+        tempBasicForm.forms[formIndex].data.disclosures = {}
+      }
+      if (tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey] === undefined) {
+        tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey] = {}
+      }
+      if (priorData?.disclosures?.[disclosureBaseKey]?.[disclosureFieldKey] !== undefined) {
+        tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosureFieldKey] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosureFieldKey];
+      }
+      if (priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]] !== undefined) {
+        tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[0]];
+      }
+      if (priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[1]] !== undefined) {
+        tempBasicForm.forms[formIndex].data.disclosures[disclosureBaseKey][disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[1]] = priorData?.disclosures?.[disclosureBaseKey]?.[disclosurSchema?.allOf?.filter(data => disclosureFieldKey in data?.if?.properties)[0]?.then?.required[1]];
+      }
       return tempBasicForm;
     });
     getIsOpen(false)
