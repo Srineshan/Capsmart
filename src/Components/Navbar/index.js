@@ -160,6 +160,14 @@ const Navbar = () => {
     setAnchorElTracker(null);
   };
 
+  const handleApplicationTypeChange = (type) => {
+    sessionStorage.setItem('applicationCreationType', type);
+  };
+
+  const handlePrivilegedStaffClick = () => {
+    handleApplicationTypeChange('REAPPOINTMENT');
+  };
+
   const id = open ? "mouse-over-popover" : undefined;
 
   const handleClickTools = (event) => {
@@ -366,6 +374,7 @@ const Navbar = () => {
           </Link>
           <Link to={"/activeStaff"} className={style.noFontStyle}>
             <div
+             onClick={handlePrivilegedStaffClick}
               className={`${style.menuStyle} ${
                 window.location.pathname.includes("/activeStaff") &&
                 style.activeMenuColor
