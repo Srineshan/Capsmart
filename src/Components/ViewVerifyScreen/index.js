@@ -203,6 +203,7 @@ const NewActiveApplication = ({
     selectedPrivilegesForDisplayMultiple,
     setSelectedPrivilegesForDisplayMultiple,
   ] = useState([]);
+  const [indexForSign, setIndexForSign] = useState(0);
   const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([])
   const [privilegeChangeYesOrNo, setPrivilegeChangeYesOrNo] = useState("");
   const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
@@ -3720,6 +3721,107 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
+            <div className={`${style.cardTitle} ${style.marginTop10}`}>
+                    Do you want to keep your current Privilege Category?
+                  </div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  {privilegeChangeYesOrNo !== '' && (
+                      <div
+                        className={`${style.marginTop10} ${style.marginLeft30}`}
+                      >
+                        <div className={style.privilegeHeading}>
+                          {privilegeChangeYesOrNo === "Yes" ? (
+                            <div className={style.privilegeHeading}>
+                              Same as Before
+                            </div>
+                          ) : (
+                            <div className={style.privilegeHeading}>
+                              Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                          ? form?.basicDetails?.priorPrivilegeCategory
+                            ?.name
+                          : form?.basicDetails
+                            ?.credentialingPrivilegeCategory
+                            ?.credentialingCategory} To {" "}
+                              {
+                                form?.basicDetails
+                                  ?.credentialingPrivilegeCategory
+                                  ?.credentialingCategory
+                              }
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                     {/* <div
+                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length !== undefined)) &&
+                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.corePrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined))
+                  ? ""
+                  : style.disabledButton
+                  }`}
+                onClick={
+                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                    0 ||
+                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)) &&
+                    ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
+                    ? selectedPrivilegeForDisplay?.length === indexForSign + 1 ? () => {
+                      // setShowPrivilegesForSign(false);
+                      // handleSelectedPrivilegesForDisplayMultiple(
+                      //   selectedPrivilegeForDisplay[indexForSign]
+                      // );
+                      // handleSubmit();
+                      setIndexForSign(0)
+                    } : () => {
+                      setIndexForSign(indexForSign + 1)
+                    }
+                    : () => { }
+                }
+              >
+                {selectedPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
+              </div> */}
           </>
         );
       default:
