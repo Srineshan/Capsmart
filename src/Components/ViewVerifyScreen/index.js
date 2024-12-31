@@ -65,6 +65,7 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import CommonCheckBox from "../CommonFields/CommonCheckBox";
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -98,7 +99,7 @@ const NewActiveApplication = ({
     sessionStorage.getItem("applicationId")
   );
   const [form, setForm] = useState();
-  const {step } = useParams();
+  const { step } = useParams();
   const contractStatus = sessionStorage.getItem("Selected Contract Status");
   const [selectContractInfo, setSelectContractInfo] = useState(
     contractType?.value
@@ -245,7 +246,7 @@ const NewActiveApplication = ({
   useEffect(() => {
     getPreApplication();
     // getPreApplicationTask();
-    console.log("staffview",staffView)
+    console.log("staffview", staffView)
   }, []);
 
   useEffect(() => {
@@ -275,7 +276,7 @@ const NewActiveApplication = ({
   const getJune30thOfCurrentYear = () => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() + 1;
-    return new Date(currentYear, 5, 30); 
+    return new Date(currentYear, 5, 30);
   };
 
   const handleVerifyClickDocs = (files, index) => {
@@ -285,7 +286,7 @@ const NewActiveApplication = ({
     setSelectedRow(files);
     setSelectedRowTableName("table");
     setSelectedFormId(form?.forms?.[1]?.id);
-};
+  };
 
 
   useEffect(() => {
@@ -312,7 +313,7 @@ const NewActiveApplication = ({
 
   // };
 
-    const getPreApplication = async () => {
+  const getPreApplication = async () => {
     const { data: basicForm } = await GET(
       `application-management-service/application/${applicationId}`
     );
@@ -321,20 +322,20 @@ const NewActiveApplication = ({
 
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
-   useEffect(() => {
-      setFormIndex(
-        form?.forms?.findIndex((data) => data?.schemaCategory)
-      );
-    }, [form, step]);
+  useEffect(() => {
+    setFormIndex(
+      form?.forms?.findIndex((data) => data?.schemaCategory)
+    );
+  }, [form, step]);
 
-useEffect(() => {
-      if (form?.forms[formIndex]?.data !== null) {
-        setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
-        setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
-        setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-        setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
-        setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-      }
+  useEffect(() => {
+    if (form?.forms[formIndex]?.data !== null) {
+      setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
+      setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
+      setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+      setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+      setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+    }
   }, [form, formIndex]);
 
   useEffect(() => {
@@ -364,7 +365,7 @@ useEffect(() => {
         form?.forms[index]?.status === "APPROVED"
       );
 
-    //   setIsApproved(areAllFormsApproved);
+      //   setIsApproved(areAllFormsApproved);
 
       console.log("areAllFormsApproved" + areAllFormsApproved)
 
@@ -398,7 +399,7 @@ useEffect(() => {
   useEffect(() => {
     if (form?.completedWorkflows) {
       const staffManagerWorkflow = form.completedWorkflows.find(workflow => workflow.role === "Staff Manager");
-  
+
       if (staffManagerWorkflow?.allFormsApproved) {
         setIsApproved(true);
       }
@@ -1272,147 +1273,147 @@ useEffect(() => {
     }
   }
 
-//   const getApplicantValues = (array, index,staffView) => {
-//     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
-//     let temp = [];
-//     console.log(array, 'arrayyyyyy')
-//     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-//       if (data === "file") {
-//         temp.push({
-//           "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-//             <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-//             : innerData?.fileType?.startsWith("image/") ?
-//               <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
-//         });
-//       } else {
-//         if (data === "valid") {
-//           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
-//         } else if (data === "verified") {
-//           temp.push({
-//             "type": "icon",
-//             "icon": array?.map((innerData, index) => (
-//                 innerData?.isVerified === true 
-//                 ? (
-//                     <div className={`${style.greenButton} ${style.cursorPointer}`}> 
-//                         <div
-//                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-//                             // onClick={() => handleVerifyClickDocs(array, index)}
-//                         >
-//                             Verified 
-//                         </div>
-//                     </div>
-//                 ) : (
-//                     <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
-//                         <div
-//                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-//                             onClick={() => handleVerifyClickDocs(array, index)}
-//                         >
-//                             Verify 
-//                         </div>
-//                     </div>
-//                 )
-//             ))
-//         });        
-//       }  else {
-//           temp.push({
-//               "type": "text",
-//               "value": array.map(innerData => 
-//                   <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-//                       {innerData[data]}
-//                   </div>
-//               )
-//           });
-//         }
-//       }
-//       // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-//       //   // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-//       //   temp.push({
-//       //     "type": "icon", "icon": array?.map(innerData =>
-//       //       <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
-//       //     ), 'isShowHoverText': false
-//       //   });
-//       // }
-//     })
-//     return temp;
-//   }
+  //   const getApplicantValues = (array, index,staffView) => {
+  //     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
+  //     let temp = [];
+  //     console.log(array, 'arrayyyyyy')
+  //     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+  //       if (data === "file") {
+  //         temp.push({
+  //           "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+  //             <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+  //             : innerData?.fileType?.startsWith("image/") ?
+  //               <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+  //         });
+  //       } else {
+  //         if (data === "valid") {
+  //           temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 'isShowHoverText': false });
+  //         } else if (data === "verified") {
+  //           temp.push({
+  //             "type": "icon",
+  //             "icon": array?.map((innerData, index) => (
+  //                 innerData?.isVerified === true 
+  //                 ? (
+  //                     <div className={`${style.greenButton} ${style.cursorPointer}`}> 
+  //                         <div
+  //                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+  //                             // onClick={() => handleVerifyClickDocs(array, index)}
+  //                         >
+  //                             Verified 
+  //                         </div>
+  //                     </div>
+  //                 ) : (
+  //                     <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
+  //                         <div
+  //                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+  //                             onClick={() => handleVerifyClickDocs(array, index)}
+  //                         >
+  //                             Verify 
+  //                         </div>
+  //                     </div>
+  //                 )
+  //             ))
+  //         });        
+  //       }  else {
+  //           temp.push({
+  //               "type": "text",
+  //               "value": array.map(innerData => 
+  //                   <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+  //                       {innerData[data]}
+  //                   </div>
+  //               )
+  //           });
+  //         }
+  //       }
+  //       // if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+  //       //   // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+  //       //   temp.push({
+  //       //     "type": "icon", "icon": array?.map(innerData =>
+  //       //       <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+  //       //     ), 'isShowHoverText': false
+  //       //   });
+  //       // }
+  //     })
+  //     return temp;
+  //   }
 
-const getApplicantValues = (array, index) => {
+  const getApplicantValues = (array, index) => {
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-        if (data === "file") {
+      if (data === "file") {
+        temp.push({
+          "type": "icon",
+          "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+            : innerData?.fileType?.startsWith("image/") ?
+              <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+              : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
+          'isShowHoverText': false
+        });
+      } else {
+        if (data === "valid") {
+          temp.push({
+            "type": "icon",
+            "icon": array?.map(innerData => innerData[data] ?
+              <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
+              : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
+            'isShowHoverText': false
+          });
+        } else if (data === "verified") {
+          // Check if staffView is true
+          if (!staffView) {
+            console.log("staffView is true");
+            console.log("StaffView", staffView)
+            // If staffView is true, push the CheckCircleRoundedIcon
             temp.push({
-                "type": "icon", 
-                "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-                    <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-                    : innerData?.fileType?.startsWith("image/") ?
-                        <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> 
-                        : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 
-                'isShowHoverText': false
+              "type": "icon",
+              "icon": array?.map((innerData, index) => (
+                innerData?.isVerified === true
+                  ? (
+                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                        Verified
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                        onClick={() => handleVerifyClickDocs(array, index)}
+                      >
+                        Verify
+                      </div>
+                    </div>
+                  )
+              ))
             });
-        } else {
-            if (data === "valid") {
-                temp.push({ 
-                    "type": "icon", 
-                    "icon": array?.map(innerData => innerData[data] ? 
-                        <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> 
-                        : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />), 
-                    'isShowHoverText': false 
-                });
-            } else if (data === "verified") {
-                // Check if staffView is true
-                if (!staffView) {
-                    console.log("staffView is true");
-                    console.log("StaffView" , staffView)
-                  // If staffView is true, push the CheckCircleRoundedIcon
-                  temp.push({
-                    "type": "icon",
-                    "icon": array?.map((innerData, index) => (
-                      innerData?.isVerified === true 
-                      ? (
-                          <div className={`${style.greenButton} ${style.cursorPointer}`}> 
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                  Verified 
-                              </div>
-                          </div>
-                      ) : (
-                          <div className={`${style.purpleButton} ${style.cursorPointer}`}> 
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  onClick={() => handleVerifyClickDocs(array, index)}
-                              >
-                                  Verify 
-                              </div>
-                          </div>
-                      )
-                    ))
-                  });
 
-                } 
-                else {
-                      temp.push({
-                    "type": "icon",
-                    "icon": array?.map((innerData, index) => (
-                        <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-                    )),
-                    'isShowHoverText': false
-                });
-                }
-              }
-               else {
-                temp.push({
-                    "type": "text",
-                    "value": array.map(innerData => 
-                        <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-                            {innerData[data]}
-                        </div>
-                    )
-                });
-            }
+          }
+          else {
+            temp.push({
+              "type": "icon",
+              "icon": array?.map((innerData, index) => (
+                <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+              )),
+              'isShowHoverText': false
+            });
+          }
         }
+        else {
+          temp.push({
+            "type": "text",
+            "value": array.map(innerData =>
+              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                {innerData[data]}
+              </div>
+            )
+          });
+        }
+      }
     })
     return temp;
-}
+  }
 
   const getMedicalDirectiveTable = () => {
     let temp = [];
@@ -1420,8 +1421,8 @@ const getApplicantValues = (array, index) => {
       "type": "icon", "icon": medicalDirectives?.map(innerData =>
         <div
         //  className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
-            // ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}
-            >
+        // ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}
+        >
           {innerData?.status === 'COMPLETED' ? (
             <CheckCircleRoundedIcon sx={{ fontSize: 20, color: `#25BF6A` }} />
           ) : (
@@ -1501,14 +1502,14 @@ const getApplicantValues = (array, index) => {
 
   const buttonStyle = isUploadYourDoc && !allVerified ? { opacity: 0.5, pointerEvents: 'none' } : {};
 
-  
+
   const getButtonStyle = () => {
     if (isUploadYourDoc && !allVerified) {
       return { opacity: 0.5, pointerEvents: 'none' };
     }
     return {};
   };
-  
+
   // const buttonStyle = getButtonStyle();
   // const approvalDate = logDetails?.approvedDate;
   // const approvalDateLog = logDetails?.logs?.map((log,index) => log.approvedDate);
@@ -3110,7 +3111,7 @@ const getApplicantValues = (array, index) => {
       case "CME":
         return (
           <>
-          {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+            {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
@@ -3119,7 +3120,72 @@ const getApplicantValues = (array, index) => {
                   subHeading={'For this application you are required to provide information on the CME transcript.'}
                   subHeading2={'You will not be able to submit your application if this is not provided.'} />
               )}
-              <CommonDivider />
+            {form?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName !== undefined && (
+              <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
+                <div><strong>CME / CEU Transcript</strong></div>
+                <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName}</div>
+                <img
+                  src={VerifiedImage}
+                  alt=""
+                  className={`${style.imgIcon} ${style.cursorPointer}`}
+                  onClick={() => {
+                    setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file);
+                  }
+                  }
+                />
+              </div>
+            )}
+            <div className={`${style.cmeCreditsGrid} ${style.marginTop20}`}>
+              <div>
+                <div className={style.cmeCard}>
+                  <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
+                  <div className={`${style.twoCol} ${style.marginTop20}`}>
+                    <div className={style.cmeHourCard}>
+                      <div className={style.totalText}>Your Total</div>
+                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} Hours</div>
+                      {(40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours) > 0 && (
+                        <div className={style.hourRemainingText}>{40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} more needed</div>
+                      )}
+                    </div>
+                    <div className={style.cmeHourCard}>
+                      <div className={style.totalText}>Required</div>
+                      <div className={style.hourText}>40 Hours</div>
+                      <div className={style.hourRemainingText}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className={`${style.checkGrid}`}>
+                  {allFormSchemas?.[index]?.formSchema?.disclaimer?.content !== undefined && (
+                    <CommonCheckBox checked={form?.forms?.[formIndex]?.acknowledged} bigCheckbox={true} />
+                  )}
+                  <div
+                    className={`${style.leftAlign} ${style.marginTop10}`}
+                    dangerouslySetInnerHTML={{ __html: allFormSchemas?.[index]?.formSchema?.disclaimer?.content }}
+                  />
+                </div>
+                {form?.forms?.[formIndex]?.esign?.name !== undefined && (
+                  <div className={style.eSignGrid}>
+                    <div>
+                      <ESignature
+                        userName={form?.forms?.[formIndex]?.esign?.name !== undefined ? form?.forms?.[formIndex]?.esign?.name : ""}
+                        encData={form?.forms?.[formIndex]?.esign?.esign !== undefined ? form?.forms?.[formIndex]?.esign?.esign : ""}
+                        showData={true}
+                        showDatais={true}
+                      />
+                    </div>
+                    <div className={style.verticalAlignCenter}>
+                      <div className={style.displayInRow}>
+                        <div className={style.dateTitle}>Date: </div>
+                        <div className={`${style.date} ${style.marginLeft}`}>{(form?.forms?.[formIndex]?.esign?.signedDate !== '' && form?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? form?.forms?.[formIndex]?.esign?.signedDate : ""}</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <CommonDivider />
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -3438,120 +3504,89 @@ const getApplicantValues = (array, index) => {
               ))}
             </div> */}
             <div className={`${style.applicationCardStyleReappointment} ${style.marginTop10}`}>
-            <div className={`${style.privilegeCard} ${style.marginTop10}`}>
-              <div>
-                <div className={style.privilegeHeading}>
-                  <strong>Privilege Category</strong>
-                </div>
-                <div className={style.twoColReappointment}>
-                  <div
-                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                  >
-                    <div className={style.privilegeHeadingCurrent}>Current</div>
-                    <div className={style.privilegeHeading}>
-                      {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
-                        ? form?.basicDetails?.priorPrivilegeCategory
-                          ?.name
-                        : form?.basicDetails
-                          ?.credentialingPrivilegeCategory
-                          ?.credentialingCategory}
-                    </div>
+              <div className={`${style.privilegeCard} ${style.marginTop10}`}>
+                <div>
+                  <div className={style.privilegeHeading}>
+                    <strong>Privilege Category</strong>
                   </div>
-                  {privilegeChangeYesOrNo !== '' && (
+                  <div className={style.twoColReappointment}>
                     <div
-                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
-                      <div className={style.privilegeHeadingReappointment}>
-                        Change for Reappointment
-                      </div>
+                      <div className={style.privilegeHeadingCurrent}>Current</div>
                       <div className={style.privilegeHeading}>
-                        {privilegeChangeYesOrNo === "Yes" ? (
-                          <div className={style.privilegeHeading}>
-                            Same as Before
-                          </div>
-                        ) : (
-                          <div className={style.privilegeHeading}>
-                            {
-                              form?.basicDetails
-                                ?.credentialingPrivilegeCategory
-                                ?.credentialingCategory
-                            }
-                          </div>
-                        )}
+                        {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                          ? form?.basicDetails?.priorPrivilegeCategory
+                            ?.name
+                          : form?.basicDetails
+                            ?.credentialingPrivilegeCategory
+                            ?.credentialingCategory}
                       </div>
                     </div>
-                  )}
-                </div>
-                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-                  <strong>Privilege Sets</strong>
-                </div>
-                <div className={style.twoColReappointment}>
-                  <div
-                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                  >
-                    <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-                    {form?.privileges?.priorObligatedPrivileges?.length ===
-                      0 ? (
-                      <>
-                        {form?.privileges?.obligatedPrivileges?.map(
-                          (data) => (
-                            <div 
-                            // className={style.privilegeHeading}
-                            className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                            onClick={() => {
-                              setShowCurrentPrivileges(true);
-                              setCurrentPrivilegesCategory('Basic')
-                              handleChange(data?.id);
-                            }}
-                            >
-                              {data?.privilegeSetTitle}
+                    {privilegeChangeYesOrNo !== '' && (
+                      <div
+                        className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                      >
+                        <div className={style.privilegeHeadingReappointment}>
+                          Change for Reappointment
+                        </div>
+                        <div className={style.privilegeHeading}>
+                          {privilegeChangeYesOrNo === "Yes" ? (
+                            <div className={style.privilegeHeading}>
+                              Same as Before
                             </div>
-                          )
-                        )}
-                      </>
-                    ) : (
-                      <>
-                        {form?.privileges?.priorObligatedPrivileges?.map(
-                          (data) => (
-                            <div 
-                            // className={style.privilegeHeading}
-                            className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                            onClick={() => {
-                              setShowCurrentPrivileges(true);
-                              setCurrentPrivilegesCategory('Basic')
-                              handleChange(data?.id);
-                            }}
-                            >
-                              {data?.privilegeSetTitle}
+                          ) : (
+                            <div className={style.privilegeHeading}>
+                              {
+                                form?.basicDetails
+                                  ?.credentialingPrivilegeCategory
+                                  ?.credentialingCategory
+                              }
                             </div>
-                          )
-                        )}
-                      </>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
-                  {privilegeSetChangeYesOrNo !== '' && (
+                  <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                    <strong>Privilege Sets</strong>
+                  </div>
+                  <div className={style.twoColReappointment}>
                     <div
-                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
-                      <div className={`${style.privilegeHeadingReappointment}`}>
-                        Change for Reappointment
-                      </div>
-                      {privilegeSetChangeYesOrNo === "Yes" ? (
-                        <div className={style.privilegeHeading}>
-                          Same Privileges Requested
-                        </div>
-                      ) : (
+                      <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                      {form?.privileges?.priorObligatedPrivileges?.length ===
+                        0 ? (
                         <>
                           {form?.privileges?.obligatedPrivileges?.map(
                             (data) => (
-                              <div 
-                              // className={style.privilegeHeading}
-                              className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                              onClick={() => {
-                                setShowCurrentPrivileges(true);
-                                setCurrentPrivilegesCategory('Basic')
-                                handleChange(data?.id);
-                              }}
+                              <div
+                                // className={style.privilegeHeading}
+                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                onClick={() => {
+                                  setShowCurrentPrivileges(true);
+                                  setCurrentPrivilegesCategory('Basic')
+                                  handleChange(data?.id);
+                                }}
+                              >
+                                {data?.privilegeSetTitle}
+                              </div>
+                            )
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {form?.privileges?.priorObligatedPrivileges?.map(
+                            (data) => (
+                              <div
+                                // className={style.privilegeHeading}
+                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                onClick={() => {
+                                  setShowCurrentPrivileges(true);
+                                  setCurrentPrivilegesCategory('Basic')
+                                  handleChange(data?.id);
+                                }}
                               >
                                 {data?.privilegeSetTitle}
                               </div>
@@ -3560,99 +3595,130 @@ const getApplicantValues = (array, index) => {
                         </>
                       )}
                     </div>
-                  )}
-                </div>
-                <div>
-                  <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
-                  <div className={style.twoColReappointment}>
-                    <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                      <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-                      {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                        <>
-                          {form?.privileges?.additionalPrivileges?.length === 0 ? (
-                            <div className={style.privilegeHeading}>None</div>
-                          ) : (
-                            <>
-                              {form?.privileges?.additionalPrivileges?.map(data => (
-                                <div className={style.privilegeHeading}
-                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                >{data?.privilegeSetTitle}</div>
-                              ))}
-                            </>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {form?.privileges?.priorAdditionalPrivileges?.map(data => (
-                            <div className={style.privilegeHeading}
-                            // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                            >{data?.privilegeSetTitle}</div>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                    {additionalPrivilegeChangeYesOrNo !== '' && (
-                      <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                        <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Additional Privileges Requested' : 'Change for Reappointment'}</div>
-                        {additionalPrivilegeChangeYesOrNo === 'No' ? (
-                          <div className={`${style.privilegeHeading}`}>None</div>
+                    {privilegeSetChangeYesOrNo !== '' && (
+                      <div
+                        className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                      >
+                        <div className={`${style.privilegeHeadingReappointment}`}>
+                          Change for Reappointment
+                        </div>
+                        {privilegeSetChangeYesOrNo === "Yes" ? (
+                          <div className={style.privilegeHeading}>
+                            Same Privileges Requested
+                          </div>
                         ) : (
                           <>
-                            {form?.privileges?.additionalPrivileges?.map(data => (
-                              <div className={style.privilegeHeading}
-                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                              >Requested: {data?.privilegeSetTitle}</div>
-                            ))}
+                            {form?.privileges?.obligatedPrivileges?.map(
+                              (data) => (
+                                <div
+                                  // className={style.privilegeHeading}
+                                  className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                  onClick={() => {
+                                    setShowCurrentPrivileges(true);
+                                    setCurrentPrivilegesCategory('Basic')
+                                    handleChange(data?.id);
+                                  }}
+                                >
+                                  {data?.privilegeSetTitle}
+                                </div>
+                              )
+                            )}
                           </>
                         )}
                       </div>
                     )}
                   </div>
-                </div>
-                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-                  <strong>Privileges at Other Hospitals</strong>
-                </div>
-                <div className={style.twoColReappointment}>
-                  <div
-                    className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                  >
-                    <div className={style.privilegeHeadingCurrent}>Current</div>
-                    <div className={style.privilegeHeading}>
-                      {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
-                        ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
-                          <div>{data?.privileges}</div>
-                        )) : (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
-                          ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
-                            <div>{data?.privileges}</div>
-                          ))
-                          : 'None'}
-                    </div>
-                  </div>
-                  {privilegeAtOtherHospitalYesOrNo !== '' && (
-                    <div
-                      className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
-                    >
-                      <div className={style.privilegeHeadingReappointment}>
-                        Change for Reappointment
+                  <div>
+                    <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
+                    <div className={style.twoColReappointment}>
+                      <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                        <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                        {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                          <>
+                            {form?.privileges?.additionalPrivileges?.length === 0 ? (
+                              <div className={style.privilegeHeading}>None</div>
+                            ) : (
+                              <>
+                                {form?.privileges?.additionalPrivileges?.map(data => (
+                                  <div className={style.privilegeHeading}
+                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                  >{data?.privilegeSetTitle}</div>
+                                ))}
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            {form?.privileges?.priorAdditionalPrivileges?.map(data => (
+                              <div className={style.privilegeHeading}
+                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                              >{data?.privilegeSetTitle}</div>
+                            ))}
+                          </>
+                        )}
                       </div>
-                      <div className={style.privilegeHeading}>
-                        <div>
-                          {privilegeAtOtherHospitalYesOrNo === 'No' ? (
-                            <div className={style.privilegeHeading}>None</div>
+                      {additionalPrivilegeChangeYesOrNo !== '' && (
+                        <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
+                          <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Additional Privileges Requested' : 'Change for Reappointment'}</div>
+                          {additionalPrivilegeChangeYesOrNo === 'No' ? (
+                            <div className={`${style.privilegeHeading}`}>None</div>
                           ) : (
-                            <div>
-                              {hospitalPrivilegeSet?.map(data => (
-                                <div className={style.privilegeHeading}>{`${data?.hospitalName} - ${data?.privileges}`}</div>
+                            <>
+                              {form?.privileges?.additionalPrivileges?.map(data => (
+                                <div className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                >Requested: {data?.privilegeSetTitle}</div>
                               ))}
-                            </div>
+                            </>
                           )}
                         </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                    <strong>Privileges at Other Hospitals</strong>
+                  </div>
+                  <div className={style.twoColReappointment}>
+                    <div
+                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                    >
+                      <div className={style.privilegeHeadingCurrent}>Current</div>
+                      <div className={style.privilegeHeading}>
+                        {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
+                          ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
+                            <div>{data?.privileges}</div>
+                          )) : (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
+                            ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
+                              <div>{data?.privileges}</div>
+                            ))
+                            : 'None'}
                       </div>
                     </div>
-                  )}
+                    {privilegeAtOtherHospitalYesOrNo !== '' && (
+                      <div
+                        className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                      >
+                        <div className={style.privilegeHeadingReappointment}>
+                          Change for Reappointment
+                        </div>
+                        <div className={style.privilegeHeading}>
+                          <div>
+                            {privilegeAtOtherHospitalYesOrNo === 'No' ? (
+                              <div className={style.privilegeHeading}>None</div>
+                            ) : (
+                              <div>
+                                {hospitalPrivilegeSet?.map(data => (
+                                  <div className={style.privilegeHeading}>{`${data?.hospitalName} - ${data?.privileges}`}</div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
             </div>
           </>
         );
@@ -3708,69 +3774,69 @@ const getApplicantValues = (array, index) => {
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.spaceBetween}>
                           {/* <div className={style.displayInRow}> */}
-                            <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
 
-                              <img
-                                src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
-                                alt="Profile Picture"
-                                className={style.profileImage}
-                              />
+                            <img
+                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                              alt="Profile Picture"
+                              className={style.profileImage}
+                            />
 
+                          </div>
+                          <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
+                            <div className={style.marginTop10}>
+                              <span className={`${style.cardTextBoldStyle}`}>
+                                {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                {form?.basicDetails?.applicant?.name?.firstName
+                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                  : ""}{" "}
+                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                              </span>
+                              <span className={`${style.cardTextNormalStyle}`}>
+                                {/* {form?.displayId || ""} */}
+                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                              </span>
                             </div>
-                            <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
-                              <div className={style.marginTop10}>
-                                <span className={`${style.cardTextBoldStyle}`}>
-                                  {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
-                                  {form?.basicDetails?.applicant?.name?.firstName
-                                    ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                    form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                    : ""}{" "}
-                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                                </span>
-                                <span className={`${style.cardTextNormalStyle}`}>
-                                  {/* {form?.displayId || ""} */}
-                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                                </span>
-                              </div>
-                              <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
-                                </span>
-                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {/* {form?.createdDate} */}
-                                  {reappointmentStartDate}
-                                </span>
-                              </div>
-                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                            <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
+                              <span className={style.rightAlignTextStyle}>
+                                Reappointment Date:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                {/* {form?.createdDate} */}
+                                {reappointmentStartDate}
+                              </span>
+                            </div>
+                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
-                              <div className={`${style.cardTextNormalStyle}`}>
-                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                                {form?.basicDetailReferences?.specialty?.name 
-                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
-                                  : ""}
-                              </div>
-                              <div className={`${style.twoColumnGridInner2}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Application Submitted:
-                                </span>
-                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
-                                </span>
-                              </div>
-                              {/* <div className={style.spaceBetween}> */}
-                              <div className={`${style.emailTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                              </div>
-                              <div className={`${style.emailTextBoldStyle}`}  onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}  style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div>
-                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                            <div className={`${style.cardTextNormalStyle}`}>
+                              {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                              {form?.basicDetailReferences?.specialty?.name
+                                ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
+                                : ""}
+                            </div>
+                            <div className={`${style.twoColumnGridInner2}`}>
+                              <span className={style.rightAlignTextStyle}>
+                                Application Submitted:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                              </span>
+                            </div>
+                            {/* <div className={style.spaceBetween}> */}
+                            <div className={`${style.emailTextBoldStyle}`}>
+                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                            </div>
+                            <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
+                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                            </div>
+                            {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                              {/* </div> */}
-                            </div>
+                            {/* </div> */}
+                          </div>
                           {/* </div> */}
                           {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
@@ -3794,7 +3860,7 @@ const getApplicantValues = (array, index) => {
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                              {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                          {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
@@ -3802,7 +3868,7 @@ const getApplicantValues = (array, index) => {
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                            {/* </div>
+                          {/* </div>
                           </div> */}
                         </div>
                       </div>
@@ -3823,71 +3889,71 @@ const getApplicantValues = (array, index) => {
                   ) : (
                     <div className={style.grid5and1}>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                      <div className={style.flex}>
+                        <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
-                            <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
 
-                              <img
-                                src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
-                                alt="Profile Picture"
-                                className={style.profileImage}
-                              />
+                            <img
+                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                              alt="Profile Picture"
+                              className={style.profileImage}
+                            />
 
+                          </div>
+                          <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
+                            <div className={style.marginTop10}>
+                              <span className={`${style.cardTextBoldStyle}`}>
+                                {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                {form?.basicDetails?.applicant?.name?.firstName
+                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+                                  : ""}{" "}
+                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                              </span>
+                              <span className={`${style.cardTextNormalStyle}`}>
+                                {/* {form?.displayId || ""} */}
+                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                              </span>
                             </div>
-                            <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
-                              <div className={style.marginTop10}>
-                                <span className={`${style.cardTextBoldStyle}`}>
-                                  {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
-                                  {form?.basicDetails?.applicant?.name?.firstName
-                                    ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                    form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                    : ""}{" "}
-                                  {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                                </span>
-                                <span className={`${style.cardTextNormalStyle}`}>
-                                  {/* {form?.displayId || ""} */}
-                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                                </span>
-                              </div>
-                              <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Reappointment Date:
-                                </span>
-                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {/* {form?.createdDate} */}
-                                  {reappointmentStartDate}
-                                </span>
-                              </div>
-                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                            <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                                Reappointment Date:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                {/* {form?.createdDate} */}
+                                {reappointmentStartDate}
+                              </span>
+                            </div>
+                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
-                              <div className={`${style.cardTextNormalStyle}`}>
-                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                                {form?.basicDetailReferences?.specialty?.name 
-                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}` 
-                                  : ""}
-                              </div>
-                              <div className={`${style.twoColumnGridInner1}`}>
-                                <span className={style.rightAlignTextStyle}>
-                                  Application Submitted:
-                                </span>
-                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
-                                </span>
-                              </div>
-                              {/* <div className={style.spaceBetween}> */}
-                              <div className={`${style.emailTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                              </div>
-                              <div className={`${style.emailTextBoldStyle}`}  onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}  style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                              </div>
-                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                            <div className={`${style.cardTextNormalStyle}`}>
+                              {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                              {form?.basicDetailReferences?.specialty?.name
+                                ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
+                                : ""}
+                            </div>
+                            <div className={`${style.twoColumnGridInner1}`}>
+                              <span className={style.rightAlignTextStyle}>
+                                Application Submitted:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                              </span>
+                            </div>
+                            {/* <div className={style.spaceBetween}> */}
+                            <div className={`${style.emailTextBoldStyle}`}>
+                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                            </div>
+                            <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
+                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                            </div>
+                            {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                              {/* </div> */}
-                            </div>
+                            {/* </div> */}
+                          </div>
                           {/* </div> */}
                           {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
@@ -3911,7 +3977,7 @@ const getApplicantValues = (array, index) => {
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                              {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                          {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
@@ -3919,7 +3985,7 @@ const getApplicantValues = (array, index) => {
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                            {/* </div>
+                          {/* </div>
                           </div> */}
                         </div>
                       </div>
@@ -4825,73 +4891,95 @@ const getApplicantValues = (array, index) => {
                                     </>
                                   ) : (
                                     <>
-                                    {credApproval?.some((newData) => {
-                                      console.log("newData.approvalRequired:", newData.approvalRequired);
-                                      return newData.schemaId === data.id && newData.approvalRequired;
-                                    }) ? (
-                                      <>
-                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                          (() => {
-                                            const isMatch = logDetails.logs.some((log) => {
-                                              if (log.form && log.form.id) {
-                                                const match = log.form.id === form?.forms[index]?.id;
-                                                console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-                                  
-                                                if (match) {
-                                                  let Match = false;
-                                  
-                                                  // Check if userRole includes log.role
-                                                  if (userRole?.includes(log.role)) {
-                                                    console.log("Role matches user role: " + log.role);
-                                                    Match = true;
+                                      {credApproval?.some((newData) => {
+                                        console.log("newData.approvalRequired:", newData.approvalRequired);
+                                        return newData.schemaId === data.id && newData.approvalRequired;
+                                      }) ? (
+                                        <>
+                                          {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                            (() => {
+                                              const isMatch = logDetails.logs.some((log) => {
+                                                if (log.form && log.form.id) {
+                                                  const match = log.form.id === form?.forms[index]?.id;
+                                                  console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                  if (match) {
+                                                    let Match = false;
+
+                                                    // Check if userRole includes log.role
+                                                    if (userRole?.includes(log.role)) {
+                                                      console.log("Role matches user role: " + log.role);
+                                                      Match = true;
+                                                    }
+
+                                                    // Determine selectedTabRole based on selectedTab
+                                                    let selectedTabRole;
+                                                    switch (selectedTab) {
+                                                      case 'level-2':
+                                                        selectedTabRole = "Department Head";
+                                                        break;
+                                                      case 'level-3':
+                                                        selectedTabRole = "Chief Of Staff";
+                                                        break;
+                                                      case 'level-4':
+                                                        selectedTabRole = "Advisory Committee";
+                                                        break;
+                                                      case 'level-5':
+                                                        selectedTabRole = "Board";
+                                                        break;
+                                                      case 'level-1':
+                                                        selectedTabRole = "Staff Manager";
+                                                        break;
+                                                      default:
+                                                        selectedTabRole = null;
+                                                    }
+
+                                                    // Check if selectedTabRole matches log.role
+                                                    if (selectedTabRole === log.role) {
+                                                      console.log("Selected tab role matches log role: " + log.role);
+                                                      Match = true;
+                                                    }
+
+                                                    return Match;
                                                   }
-                                  
-                                                  // Determine selectedTabRole based on selectedTab
-                                                  let selectedTabRole;
-                                                  switch (selectedTab) {
-                                                    case 'level-2':
-                                                      selectedTabRole = "Department Head";
-                                                      break;
-                                                    case 'level-3':
-                                                      selectedTabRole = "Chief Of Staff";
-                                                      break;
-                                                    case 'level-4':
-                                                      selectedTabRole = "Advisory Committee";
-                                                      break;
-                                                    case 'level-5':
-                                                      selectedTabRole = "Board";
-                                                      break;
-                                                    case 'level-1':
-                                                      selectedTabRole = "Staff Manager";
-                                                      break;
-                                                    default:
-                                                      selectedTabRole = null;
-                                                  }
-                                  
-                                                  // Check if selectedTabRole matches log.role
-                                                  if (selectedTabRole === log.role) {
-                                                    console.log("Selected tab role matches log role: " + log.role);
-                                                    Match = true;
-                                                  }
-                                  
-                                                  return Match;
                                                 }
-                                              }
-                                              return false;
-                                            });
-                                  
-                                            return (
-                                              <div>
-                                                {form?.forms[index]?.schemaCategory !== 'UploadYourDoc' ? (
-                                                  isMatch ? (
-                                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                        Verified
+                                                return false;
+                                              });
+
+                                              return (
+                                                <div>
+                                                  {form?.forms[index]?.schemaCategory !== 'UploadYourDoc' ? (
+                                                    isMatch ? (
+                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          Verified
+                                                        </div>
                                                       </div>
-                                                    </div>
+                                                    ) : (
+                                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                          <div
+                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                            onClick={() => {
+                                                              if (!(isUploadYourDoc && !allVerified)) {
+                                                                handleStepsVerify(form?.forms[index]?.id);
+                                                              }
+                                                            }}
+                                                          >
+                                                            Verify
+                                                          </div>
+                                                        </div>
+                                                      ) : (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Verified
+                                                          </div>
+                                                        </div>
+                                                      )
+                                                    )
                                                   ) : (
                                                     form?.forms[index]?.status !== "APPROVED" ? (
-                                                      <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                      <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
                                                         <div
                                                           className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                           onClick={() => {
@@ -4911,42 +4999,20 @@ const getApplicantValues = (array, index) => {
                                                       </div>
                                                     )
                                                   )
-                                                ) : (
-                                                  form?.forms[index]?.status !== "APPROVED" ? (
-                                                    <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
-                                                      <div
-                                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                        onClick={() => {
-                                                          if (!(isUploadYourDoc && !allVerified)) {
-                                                            handleStepsVerify(form?.forms[index]?.id);
-                                                          }
-                                                        }}
-                                                      >
-                                                        Verify
-                                                      </div>
-                                                    </div>
-                                                  ) : (
-                                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                        Verified
-                                                      </div>
-                                                    </div>
-                                                  )
-                                                )
-                                                }
-                                              </div>
-                                            );
-                                          })()
-                                        )}
-                                      </>
-                                    ) : (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                          Verified
+                                                  }
+                                                </div>
+                                              );
+                                            })()
+                                          )}
+                                        </>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Verified
+                                          </div>
                                         </div>
-                                      </div>
-                                    )}
-                                  </>                                  
+                                      )}
+                                    </>
                                   )}
                                 </div>))}
                             {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
@@ -5462,7 +5528,7 @@ const getApplicantValues = (array, index) => {
 
                                             </div>
                                           ) : ''}
-                                        {/* </div> */}
+                                          {/* </div> */}
                                         </div>
                                         {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
@@ -5759,7 +5825,7 @@ const getApplicantValues = (array, index) => {
                                           ) : ''}
                                         </div> */}
                                       </div>
-                                      
+
                                       {applicationType === "NEW" ? (
                                         <>
                                           {expand?.status && expand?.index === index + 1 &&
@@ -5950,13 +6016,13 @@ const getApplicantValues = (array, index) => {
                                             </>
                                           ) : (
                                             <>
-                                            {!staffView && (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Verified
-                                              </div>
-                                            </div>
-                                            )}
+                                              {!staffView && (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Verified
+                                                  </div>
+                                                </div>
+                                              )}
                                             </>
                                           )}
                                         </>
@@ -8334,38 +8400,38 @@ const getApplicantValues = (array, index) => {
                                       {data?.title}
                                     </div>
                                     <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
-                                      {expand?.status && expand?.index === index + 1 ? (
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: false, index: 0 });
-                                            setFormSchemaId("");
-                                          }}
-                                        />
-                                      ) : (
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: true, index: index + 1 });
-                                            setFormSchemaId(data?.id);
-                                          }}
-                                        />
-                                      )}
+                                      <div
+                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                      >
+                                        {expand?.status && expand?.index === index + 1 ? (
+                                          <RemoveIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() => {
+                                              setExpand({ status: false, index: 0 });
+                                              setFormSchemaId("");
+                                            }}
+                                          />
+                                        ) : (
+                                          <AddIcon
+                                            sx={{
+                                              fontSize: 20,
+                                              color: "#94979A",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() => {
+                                              setExpand({ status: true, index: index + 1 });
+                                              setFormSchemaId(data?.id);
+                                            }}
+                                          />
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
                                   </div>
                                   {/* {expand?.status && expand?.index === index + 1 ? (
                           <>
@@ -9384,37 +9450,37 @@ const getApplicantValues = (array, index) => {
                 {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
-                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                       <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                          onClick={() => {
-                            onClose();
-                          }}
-                        >
-                          SAVE IN PROGRESS
-                        </div>
-                      </div>
+                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                       <div
-                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                        onClick={() => {
+                          onClose();
+                        }}
                       >
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          // onClick={() => {
-                          //   setShowApplicationDeclineDialog(true);
-                          // }}
-                          onClick={() => {
-                            setShowApplicationDeclineDialog(true);
-                          }}
-                        >
-                          NOT RECOMMENDED
-                        </div>
+                        SAVE IN PROGRESS
                       </div>
+                    </div>
+                    <div
+                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                    >
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                        // onClick={() => {
+                        //   setShowApplicationDeclineDialog(true);
+                        // }}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED
+                      </div>
+                    </div>
                     {/* </div> */}
                     <div className={`${style.marginTop20}`}>
                       <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
                           // onClick={onClickApproveFunction}
@@ -9426,7 +9492,7 @@ const getApplicantValues = (array, index) => {
                         </div>
                       </div>
                       <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
                           onClick={onClickApprovalwithoutnotesFunction}
@@ -10084,7 +10150,7 @@ const getApplicantValues = (array, index) => {
                                   ?.filter((log) =>
                                     log?.workflowStatus !== "SUBMITTED"
                                     && !(log?.approvalType === null || log?.approvalType === "")
-                                  ).reverse() 
+                                  ).reverse()
                                   .map((log, index) => (
                                     <div key={index}>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
@@ -10126,7 +10192,7 @@ const getApplicantValues = (array, index) => {
                               <div
                                 className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
                               >
-                               <Tooltip title="Create a note" arrow>
+                                <Tooltip title="Create a note" arrow>
                                   <CreateOutlinedIcon
                                     className={`${style.notesIcon} ${style.cursorPointer}`}
                                     onClick={onClickNotesFunction}
@@ -10181,74 +10247,74 @@ const getApplicantValues = (array, index) => {
 
                             // </>
                             <>
-                        {form?.notesDetails
-                            ?.filter(log => log.notes.notes)
-                            .reverse()
-                            .map((log, index) => (
-                                <div key={index}>
+                              {form?.notesDetails
+                                ?.filter(log => log.notes.notes)
+                                .reverse()
+                                .map((log, index) => (
+                                  <div key={index}>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                        {log.title}
+                                      {log.title}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                        {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
+                                      {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
-                                        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                      <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                     </div>
 
                                     {/* Check if there are files */}
                                     {log.files && log.files.length > 0 && (
-                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                            {log.files.map((file, fileIndex) => {
-                                              // let innerData = log?.files[0];
-                                              return (
-                                                <div key={fileIndex}>
-                                                  <div className={style.displayInRow}>
-                                                    {/* Display Material UI PDF icon and link */}
-                                                    <div
-                                                      className={style.cursorPointer}
-                                                      onClick={() => {
-                                                        setShowFileDisplayDialog(true);
-                                                        setselectedFile(file);
-                                                      }}
-                                                    >
-                                                      <DescriptionRoundedIcon
-                                                        className={style.docsIcon}
-                                                        style={{ marginRight: '8px' }}
-                                                      />
-                                                    </div>
-                                                    <div
-                                                      className={`${style.cursorPointer} ${style.docsIcon}`}
-                                                      onClick={() => {
-                                                        setShowFileDisplayDialog(true);
-                                                        setselectedFile(file);
-                                                      }}
-                                                    >
-                                                      {file?.fileName}
-                                                    </div>
-                                                  </div>
-                                                  {file?.title && (
-                                                    <div
-                                                      className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
-                                                    >
-                                                      <div>{file?.title}</div>
-                                                    </div>
-                                                  )}
-                                                  {/* Optional description */}
-                                                  {file?.description && (
-                                                    <div
-                                                      className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
-                                                    >
-                                                      <div>{file?.description}</div>
-                                                    </div>
-                                                  )}
+                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                        {log.files.map((file, fileIndex) => {
+                                          // let innerData = log?.files[0];
+                                          return (
+                                            <div key={fileIndex}>
+                                              <div className={style.displayInRow}>
+                                                {/* Display Material UI PDF icon and link */}
+                                                <div
+                                                  className={style.cursorPointer}
+                                                  onClick={() => {
+                                                    setShowFileDisplayDialog(true);
+                                                    setselectedFile(file);
+                                                  }}
+                                                >
+                                                  <DescriptionRoundedIcon
+                                                    className={style.docsIcon}
+                                                    style={{ marginRight: '8px' }}
+                                                  />
                                                 </div>
-                                              );
-                                            })}
-                                        </div>
+                                                <div
+                                                  className={`${style.cursorPointer} ${style.docsIcon}`}
+                                                  onClick={() => {
+                                                    setShowFileDisplayDialog(true);
+                                                    setselectedFile(file);
+                                                  }}
+                                                >
+                                                  {file?.fileName}
+                                                </div>
+                                              </div>
+                                              {file?.title && (
+                                                <div
+                                                  className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                                                >
+                                                  <div>{file?.title}</div>
+                                                </div>
+                                              )}
+                                              {/* Optional description */}
+                                              {file?.description && (
+                                                <div
+                                                  className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                                                >
+                                                  <div>{file?.description}</div>
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
                                     )}
-                                </div>
-                            ))}
+                                  </div>
+                                ))}
                             </>
                           )}
                         </div>
@@ -10747,20 +10813,20 @@ const getApplicantValues = (array, index) => {
             />
           )
         }
-           {showFileVerifyDialog && (
-                <FileVerifyDialog
-                    getIsOpen={setShowFileVerifyDialog}
-                    file={fileArray[selectedFileIndex]}
-                    fileArray={fileArray}
-                    setFileArray={setFileArray}
-                    selectedFileIndex={selectedFileIndex}
-                    setSelectedFileIndex={setSelectedFileIndex}
-                    selectedRow = {selectedRow}
-                    selectedRowTableName = {selectedRowTableName}
-                    selectedFormId = {selectedFormId}
-                    setForm = {setForm}
-                />
-            )}
+        {showFileVerifyDialog && (
+          <FileVerifyDialog
+            getIsOpen={setShowFileVerifyDialog}
+            file={fileArray[selectedFileIndex]}
+            fileArray={fileArray}
+            setFileArray={setFileArray}
+            selectedFileIndex={selectedFileIndex}
+            setSelectedFileIndex={setSelectedFileIndex}
+            selectedRow={selectedRow}
+            selectedRowTableName={selectedRowTableName}
+            selectedFormId={selectedFormId}
+            setForm={setForm}
+          />
+        )}
         {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>
