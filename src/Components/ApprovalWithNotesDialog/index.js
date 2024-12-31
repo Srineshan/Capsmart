@@ -103,7 +103,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [isChecked, userRoleComments, isSigned]);
+  }, [isChecked, userRoleComments, isSigned, documentTitle, uploadFileData]);
 
   useEffect(() => {
     setUserDetails();
@@ -248,16 +248,34 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     }
   };
 
+  // const checkApproveEnabled = () => {
+  //   const hasValidComments = userRoleComments.trim() !== '';
+
+  //   if (userRole.includes('Chief Of Staff')) {
+  //     setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && isSigned);
+  //   } else {
+  //     // setIsApproveEnabled(isChecked.isChecked2 && hasValidComments && isSigned);
+  //     setIsApproveEnabled(hasValidComments);
+  //   }
+  // };
+
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
-
-    if (userRole.includes('Chief Of Staff')) {
-      setIsApproveEnabled(isChecked.isChecked1 && hasValidComments && isSigned);
+    
+    // Check if there are any uploaded files
+    if (uploadFileData.length > 0) {
+      // For files, check if all documents have titles
+      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+        documentTitle[index] && documentTitle[index].trim() !== ''
+      );
+      
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
     } else {
-      // setIsApproveEnabled(isChecked.isChecked2 && hasValidComments && isSigned);
+      // If no files are uploaded, only check for valid comments
       setIsApproveEnabled(hasValidComments);
     }
   };
+
   const onClose = () => {
     getActiveApplicationView(false);
     getIsOpen(false);
@@ -864,12 +882,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
             </div> */}
                 {/* )}  */}
                 {/* <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}> */}
-                <div className={`${style.marginTop} ${style.alignCenter} ${style.cursorPointer}`}>
+                <div className={`${style.marginTop} ${style.alignCenter} ${isApproveEnabled ? style.cursorPointer : '' }`}>
                   {/* <div onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
               </div> */}
                   <div
-                    className={`${style.reviewButtonStyle} ${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer}`}
+                    className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}`}
                     onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                     style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
                   >

@@ -150,7 +150,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [isChecked, notes, isSigned]);
+  }, [isChecked, notes, isSigned, documentTitle, uploadFileData]);
 
   useEffect(() => {
     setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
@@ -316,13 +316,31 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     }
   };
 
+  // const checkApproveEnabled = () => {
+  //   const hasValidComments = notes.trim() !== '';
+  //   // const hasValidSignature = formDetails?.esignatureRequired ? isSigned : true;
+  //   // setIsApproveEnabled(isChecked.isChecked && hasValidComments && isSigned);
+  //   setIsApproveEnabled(hasValidComments);
+    
+  // };
+
   const checkApproveEnabled = () => {
     const hasValidComments = notes.trim() !== '';
-    // const hasValidSignature = formDetails?.esignatureRequired ? isSigned : true;
-    // setIsApproveEnabled(isChecked.isChecked && hasValidComments && isSigned);
-    setIsApproveEnabled(hasValidComments);
     
+    // Check if there are any uploaded files
+    if (uploadFileData.length > 0) {
+      // For files, check if all documents have titles
+      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+        documentTitle[index] && documentTitle[index].trim() !== ''
+      );
+      
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+    } else {
+      // If no files are uploaded, only check for valid comments
+      setIsApproveEnabled(hasValidComments);
+    }
   };
+
 
   const checkRequirements = () => {
       return isChecked.isChecked
