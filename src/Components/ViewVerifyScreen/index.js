@@ -66,6 +66,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import IconButton from '@mui/material/IconButton';
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -212,6 +215,7 @@ const NewActiveApplication = ({
   const [formIndex, setFormIndex] = useState();
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [fileArray, setFileArray] = useState([]);
+  const [expandedIcon, setExpandedIcon] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -274,6 +278,20 @@ const NewActiveApplication = ({
 
   };
 
+    const handleExpandClick = (catIndex) => {
+      setExpandedIcon(prev => ({
+        ...prev,
+        [catIndex]: !prev[catIndex]
+      }));
+  };
+
+  const handleExpandClickAdvance = (Index) => {
+    setExpandedIcon(prev => ({
+      ...prev,
+      [Index]: !prev[Index]
+    }));
+};
+
   const getJune30thOfCurrentYear = () => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() + 1;
@@ -329,13 +347,45 @@ const NewActiveApplication = ({
     );
   }, [form, step]);
 
+  // useEffect(() => {
+  //   setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+  //   console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
+  //   console.log("selectedPrivilege" , JSON.stringify(selectedPrivilege, null, 2));
+  //   console.log(
+  //     "1111111111111",selectedPrivilegeForDisplay,
+  //     "2222222222222",selectedAdditionalPrivilegeForDisplay,
+  //     "entered",
+  //     "3333333333333",selectedPrivilege,
+  //     "4444444444444",staffPrivilege?.filter((data) => data?.id === selectedPrivilege),
+  //     "5555555555555",staffPrivilege,
+  //     "6666666666666",selectedPrivilegesForDisplayMultiple
+  //   );
+    
+  // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
+
+  // useEffect(() => {
+  //   setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+  //   console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
+  //   console.log("selectedPrivilege" , JSON.stringify(selectedPrivilege, null, 2));
+  //   console.log(
+  //     "1111111111111",selectedPrivilegeForDisplay,
+  //   );
+    
+  // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
+  
+
   useEffect(() => {
     if (form?.forms[formIndex]?.data !== null) {
+      setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+      setSelectedAdditionalPrivilegeForDisplay(
+        form?.privileges?.additionalPrivileges
+      );
       setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
       setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
       setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
       setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
       setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+      console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
     }
   }, [form, formIndex]);
 
@@ -1498,6 +1548,8 @@ const NewActiveApplication = ({
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const paymentmentDate = form?.payment?.paidDateTime;
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
 
@@ -3563,8 +3615,8 @@ const NewActiveApplication = ({
                           {form?.privileges?.obligatedPrivileges?.map(
                             (data) => (
                               <div
-                                // className={style.privilegeHeading}
-                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                 onClick={() => {
                                   setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategory('Basic')
@@ -3581,8 +3633,8 @@ const NewActiveApplication = ({
                           {form?.privileges?.priorObligatedPrivileges?.map(
                             (data) => (
                               <div
-                                // className={style.privilegeHeading}
-                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                 onClick={() => {
                                   setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategory('Basic')
@@ -3612,8 +3664,8 @@ const NewActiveApplication = ({
                             {form?.privileges?.obligatedPrivileges?.map(
                               (data) => (
                                 <div
-                                  // className={style.privilegeHeading}
-                                  className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                  className={style.privilegeHeading}
+                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                   onClick={() => {
                                     setShowCurrentPrivileges(true);
                                     setCurrentPrivilegesCategory('Basic')
@@ -3752,77 +3804,225 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     )}
-                     {/* <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                  ?.restrictedPrivileges?.esign !== null &&
-                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== undefined) ||
-                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                  0 ||
-                  (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                    ?.privileges?.length === 0 &&
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length !== undefined)) &&
-                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.corePrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                      ?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined))
-                  ? ""
-                  : style.disabledButton
-                  }`}
-                onClick={
-                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== null &&
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                    0 ||
-                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length === 0 &&
-                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined)) &&
-                    ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.esign !== null &&
-                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.esign !== undefined) ||
-                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
-                      (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                        ?.length === 0 &&
-                        selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                          ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined))
-                    ? selectedPrivilegeForDisplay?.length === indexForSign + 1 ? () => {
-                      // setShowPrivilegesForSign(false);
-                      // handleSelectedPrivilegesForDisplayMultiple(
-                      //   selectedPrivilegeForDisplay[indexForSign]
-                      // );
-                      // handleSubmit();
-                      setIndexForSign(0)
-                    } : () => {
-                      setIndexForSign(indexForSign + 1)
-                    }
-                    : () => { }
-                }
-              >
-                {selectedPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
-              </div> */}
-          </>
+                    <div className={`${style.cardTitle}  ${style.marginTop10}`}>
+                    Requested Privilege Set(s) for Reappointment
+                  </div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  {form?.privileges?.obligatedPrivileges?.map(
+                              (data) => (
+                                <div
+                                  className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                >
+                                  {data?.privilegeSetTitle}
+                                </div>
+                              )
+                            )}
+                             {/* <div
+                                  className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                                >
+                                  {form?.basicDetails?.departmentSpecialty?.department}
+                                </div> */}
+                  {/* {form?.privileges?.obligatedPrivileges?.map(
+                              (data) => ( */}
+                                <div
+                                  className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                  // onClick={() => {
+                                  //   setShowCurrentPrivileges(true);
+                                  //   setCurrentPrivilegesCategory('Basic')
+                                  //   handleChange(data?.id);
+                                  // }}
+                                >
+                                  {form?.privileges?.obligatedPrivileges?.privilegeSetTitle}
+                                </div>
+                            {/* //   )
+                            // )} */}
+                                          <>
+                                          {
+                                        selectedPrivilegeForDisplay?.map((data, dataIndex) => 
+                                        ( <div key={dataIndex}>
+                                          {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => {
+                                            const uniqueKey = `${dataIndex}-${catIndex}`;
+                                            return (
+                                          <div>
+                                            <div className={style.flex}>
+                                              <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong>
+                                              {/* <span className={`${style.docsIcon} ${style.marginTop10} ${style.marginLeft20}`} onClick={() => handleExpandClick(uniqueKey)}>
+                                                {expandedIcon[uniqueKey] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                              </span> */}
+                                              </div>
+                                              <div className={`${style.docsIcon} ${style.marginTop5} ${style.marginLeft20}`} onClick={() => handleExpandClick(uniqueKey)}>
+                                                {expandedIcon[uniqueKey] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                                              </div>
+                                            </div>
+                                            {expandedIcon[uniqueKey] && (
+                                            <>{
+                                              categories?.privileges?.map(privileges => (
+                                                <div className={style.privilegeCodeGrid}>
+                                                  <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                                  <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                                </div>
+
+                                              ))
+                                            }
+                                            </>
+                                            )}
+                                          </div>
+                                            )
+                                        })}
+                                        </div>)
+                                        )}
+              <div className={style.twoCol}>
+                                  {selectedPrivilegeForDisplay?.[0] && (
+                                    <>
+                                      <div>
+                                        <ESignature
+                                          userName={
+                                            selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.name
+                                              : ""
+                                          }
+                                          encData={
+                                            selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.esign
+                                              : ""
+                                          }
+                                          showData={
+                                            selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null &&
+                                              selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign !== undefined
+                                              ? true
+                                              : false
+                                          }
+                                          showDatais={true}
+                                        />
+                                      </div>
+                                      <div className={style.verticalAlignCenter}>
+                                        <div className={style.displayInRow}>
+                                          <div className={style.dateTitle}>Date: </div>
+                                          <div className={`${style.date} ${style.marginLeft}`}>
+                                            {selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.signedDate
+                                              : ""}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+               <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+               Advanced Privileges
+                  </div>
+                  {/* <div className={`${style.borderStyleTiles}`}></div> */}
+                  {
+              selectedAdditionalPrivilegeForDisplay?.map((data, dataIndex) => 
+                ( <div key={dataIndex}>
+                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => {
+                  const uniqueKey = `${dataIndex}-${catIndex}`;
+                  return (
+                <div>
+                  <div className={style.flex}>
+                    <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                    <div className={`${style.docsIcon} ${style.marginTop5} ${style.marginLeft20}`} onClick={() => handleExpandClickAdvance(uniqueKey)}>
+                      {expandedIcon[uniqueKey] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </div>
+                  </div>
+                  {expandedIcon[uniqueKey] && (
+                  <>{
+                    categories?.privileges?.map(privileges => (
+                      <div className={style.privilegeCodeGrid}>
+                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                      </div>
+
+                    ))
+                  }
+                  </>
+                  )}
+                </div>
+                  )
+                })}
+              </div>)
+              )}
+                     <div className={style.twoCol}>
+                                  {selectedAdditionalPrivilegeForDisplay?.[0] && (
+                                    <>
+                                      <div>
+                                        <ESignature
+                                          userName={
+                                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.name
+                                              : ""
+                                          }
+                                          encData={
+                                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.esign
+                                              : ""
+                                          }
+                                          showData={
+                                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null &&
+                                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign !== undefined
+                                              ? true
+                                              : false
+                                          }
+                                          showDatais={true}
+                                        />
+                                      </div>
+                                      <div className={style.verticalAlignCenter}>
+                                        <div className={style.displayInRow}>
+                                          <div className={style.dateTitle}>Date: </div>
+                                          <div className={`${style.date} ${style.marginLeft}`}>
+                                            {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                              ?.restrictedPrivileges?.esign !== null
+                                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                                ?.restrictedPrivileges?.esign?.signedDate
+                                              : ""}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                                <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                                Application Payment Status
+                                <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
+                                  {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
+                                </span>
+                               </div>
+                               <div className={`${style.threeColumnGrid}`}>
+                                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                  <div>Amount</div>
+                                  <div className={`${style.borderStyleTiles}`}></div>
+                                  <div  className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || ""}</div>
+                                </div>
+                                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                  <div>Transaction ID / Confirmation Number</div>
+                                  <div className={`${style.borderStyleTiles}`}></div>
+                                  <div className={`${style.marginLeft30} ${style.marginTop10} `}>{form?.payment?.receiptId || ""}</div>
+                                </div>
+                                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                  <div>Payment Date & Time</div>
+                                  <div className={`${style.borderStyleTiles}`}></div>
+                                  <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
+                                </div>
+
+                               </div>
+                                </>
+                        </>
         );
       default:
         return <></>;
@@ -3975,11 +4175,11 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                        <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
                         <div className={style.greyDotTextStyle}>
                           Application Payment Status
                         </div>
-                        <div>payment ID</div>
+                        <div className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || ""}</div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                         <div className={`${statusStyle} ${style.marginCenter}`}></div>
