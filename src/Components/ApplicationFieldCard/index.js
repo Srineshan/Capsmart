@@ -185,35 +185,36 @@ const ApplicationFieldCard = ({
       for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
         try {
           if (
-            response?.data[triggerIndex]?.classification !== null &&
+            response?.data[triggerIndex]?.documentType !== null &&
             formSchema?.requiredDocuments?.length !== 0
           ) {
             await PUT(
-              `application-management-service/application/${applicationId}/form/updateData`,
+              `application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`,
               {
                 documentType:
-                  response?.data[triggerIndex]?.classification !== null
-                    ? response?.data[triggerIndex]?.classification
+                  response?.data[triggerIndex]?.documentType !== null
+                    ? response?.data[triggerIndex]?.documentType?.name
                     : "",
                 fileSize: `${(
                   event[triggerIndex]?.size /
                   (1024 * 1024)
                 ).toFixed(2)} Mb`,
-                fileURL: response?.data[triggerIndex]?.fileURL,
-                fileType: response?.data[triggerIndex]?.fileType,
+                fileURL: response?.data[triggerIndex]?.file?.fileURL,
+                fileType: response?.data[triggerIndex]?.file?.fileType,
                 fileUploaded: event[triggerIndex]?.name,
                 requirement:
-                  response?.data[triggerIndex]?.classification !== null
+                  response?.data[triggerIndex]?.documentType !== null
                     ? basicForm?.documentsRequired?.filter(
                       (data) =>
                         data?.document?.name ===
-                        response?.data[triggerIndex]?.classification
+                        response?.data[triggerIndex]?.documentType?.name
                     )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
                 valid: response?.data[triggerIndex]?.valid,
                 verified: response?.data[triggerIndex]?.verified,
+                rowId: response?.data[triggerIndex]?.id
               }
             );
           }
@@ -267,7 +268,8 @@ const ApplicationFieldCard = ({
         file = await addNewDocument(value);
       }
       console.log(file);
-      current[lastKey] = file;
+      current[lastKey] = file?.file;
+      current['rowId'] = file?.id;
       setIsLoading(false);
     } else {
       current[lastKey] = value;
@@ -963,32 +965,33 @@ const ApplicationFieldCard = ({
         SuccessToaster("File Uploaded Successfully");
         try {
           if (
-            response?.data?.classification !== null &&
+            response?.data?.documentType !== null &&
             formSchema?.requiredDocuments?.length !== 0
           ) {
             await PUT(
               `application-management-service/application/${applicationId}/form/updateData`,
               {
                 documentType:
-                  response?.data?.classification !== null
-                    ? response?.data?.classification
+                  response?.data?.documentType !== null
+                    ? response?.data?.documentType?.name
                     : "",
                 fileSize: `${(file?.size / (1024 * 1024)).toFixed(2)} Mb`,
-                fileURL: response?.data?.fileURL,
-                fileType: response?.data?.fileType,
+                fileURL: response?.data?.file?.fileURL,
+                fileType: response?.data?.file?.fileType,
                 fileUploaded: file?.name,
                 requirement:
-                  response?.data?.classification !== null
+                  response?.data?.documentType !== null
                     ? basicForm?.documentsRequired?.filter(
                       (data) =>
                         data?.document?.name ===
-                        response?.data?.classification
+                        response?.data?.documentType?.name
                     )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
                 valid: response?.data?.valid,
                 verified: response?.data?.verified,
+                rowId: response?.data?.id
               }
             );
           }

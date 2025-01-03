@@ -176,8 +176,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const generateRandomId = () => {
         return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
-      };
-    
+    };
+
     const handleFileUpload = async (e, id) => {
         setIsEdited(true);
         let file = await addNewDocument(e.target.files[0]);
@@ -260,12 +260,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: generateRandomId() })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
-                    if (response?.data[triggerIndex]?.classification !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data[triggerIndex]?.classification !== null ? response?.data[triggerIndex]?.classification : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.fileURL, fileType: response?.data[triggerIndex]?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified });
+                    if (response?.data[triggerIndex]?.documentType !== null) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -315,7 +315,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             temp[index].requirement = basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
         }
         console.log(temp)
-        await PUT(`application-management-service/application/${applicationId}/form/updateData`, temp[index])
+        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}`, temp[index])
             .then(response => {
                 console.log(response)
                 setIsLoading(false)
@@ -432,7 +432,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         let temp = tempValue?.table;
         temp = temp.filter(obj => !isEqual(obj, data))
         console.log(temp, data)
-        await DELETE(`application-management-service/application/${applicationId}/files`, [data])
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[data?.rowId]}`, [data])
             .then((response) => {
                 SuccessToaster("File Deleted Successfully");
             })
