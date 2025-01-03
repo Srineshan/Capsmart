@@ -180,6 +180,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
+        handleSavePDF(response?.data)
         uploadedFile = response?.data;
       } catch (error) {
         console.error(error);
@@ -195,6 +196,48 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       //   return null;
       // }
     }
+  }
+
+  const handleSavePDF = async (file) => {
+    let temp = {
+      "payee": {
+        "name": {
+          "firstName": paymentInfo?.card?.name,
+          "lastName": "string",
+          "middleName": "string"
+        },
+        "email": {
+          "officialEmail": paymentInfo?.shipping?.email_address
+        },
+        "mobileNumber": paymentInfo?.shipping?.phone_number,
+        "address": {
+          "streetName": paymentInfo?.shipping?.address_line1,
+          "city": paymentInfo?.shipping?.city,
+          "province": paymentInfo?.shipping?.province,
+          "pinCode": paymentInfo?.shipping?.postal_code
+        }
+      },
+      "fee": paymentInfo?.amount,
+      "tax": 0,
+      "total": paymentInfo?.amount,
+      "currency": paymentListData?.[0]?.currencyType,
+      "quantity": 1,
+      "product": "Reappointment Application Fee",
+      "paidDateTime": format(new Date(paymentInfo?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paymentMethod": paymentInfo?.payment_method,
+      "cardNumber": paymentInfo?.card?.last_four,
+      "receiptId": paymentInfo?.order_number,
+      "paymentApplicable": true,
+      "paymentCompleted": true,
+      "invoice": file
+    }
+
+    try {
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+    } catch (error) {
+      console.log(error);
+    }
+    continueClick();
   }
 
   const handleDownload = () => {
@@ -216,9 +259,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     //     _element.classList.remove('applicationCardScrollStyle');
     // });
     html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
-      // addNewDocument(pdfBlob);
+      addNewDocument(pdfBlob);
     });
-    continueClick();
   };
 
   return (
@@ -324,13 +366,15 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
             <div className={`${style.receiptContainer}`} ref={targetRef}>
               {/* Header */}
               <div className={style.receiptHeader}>
-                <h2>Reappointment Application Fee Payment Receipt</h2>
-                <p>{new Date().toLocaleDateString()}</p>
+                <h2>Payment Receipt</h2>
               </div>
 
               {/* Receipt Details */}
               <div className={style.receiptDetails}>
                 <h3>Transaction Details</h3>
+                <p>
+                  <strong>Description:</strong> Reappointment Application Fee
+                </p>
                 <p>
                   <strong>Transaction ID:</strong> {paymentInfo?.order_number}
                 </p>
