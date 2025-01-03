@@ -373,6 +373,11 @@ useEffect(() => {
   const getApplicationMoveToNext = async () => {
 
    let title;
+   const files = (uploadFileData || []).map((file, index) => ({
+    ...file,              
+    description: documentDesc[index] || "",
+    title: documentTitle[index] || "", 
+  }));
        if (selectedTab === 'level-2') {
         if (userRole?.includes("Department Head")) {
           title = "Dept. Head / Chief Review";
@@ -410,7 +415,7 @@ useEffect(() => {
         },
         role: "Credentialing Committee"
       },
-       files: uploadFileData || [],
+       files: files,
        upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
 

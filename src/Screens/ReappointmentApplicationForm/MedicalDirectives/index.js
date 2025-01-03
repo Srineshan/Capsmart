@@ -225,6 +225,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
     }
 
+    const generateRandomId = () => {
+        return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
+      };
+
+    const rowId = generateRandomId();
+
     const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
         let missingFields = []
@@ -260,11 +266,28 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         // } 
     }
 
+    useEffect(() => {
+      console.log("1111111111", allMedicalDirectives?.completed?.medicalDirective?.title)
+    }, [])
+    
+
     const handleContinue = async () => {
         if (isSigned) {
+
+            let payload = medicalDirectives?.map((innerData, index) => ({
+                attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
+                mdId: innerData?.medicalDirective?.mdID,
+                title: innerData?.medicalDirective?.title,
+                type: innerData?.medicalDirective?.creationType,
+                rowId: generateRandomId(),
+                file:""
+            }));
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
+                // data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
+                data: {
+                    table: payload,
+                },
                 acknowledged: isSigned,
                 esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
             }

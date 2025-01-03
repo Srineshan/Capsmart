@@ -78,7 +78,7 @@ const StaffApplicationList = ({
   const [tableData, setTableData] = useState([]);
   const [rejectionListData, setRejectionListData] = useState([]);
   const [declineListData, setDeclineListData] = useState([]);
-  const [sortField, setSortField] = useState('DEFAULT');
+  const [sortField, setSortField] = useState('SUBMITTED_DATE');
   const [sortValue, setSortValue] = useState('DESCENDING');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -319,7 +319,7 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    false,
+    true,
     false
   ]
 
