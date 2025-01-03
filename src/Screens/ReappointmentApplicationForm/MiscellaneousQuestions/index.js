@@ -40,43 +40,49 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [yesOrNoMRP, setYesOrNoMRP] = useState('');
   const [updatedDateMRP, setUpdatedDateMRP] = useState('');
   const [showJourneyDialog, setShowJourneyDialog] = useState(false);
-  const [specificProviderGroup, setSpecificProviderGroup] = useState("");
+  const [providerType, setProviderType] = useState("");
   const [providerOptions, setProviderOptions] = useState([]);
-  const [obstetricsSpecificProviderGroup, setObstetricsSpecificProviderGroup] = useState("");
+  const [obstetricsProviderType, setObstetricsProviderType] = useState("");
   const [applicantOptions, setApplicantOptions] = useState([]);
   const [providerLabels, setProviderLabels] = useState("");
   const [obstetricsapplicantOptions, setObstetricsApplicantOptions] = useState(
     []
   );
-  const [whoCovers, setWhoCovers] = useState("");
-  const [whoCoversObstetrics, setWhoCoversObstetrics] = useState("");
+  const [covererName, setCovererName] = useState("");
+  const [obstetricsCovererName, setObstetricsCovererName] = useState("");
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
     }
     if (basicForm !== undefined && formIndex !== undefined) {
-      setYesOrNoLMS(basicForm?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.lms?.yesOrNo : '');
-      setUpdatedDateLMS(basicForm?.forms?.[formIndex]?.data?.lms?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.lms?.updatedDate : '');
-      setYesOrNoSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.yesOrNo : '');
-      setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.suboxone?.updatedDate : '');
-      setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.yesOrNo : '');
-      setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate !== undefined ? basicForm?.forms?.[formIndex]?.data?.mrp?.updatedDate : '');
-      setWhoCovers(
-        basicForm?.forms?.[formIndex]?.data?.coverer?.whoCovers !== undefined
-          ? basicForm?.forms?.[formIndex]?.data?.coverer?.whoCovers
-          : ""
-      );
-      setWhoCoversObstetrics(
-        basicForm?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics !== undefined
-          ? basicForm?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics
-          : ""
-      );
-      setSpecificProviderGroup(
-        basicForm?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup !== undefined
-          ? basicForm?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup
+      setYesOrNoLMS(basicForm?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response !== undefined ? basicForm?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response : '');
+      setUpdatedDateLMS(basicForm?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== undefined ? basicForm?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date : '');
+      setYesOrNoSuboxone(basicForm?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response !== undefined ? basicForm?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response : '');
+      setUpdatedDateSuboxone(basicForm?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== undefined ? basicForm?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date : '');
+      setYesOrNoMRP(basicForm?.forms?.[formIndex]?.data?.wishToBeMRP?.response !== undefined ? basicForm?.forms?.[formIndex]?.data?.wishToBeMRP?.response : '');
+      setUpdatedDateMRP(basicForm?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== undefined ? basicForm?.forms?.[formIndex]?.data?.wishToBeMRP?.date : '');
+      setProviderType(
+        basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType !== undefined
+          ? basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType
           : ""
       )
+      setObstetricsProviderType(
+        basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType !== undefined
+          ? basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType
+          : ""
+      )
+      setCovererName(
+        basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName !== undefined
+          ? basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName
+          : ""
+      );
+      setObstetricsCovererName(
+        basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName !== undefined
+          ? basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName
+          : ""
+      );
       setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      console.log(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName, obstetricsCovererName, covererName, 'coverername', basicForm?.forms?.[formIndex]?.data?.coverageDetails)
     }
   }, [basicForm, formIndex])
 
@@ -139,13 +145,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
   }, [basicForm, step])
 
-  useEffect(() => {
-    setWhoCovers("");
-  }, [specificProviderGroup]);
+  // useEffect(() => {
+  //   setCovererName("");
+  // }, [providerType]);
 
-  useEffect(() => {
-    setWhoCoversObstetrics("");
-  }, [obstetricsSpecificProviderGroup]);
+  // useEffect(() => {
+  //   setObstetricsCovererName("");
+  // }, [obstetricsProviderType]);
 
   const getIsValidationDialogOpen = (value) => {
     setShowValidationDialog(value);
@@ -202,12 +208,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   const getSkipClicked = (value) => {
     if (value) {
-      // handleSubmitApplicationReq("skipped")
+      handleSubmitApplicationReq("skipped")
       navigate(navigateURL);
     }
   }
 
-  console.log(whoCovers, specificProviderGroup, basicForm?.forms?.[formIndex]?.data?.coverer?.whoCovers)
+  console.log(covererName, providerType, basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName)
 
   const getMissingFields = () => {
     let missingKeys = [];
@@ -220,13 +226,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
       missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
     }
-    if (whoCovers === "") {
+    if (covererName === "") {
       missingKeys.push({
         label: "Who covers your hospital patients when you are not available?",
       });
     }
     if (
-      whoCoversObstetrics === "" &&
+      obstetricsCovererName === "" &&
       basicForm?.basicDetails?.departmentSpecialty?.department ===
       "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
@@ -251,10 +257,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: {
-        lms: { yesOrNo: yesOrNoLMS, updatedDate: updatedDateLMS },
-        suboxone: { yesOrNo: yesOrNoSuboxone, updatedDate: updatedDateSuboxone },
-        mrp: { yesOrNo: yesOrNoMRP, updatedDate: updatedDateMRP },
-        coverer: { whoCovers: whoCovers, whoCoversObstetrics: whoCoversObstetrics, specificProviderGroup: specificProviderGroup },
+        isModulesForReAppointmentCompleted: { response: yesOrNoLMS, date: updatedDateLMS },
+        doYouPrescribeSuboxone: { response: yesOrNoSuboxone, date: updatedDateSuboxone },
+        wishToBeMRP: { response: yesOrNoMRP, date: updatedDateMRP },
+        coverageDetails: { covererName: covererName, obstetricsCovererName: obstetricsCovererName, providerType: providerType, obstetricsProviderType: obstetricsProviderType },
       },
       unFilledFields: warningFields?.map(data => data?.label),
       acknowledged: data === "skipped" ? false : true
@@ -304,7 +310,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             <div className={style.cardTitle}>
-              {formSchema?.properties?.isModulesForReAppointmentCompleted?.label}
+              {formSchema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
             </div>
             {yesOrNoLMS === '' ? (
               <div
@@ -341,7 +347,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           </div>
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             <div className={style.cardTitle}>
-              {formSchema?.properties?.doYouPrescribeSuboxone?.label}
+              {formSchema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
             </div>
             {yesOrNoSuboxone === '' ? (
               <div
@@ -379,7 +385,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
             <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
               <div className={style.cardTitle}>
-                {formSchema?.properties?.wishToBeMRP?.label}
+                {formSchema?.properties?.wishToBeMRP?.properties?.response?.label}
               </div>
               {yesOrNoMRP === '' ? (
                 <div
@@ -432,8 +438,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div className={style.rowContainer}>
                   <div className={style.fieldWrapper}>
                     <CommonSelectField
-                      value={specificProviderGroup}
-                      onChange={(e) => setSpecificProviderGroup(e.target.value)}
+                      value={providerType}
+                      onChange={(e) => { setProviderType(e.target.value); setCovererName(""); }}
                       className={style.fullWidth}
                       firstOptionLabel={providerLabels}
                       firstOptionValue=""
@@ -447,17 +453,17 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                       warning={false}
                     />
                   </div>
-                  {specificProviderGroup === "Individual" && (
+                  {providerType === "Individual" && (
                     <div className={style.fieldWrapper}>
                       <CommonSelectField
-                        value={whoCovers}
-                        onChange={(e) => setWhoCovers(e.target.value)}
+                        value={covererName}
+                        onChange={(e) => setCovererName(e.target.value)}
                         className={style.fullWidth}
                         valueList={applicantOptions?.map((option) => option?.value)}
                         labelList={applicantOptions?.map((option) => option?.label)}
                         disabledList={[]}
                         disabledSelect={false}
-                        error={!whoCovers}
+                        error={!covererName}
                         label={"Select named Covering Provider"}
                         required={true}
                         warning={warningFields
@@ -469,12 +475,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     </div>
                   )}
 
-                  {specificProviderGroup === "Group" && (
+                  {providerType === "Group" && (
                     <div className={style.fieldWrapper}>
                       {/* <CommonTextField
-                        value={whoCovers}
+                        value={covererName}
                         className={`${style.fullWidth}`}
-                        onChange={(e) => setWhoCovers(e.target.value)}
+                        onChange={(e) => setCovererName(e.target.value)}
                         placeholder={"Enter Here"}
                         label={
                           "Name the Provider Group to cover you"
@@ -488,14 +494,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                         normalLabel={true}
                       /> */}
                       <CommonSelectField
-                        value={whoCovers}
-                        onChange={(e) => setWhoCovers(e.target.value)}
+                        value={covererName}
+                        onChange={(e) => setCovererName(e.target.value)}
                         className={style.fullWidth}
                         valueList={['CMH Radiologists', 'ENT call group', 'Cambridge Midwives', 'Cambridge Memorial Hospital Obstetrical Group']}
                         labelList={['CMH Radiologists', 'ENT call group', 'Cambridge Midwives', 'Cambridge Memorial Hospital Obstetrical Group']}
                         disabledList={[false, false, false, false]}
                         disabledSelect={false}
-                        error={!whoCovers}
+                        error={!covererName}
                         label={"Name the Provider Group to cover you"}
                         required={true}
                         warning={warningFields
@@ -517,8 +523,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                       {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                     </div>
                     <CommonSelectField
-                      value={obstetricsSpecificProviderGroup}
-                      onChange={(e) => setObstetricsSpecificProviderGroup(e.target.value)}
+                      value={obstetricsProviderType}
+                      onChange={(e) => { setObstetricsProviderType(e.target.value); setObstetricsCovererName(""); }}
                       className={style.fullWidth}
                       firstOptionLabel={providerLabels}
                       firstOptionValue=""
@@ -532,11 +538,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                       warning={false}
                     />
 
-                    {obstetricsSpecificProviderGroup === "Individual" && (
+                    {obstetricsProviderType === "Individual" && (
                       <div>
                         <CommonSelectField
-                          value={whoCoversObstetrics}
-                          onChange={(e) => setWhoCoversObstetrics(e.target.value)}
+                          value={obstetricsCovererName}
+                          onChange={(e) => setObstetricsCovererName(e.target.value)}
                           firstOptionLabel="Select who covers in Specific Provider"
                           firstOptionValue=""
                           className={style.fullWidth}
@@ -544,19 +550,19 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           labelList={obstetricsapplicantOptions.map((option) => option.label)}
                           disabledList={[]}
                           disabledSelect={false}
-                          error={!whoCoversObstetrics}
+                          error={!obstetricsCovererName}
                           label={"Select Who covers in Specific Provider"}
                           required={true}
-                          warning={!whoCoversObstetrics}
+                          warning={!obstetricsCovererName}
                         />
                       </div>
                     )}
 
-                    {obstetricsSpecificProviderGroup === "Group" && (
+                    {obstetricsProviderType === "Group" && (
                       <TextArea
-                        value={whoCoversObstetrics}
+                        value={obstetricsCovererName}
                         className={`${style.fullWidth} ${style.marginTop10}`}
-                        onChange={(e) => setWhoCoversObstetrics(e.target.value)}
+                        onChange={(e) => setObstetricsCovererName(e.target.value)}
                         placeholder={"Enter Here"}
                         rows={4}
                       />

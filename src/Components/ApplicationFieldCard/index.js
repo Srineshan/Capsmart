@@ -1891,11 +1891,10 @@ const ApplicationFieldCard = ({
           if (fieldData.priorDataComparisonNeeded === true) {
             const priorData = basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]]?.[fieldKey];
             const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
-            const isConflict = priorData !== undefined && currentValue !== priorData;
-            console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData, currentValue !== priorData, currentValue, priorData, basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]], basicForm?.forms?.[formIndex], formIndex)
+            const isConflict = priorData !== undefined && priorData !== null && currentValue !== undefined && currentValue !== null && currentValue !== priorData;
             let isIssueResolved = basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== undefined && basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== null;
             let isShowAdditionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.if?.properties?.[fieldKey]?.const;
-            console.log(isShowAdditionalFields)
+            console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData, currentValue !== priorData, currentValue, priorData, basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]], basicForm?.forms?.[formIndex], formIndex, isShowAdditionalFields, priorData !== undefined, priorData !== null, currentValue !== undefined, currentValue !== null, currentValue !== priorData, isShowAdditionalFields !== currentValue)
             if (isConflict && !showPriorDataDialog && !isIssueResolved && isShowAdditionalFields !== currentValue) {
               setDisclosureBaseKey(baseKey?.split('.')?.[1])
               setDisclosureFieldKey(fieldKey)

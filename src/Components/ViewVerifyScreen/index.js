@@ -3279,27 +3279,27 @@ const NewActiveApplication = ({
             <div>
               <div>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
                 </div>
-                {form?.forms?.[formIndex]?.data?.lms?.yesOrNo !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.lms?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.lms?.yesOrNo}</span></strong> on {form?.forms?.[formIndex]?.data?.lms?.updatedDate !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.lms?.updatedDate), "MMM dd, yyyy") : ''}</div>
+                {form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response !== undefined && (
+                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === 'Yes' || form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response === false ? "No" : form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.response}</span></strong> on {form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.isModulesForReAppointmentCompleted?.date), "MMM dd, yyyy") : ''}</div>
                 )}
               </div>
               <div className={`${style.marginTop20}`}>
                 <div className={style.cardTitle}>
-                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.label}
+                  {allFormSchemas?.[index]?.formSchema?.schema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
                 </div>
-                {form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo !== undefined && (
-                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.suboxone?.yesOrNo}</span></strong> on {form?.forms?.[formIndex]?.data?.lms?.updatedDate !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.suboxone?.updatedDate), "MMM dd, yyyy") : ''}</div>
+                {form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response !== undefined && (
+                  <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === 'Yes' || form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true) ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === true ? 'Yes' : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response === false ? "No" : form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.response}</span></strong> on {form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.doYouPrescribeSuboxone?.date), "MMM dd, yyyy") : ''}</div>
                 )}
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
                 <div className={`${style.marginTop20}`}>
                   <div className={style.cardTitle}>
-                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.label}
+                    {allFormSchemas?.[index]?.formSchema?.schema?.properties?.wishToBeMRP?.properties?.response?.label}
                   </div>
-                  {form?.forms?.[formIndex]?.data?.mrp?.yesOrNo !== undefined && (
-                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={form?.forms?.[formIndex]?.data?.mrp?.yesOrNo === 'Yes' ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.mrp?.yesOrNo}</span></strong> on {form?.forms?.[formIndex]?.data?.lms?.updatedDate !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.mrp?.updatedDate), "MMM dd, yyyy") : ''}</div>
+                  {form?.forms?.[formIndex]?.data?.wishToBeMRP?.response !== undefined && (
+                    <div className={`${style.markedAsText} ${style.marginTop20}`}><strong>Marked as <span className={(form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true || form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === 'Yes') ? style.yesText : style.noText}>{form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === true ? "Yes" : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response === false ? 'No' : form?.forms?.[formIndex]?.data?.wishToBeMRP?.response}</span></strong> on {form?.forms?.[formIndex]?.data?.wishToBeMRP?.date !== '' ? format(new Date(form?.forms?.[formIndex]?.data?.wishToBeMRP?.date), "MMM dd, yyyy") : ''}</div>
                   )}
                 </div>
               )}
@@ -3307,14 +3307,14 @@ const NewActiveApplication = ({
                 <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
               </div>
               <div className={style.marginTop20}>
-                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.specificProviderGroup : ''} : {form?.forms?.[formIndex]?.data?.coverer?.whoCovers !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCovers : ''}</strong></div>
+                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverageDetails?.providerType !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.providerType : ''} : {form?.forms?.[formIndex]?.data?.coverageDetails?.covererName !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.covererName : ''}</strong></div>
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
                 <div className={style.marginTop20}>
                   <div className={`${style.cardTitle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                   </div>
-                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics !== undefined ? form?.forms?.[formIndex]?.data?.coverer?.whoCoversObstetrics : ''}</strong></div>
+                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType : ''} : {form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName : ''}</strong></div>
                 </div>
               )}
             </div>
