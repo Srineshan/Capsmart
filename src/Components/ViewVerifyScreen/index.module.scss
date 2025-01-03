@@ -4935,6 +4935,14 @@ input[type="number"] {
   color: #1D2437;
 }
 
+.privilegeHeadingTitle {
+  font: normal normal medium 18px/24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
 .padding30 {
   padding: 30px;
 }
@@ -5294,3 +5302,36 @@ input[type="number"] {
   grid-template-columns: 1.25fr 0.75fr;
   gap: 20px;
 }
+
+.advanceBoxStyle{
+  background: var(--unnamed-color-e8e9e9) 0% 0% no-repeat padding-box;
+background: #E8E9E9 0% 0% no-repeat padding-box;
+border-radius: 2px;
+opacity: 0.8;
+padding: 5px;
+}
+
+.paidTextStyle{
+text-align: left;
+font: italic normal bold 20px/26px Proxima Nova;
+letter-spacing: 0px;
+color: $primarycolor;
+opacity: 1;
+}
+
+.unpaidTextStyle{
+  text-align: left;
+  font: italic normal bold 20px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: $statusred;
+  opacity: 1;
+  }
+
+  .paymentIDStyle{
+    text-align: center;
+    font: normal normal 600 15px/18px Proxima Nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: capitalize;
+    opacity: 1;
+  }

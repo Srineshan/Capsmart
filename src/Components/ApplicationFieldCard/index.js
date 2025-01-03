@@ -1842,6 +1842,9 @@ const ApplicationFieldCard = ({
             );
           }
         case "radiobutton":
+          if (isPOD) {
+            return null;
+          }
           return (
             <div
               className={`${style.spaceBetween} ${style.verticalAlignCenter}`}
@@ -1902,6 +1905,7 @@ const ApplicationFieldCard = ({
               setShowPriorDataDialog(true)
             }
           }
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -1932,6 +1936,11 @@ const ApplicationFieldCard = ({
                   </span> */}
                 </div>
               </div>
+              {isPOD ? (
+                <span className={currentValue === 'Yes' ? style.RadiobuttonYesStyle : style.RadiobuttonNoStyle}>
+                  {currentValue}
+                </span>
+              ) : (
               <CommonRadio
                 className={style.leftAlign}
                 value={
@@ -1959,6 +1968,7 @@ const ApplicationFieldCard = ({
                   ?.map((data) => data?.key)
                   ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
               />
+                )}
             </div>
           );
 

@@ -66,6 +66,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import IconButton from '@mui/material/IconButton';
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -203,6 +206,7 @@ const NewActiveApplication = ({
     selectedPrivilegesForDisplayMultiple,
     setSelectedPrivilegesForDisplayMultiple,
   ] = useState([]);
+  const [indexForSign, setIndexForSign] = useState(0);
   const [hospitalPrivilegeSet, setHospitalPrivilegeSet] = useState([])
   const [privilegeChangeYesOrNo, setPrivilegeChangeYesOrNo] = useState("");
   const [privilegeSetChangeYesOrNo, setPrivilegeSetChangeYesOrNo] = useState("");
@@ -211,6 +215,7 @@ const NewActiveApplication = ({
   const [formIndex, setFormIndex] = useState();
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [fileArray, setFileArray] = useState([]);
+  const [expandedIcon, setExpandedIcon] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -273,6 +278,20 @@ const NewActiveApplication = ({
 
   };
 
+    const handleExpandClick = (catIndex) => {
+      setExpandedIcon(prev => ({
+        ...prev,
+        [catIndex]: !prev[catIndex]
+      }));
+  };
+
+  const handleExpandClickAdvance = (Index) => {
+    setExpandedIcon(prev => ({
+      ...prev,
+      [Index]: !prev[Index]
+    }));
+};
+
   const getJune30thOfCurrentYear = () => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() + 1;
@@ -328,13 +347,45 @@ const NewActiveApplication = ({
     );
   }, [form, step]);
 
+  // useEffect(() => {
+  //   setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+  //   console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
+  //   console.log("selectedPrivilege" , JSON.stringify(selectedPrivilege, null, 2));
+  //   console.log(
+  //     "1111111111111",selectedPrivilegeForDisplay,
+  //     "2222222222222",selectedAdditionalPrivilegeForDisplay,
+  //     "entered",
+  //     "3333333333333",selectedPrivilege,
+  //     "4444444444444",staffPrivilege?.filter((data) => data?.id === selectedPrivilege),
+  //     "5555555555555",staffPrivilege,
+  //     "6666666666666",selectedPrivilegesForDisplayMultiple
+  //   );
+    
+  // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
+
+  // useEffect(() => {
+  //   setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+  //   console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
+  //   console.log("selectedPrivilege" , JSON.stringify(selectedPrivilege, null, 2));
+  //   console.log(
+  //     "1111111111111",selectedPrivilegeForDisplay,
+  //   );
+    
+  // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
+  
+
   useEffect(() => {
     if (form?.forms[formIndex]?.data !== null) {
+      setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+      setSelectedAdditionalPrivilegeForDisplay(
+        form?.privileges?.additionalPrivileges
+      );
       setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
       setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
       setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
       setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
       setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+      console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
     }
   }, [form, formIndex]);
 
@@ -1341,6 +1392,8 @@ const NewActiveApplication = ({
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
+    console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
+    
     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
       if (data === "file") {
         temp.push({
@@ -1442,8 +1495,201 @@ const NewActiveApplication = ({
         <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
       ), 'isShowHoverText': false
     });
+
+    // temp.push({
+    //   "type": "icon",
+    //   "icon": medicalDirectives?.map((innerData, index) => (
+    //     innerData?.isVerified === true
+    //       ? (
+    //         <div className={`${style.greenButton} ${style.cursorPointer}`}>
+    //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+    //             Verified
+    //           </div>
+    //         </div>
+    //       ) : (
+    //         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+    //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+    //             onClick={() => handleVerifyClickDocs(medicalDirectives, index)}
+    //           >
+    //             Verify
+    //           </div>
+    //         </div>
+    //       )
+    //   ))
+    // });
     return temp;
   }
+
+  // const getMedicalDirectiveTable = (array, index) => {
+  //   // let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[9]?.formSchema?.schema
+  //   let schema = applicationType === "NEW" ? formSchema : form?.forms?.[9]?.data?.table
+  //   let temp = [];
+  //   console.log(array, 'arrayyyyyy1111')
+  //   console.log("schemaaaa",schema)
+  //   console.log("allFormSchemas?.[index]?.formSchema?.schema1",allFormSchemas?.[9]?.formSchema?.schema);
+  //   Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+
+  //     temp.push({
+  //       "type": "icon",
+  //       "icon": schema?.map((innerData, index) => (
+  //         <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+  //       )),
+  //       'isShowHoverText': false
+  //     });
+      
+  //     // if (data === "file") {
+  //       temp.push({
+  //         "type": "icon",
+  //         "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+  //           <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+  //           : innerData?.fileType?.startsWith("image/") ?
+  //             <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+  //             : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
+  //         'isShowHoverText': false
+  //       });
+  //     // } else {
+  //       // if (data === "valid") {
+  //         temp.push({
+  //           "type": "icon",
+  //           "icon": array?.map(innerData => innerData[data] ?
+  //             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
+  //             : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
+  //           'isShowHoverText': false
+  //         });
+  //       // } else if (data === "verified") {
+  //         // Check if staffView is true
+  //         // if (!staffView) {
+  //           console.log("staffView is true");
+  //           console.log("StaffView", staffView)
+  //           // If staffView is true, push the CheckCircleRoundedIcon
+  //           temp.push({
+  //             "type": "icon",
+  //             "icon": array?.map((innerData, index) => (
+  //               innerData?.isVerified === true
+  //                 ? (
+  //                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
+  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+  //                       Verified
+  //                     </div>
+  //                   </div>
+  //                 ) : (
+  //                   <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+  //                       onClick={() => handleVerifyClickDocs(array, index)}
+  //                     >
+  //                       Verify
+  //                     </div>
+  //                   </div>
+  //                 )
+  //             ))
+  //           });
+
+  //         // }
+  //         // else {
+  //           temp.push({
+  //             "type": "icon",
+  //             "icon": array?.map((innerData, index) => (
+  //               <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+  //             )),
+  //             'isShowHoverText': false
+  //           });
+  //         // }
+  //       // }
+  //       // else {
+  //         temp.push({
+  //           "type": "text",
+  //           "value": schema.map(innerData =>
+  //             <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+  //               {innerData.title}
+  //             </div>
+  //           )
+  //         });
+  //       // }
+  //     // }
+  //   })
+  //   return temp;
+  // }
+
+  // const getMedicalDirectiveTable = (array, index) => {
+  //   let schema1 = applicationType === "NEW" ? formSchema : form?.forms?.[9]?.data?.table
+  //   let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
+  //   let temp = [];
+  //   console.log(array, 'arrayyyyyy')
+  //   console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
+    
+  //   Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+  //     if (data === "file") {
+  //       temp.push({
+  //         "type": "icon",
+  //         "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
+  //           <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+  //           : innerData?.fileType?.startsWith("image/") ?
+  //             <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
+  //             : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
+  //         'isShowHoverText': false
+  //       });
+  //     } else {
+  //       if (data === "valid") {
+  //         temp.push({
+  //           "type": "icon",
+  //           "icon": array?.map(innerData => innerData[data] ?
+  //             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
+  //             : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
+  //           'isShowHoverText': false
+  //         });
+  //       } else if (data === "verified") {
+  //         // Check if staffView is true
+  //         if (!staffView) {
+  //           console.log("staffView is true");
+  //           console.log("StaffView", staffView)
+  //           // If staffView is true, push the CheckCircleRoundedIcon
+  //           temp.push({
+  //             "type": "icon",
+  //             "icon": array?.map((innerData, index) => (
+  //               innerData?.isVerified === true
+  //                 ? (
+  //                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
+  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+  //                       Verified
+  //                     </div>
+  //                   </div>
+  //                 ) : (
+  //                   <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+  //                       onClick={() => handleVerifyClickDocs(array, index)}
+  //                     >
+  //                       Verify
+  //                     </div>
+  //                   </div>
+  //                 )
+  //             ))
+  //           });
+
+  //         }
+  //         else {
+  //           temp.push({
+  //             "type": "icon",
+  //             "icon": array?.map((innerData, index) => (
+  //               <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+  //             )),
+  //             'isShowHoverText': false
+  //           });
+  //         }
+  //       }
+  //       else {
+  //         temp.push({
+  //           "type": "text",
+  //           "value": array.map(innerData =>
+  //             <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+  //               {innerData[data]}
+  //             </div>
+  //           )
+  //         });
+  //       }
+  //     }
+  //   })
+  //   return temp;
+  // }
 
   const getFileFields = (value) => {
     console.log(value);
@@ -1497,6 +1743,8 @@ const NewActiveApplication = ({
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const paymentmentDate = form?.payment?.paidDateTime;
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
 
@@ -3562,8 +3810,8 @@ const NewActiveApplication = ({
                           {form?.privileges?.obligatedPrivileges?.map(
                             (data) => (
                               <div
-                                // className={style.privilegeHeading}
-                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                 onClick={() => {
                                   setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategory('Basic')
@@ -3580,8 +3828,8 @@ const NewActiveApplication = ({
                           {form?.privileges?.priorObligatedPrivileges?.map(
                             (data) => (
                               <div
-                                // className={style.privilegeHeading}
-                                className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                className={style.privilegeHeading}
+                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                 onClick={() => {
                                   setShowCurrentPrivileges(true);
                                   setCurrentPrivilegesCategory('Basic')
@@ -3611,8 +3859,8 @@ const NewActiveApplication = ({
                             {form?.privileges?.obligatedPrivileges?.map(
                               (data) => (
                                 <div
-                                  // className={style.privilegeHeading}
-                                  className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
+                                  className={style.privilegeHeading}
+                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
                                   onClick={() => {
                                     setShowCurrentPrivileges(true);
                                     setCurrentPrivilegesCategory('Basic')
@@ -3720,7 +3968,201 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
-          </>
+            <div className={`${style.cardTitle} ${style.marginTop10}`}>
+                    Do you want to keep your current Privilege Category?
+                  </div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  {privilegeChangeYesOrNo !== '' && (
+                      <div
+                        className={`${style.marginTop10} ${style.marginLeft30}`}
+                      >
+                        <div className={style.privilegeHeading}>
+                          {privilegeChangeYesOrNo === "Yes" ? (
+                            <div className={style.privilegeHeading}>
+                              Same as Before
+                            </div>
+                          ) : (
+                            <div className={style.privilegeHeading}>
+                              Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                          ? form?.basicDetails?.priorPrivilegeCategory
+                            ?.name
+                          : form?.basicDetails
+                            ?.credentialingPrivilegeCategory
+                            ?.credentialingCategory} To {" "}
+                              {
+                                form?.basicDetails
+                                  ?.credentialingPrivilegeCategory
+                                  ?.credentialingCategory
+                              }
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    <div className={`${style.cardTitle}  ${style.marginTop10}`}>
+                    Requested Privilege Set(s) for Reappointment
+                  </div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+
+                  {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
+                    <div key={dataIndex}>
+                    <div
+                      className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                    >
+                      {data?.privilegeSetTitle}
+                    </div>
+                      {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                        <div key={catIndex}>
+                          <div className={style.flex}>
+                            <div className={style.itemLeft}>
+                              <strong>{categories?.category || ""}</strong>
+                            </div>
+                          </div>
+                          {categories?.privileges?.map((privilege, privIndex) => (
+                            <div key={privIndex} className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}>
+                                <strong>{privilege?.privilegeId || ""}</strong>
+                              </div>
+                              <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                      <div className={style.twoCol}>
+                    {selectedPrivilegeForDisplay?.[0] && (
+                      <>
+                        <div>
+                          <ESignature
+                            userName={
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.name || ""
+                            }
+                            encData={
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.esign || ""
+                            }
+                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign}
+                            showDatais={true}
+                          />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Date:</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>
+                              {
+                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.signedDate ||
+                                ""
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                    </div>
+                  ))}
+              <>
+               <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+               Advanced Privileges
+                  </div>
+                  {
+              selectedAdditionalPrivilegeForDisplay?.map((data) => 
+                ( <div>
+                  <div
+                      className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                    >
+                      {data?.privilegeSetTitle}
+                    </div>
+                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories) => {
+                  return (
+                <div>
+                  <div className={style.flex}>
+                    <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                  </div>
+                  <>{
+                    categories?.privileges?.map(privileges => (
+                      <div className={style.privilegeCodeGrid}>
+                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                      </div>
+
+                    ))
+                  }
+                  </>
+                </div>
+                  )
+                })}
+                <div className={style.twoCol}>
+                  {selectedAdditionalPrivilegeForDisplay?.[0] && (
+                    <>
+                      <div>
+                        <ESignature
+                          userName={
+                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.esign !== null
+                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign?.name
+                              : ""
+                          }
+                          encData={
+                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.esign !== null
+                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign?.esign
+                              : ""
+                          }
+                          showData={
+                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.esign !== null &&
+                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign !== undefined
+                              ? true
+                              : false
+                          }
+                          showDatais={true}
+                        />
+                      </div>
+                      <div className={style.verticalAlignCenter}>
+                        <div className={style.displayInRow}>
+                          <div className={style.dateTitle}>Date: </div>
+                          <div className={`${style.date} ${style.marginLeft}`}>
+                            {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.esign !== null
+                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign?.signedDate
+                              : ""}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>)
+              )}
+                <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                Application Payment Status
+                <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
+                  {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
+                </span>
+                </div>
+                <div className={`${style.threeColumnGrid}`}>
+                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                  <div>Amount</div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  <div  className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || ""}</div>
+                </div>
+                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                  <div>Transaction ID / Confirmation Number</div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  <div className={`${style.marginLeft30} ${style.marginTop10} `}>{form?.payment?.receiptId || ""}</div>
+                </div>
+                <div className={`${style.alignStart} ${style.marginTop10}`}>
+                  <div>Payment Date & Time</div>
+                  <div className={`${style.borderStyleTiles}`}></div>
+                  <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
+                </div>
+
+                </div>
+                </>
+        </>
         );
       default:
         return <></>;
@@ -3873,11 +4315,13 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                        <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
                         <div className={style.greyDotTextStyle}>
                           Application Payment Status
                         </div>
-                        <div>payment ID</div>
+                        <div> payment ID:{" "}
+                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || ""}</span>
+                      </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                         <div className={`${statusStyle} ${style.marginCenter}`}></div>
@@ -4005,8 +4449,9 @@ const NewActiveApplication = ({
                       >
 
                         <div>
+                        {applicationType === "REAPPOINTMENT" && (
                           <div
-                            className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+                            className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
                           >
                             <div
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
@@ -4018,12 +4463,31 @@ const NewActiveApplication = ({
                             <div
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
-                              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft30}`}>
+                              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
                                 Required Data & POD Verification
                               </div>
                             </div>
+                            </div>
+                        )}
                             {applicationType === "NEW" && (
+                              <div
+                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+                            >
                               <>
+                               <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                            >
+                              <div
+                                className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                            >
+                              <div className={`${style.tableHeaderTextStyle}`}>
+                                Required Data & POD Verification
+                              </div>
+                            </div>
                                 <div
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
@@ -4140,8 +4604,9 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               </>
+                              </div>
                             )}
-                          </div>
+                          {/* </div> */}
                           <div>
                             <>
                               {applicationType === "NEW" && (

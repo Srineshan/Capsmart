@@ -105,6 +105,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_TYPE: 'Staff Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
+        SUBMITTED_DATE: 'Submitted',
         APPLICANT_ID: 'Applicant ID',
         REAPPOINTMENT_STATUS: 'Reappointment'
     }
@@ -117,6 +118,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Staff Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
+        'Submitted': 'SUBMITTED_DATE',
         'Applicant ID': 'APPLICANT_ID',
         'Reappointment': 'REAPPOINTMENT_STATUS'
     }
