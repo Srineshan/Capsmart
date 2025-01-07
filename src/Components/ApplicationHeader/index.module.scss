@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .headerCard {
-    height: 80px;
+    height: clamp(80px, 8vh, 100px);
     background-color: white;
     padding: 0px 60px;
 }
@@ -20,11 +20,23 @@
 }
 
 .titleText {
-    text-align: left;
+    text-align: center;
     font: normal normal bold 20px/28px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
     text-transform: capitalize;
+    word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .titleText {
+        text-align: center;
+        font-size: 18px; 
+    }
+
+    .headerCard{
+        height: auto;
+    }
 }
 
 .marginLeft20 {

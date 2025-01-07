@@ -9,12 +9,6 @@
     scrollbar-color: gray transparent !important;
 }
 
-.applicationScreenGrid {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-gap: 20px;
-}
-
 .screenBackground {
     background: #EDEDF3 0% 0% no-repeat padding-box;
 }
@@ -27,14 +21,22 @@
     margin-top: 10px;
 }
 
+.applicationScreenGrid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-gap: 20px;
+    position: relative;
+}
+
 .stickyContainer {
-    position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
+    position: sticky;
+    // right: 100px;
+    // left: calc(75% - 45px);
     bottom: 20px;
     z-index: 10;
     padding: 0 20px 20px 20px;
     background: #EDEDF3 0% 0% no-repeat padding-box;
+    grid-column: 2 / 3;
 }
 
 .saveInProgress {
@@ -49,6 +51,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -62,6 +73,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .applicationCardStyle {
