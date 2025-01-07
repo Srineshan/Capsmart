@@ -332,21 +332,35 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}/${data?.medicalDirective?.id}`)
     }
 
+    const handleCheckboxClick = (id) => {
+        console.log(id, 'selectedIds')
+        setSelectedIds(prevCheckedIds => {
+            // Toggle the ID in the array
+            return prevCheckedIds?.map(data => data?.id)?.includes(id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== id)
+                : [...prevCheckedIds, { id: id }];
+        });
+        // console.log("Idschecked" + checkedIds)
+    };
+
+    console.log(selectedIds, 'selectedIds', selectedMedicalDirectiveList, selectedMedicalDirectiveList?.map(innerData => selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)))
+
     const getMedicalDirectiveTable = () => {
         let temp = [];
         if (medicalDirectivesStatus !== 'completed') {
             temp.push({
-                "type": "checkbox", "value": selectedMedicalDirectiveList?.map(innerData =>
+                "type": "checkbox", "value": selectedMedicalDirectiveList?.map((innerData, innerIndex) =>
                     <CommonCheckBox
                         checked={selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)}
-                        onChange={() => setSelectedIds({ id: innerData?.medicalDirective?.id })}
+                        onChange={() => handleCheckboxClick(innerData?.medicalDirective?.id)}
                         color="primary"
+                        key={innerIndex}
                     />)
             });
         }
         temp.push({
             "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
-                <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
+                <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : style.iconBackgroundColorRed} 
                 ${style.verticalAlignCenter} ${style.justifyCenter}`}>
                     {innerData?.status === 'COMPLETED' ? (
                         <CheckCircleOutlineIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
@@ -396,12 +410,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending</div>
                                 </div> */}
                                 {/* )} */}
-                                {/* {allMedicalDirectives?.pending?.length !== 0 && ( */}
-                                <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
-                                    <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                    <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
-                                </div>
-                                {/* )} */}
+                                {allMedicalDirectives?.pending?.length !== 0 && (
+                                    <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
+                                        <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                        <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
+                                    </div>
+                                )}
                                 {allMedicalDirectives?.reviewInprogress?.length !== 0 && (
                                     <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('inprogress'); setSelectedMedicalDirectiveList(allMedicalDirectives?.reviewInprogress) }}>
                                         <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
@@ -452,7 +466,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                                 <CommonCheckBox
                                                     size="medium"
                                                     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
-                                                    onChange={() => setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}
+                                                    onChange={(e) => e.target.checked ? setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id }))) : setSelectedIds([])}
                                                 />,
                                                 "",
                                                 "Title",
@@ -469,6 +483,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             tableSortValues={[]}
                                             heading={"There are no Record for you to manage"}
                                             onClickFunction={() => { }}
+                                            handleCheckboxClick={handleCheckboxClick}
                                         />
                                     )}
                                 </div>
