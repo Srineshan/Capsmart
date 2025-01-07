@@ -109,7 +109,13 @@
     font: normal normal normal 18px/25px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.completedItemsText:hover {
+    cursor: pointer;
+    opacity: 1;
 }
 
 .completedItemsTextRed {
@@ -117,6 +123,12 @@
     font: normal normal bold 20px/25px proxima-nova;
     letter-spacing: 0px;
     color: $statusred;
+    opacity: 0.7;
+}
+
+.completedItemsTextRed:hover {
+    cursor: pointer;
+    opacity: 1;
 }
 
 .journeyImg {

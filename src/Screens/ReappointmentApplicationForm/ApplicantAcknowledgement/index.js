@@ -50,6 +50,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        if (sessionStorage.getItem('fromSummary') === true || sessionStorage.getItem('fromSummary') === 'true') {
+            setShowJourneyDialog(true);
+        }
         sessionStorage.setItem('fromSummary', false);
     }, [])
 

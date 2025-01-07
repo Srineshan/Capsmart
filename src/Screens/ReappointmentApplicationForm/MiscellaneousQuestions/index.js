@@ -314,7 +314,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
             {yesOrNoLMS === '' ? (
               <div
-                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
@@ -331,9 +331,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
             ) : (
               <>
-                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}</div>
+                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}</div>
                 <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
                   <div
                     className={`${style.reappointmentButtonEdit}`}
@@ -351,7 +351,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
             {yesOrNoSuboxone === '' ? (
               <div
-                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
@@ -368,9 +368,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
             ) : (
               <>
-                <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone), "MMM dd, yyyy")}</div>
+                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone), "MMM dd, yyyy")}</div>
                 <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
                   <div
                     className={`${style.reappointmentButtonEdit}`}
@@ -389,7 +389,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
               {yesOrNoMRP === '' ? (
                 <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
@@ -406,9 +406,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 </div>
               ) : (
                 <>
-                  <div className={`${style.markedAsText} ${style.marginTop}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
+                  <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
                   <div
-                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
+                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                   >
                     <div
                       className={`${style.reappointmentButtonEdit}`}
@@ -423,6 +423,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           )}
           <div className={` ${style.marginTop}`}>
             <div className={`${style.applicationCardStyle}`}>
+              <div className={style.cardTitle}>
+                Hospital Coverage
+              </div>
               <div className={`${style.warningCard} ${style.marginTop10}`}>
                 <div className={style.warningText}>
                   24 hours coverage of hospital patients, including those in the
@@ -578,8 +581,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
           </div>
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}

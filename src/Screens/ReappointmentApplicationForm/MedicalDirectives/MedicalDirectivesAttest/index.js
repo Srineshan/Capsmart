@@ -149,7 +149,7 @@ const MedicalDirectivesAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
+                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}`)
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -189,18 +189,15 @@ const MedicalDirectivesAttest = () => {
                     </div>
                     <div>
                         <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`Attestation Required In 43 Days`} </div>
-                            {(!isScrolledToBottom) && (
-                                <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
-                            )}
+                            <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
                             <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
                             {(!isScrolledToBottom) ? (
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
-                                        <div className={` ${style.marginTop} ${style.leftAlign} ${style.disabled}`}>
+                                        <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
                                             <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                         </div>
                                         <div className={style.disabled}>
@@ -226,7 +223,7 @@ const MedicalDirectivesAttest = () => {
                                 </Tooltip>
                             ) : (
                                 <>
-                                    <div className={` ${style.marginTop} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
+                                    <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
                                         <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
                                     </div>
                                     <div>
@@ -247,7 +244,10 @@ const MedicalDirectivesAttest = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                    {(!isScrolledToBottom) && (
+                                        <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                    )}
+                                    <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
                                 </>
                             )}
                         </div>

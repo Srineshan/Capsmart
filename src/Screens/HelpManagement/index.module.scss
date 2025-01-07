@@ -257,7 +257,7 @@ body {
         height: 40px;
         width: 220px;
         margin-right: 10px;
-        background: #F5F5F8 0% 0% no-repeat padding-box;
+        background: $secondarycolor 0% 0% no-repeat padding-box;
         border: 0.4000000059604645px solid #B3B8BD;
         font-weight: 600;
         border-radius: 6px;
@@ -276,7 +276,7 @@ body {
 
 .normalButton {
     color: #2C2C2C;
-    background: #F5F5F8 0% 0% no-repeat padding-box !important;
+    background: $secondarycolor 0% 0% no-repeat padding-box !important;
     border: 0.4000000059604645px solid $primarycolor;
     border-radius: 6px;
     opacity: 0.75;
@@ -412,7 +412,7 @@ body {
 }
 
 .tableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -1310,7 +1310,7 @@ select {
 }
 
 .tutorialPostCard {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
     padding: 5px;
 }

@@ -18,10 +18,10 @@
     position: fixed;
     right: 100px;
     left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {

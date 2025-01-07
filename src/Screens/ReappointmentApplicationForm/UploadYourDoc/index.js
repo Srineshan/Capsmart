@@ -714,7 +714,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         fontSize: "24px",
                                     }}>{eSignTypeContent}</div>
                                 </div> */}
-                                <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                                {/* <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
                                     <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
                                     <div>
                                         <div className={style.eSignGrid}>
@@ -738,7 +738,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>CLICK TO UPDATE</div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> */}
                             </>
                         ) : (
                             <div

@@ -273,7 +273,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   {title} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  Processing of your reappointment application will now be a less burdensome activity.
+                  Processing of Your Reappointment Application will now be a less burdensome activity.
                 </div>
                 <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>

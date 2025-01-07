@@ -77,7 +77,7 @@ const ReappointmentApplicationForm = () => {
             case 'DemographicData':
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
-                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} />;
             case 'AdditionalPrivilegeSelection':
                 return <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':

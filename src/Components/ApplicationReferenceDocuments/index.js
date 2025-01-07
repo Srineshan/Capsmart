@@ -65,8 +65,8 @@ const ApplicationReferenceDocuments = () => {
               key={index}
             >
               <div className={style.fullWidth}>
-                <div className={style.spaceBetween}>
-                  <div className={style.displayInRow}>
+                <div className={`${style.documentsGrid} ${style.verticalAlignCenter}`}>
+                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     {docIcon && (
                       <img
                         src={docIcon}

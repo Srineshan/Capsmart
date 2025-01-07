@@ -1941,34 +1941,34 @@ const ApplicationFieldCard = ({
                   {currentValue}
                 </span>
               ) : (
-              <CommonRadio
-                className={style.leftAlign}
-                value={
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) || null
-                }
-                onChange={
-                  isPOD
-                    ? () => { }
-                    : (e) => handleChange(fieldKey, e.target.value, baseKey)
-                }
-                radioValue={fieldData.enum}
-                label={fieldData.enum}
-                required={
-                  isLableEmpty(fieldData.label)
-                    ? false
-                    : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)
-                }
-                warning={warningFields
-                  ?.map((data) => data?.key)
-                  ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-              />
-                )}
+                <CommonRadio
+                  className={style.leftAlign}
+                  value={
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || null
+                  }
+                  onChange={
+                    isPOD
+                      ? () => { }
+                      : (e) => handleChange(fieldKey, e.target.value, baseKey)
+                  }
+                  radioValue={fieldData.enum}
+                  label={fieldData.enum}
+                  required={
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)
+                  }
+                  warning={warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                />
+              )}
             </div>
           );
 
@@ -3018,7 +3018,7 @@ const ApplicationFieldCard = ({
                   </div>
                 ) : (
                   <>
-                    <div
+                    {/* <div
                       className={`${style.viewMyInfoText} ${style.cursorPointer}`}
                       onClick={() => {
                         setIsChanged(true);
@@ -3026,9 +3026,9 @@ const ApplicationFieldCard = ({
                       }}
                     >
                       View my information on file
-                    </div>
+                    </div> */}
                     <div
-                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
                       <div
                         className={`${yesOrNoDemographic === "Yes"

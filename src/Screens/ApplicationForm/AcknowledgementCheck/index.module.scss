@@ -437,7 +437,7 @@ body::-webkit-scrollbar {
 }
 
 .staffTextStyle {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.45px solid #C4C8D066;
     border-radius: 2px;
 }
@@ -3201,7 +3201,7 @@ input[type="number"] {
 }
 
 .tableDataStyle {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -3647,7 +3647,7 @@ input[type="number"] {
 }
 
 .staffCardBorderStyle {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 1px solid #e2e2e9;
     border-radius: 2px;
     text-align: left;

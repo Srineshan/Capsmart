@@ -30,10 +30,10 @@
     position: fixed;
     right: 100px;
     left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {
@@ -402,6 +402,12 @@
     gap: 1%;
 }
 
+.gridStyleWithCheckbox {
+    display: grid;
+    grid-template-columns: 3% 3% 49% 10% 10% 15% 3%;
+    gap: 1%;
+}
+
 .blueSignImgStyle {
     height: 30px;
     width: auto;
@@ -470,4 +476,14 @@
     font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
+}
+
+.disabled {
+    filter: grayscale(100%);
+    opacity: 0.5;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
 }

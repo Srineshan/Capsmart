@@ -909,7 +909,7 @@ body {
 }
 
 .tableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -920,7 +920,7 @@ body {
 }
 
 .tableDataActiveCustomer {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -933,7 +933,7 @@ body {
 }
 
 .tableDataTrialCustomer {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -946,7 +946,7 @@ body {
 }
 
 .tableDataTerminatedCustomer {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -959,7 +959,7 @@ body {
 }
 
 .tableDataFeedbackCustomer {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -1720,7 +1720,7 @@ body {
 }
 
 .tableDataToDo {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -1731,7 +1731,7 @@ body {
 }
 
 .documentDataProof {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -1744,7 +1744,7 @@ body {
 }
 
 .serviceSpecificationTableData {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     height: 50px;
     width: 96%;
     margin-left: 2%;
@@ -1960,7 +1960,7 @@ body {
         height: 40px;
         width: 220px;
         margin-right: 10px;
-        background: #F5F5F8 0% 0% no-repeat padding-box;
+        background: $secondarycolor 0% 0% no-repeat padding-box;
         border: 0.4000000059604645px solid #B3B8BD;
         font-weight: 600;
         border-radius: 6px;

@@ -13,7 +13,7 @@
 }
 
 .screenBackground {
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .marginTop {
@@ -32,10 +32,10 @@
     position: fixed;
     right: 100px;
     left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {
@@ -88,23 +88,14 @@
 }
 
 .requiredDocumentCard {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
+    background: $tableRow1 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     padding: 10px 15px;
 }
 
 .info {
     visibility: hidden;
-}
-
-.requiredDocumentCard:hover {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
-
-    .info {
-        visibility: visible;
-        opacity: 0.7;
-    }
 }
 
 .documentTextStyle {
@@ -153,5 +144,5 @@
 }
 
 .requiredDocumentCardAlternativeColor {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 }

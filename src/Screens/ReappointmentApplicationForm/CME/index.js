@@ -322,9 +322,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <CommonDivider />
                         {formSchema !== undefined && 'cmeCertificates' in formSchema?.properties && (
                             <ApplicationFieldCard object={formSchema?.properties?.cmeCertificates} gridStyle={style.EducationGrid} baseKey={'cmeCertificates'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
-                                heading={'Information Requirement Alert'}
-                                subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
-                                subHeading2={'You will not be able to submit your application if this is not provided.'} />
+                            // heading={'Information Requirement Alert'}
+                            // subHeading={'For this application you are required to provide information on Continuing Medical Education.'}
+                            // subHeading2={'You will not be able to submit your application if this is not provided.'} 
+                            />
                         )}
                     </div>
                 </div>
@@ -334,8 +335,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>

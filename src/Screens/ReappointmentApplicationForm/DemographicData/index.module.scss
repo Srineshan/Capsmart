@@ -33,10 +33,10 @@
     position: fixed;
     right: 100px;
     left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .hiddenStickyContainer {
@@ -351,10 +351,10 @@
 }
 
 .reappointmentCard {
-    background: #F5F7FB 0% 0% no-repeat padding-box;
-    border: 1px solid $secondarycolor;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px solid $buttonBorder;
     border-radius: 8px;
-    padding: 20px;
+    padding: 0 20px;
 }
 
 
@@ -382,9 +382,9 @@
 }
 
 .reappointmentButtonOutlined {
-    background: #14358F1A 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 8px;
-    border: 1px solid $primarycolor;
+    border: 1px solid $buttonBorder;
     padding: 10px 15px;
     color: $primarycolor;
     min-width: 120px;

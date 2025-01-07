@@ -22,18 +22,18 @@
   margin-right: 20px;
 }
 
-.marginBoth{
+.marginBoth {
   margin-top: 15px;
   margin-left: 10px;
 }
 
-.marginBothText{
+.marginBothText {
   margin-top: 5px;
   margin-left: 10px;
 }
 
-.marginBottom{
- margin-bottom: 5px;
+.marginBottom {
+  margin-bottom: 5px;
 }
 
 .marginTop10 {
@@ -524,7 +524,7 @@
 }
 
 .uploadBorderStyle {
-  background: #F5F5F8 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   border: 0.800000011920929px dashed #173790;
   border-radius: 4px;
   opacity: 1;
@@ -553,7 +553,7 @@
   align-self: center;
 }
 
-.marginBottom20{
+.marginBottom20 {
   margin-bottom: 20px;
 }
 
@@ -569,7 +569,7 @@
   margin-left: 20px;
 }
 
-.marginLeft2{
+.marginLeft2 {
   margin-left: 4px;
 }
 
