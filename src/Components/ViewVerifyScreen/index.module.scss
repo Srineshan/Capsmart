@@ -108,6 +108,10 @@ body::-webkit-scrollbar {
   font-weight: 400;
 }
 
+.fontSize{
+  font-size: 16px;
+}
+
 .buttonCardStyle {
   height: 50px;
   // width: 270px;
@@ -4761,7 +4765,7 @@ input[type="number"] {
 
 .medicalDirectivesGridStyle {
   display: grid;
-  grid-template-columns: 5% 51% 10% 10% 15% 3%;
+  grid-template-columns: 5% 41% 10% 10% 15% 15%;
   gap: 1%;
 }
 
@@ -4933,6 +4937,7 @@ input[type="number"] {
   font: normal normal medium 18px/24px proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
+  // font-size: 16px;
 }
 
 .privilegeHeadingTitle {

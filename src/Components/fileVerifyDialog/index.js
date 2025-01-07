@@ -156,7 +156,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>
                         ) : file?.fileType?.startsWith("image/") ? (
                             <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
-                        ) : ''}
+                        ) :  <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>}
                     </div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div>

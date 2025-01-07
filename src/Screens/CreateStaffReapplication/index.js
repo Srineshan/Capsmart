@@ -269,11 +269,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         close={true}
         closeClick={handleCloseClick}
       />
-      <div className={`${style.margin20} ${style.screenPadding}`}>
+      <div className={` ${style.screenPadding}`}>
         <div className={style.bigCardStyle1}>
           <div className={`${style.numberOfContractorsGrid} ${style.filterPadding}`}>
             <div>
-              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   Department
                 </div>
@@ -297,7 +297,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             </div>
             <div>
-              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   Privilege Category
                 </div>
@@ -321,7 +321,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             </div>
             <div>
-              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   Staff Type
                 </div>
@@ -344,7 +344,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               </div>
             </div>
             <div>
-              <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginTop10}`}>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   reappointment status
                 </div>
@@ -370,13 +370,13 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           </div>
         </div>
         {/* Filtering section remains the same */}
-        <div className={`${style.bigCardStyle} ${style.marginTop20}`}>
+        <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <CircularProgress sx={{ color: "#06617A" }} />
             </div>
           ) : (
-            <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>
+            <div className={`${style.margin20}`}>
               <TableTwo
                 tableHeaderValues={headerValues}
                 tableDataValues={getTableValues()}

@@ -233,8 +233,6 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
     };
 
-    const rowId = generateRandomId();
-
     const handleSubmitApplicationReq = async (data, skip) => {
         // if(isEdited){
         let missingFields = []
@@ -284,7 +282,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                 title: innerData?.medicalDirective?.title,
                 type: innerData?.medicalDirective?.creationType,
                 rowId: generateRandomId(),
-                file: ""
+                fileURL: innerData?.medicalDirective?.file?.fileURL,
             }));
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
