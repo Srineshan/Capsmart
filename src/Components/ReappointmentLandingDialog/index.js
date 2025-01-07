@@ -181,7 +181,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
+        <div className={style.dialogContent}>
           <div className={style.alignCenter}>
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
@@ -251,8 +251,8 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
-          <div className={style.whiteBackground}>
+        <div className={style.dialogContent}>
+          <div className={`${style.responsiveCard} ${style.whiteBackground}`}>
             {/* <div className={style.alignCenter}>
             <p className={style.loginHeaderText}>
               <span className={style.bold}>CAP</span>Smart
@@ -264,10 +264,10 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <br />
             <div className={style.reappointmentGrid}>
-              <div>
+              <div className={style.imageCard}>
                 <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
               </div>
-              <div>
+              <div className={style.contentCard}>
                 <div className={style.welcomeText}>Your Reappointment Application</div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
                   {title} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
@@ -359,7 +359,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
-        <div>
+        <div className={style.dialogContent}>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title}.`}
