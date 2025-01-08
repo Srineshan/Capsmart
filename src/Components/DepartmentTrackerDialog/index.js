@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { fileLoadingURL,dataLoadingGIF } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
+const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationView}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -45,6 +45,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading }) => {
   }, [applicationType]);
 
 
+  const onClickViewFunction = (data) => {
+    getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
 
   useEffect(() => {
     setUserDetails();
@@ -83,21 +87,22 @@ const headerValues = [
   const colSortValues = [false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
-      data: userRole?.includes("Staff Manager") ? "View" : "Review to Recommend",
+      data: "View",
       requiredValue: "boolean",
+      // onClick: onClickViewFunction,
       onClick: "",
     },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-      hideForRoles: "Staff Manager",
-      showForRoles: "Chief Of Staff",
-      showForRoles2: "Department Head",
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    //   hideForRoles: "Staff Manager",
+    //   showForRoles: "Chief Of Staff",
+    //   showForRoles2: "Department Head",
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
   ];
 
 
@@ -316,4 +321,4 @@ const headerValues = [
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default DepartmentTrackerDialog;

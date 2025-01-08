@@ -159,7 +159,7 @@ const StaffApplication = () => {
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showDeptTrackerDialog && (
-                <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} />
+                <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showTimerDialog && (
                 <IdleTimer getIsOpen={getTimerDialog} />

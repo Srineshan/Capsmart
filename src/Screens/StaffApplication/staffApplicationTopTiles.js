@@ -491,6 +491,7 @@ const StaffApplicationTopTiles = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
+  const workModeType = sessionStorage.getItem('workModeType')
 
   const getTitleCounts = async (type) => {
     try {
@@ -561,12 +562,12 @@ const StaffApplicationTopTiles = () => {
     if (!countsObj || !userFlow?.workflow) return 0;
     
     const UserFlowType = userFlow.workflow;
-    const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
+    const isManagerOrChief = (workModeType === "Staff Manager") || (workModeType === "Chief Of Staff");
     
     let visibleLevels = [];
-    if (userRole?.includes("Department Head")) {
+    if (workModeType === "Department Head") {
       visibleLevels = ['level-2'];
-    } else if (userRole?.includes("Credentialing Committee")) {
+    } else if (workModeType === "Credentialing Committee") {
       visibleLevels = ['level-3'];
     } else if (isManagerOrChief) {
       visibleLevels = Object.keys(UserFlowType).map(key => `level-${key}`);
@@ -574,7 +575,7 @@ const StaffApplicationTopTiles = () => {
       const currentIndex = Object.entries(UserFlowType).findIndex(([key, value]) => {
         const details = value?.flowDetails;
         return details?.some(detail => 
-          detail?.role && userRole?.includes(detail?.role?.roleName)
+          detail?.role && (workModeType === detail?.role?.roleName)
         );
       });
       

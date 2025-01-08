@@ -60,7 +60,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
       );
-
+    const workModeType = sessionStorage.getItem('workModeType')
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
     //     ...acc,
@@ -432,23 +432,23 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const classes = useStyles();
 
-    function checkRoleVisibility(actionsData, userRole) {
+    function checkRoleVisibility(actionsData, workModeType) {
         if (!actionsData.hideForRoles &&
             !actionsData.hideForRoles2 &&
             !actionsData.showForRoles &&
             !actionsData.showForRoles2) {
             return true;
         }
-        if (actionsData.hideForRoles?.includes(userRole)) {
+        if (actionsData.hideForRoles?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideForRoles2?.includes(userRole)) {
+        if (actionsData.hideForRoles2?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.showForRoles && actionsData.showForRoles.includes(userRole)) {
+        if (actionsData.showForRoles && actionsData.showForRoles.includes(workModeType)) {
             return true;
         }
-        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(userRole)) {
+        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(workModeType)) {
             return true;
         }
         if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
@@ -457,7 +457,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         return true;
     }
 
-    const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, userRole));
+    const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, workModeType));
 
     useEffect(() => {
         setUserDetails();

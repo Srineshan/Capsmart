@@ -96,6 +96,9 @@ const StaffApplicationList = ({
   const [applicationIsLocum, setApplicationIsLocum] = useState(() =>
     sessionStorage.getItem('isLocum') || false
   );
+  const [workModeType, setWorkModeType] = useState(() =>
+      sessionStorage.getItem("workModeType") || ''
+  );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   const handleSelectAllClick = () => {
@@ -544,13 +547,22 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     setUserDetails();
-  }, [users?.id])
+  }, [users?.id, workModeType])
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
     console.log("userdataaaa" + JSON.stringify(userData))
     sessionStorage.setItem('user', JSON.stringify(userData))
-    setUserRole(userData?.roles?.map((data) => data?.roleName));
+    // setUserRole(userData?.roles?.map((data) => data?.roleName));
+    const roles = userData?.roles?.map((data) => data?.roleName) || [];
+    setUserRole(roles);
+
+  // Automatically set the work mode type if there's only one role
+  if (roles.length === 1) {
+    const singleRole = roles[0];
+    setWorkModeType(singleRole);
+    sessionStorage.setItem("workModeType", singleRole);
+  }
   }
 
   const getReFetchMetaData = (value) => {
@@ -580,9 +592,9 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
-  const onClickDepttrackerDialog = () => {
+  const onClickDepttrackerDialog = (data) => {
     getDeptTrackerDialog(true);
-    // sessionStorage.setItem("applicationId", data?.id);
+    sessionStorage.setItem("applicationId", data?.id);
   };
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -660,7 +672,8 @@ const StaffApplicationList = ({
     // }
 
     let temp = {
-      role: Array.isArray(userRole) ? userRole[0] : userRole,
+      // role: Array.isArray(userRole) ? userRole[0] : userRole,
+      role: workModeType,
       notes: notes
     };
 
@@ -2624,7 +2637,7 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: userRole?.includes("Staff Manager") ? "View" : "Review to Recommend",
+      data: workModeType === "Staff Manager" ? "View" : "Review to Recommend",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
@@ -2682,7 +2695,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: userRole?.includes("Staff Manager") || userRole?.includes("Department Head") ? "View" : "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
+    { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") ? "View" : "Review & Approve", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: onClickMoveToNextFunction, hideForRoles: userRole, },
     // { data: "Review & Approve", requiredValue: "boolean", onClick: "" },
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
@@ -2696,7 +2709,7 @@ const StaffApplicationList = ({
       // showForRoles2: "Credentialing Committee",
     },
     {
-      data: `From ${userRole}`,
+      data: `From ${workModeType}`,
       requiredValue: "boolean",
       onClick: "",
       isIndent: true,
@@ -2728,7 +2741,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: userRole?.includes("Staff Manager") || userRole?.includes("Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
+    { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog , hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
@@ -2782,11 +2795,11 @@ const StaffApplicationList = ({
     // { data: "MAC Approval", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "Applicant Processing Tasks", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ]:[
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
@@ -2818,11 +2831,11 @@ const StaffApplicationList = ({
     //   onClick: "",
     // },
     // { data: "BOD Move Approval Status", requiredValue: "boolean", onClick: onClickMoveToNextFunction },
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "BOD Approval Status", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
+    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval Status", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
-    { data: userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     {
@@ -3026,7 +3039,7 @@ const StaffApplicationList = ({
         <div>
           <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
             <>
-              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                 <div
                   className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                 >
@@ -3068,7 +3081,7 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-                  {(applicationType === "REAPPOINTMENT" && (userRole?.includes("Staff Manager") || userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee"))) ? (
+                  {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                     <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                       <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                         <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
@@ -3120,7 +3133,7 @@ const StaffApplicationList = ({
                     </div>
                   ) : null}
 
-              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                 <div
                   className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >
@@ -3215,7 +3228,7 @@ const StaffApplicationList = ({
                   )}
                 </div>
               ) : null}
-              {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                 <div
                   className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                 >

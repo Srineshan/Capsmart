@@ -17,6 +17,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
     const [currentUserDetails, setCurrentUserDetails] = useState();
     const [userId, setUserId] = useState(user?.id);
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const workModeType = sessionStorage.getItem('workModeType')
 
     console.log('in user card', user?.id);
     useEffect(() => {
@@ -59,7 +60,8 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                             </div>
                             <div className={style.loginStatus}>
-                                {`${currentUserDetails?.roles?.[0]?.roleName}`}
+                                {/* {`${currentUserDetails?.roles?.[0]?.roleName}`} */}
+                                {workModeType}
                             </div>
                         </div>
                     </Link>

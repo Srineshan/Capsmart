@@ -3926,7 +3926,7 @@ const NewActiveApplication = ({
                               Same as Before
                             </div>
                           ) : (
-                            <div className={style.privilegeHeading}>
+                            <div className={`${style.privilegeHeading} ${style.fontSize}`}>
                               Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
                           ? form?.basicDetails?.priorPrivilegeCategory
                             ?.name

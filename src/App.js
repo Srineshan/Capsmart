@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
+import WorkModeDialog from "./Components/WorkModeSelectionDialog";
 import IdleTimer from "./Components/IdleTimer";
 import Cookie from "universal-cookie";
 import { Auth, GetEntityDetails, currentUser, baseUrl } from "./utils/auth";
@@ -624,6 +625,13 @@ const App = ({ props }) => {
 
   const LoginRoute = () => {
     let roles = jwt(Auth())?.roles?.split(",");
+    console.log("LoginRole" , roles)
+    if (roles.length > 1) {
+      return <WorkModeDialog getIsOpen={true} />;
+    }
+    if (roles.length === 1) {
+      sessionStorage.setItem("workModeType", roles[0]);
+    }
     let isAppUser =
       roles.includes("Approver") ||
       roles.includes("Reviewer") ||

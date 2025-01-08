@@ -66,6 +66,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       borderRadius: 5,
     };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const workModeType = sessionStorage.getItem('workModeType')
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
   // selectedDateForDept !== null && 
@@ -229,11 +230,11 @@ useEffect(() => {
     }
   };
 
-  const checkRequirements = () => {
-    return userRole.includes('Chief Of Staff')
-      ? isChecked.isChecked1
-      : (isChecked.isChecked2 && isChecked.isChecked3);
-  };
+  // const checkRequirements = () => {
+  //   return userRole.includes('Chief Of Staff')
+  //     ? isChecked.isChecked1
+  //     : (isChecked.isChecked2 && isChecked.isChecked3);
+  // };
 
   const handleSignatureClick = () => {
      {
@@ -314,15 +315,15 @@ useEffect(() => {
               title: documentTitle[index] || "", 
             }));
             if (selectedTab === 'level-2') {
-            if (userRole?.includes("Department Head")) {
+            if (workModeType === "Department Head") {
               title = "Dept. Head / Chief Review";
             } else {
               title = "Dept. Head / Chief Review";
             }
             }else if (selectedTab === 'level-3') {
-            if (userRole?.includes("Credentialing Committee")) {
+            if (workModeType === "Credentialing Committee") {
               title = "Credentialing Committee Review";
-            } else if (userRole?.includes("chief of staff")) {
+            } else if (workModeType === "Chief Of Staff") {
               title = "Chief Of Staff Review";
             }
           } else if (selectedTab === 'level-4') {
@@ -379,15 +380,15 @@ useEffect(() => {
     title: documentTitle[index] || "", 
   }));
        if (selectedTab === 'level-2') {
-        if (userRole?.includes("Department Head")) {
+        if (workModeType === "Department Head") {
           title = "Dept. Head / Chief Review";
         } else {
           title = "Dept. Head / Chief Review";
         }
        }else if (selectedTab === 'level-3') {
-        if (userRole?.includes("Credentialing Committee")) {
+        if (workModeType === "Credentialing Committee") {
           title = "Credentialing Committee Review";
-        } else if (userRole?.includes("chief of staff")) {
+        } else if (workModeType === "Chief Of Staff") {
           title = "Chief Of Staff Review";
         }
       } else if (selectedTab === 'level-4') {
