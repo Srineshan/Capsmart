@@ -180,7 +180,7 @@
 .actionCard {
     background: #D8D7EE 0% 0% no-repeat padding-box;
     opacity: 0.99;
-    width: 40px;
+    width: clamp(20px, 10vw, 40px);
 }
 
 .actionsIcon {
@@ -425,3 +425,36 @@
     font-size: 17px;
     text-decoration: underline;
 }
+
+.tableContainer {
+    width: auto;
+    overflow-x: auto;
+}
+
+.table {
+    width: auto;
+    border-collapse: collapse;
+    overflow-x: auto;
+}
+
+// @media (max-width: 1000px) {
+//     .tableHeaderFontStyle {
+//         font-size: 18px;
+//         padding: 8px;
+//     }
+//     .tableDataFontStyle{
+//         font-size: 16px;
+//         padding: 6px;
+//     }
+// }
+
+// @media (max-width: 768px) {
+//     .tableHeaderFontStyle{
+//         font-size: 14px;
+//         padding: 6px;
+//     }
+//     .tableDataFontStyle {
+//         font-size: 12px;
+//         padding: 4px;
+//     }
+// }

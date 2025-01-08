@@ -461,34 +461,47 @@
     display: grid;
     grid-template-columns: 49% 24% 24%;
     gap: 1%;
+
+    @media (max-width: 1150px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
-    .applicationScreenGrid {
-        grid-template-columns: 1fr;
-    }
+// @media (max-width: 1024px) {
+//     .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
-}
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
 
-@media (max-width: 768px) {
-    .applicationScreenGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-    }
+//     .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
+//         grid-template-columns: 1fr;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
+//     .twoColForButton {
+//         gap: 15px;
+//     }
+// }
 
-    .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
-        grid-template-columns: 1fr;
-    }
+// @media (max-width: 768px) {
+//     .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//         padding: 0;
+//     }
 
-    .twoColForButton {
-        gap: 15px;
-    }
-}
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
+
+//     .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
+//         grid-template-columns: 1fr;
+//     }
+
+//     .twoColForButton {
+//         gap: 15px;
+//     }
+// }
+

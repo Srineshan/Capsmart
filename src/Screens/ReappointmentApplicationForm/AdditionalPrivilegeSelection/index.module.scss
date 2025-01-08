@@ -533,6 +533,14 @@
     gap: 1%;
 }
 
+.privilegeConfirmationGrid:hover {
+    background: #06617A14 0% 0% no-repeat padding-box;
+    border: 0.5px solid #9AAFB5;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
 .iconBackgroundColor {
     background-color: #2C2C2C;
     border-radius: 4px;

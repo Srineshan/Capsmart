@@ -163,3 +163,10 @@
     display: flex;
     flex-direction: row;
 }
+
+@media (max-width: 900px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+}

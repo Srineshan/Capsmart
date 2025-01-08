@@ -152,3 +152,29 @@
     color: #94979A;
     text-transform: capitalize;
 }
+
+@media (max-width: 900px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+    .applicationScreenGrid {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-gap: 20px;
+        position: relative;
+    }
+}
+
+@media (max-width: 480px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+    .applicationScreenGrid {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        grid-gap: 20px;
+        position: relative;
+    }
+}

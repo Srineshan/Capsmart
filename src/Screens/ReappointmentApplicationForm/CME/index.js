@@ -288,7 +288,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     </div>
                                 </div>
                             </div>
-                            <div>
+                            <div className={style.hoursCard}>
                                 <div className={`${style.checkGrid}`}>
                                     {formContent?.disclaimer?.content !== null && (
                                         <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />

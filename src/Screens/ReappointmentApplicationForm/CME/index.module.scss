@@ -87,8 +87,8 @@
 
 .eSignGrid {
     display: grid;
-    grid-template-columns: 1.25fr 0.75fr;
-    gap: 20px;
+    grid-template-columns: 1.05fr 0.75fr;
+    gap: 0;
 }
 
 .twoCol {
@@ -103,24 +103,24 @@
     gap: 10px;
 }
 
-@media (max-width: 768px) {
-   .applicationScreenGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-    }
+// @media (max-width: 768px) {
+//    .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//         padding: 0;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
 
-    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .eSignGrid, .EducationGrid, .siteDisplayGrid {
-        grid-template-columns: 1fr;
-    }
+//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .eSignGrid, .EducationGrid, .siteDisplayGrid {
+//         grid-template-columns: 1fr;
+//     }
 
-    .twoColForButton {
-        gap: 15px;
-    }
-}
+//     .twoColForButton {
+//         gap: 15px;
+//     }
+// }
 
 .threeColForButton {
     display: grid;
@@ -297,6 +297,14 @@
     display: grid;
     grid-template-columns: 40% 60%;
     gap: 20px;
+
+@media (max-width: 1150px) {
+    grid-template-columns: 1fr; 
+}
+}
+
+.cmeCard, .hoursCard {
+    margin-bottom: 20px; 
 }
 
 .dateTitle {
