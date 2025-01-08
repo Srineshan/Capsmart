@@ -3926,7 +3926,7 @@ const NewActiveApplication = ({
                               Same as Before
                             </div>
                           ) : (
-                            <div className={style.privilegeHeading}>
+                            <div className={`${style.privilegeHeading} ${style.fontSize}`}>
                               Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
                           ? form?.basicDetails?.priorPrivilegeCategory
                             ?.name
@@ -3978,12 +3978,12 @@ const NewActiveApplication = ({
                         <div>
                           <ESignature
                             userName={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.name || ""
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
                             }
                             encData={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.esign || ""
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                             }
-                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign}
+                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
                             showDatais={true}
                           />
                         </div>
@@ -3992,7 +3992,7 @@ const NewActiveApplication = ({
                             <div className={style.dateTitle}>Date:</div>
                             <div className={`${style.date} ${style.marginLeft}`}>
                               {
-                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.signedDate ||
+                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                                 ""
                               }
                             </div>

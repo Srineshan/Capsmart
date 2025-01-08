@@ -574,7 +574,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                       <div className={`${style.threeColumnGrid}`}>
                       <div className={`${style.displayInRow} ${style.referenceCardStyleDocs}`}>
                         <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file.fileName}</div>
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
                       </div>
                       <div>
                       <CommonInputField
