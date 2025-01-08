@@ -62,6 +62,15 @@
     color: $primarycolor;
     font: normal normal bold 20px/40px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.addButton:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1; 
 }
 
 .addMoreButton {
@@ -72,6 +81,14 @@
     min-width: 150px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.addMoreButton:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .addMoreButtonOutlined {
@@ -83,6 +100,15 @@
     min-width: 180px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.addMoreButtonOutlined:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1; 
 }
 
 .reappointmentButton {
@@ -93,6 +119,14 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButton:hover { 
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .reappointmentButtonOutlined {
@@ -104,6 +138,15 @@
     min-width: 120px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonOutlined:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .spaceBetween {
@@ -116,7 +159,12 @@
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 5px 10px;
+    // transition: background-color 0.3s ease;
 }
+
+// .uploadButton:hover { 
+//     background-color: #fff; 
+// }
 
 .uploadText {
     text-align: left !important;
@@ -134,6 +182,15 @@
     padding: 5px;
     text-align: center !important;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.uploadTextButton:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .imgIcon {

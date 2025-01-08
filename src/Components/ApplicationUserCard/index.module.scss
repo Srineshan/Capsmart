@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .applicationUserCard {
-    height: 120px;
+    height: auto;
     padding: 10px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D4D;
@@ -9,17 +9,10 @@
     border: 0.4000000059604645px solid #e5e6e6;
 }
 
-// .profilePic {
-//     height: 100px;
-//     width: auto;
-//     object-fit: contain;
-// }
-
 .profilePic {
     height: 80px;
     width: 80px; 
     object-fit: cover; 
-    // border-radius: 50%; 
 }
 
 .profileGrid {
@@ -81,4 +74,10 @@
     justify-content: start;
     flex-direction: row;
     align-items: center;
+}
+
+@media (max-width: 768px) {
+    .applicationUserCard {
+        height: auto;
+    }
 }

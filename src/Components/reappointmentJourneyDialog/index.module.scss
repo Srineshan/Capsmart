@@ -31,6 +31,17 @@
     justify-content: space-between;
 }
 
+@media (max-width: 768px) {
+    .twoCol {
+        grid-template-columns: 100%;
+        gap: 10px;
+    }
+
+    .completedItemsText {
+        text-align: center;
+    }
+}
+
 .eSignDialog {
     height: 75%;
     width: 80% !important;
@@ -40,20 +51,6 @@
     background: #ffffff 0% 0% no-repeat padding-box;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
-}
-
-.continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border-radius: 8px;
-    text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
-    letter-spacing: 0px;
-    color: #FFFFFF;
-    text-transform: uppercase;
-    padding: 5px;
-    cursor: pointer;
-    width: 240px;
 }
 
 .saveInProgress {
@@ -69,11 +66,44 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .displayInRow {
     display: flex;
     flex-direction: row;
+    width: auto;
+    word-wrap: break-word;
 }
 
 .justifyCenter {
@@ -93,6 +123,7 @@
 
 .verticalAlignCenter {
     display: flex;
+    width:auto;
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -116,6 +147,8 @@
 .completedItemsText:hover {
     cursor: pointer;
     opacity: 1;
+    width: auto;
+    word-wrap: break-word;
 }
 
 .completedItemsTextRed {

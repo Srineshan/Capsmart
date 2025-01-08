@@ -452,6 +452,15 @@
     color: $primarycolor;
 }
 
+.privilegeCategoryChips:hover {
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 23px;
+    padding: 5px 10px;
+    opacity: 1;
+}
+
 .privilegeCategoryChipsSelected {
     background: $primarycolor 0% 0% no-repeat padding-box;
     border: 1px solid $primarycolor;
@@ -547,6 +556,14 @@
     display: grid;
     grid-template-columns: 3% 89% 5%;
     gap: 1%;
+}
+
+.privilegeConfirmationGrid:hover {
+    background: #06617A14 0% 0% no-repeat padding-box;
+    border: 0.5px solid #9AAFB5;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .iconBackgroundColor {

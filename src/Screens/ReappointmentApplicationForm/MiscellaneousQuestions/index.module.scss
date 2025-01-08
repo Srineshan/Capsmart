@@ -16,16 +16,18 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
 }
 
 .stickyContainer {
-    position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
+    position: sticky;
+    // right: 100px;
+    // left: calc(75% - 45px);
     bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
+    grid-column: 2 / 3;
 }
 
 .hiddenStickyContainer {
@@ -47,6 +49,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -60,6 +71,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -174,6 +193,14 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButton:hover { 
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .reappointmentButtonOutlined {
@@ -185,6 +212,15 @@
     min-width: 120px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonOutlined:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .reappointmentButtonEdit {
@@ -196,6 +232,15 @@
     min-width: 200px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonEdit:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .cardTitle {
@@ -229,7 +274,7 @@
 }
 
 .noText {
-    font: italic normal bold 18px/24px proxima-nova;
+    font: italic normalold 18px/24px proxima-nova;
     color: #FF5555;
 }
 
@@ -261,13 +306,10 @@
 .fullWidth {
     width: 100%;
 }
-
-.fieldWrapper {
-    flex: 1;
-    min-width: 200px;
-    /* Optional: Set a minimum width to avoid shrinking too much */
-}
-
+  .fieldWrapper {
+    flex: 1; 
+    min-width: 200px; /* Optional: Set a minimum width to avoid shrinking too much */
+  }
 .lableStyle {
     text-align: left;
     font: normal normal 500 15px/17px proxima-nova;
@@ -277,4 +319,24 @@
     opacity: 1;
     margin-top: 5px;
     max-width: 85%;
+}
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .applicationScreenGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .stickyContainer {
+        grid-column: 1 / 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .siteDisplayGrid {
+        grid-template-columns: 1fr;
+    }
 }

@@ -24,6 +24,7 @@
     display: grid;
     grid-template-columns: 2.5fr 1fr;
     grid-gap: 20px;
+    position: relative;
 }
 
 .applicationCardStyle {
@@ -43,11 +44,21 @@
 }
 
 .stickyContainer {
-    position: fixed;
-    right: 80px;
-    left: calc(75% - 80px);
+    position: sticky;
+    // right: 100px;
+    // left: calc(75% - 45px);
     bottom: 0;
     z-index: 10;
+    padding: 0 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    grid-column: 2 / 3;
+}
+
+.hiddenStickyContainer {
+    opacity: 0;
+    pointer-events: none;
+    // filter: blur(5px); 
+    // box-shadow: 0 0 10px 5px #06617A;
 }
 
 .screenPadding {
@@ -124,6 +135,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .dateTitle {
@@ -143,4 +162,11 @@
 .displayInRow {
     display: flex;
     flex-direction: row;
+}
+
+@media (max-width: 900px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
 }

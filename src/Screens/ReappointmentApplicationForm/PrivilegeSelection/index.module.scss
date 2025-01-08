@@ -20,16 +20,18 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
 }
 
 .stickyContainer {
-    position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
+    position: sticky;
+    // right: 100px;
+    // left: calc(75% - 45px);
     bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
+    grid-column: 2 / 3;
 }
 
 .hiddenStickyContainer {
@@ -51,6 +53,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -64,6 +75,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -453,9 +472,12 @@
 }
 
 .privilegeCategoryChips:hover {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    border: 1px solid $primarycolor;
-    color: $secondarycolor;
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 23px;
+    padding: 5px 10px;
+    opacity: 1;
 }
 
 .privilegeCategoryChipsSelected {
@@ -566,6 +588,13 @@
     text-align: center;
 }
 
+.reappointmentButton:hover { 
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
+}
+
 .reappointmentButtonOutlined {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 8px;
@@ -577,10 +606,26 @@
     cursor: pointer;
 }
 
+.reappointmentButtonOutlined:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1; 
+}
+
 .privilegeConfirmationGrid {
     display: grid;
     grid-template-columns: 3% 89% 5%;
     gap: 1%;
+}
+
+.privilegeConfirmationGrid:hover {
+    background: #06617A14 0% 0% no-repeat padding-box;
+    border: 0.5px solid #9AAFB5;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .iconBackgroundColor {
@@ -652,6 +697,15 @@
     min-width: 200px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonEdit:hover { 
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029; 
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1; 
 }
 
 .loadingOverlay {
