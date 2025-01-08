@@ -332,18 +332,19 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}/${data?.medicalDirective?.id}`)
     }
 
-    const handleCheckboxClick = (id) => {
-        console.log(id, 'selectedIds')
+    const handleCheckboxClick = (id, innerData) => {
+        console.log(innerData?.medicalDirective?.id, 'selectedIds')
         setSelectedIds(prevCheckedIds => {
             // Toggle the ID in the array
-            return prevCheckedIds?.map(data => data?.id)?.includes(id)
-                ? prevCheckedIds.filter(checkedId => checkedId?.id !== id)
-                : [...prevCheckedIds, { id: id }];
+            return prevCheckedIds?.map(data => data?.id)?.includes(innerData?.medicalDirective?.id)
+                ? prevCheckedIds.filter(checkedId => checkedId?.id !== innerData?.medicalDirective?.id)
+                : [...prevCheckedIds, { id: innerData?.medicalDirective?.id }];
         });
+        getMedicalDirectiveTable()
         // console.log("Idschecked" + checkedIds)
     };
 
-    console.log(selectedIds, 'selectedIds', selectedMedicalDirectiveList, selectedMedicalDirectiveList?.map(innerData => selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)))
+    console.log(selectedIds?.map(data => data?.id), 'selectedIds', selectedMedicalDirectiveList, selectedMedicalDirectiveList?.map(innerData => selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)))
 
     const getMedicalDirectiveTable = () => {
         let temp = [];
@@ -351,10 +352,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             temp.push({
                 "type": "checkbox", "value": selectedMedicalDirectiveList?.map((innerData, innerIndex) =>
                     <CommonCheckBox
-                        checked={selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)}
+                        size="medium"
+                        checked={true}
                         onChange={() => handleCheckboxClick(innerData?.medicalDirective?.id)}
-                        color="primary"
-                        key={innerIndex}
+                        key={`${innerData?.medicalDirective?.id}${innerIndex}`}
                     />)
             });
         }
@@ -535,7 +536,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${isSigned ? '' : style.disabledButton}`} onClick={isSigned ? showMedicalDirectives ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { }}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${isSigned ? '' : style.disabledButton}`} onClick={isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { }}>CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

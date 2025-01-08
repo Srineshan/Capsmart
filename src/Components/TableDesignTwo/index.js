@@ -59,7 +59,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [clickedIndex, setClickedIndex] = useState(null);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
-      );
+    );
 
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
@@ -529,7 +529,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                                 <CommonCheckBox
                                                     checked={checkedIds?.includes(data.id)}
-                                                    onChange={() => handleCheckboxClick(data.id)}
+                                                    onChange={() => handleCheckboxClick(data.id, data)}
                                                     color="primary"
                                                     inputProps={{ 'aria-label': `Select ${data.name}` }}
                                                 />

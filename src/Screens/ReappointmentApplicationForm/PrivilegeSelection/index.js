@@ -624,9 +624,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         console.log(response);
         setBasicForm(response?.data);
         SuccessToaster("Application Updated Successfully");
-        // if (paymentListData?.length === 0 || basicForm?.payment?.paymentCompleted) {
-        //   handleContinue();
-        // }
+        if (paymentListData?.length === 0 || basicForm?.payment?.paymentCompleted) {
+          handleContinue();
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -644,9 +644,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinueClick = () => {
-    // if (paymentListData?.length !== 0 && !basicForm?.payment?.paymentCompleted) {
-    setShowPaymentDialog(true);
-    // }
+    if (paymentListData?.length !== 0 && !basicForm?.payment?.paymentCompleted) {
+      setShowPaymentDialog(true);
+    }
     handleSubmitAcknowledgement();
   }
 

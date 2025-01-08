@@ -321,3 +321,125 @@
     width: auto;
     object-fit: contain;
 }
+
+.reappointmentButton {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #fff;
+    min-width: 120px !important;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.reappointmentButtonOutlined {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    border: 1px solid $buttonBorder;
+    padding: 10px 15px;
+    color: $primarycolor;
+    min-width: 120px;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.reappointmentButtonEdit {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    border: 1px solid $buttonBorder;
+    padding: 10px 15px;
+    color: $primarycolor;
+    min-width: 200px;
+    font: normal normal bold 15px/15px proxima-nova;
+    cursor: pointer;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.markedAsText {
+    text-align: left;
+    font: italic normal medium $tabledatatext2 proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.yesText {
+    font: italic normal bold 18px/24px proxima-nova;
+    color: #14B15A;
+}
+
+.noText {
+    font: italic normal bold 18px/24px proxima-nova;
+    color: #FF5555;
+}
+
+.marginLeft {
+    margin-left: 10px;
+}
+
+.eSignDialog {
+    height: 75%;
+    width: 60% !important;
+}
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 20px 0px 20px;
+    border-radius: 20px !important;
+}
+
+.fileLoadingStyle {
+    height: auto;
+    width: 40%;
+    object-fit: contain;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.heading {
+    text-align: left;
+    font: normal normal bold 20px/28px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.disabledButton {
+    cursor: not-allowed;
+    opacity: 0.4;
+}
