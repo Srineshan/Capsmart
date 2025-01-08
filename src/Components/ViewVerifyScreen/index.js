@@ -237,7 +237,7 @@ const NewActiveApplication = ({
   const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
-
+  const workModeType = sessionStorage.getItem('workModeType')
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -553,8 +553,13 @@ const NewActiveApplication = ({
     }
   }, [contractSelected]);
 
+  // useEffect(() => {
+  //   approveView(userRole);
+  //   getLog();
+  // }, []);
+
   useEffect(() => {
-    approveView(userRole);
+    approveView(workModeType);
     getLog();
   }, []);
 
@@ -825,7 +830,7 @@ const NewActiveApplication = ({
     // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5' ? true : false;
     // const requestData = isDelegate === true ? temp : {};
 
-    const isDelegate = userRole?.includes(role) ? false : true;
+    const isDelegate = (workModeType === role) ? false : true;
     const requestData = isDelegate ? { role: role } : {};
     await PUT(
       `application-management-service/application/${applicationId}/form/${formId}/APPROVED?isDelegate=${isDelegate}`, requestData
@@ -893,7 +898,7 @@ const NewActiveApplication = ({
     getPreApplication();
   };
 
-  const approveView = async (userRole) => {
+  const approveView = async () => {
     const roleMap = {
       'level-1': "Staff Manager",
       'level-2': "Department Head",
@@ -969,7 +974,7 @@ const NewActiveApplication = ({
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
         title = "Dept. Head / Chief Review"
@@ -978,11 +983,11 @@ const NewActiveApplication = ({
         title = "Dept. Head / Chief Review"
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("chief of staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
         title = "Chief Of Staff Review";
@@ -1028,7 +1033,7 @@ const NewActiveApplication = ({
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
         title = "Dept. Head / Chief Review"
@@ -1037,11 +1042,11 @@ const NewActiveApplication = ({
         title = "Dept. Head / Chief Review"
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("chief of staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
         title = "Chief Of Staff Review";
@@ -1086,24 +1091,24 @@ const NewActiveApplication = ({
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-1') {
-      if (userRole?.includes("Staff Manager")) {
+      if (workModeType === "Staff Manager") {
         role = "Staff Manager";
         isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
       }
     } else if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
       } else {
         role = "Department Head";
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         isDelegate = false;
-      } else if (userRole?.includes("Chief Of Staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
       }
@@ -1138,7 +1143,7 @@ const NewActiveApplication = ({
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
         title = "Dept. Head / Chief Review"
@@ -1147,11 +1152,11 @@ const NewActiveApplication = ({
         title = "Dept. Head / Chief Review"
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("chief of staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
         title = "Chief Of Staff Review";
@@ -1186,30 +1191,30 @@ const NewActiveApplication = ({
     // getPreApplication();
   }
 
-  const getUserRole = (selectedTab) => {
-    switch (selectedTab) {
-      case "level-1":
-        return "Staff Manager";
-      case "level-2":
-        return "Dept Head";
-      case "level-3":
-        if (userRole?.includes("Credentialing Committee")) {
-          return "Cred Comm";
-        }
-        if (userRole?.includes("Chief Of Staff")) {
-          return "Chief Of Staff";
-        }
-        return "Cred Comm";
-      case "level-4":
-        return "MAC";
-      case "level-5":
-        return "BOD";
-      default:
-        return "";
-    }
-  };
+  // const getUserRole = (selectedTab) => {
+  //   switch (selectedTab) {
+  //     case "level-1":
+  //       return "Staff Manager";
+  //     case "level-2":
+  //       return "Dept Head";
+  //     case "level-3":
+  //       if (userRole?.includes("Credentialing Committee")) {
+  //         return "Cred Comm";
+  //       }
+  //       if (userRole?.includes("Chief Of Staff")) {
+  //         return "Chief Of Staff";
+  //       }
+  //       return "Cred Comm";
+  //     case "level-4":
+  //       return "MAC";
+  //     case "level-5":
+  //       return "BOD";
+  //     default:
+  //       return "";
+  //   }
+  // };
 
-  const userRoleTab = getUserRole(selectedTab);
+  // const userRoleTab = getUserRole(selectedTab);
 
   const getContractId = (value) => {
     setContractId(value);
@@ -1795,49 +1800,49 @@ const NewActiveApplication = ({
   //   console.log(`Role at index ${index}: ${log?.role}`);
   // });
 
-  const checkApprovalAndLogMatch = (data, index) => {
-    // Check if the expand status and index match
-    if (!(expand?.status && expand?.index === index + 1)) {
-      console.log("expand" + expand?.status)
-      return false;
+  // const checkApprovalAndLogMatch = (data, index) => {
+  //   // Check if the expand status and index match
+  //   if (!(expand?.status && expand?.index === index + 1)) {
+  //     console.log("expand" + expand?.status)
+  //     return false;
 
-    }
+  //   }
 
-    // Check if any newData requires approval
-    const approvalRequired = credApproval?.some((newData) => {
-      console.log("newData.approvalRequired:", newData?.approvalRequired);
-      return newData.schemaId === data?.id && newData?.approvalRequired;
-    });
+  //   // Check if any newData requires approval
+  //   const approvalRequired = credApproval?.some((newData) => {
+  //     console.log("newData.approvalRequired:", newData?.approvalRequired);
+  //     return newData.schemaId === data?.id && newData?.approvalRequired;
+  //   });
 
-    if (!approvalRequired) return false;
+  //   if (!approvalRequired) return false;
 
-    // Check if logDetails.logs is an array and has elements
-    if (logDetails?.logs && Array.isArray(logDetails.logs)) {
-      return logDetails.logs.some((log) => {
-        if (log?.form?.id === form?.forms[index]?.id) {
-          console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id);
+  //   // Check if logDetails.logs is an array and has elements
+  //   if (logDetails?.logs && Array.isArray(logDetails.logs)) {
+  //     return logDetails.logs.some((log) => {
+  //       if (log?.form?.id === form?.forms[index]?.id) {
+  //         console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id);
 
-          // Check if userRole includes log.role
-          const roleMatch = userRole?.includes(log?.role);
-          if (roleMatch) {
-            console.log("Role matches user role: " + log?.role);
-          }
+  //         // Check if userRole includes log.role
+  //         const roleMatch = userRole?.includes(log?.role);
+  //         if (roleMatch) {
+  //           console.log("Role matches user role: " + log?.role);
+  //         }
 
-          // Determine selectedTabRole based on selectedTab
-          const selectedTabRole = getSelectedTabRole(selectedTab);
+  //         // Determine selectedTabRole based on selectedTab
+  //         const selectedTabRole = getSelectedTabRole(selectedTab);
 
-          // Check if selectedTabRole matches log.role
-          if (selectedTabRole === log.role) {
-            console.log("Selected tab role matches log role: " + log?.role);
-            return true;
-          }
-        }
-        return false;
-      });
-    }
+  //         // Check if selectedTabRole matches log.role
+  //         if (selectedTabRole === log.role) {
+  //           console.log("Selected tab role matches log role: " + log?.role);
+  //           return true;
+  //         }
+  //       }
+  //       return false;
+  //     });
+  //   }
 
-    return false;
-  };
+  //   return false;
+  // };
 
   const getStaffPrivilege = async () => {
     if (form) {
@@ -2400,9 +2405,9 @@ const NewActiveApplication = ({
     }
   };
 
-  const showDot = checkApprovalAndLogMatch();
+  // const showDot = checkApprovalAndLogMatch();
 
-  console.log("showDot" + checkApprovalAndLogMatch())
+  // console.log("showDot" + checkApprovalAndLogMatch())
 
   const renderFieldsBasedOnStep = (data) => {
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
@@ -4152,7 +4157,7 @@ const NewActiveApplication = ({
         </div> */}
         <div className={style.grid2to1}>
           <>
-            {userRole.includes('Staff Manager') || userRole.includes('Chief Of Staff') || userRole.includes('Credentialing Committee') || userRole.includes('Department Head') ? (
+            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Department Head') ? (
               <>
                 <div>
                   {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
@@ -4387,7 +4392,7 @@ const NewActiveApplication = ({
                   )}
 
                   <>
-                    {((userRole?.includes('Staff Manager') && selectedTab === "level-1") || (userRole?.includes('Chief Of Staff') && selectedTab === "level-1")) ? (
+                    {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1")) ? (
                       <div
                         className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                       >
@@ -5226,7 +5231,7 @@ const NewActiveApplication = ({
                                                         let Match = false;
 
                                                         // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
+                                                        if (workModeType === log.role) {
                                                           console.log("Role matches user role: " + log.role);
                                                           Match = true;
                                                         }
@@ -5316,7 +5321,7 @@ const NewActiveApplication = ({
                                                     let Match = false;
 
                                                     // Check if userRole includes log.role
-                                                    if (userRole?.includes(log.role)) {
+                                                    if (workModeType === log.role) {
                                                       console.log("Role matches user role: " + log.role);
                                                       Match = true;
                                                     }
@@ -5590,7 +5595,7 @@ const NewActiveApplication = ({
                                                           let Match = false;
 
                                                           // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
+                                                          if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
@@ -6272,7 +6277,7 @@ const NewActiveApplication = ({
                                                             let Match = false;
 
                                                             // Check if userRole includes log.role
-                                                            if (userRole?.includes(log.role)) {
+                                                            if (workModeType === log.role) {
                                                               console.log("Role matches user role: " + log.role);
                                                               Match = true;
                                                             }
@@ -6362,7 +6367,7 @@ const NewActiveApplication = ({
                                                         let Match = false;
 
                                                         // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
+                                                        if (workModeType === log.role) {
                                                           console.log("Role matches user role: " + log.role);
                                                           Match = true;
                                                         }
@@ -6657,7 +6662,7 @@ const NewActiveApplication = ({
                                                           let Match = false;
 
                                                           // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
+                                                          if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
@@ -6837,7 +6842,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                   <>
-                    {userRole?.includes('Staff Manager') ? (
+                    {(workModeType === 'Staff Manager') ? (
                       <div
                         className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
                       >
@@ -7317,7 +7322,7 @@ const NewActiveApplication = ({
                                                         let Match = false;
 
                                                         // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
+                                                        if (workModeType === log.role) {
                                                           console.log("Role matches user role: " + log.role);
                                                           Match = true;
                                                         }
@@ -7578,7 +7583,7 @@ const NewActiveApplication = ({
                                                           let Match = false;
 
                                                           // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
+                                                          if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
@@ -8056,7 +8061,7 @@ const NewActiveApplication = ({
                                                         let Match = false;
 
                                                         // Check if userRole includes log.role
-                                                        if (userRole?.includes(log.role)) {
+                                                        if (workModeType === log.role) {
                                                           console.log("Role matches user role: " + log.role);
                                                           Match = true;
                                                         }
@@ -8287,7 +8292,7 @@ const NewActiveApplication = ({
                                                           let Match = false;
 
                                                           // Check if userRole includes log.role
-                                                          if (userRole?.includes(log.role)) {
+                                                          if (workModeType === log.role) {
                                                             console.log("Role matches user role: " + log.role);
                                                             Match = true;
                                                           }
@@ -8415,7 +8420,7 @@ const NewActiveApplication = ({
                   </>
                 </div>
                 <>
-                  {userRole?.includes('Staff Manager') ? (
+                  {(workModeType === 'Staff Manager') ? (
                     <div
                       className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
                     >
@@ -8932,7 +8937,7 @@ const NewActiveApplication = ({
                                                       let Match = false;
 
                                                       // Check if userRole includes log.role
-                                                      if (userRole?.includes(log.role)) {
+                                                      if (workModeType === log.role) {
                                                         console.log("Role matches user role: " + log.role);
                                                         Match = true;
                                                       }
@@ -9292,7 +9297,7 @@ const NewActiveApplication = ({
                                                             let Match = false;
 
                                                             // Check if userRole includes log.role
-                                                            if (userRole?.includes(log.role)) {
+                                                            if (workModeType === log.role) {
                                                               console.log("Role matches user role: " + log.role);
                                                               Match = true;
                                                             }
@@ -9549,7 +9554,7 @@ const NewActiveApplication = ({
             )}
           </>
           <div>
-            {userRole?.includes('Staff Manager') || userRole?.includes('Chief Of Staff') || userRole?.includes('Credentialing Committee') || userRole?.includes('Department Head') ? (
+            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Department Head') ? (
               <>
                 {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
                   <div className={`${style.twoColumnGrid}`}>
@@ -9580,7 +9585,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                {(userRole?.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") ? (
+                {(workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") ? (
                   // <div className={`${style.twoColumnGrid}`}>
                   //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                   //     <div
@@ -9712,10 +9717,10 @@ const NewActiveApplication = ({
 
                 {(applicationType === "NEW" && selectedTab === "level-3") ? (
                   <div
-                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${userRole?.includes("Chief Of Staff") ? style.disabledButton : ""}`}
-                    style={{ opacity: userRole?.includes("Chief Of Staff") ? 0.5 : 1 }}
+                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${(workModeType === "Chief Of Staff") ? style.disabledButton : ""}`}
+                    style={{ opacity: (workModeType === "Chief Of Staff") ? 0.5 : 1 }}
                     onClick={() => {
-                      if (!userRole?.includes("Chief Of Staff")) {
+                      if (!(workModeType === "Chief Of Staff")) {
                         // Call your approve move function here
                         onClickApproveMoveFunction();
                       }
@@ -9857,7 +9862,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {(userRole?.includes('Department Head') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
+                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || ( workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
                     <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -9913,7 +9918,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 ) : (" ")}
-                {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                {workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Dept. Head. Recommendation
@@ -9921,7 +9926,7 @@ const NewActiveApplication = ({
                   </div>
                 </>)}
 
-                {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
+                {(workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Cred. Comm. Recommendation
@@ -9929,7 +9934,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : ("")}
 
-                {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending MAC Recommendation
@@ -9937,14 +9942,14 @@ const NewActiveApplication = ({
                   </div>
                 </>) : (" ")}
 
-                {(userRole?.includes('Credentialing Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Department Head') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Advisory Committee') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (userRole?.includes('Board') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Board' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending BOD Recommendation
                     </div>
                   </div>
                 </>) : (" ")}
-                {(userRole?.includes('Staff Manager') && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
+                {(workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -9997,7 +10002,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {(userRole?.includes('Staff Manager') && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
+                {(workModeType ==='Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInCol}`}>
@@ -10055,7 +10060,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {userRole?.includes('Chief Of Staff') && (
+                {(workModeType ==='Chief Of Staff') && (
                   <>
                     {selectedTab === "level-3" && (
                       <>
@@ -10211,10 +10216,10 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
                 {applicationType === "NEW" ? (
-                  ((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3') ||
-                    (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") ||
-                    (userRole?.includes('Staff Manager') && selectedTab === "level-3") ||
-                    (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
+                  ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
+                    (workModeType ==='Chief Of Staff' && selectedTab === "level-3") ||
+                    (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
+                    (workModeType === 'Department Head' && selectedTab === "level-3")) ? (
                     <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
                       <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>
                         Review and Approval Status
@@ -10892,7 +10897,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   </>
-                  {userRole?.includes('Chief Of Staff') && (
+                  {(workModeType === 'Chief Of Staff') && (
                     <>
                       {applicationType === "NEW" && (
                         <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
@@ -11109,7 +11114,7 @@ const NewActiveApplication = ({
                       <div className={style.marginBottom20}></div>
                     </div>
                   </>
-                  {userRole?.includes('Chief Of Staff') && (
+                  {(workModeType === 'Chief Of Staff') && (
                     <>
                       {applicationType === "NEW" && (
                         <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>

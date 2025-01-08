@@ -745,18 +745,38 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         );
       });
 
+    // if (userRole.length > 0 && !initialTabSet) {
+    //   let initialTab;
+    //   if (applicationType === "LOCUM") {
+    //     // For LOCUM, set initial tab to LocumRenewals if the user is a Department Head
+    //     initialTab =  "LocumRenewals" ;
+    //   } else {
+    //     // For other application types, keep the existing logic
+    //     initialTab = (isManagerOrChief
+    //       ? 'level-1'
+    //       : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`);
+    //   }
+
+    //   if (initialTab) {
+    //     getSelectedTab(initialTab);
+    //     setInitialTabSet(true);
+    //   }
+    // }
     if (userRole.length > 0 && !initialTabSet) {
       let initialTab;
+    
       if (applicationType === "LOCUM") {
-        // For LOCUM, set initial tab to LocumRenewals if the user is a Department Head
-        initialTab =  "LocumRenewals" ;
+        initialTab = "LocumRenewals";
+      } else if (workModeType === "Department Head") {
+        initialTab = "level-2";
+      } else if (workModeType === "Credentialing Committee") {
+        initialTab = "level-3";
       } else {
-        // For other application types, keep the existing logic
-        initialTab = (isManagerOrChief
-          ? 'level-1'
-          : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`);
+        initialTab = isManagerOrChief
+          ? "level-1"
+          : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
       }
-
+    
       if (initialTab) {
         getSelectedTab(initialTab);
         setInitialTabSet(true);
@@ -764,6 +784,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
 
     setCurrentRoleIndex(newCurrentRoleIndex);
+    console.log('user1',userRole)
   }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType,workModeType]);
 
    const getFilteredTiles = () => {

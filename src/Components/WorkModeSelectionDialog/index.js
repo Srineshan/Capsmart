@@ -55,7 +55,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
               onClick={() => getIsOpen(false)}
             /> */}
             <div className={`${style.displayInRow} ${style.marginTop10}`}>
-              {userRole.includes("Staff Manager") && (
+              {userRole?.includes("Staff Manager") && (
                 <div
                   className={`${style.justifyItem}`}
                   onClick={() => handleWorkModeSelection("Staff Manager")}
@@ -68,7 +68,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   <p className={`${style.roleTitle}`}>Staff Manager</p>
                 </div>
               )}
-              {userRole.includes("Department Head") && (
+              {userRole?.includes("Department Head") && (
                 <div
                   className={`${style.justifyItem}`}
                   onClick={() => handleWorkModeSelection("Department Head")}
@@ -81,7 +81,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   <p className={`${style.roleTitle}`}>Department Head</p>
                 </div>
               )}
-              {userRole.includes("Credentialing Committee") && (
+              {userRole?.includes("Credentialing Committee") && (
                 <div
                   className={`${style.justifyItem}`}
                   onClick={() => handleWorkModeSelection("Credentialing Committee")}
