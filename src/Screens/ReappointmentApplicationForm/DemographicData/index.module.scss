@@ -30,15 +30,36 @@
     position: relative;
 }
 
-.stickyContainer {
-    position: sticky;
-    // right: 100px;
-    // left: calc(75% - 45px);
+.stickyContainer1 {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
     bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
+    padding: 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     grid-column: 2 / 3;
+
+    @media (max-width: 948px) {
+        position: fixed;
+        left: auto;
+        right: auto;
+        bottom: 0;
+        z-index: 10;
+        padding: 20px;
+        background: $secondarycolor 0% 0% no-repeat padding-box;
+        grid-column: 2 / 3;
+    }
+}
+
+.stickyContainer {
+    position: fixed;
+    bottom: 0;
+    z-index: 10;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 45px);
 }
 
 .hiddenStickyContainer {
@@ -64,9 +85,9 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress1:hover { 
+.saveInProgress1:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -87,9 +108,9 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -110,9 +131,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -432,10 +453,10 @@
     transition: background-color 0.3s ease;
 }
 
-.reappointmentButton:hover { 
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+.reappointmentButton:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -451,9 +472,9 @@
     transition: background-color 0.3s ease;
 }
 
-.reappointmentButtonOutlined:hover { 
+.reappointmentButtonOutlined:hover {
     background: #DBE8EA 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000029; 
+    box-shadow: 0px 3px 12px #00000029;
     border: 0.5px solid #06617A;
     border-radius: 8px;
     opacity: 1;
@@ -466,7 +487,22 @@
     color: $primarycolor;
 }
 
+// .disabledButtonLook {
+//     opacity: 0.5;
+//     cursor: not-allowed !important;
+// }
+
+// .disabledButtonLook :hover {
+//     opacity: 0.5 !important;
+//     cursor: not-allowed !important;
+// }
+
 .disabledButtonLook {
-    opacity: 0.5;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.disabledButtonLook:hover {
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }

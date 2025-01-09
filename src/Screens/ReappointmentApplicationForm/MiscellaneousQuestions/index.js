@@ -586,7 +586,30 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-              <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+              {/* <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') 
+                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                   && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : 
+                   (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div> */}
+                   <button
+  className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' 
+    && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') 
+    ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') 
+    : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`}
+  onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' 
+    && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') 
+    ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') 
+    : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) 
+      ? () => getMissingFields() 
+      : () => { }}
+  disabled={!((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' 
+    && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') 
+    ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') 
+    : (yesOrNoLMS !== '' && yesOrNoSuboxone !== ''))}
+>
+  CONTINUE
+</button>
+
             </div>
           </div>
           <div className={style.marginTop}>

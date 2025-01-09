@@ -2595,6 +2595,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                onClick={() => {
+                                  setShowPrivileges(true);
+                                  handleChange(data?.id);
+                                }}
                               >
                                 {selectedPrivilegesForDisplayMultiple
                                   ?.map((data) => data?.id)
@@ -2990,6 +2994,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                onClick={() => {
+                                  setShowPrivileges(true);
+                                  handleChange(data?.id);
+                                }}
                               >
                                 {selectedPrivilegesForDisplayMultiple
                                   ?.map((data) => data?.id)
@@ -3142,7 +3150,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   </div>
                   {staffPrivilege?.map((data, index) => (
                     <>
-                      <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
+                      <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                        onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
+                      >
                         {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                           <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
                         ) : (
@@ -3285,14 +3295,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                     <div className={style.chipsContainer}>
                       {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
-                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}`} onClick={() => {
-                          setHospitalPrivilege(data?.privilegeCategory?.category);
-                          setHospitalPrivilegeCategory({
-                            "id": data?.privilegeCategory?.id,
-                            "name": data?.privilegeCategory?.category,
-                            "type": data?.privilegeCategory?.type
-                          })
-                        }}>{data?.privilegeCategory?.category}</div>
+                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} 
+                        ${style.cursorPointer}
+                         `} onClick={() => {
+                            setHospitalPrivilege(data?.privilegeCategory?.category);
+                            setHospitalPrivilegeCategory({
+                              "id": data?.privilegeCategory?.id,
+                              "name": data?.privilegeCategory?.category,
+                              "type": data?.privilegeCategory?.type
+                            })
+                          }}>{data?.privilegeCategory?.category}</div>
                       ))}
                     </div>
                   </div>
@@ -3303,7 +3315,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
-                          : ""
+                          : ''
                         }`}
                       onClick={
                         (hospitalName === "" || hospitalPrivilege === "")
@@ -3323,7 +3335,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
-                          : ""
+                          : ''
                         }`}
                       onClick={
                         (hospitalName === "" || hospitalPrivilege === "")

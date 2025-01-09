@@ -443,7 +443,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 <div className={style.spaceBetween}>
                                     <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
                                     {/* {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && ( */}
-                                    <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
+                                    <button className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
+                                         ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
+                                         disabled={selectedIds?.length === 0} >
+                                        <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
+                                        </button> 
+                                        
                                     {/* )} */}
                                 </div>
                                 <div>
