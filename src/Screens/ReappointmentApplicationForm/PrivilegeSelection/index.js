@@ -3331,7 +3331,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={style.chipsContainer}>
                       {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
                         <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} 
-                        ${style.cursorPointer} `} onClick={() => {
+                        ${style.cursorPointer}
+                         `} onClick={() => {
                           setHospitalPrivilege(data?.privilegeCategory?.category);
                           setHospitalPrivilegeCategory({
                             "id": data?.privilegeCategory?.id,
@@ -3381,7 +3382,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
-                          : ""
+                          : ''
                         }`}
                       onClick={
                         (hospitalName === "" || hospitalPrivilege === "")
@@ -3401,7 +3402,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
-                          : ""
+                          : ''
                         }`}
                       onClick={
                         (hospitalName === "" || hospitalPrivilege === "")

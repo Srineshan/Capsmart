@@ -25,13 +25,12 @@
 
 .stickyContainer {
     position: fixed;
-    right: 111px;
-    left: calc(75% - 54px);
     bottom: 0;
     z-index: 10;
-    padding: 20px;
+    padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    grid-column: 2 / 3;
+    right: 100px;
+    width: calc(25% - 45px);
 }
 
 .hiddenStickyContainer {
@@ -108,31 +107,11 @@
 .disabled {
     cursor: not-allowed !important;
     opacity: 0.4;
-    pointer-events: auto; 
-    user-select: none;
-}
-
-.disabled:hover,
-.disabled:active,
-.disabled:focus {
-    opacity: 0.4;
-    cursor: not-allowed;
-    outline: none;
 }
 
 .disabledButton {
     cursor: not-allowed !important;
-    opacity: 0.4;
-    pointer-events: auto; 
-    user-select: none;
-}
-
-.disabledButton:hover,
-.disabledButton:active,
-.disabledButton:focus {
-    opacity: 0.4;
-    cursor: not-allowed;
-    outline: none;
+    opacity: 0.4; 
 }
 
 .twoColForButton {

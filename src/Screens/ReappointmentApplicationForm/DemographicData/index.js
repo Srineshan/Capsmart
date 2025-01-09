@@ -584,16 +584,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${style.displayInRowRev} ${style.marginTop}`}
                                     >
                                         <div className={style.marginLeft}>
-                                            <div
+                                            <button
                                                 className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
                                                 onClick={isContactInfoEdited ? () => {
                                                     // setShowContactInfo(false);
                                                     getMissingFields()
                                                     setUpdateFrom('contact')
                                                 } : () => { }}
+                                                disabled={!isContactInfoEdited}
                                             >
                                                 UPDATE
-                                            </div>
+                                            </button>
                                         </div>
                                         <div>
                                             <div

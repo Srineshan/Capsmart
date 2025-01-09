@@ -2973,7 +2973,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
-                          <div
+                          <button
                             className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
                               }`}
                             onClick={
@@ -2983,9 +2983,10 @@ const ApplicationFieldCard = ({
                                 }
                                 : () => { }
                             }
+                             disabled={!isEdited}
                           >
                             UPDATE
-                          </div>
+                          </button>
                         </div>
                         <div>
                           <div
