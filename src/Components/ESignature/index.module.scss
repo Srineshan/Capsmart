@@ -131,8 +131,9 @@
 }
 
 .eSignImg {
-    max-width: 90px;
-    height: auto;
+    width: auto;
+    max-height: 32px !important;
+    object-fit: contain;
    
 }
 
