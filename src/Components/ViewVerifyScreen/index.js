@@ -5375,7 +5375,7 @@ const NewActiveApplication = ({
 
                                               return (
                                                 <div>
-                                                  {form?.forms[index]?.schemaCategory !== 'UploadYourDoc' ? (
+                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                     isMatch ? (
                                                       <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
@@ -5388,7 +5388,37 @@ const NewActiveApplication = ({
                                                           <div
                                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                             onClick={() => {
-                                                              if (!(isUploadYourDoc && !allVerified)) {
+                                                                handleStepsVerify(form?.forms[index]?.id);
+                                                            }}
+                                                          >
+                                                            Verify
+                                                          </div>
+                                                        </div>
+                                                      ) : (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Verified
+                                                          </div>
+                                                        </div>
+                                                      )
+                                                    )
+                                                  )}
+                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' && (
+                                                    isMatch ? (
+                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          Verified
+                                                        </div>
+                                                      </div>
+                                                    ) : (
+                                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
+                                                          <div
+                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                            onClick={() => {
+                                                              if (
+                                                                !(isUploadYourDoc && !allVerified)
+                                                              ) {
                                                                 handleStepsVerify(form?.forms[index]?.id);
                                                               }
                                                             }}
@@ -5403,27 +5433,6 @@ const NewActiveApplication = ({
                                                           </div>
                                                         </div>
                                                       )
-                                                    )
-                                                  ) : (
-                                                    form?.forms[index]?.status !== "APPROVED" ? (
-                                                      <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
-                                                        <div
-                                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                          onClick={() => {
-                                                            if (!(isUploadYourDoc && !allVerified)) {
-                                                              handleStepsVerify(form?.forms[index]?.id);
-                                                            }
-                                                          }}
-                                                        >
-                                                          Verify
-                                                        </div>
-                                                      </div>
-                                                    ) : (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Verified
-                                                        </div>
-                                                      </div>
                                                     )
                                                   )}
 
