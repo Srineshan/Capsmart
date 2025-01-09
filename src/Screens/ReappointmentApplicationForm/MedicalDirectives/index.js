@@ -431,7 +431,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 {allMedicalDirectives?.completed?.length !== 0 && (
                                     <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('completed'); setSelectedMedicalDirectiveList(allMedicalDirectives?.completed) }}>
                                         <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                        <div className={style.marginLeft}> {medicalDirectives?.length === 0 ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
+                                        <div className={style.marginLeft}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                     </div>
                                 )}
                                 {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
@@ -499,7 +499,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <div>
                                             <div className={`${style.checkGrid}`}>
                                                 {formContent?.disclaimer?.content !== null && (
-                                                    <CommonCheckBox checked={isChecked} onChange={(medicalDirectives?.length === allMedicalDirectives?.completed?.length && medicalDirectivesStatus !== 'completed') ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
+                                                    <CommonCheckBox checked={isChecked} onChange={(medicalDirectivesStatus !== 'completed') ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
                                                 )}
                                                 <div
                                                     className={`${style.leftAlign} ${style.marginTop}`}
@@ -542,7 +542,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${isSigned ? '' : style.disabledButton}`} onClick={isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { }}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { } : () => handleContinue()}>CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

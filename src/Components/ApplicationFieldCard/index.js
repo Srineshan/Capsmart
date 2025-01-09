@@ -2650,6 +2650,7 @@ const ApplicationFieldCard = ({
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
+    setIsChanged(false);
   };
 
   const isValidDateString = (dateString) => {
