@@ -166,7 +166,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   });
   useEffect(() => {
     getApplication();
-    getPrivilegeCategory();
     getDepartmentList();
     getApplicantProfile();
   }, []);
@@ -199,6 +198,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       if (basicForm && !formSchema) {
         getFormSchema();
         getUploadFormSchema();
+        getPrivilegeCategory();
       }
       if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
         setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
