@@ -3420,6 +3420,7 @@ input[type="number"] {
   width: 96%;
   margin-left: 2%;
   border: 0.400000006px solid $secondarycolor;
+  box-shadow: 0px 5px 20px #52575D29;
   border-radius: 2px;
   padding: 10px;
 }
@@ -4765,7 +4766,7 @@ input[type="number"] {
 
 .medicalDirectivesGridStyle {
   display: grid;
-  grid-template-columns: 5% 41% 10% 10% 15% 15%;
+  grid-template-columns: 5% 53% 10% 10% 18%;
   gap: 1%;
 }
 
@@ -4952,6 +4953,9 @@ input[type="number"] {
   padding: 30px;
 }
 
+.padding20 {
+  padding: 20px;
+}
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
@@ -5224,7 +5228,8 @@ input[type="number"] {
 }
 
 .cmeCard {
-  background: #14358F14 0% 0% no-repeat padding-box;
+  // background: #14358F14 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #14358F1F;
   border-radius: 12px;
   padding: 20px;
