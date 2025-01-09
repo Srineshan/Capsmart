@@ -2528,7 +2528,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     label={"What would you like to change your current Privilege Category to?"}
                     required={true}
                   />
-                  {/* <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                  <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                     {privilegeCategories?.map(data => {
                       let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
                       let isDisabled = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
@@ -2542,32 +2542,32 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           }}>{data?.privilegeCategory?.category}</div>
                       )
                     })}
-                  </div> */}
-                  <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-  {privilegeCategories?.map((data) => {
-    //  let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
-    //  let isDisable = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
-    const isSelected = selectedPrivilegeCategory === data?.privilegeCategory?.id;
-    const isDisabled = selectedPrivilegeCategory && !isSelected;
+                  </div>
+                   {/*<div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                   // {privilegeCategories?.map((data) => {
+                  //     //  let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
+                  //     //  let isDisable = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
+                  //     const isSelected = selectedPrivilegeCategory === data?.privilegeCategory?.id;
+                  //     const isDisabled = selectedPrivilegeCategory && !isSelected;
 
-    return (
-      <div
-        key={data?.privilegeCategory?.id}
-        className={`${style.privilegeCategoryChips} 
-                    ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
-                    ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
-                    ${!isDisabled ? style.cursorPointer : ''}
-                    `}
-        onClick={isDisabled ? () => {} : () => {
-          setShowPrivilegeResetError(data?.inheritExistingPrivilegeSets ? false : true);
-          setSelectedPrivilegeCategory(data?.privilegeCategory?.id);
-        }}
-      >
-        {data?.privilegeCategory?.category}
-      </div>
-    );
-  })}
-</div>
+                  //     return (
+                  //       <div
+                  //         key={data?.privilegeCategory?.id}
+                  //           className={`${style.privilegeCategoryChips} 
+                  //               ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
+                  //               ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
+                  //               ${!isDisabled ? style.cursorPointer : ''}
+                  //               `}
+                  //               onClick={isDisabled ? () => {} : () => {
+                  //                 setShowPrivilegeResetError(data?.inheritExistingPrivilegeSets ? false : true);
+                  //                 setSelectedPrivilegeCategory(data?.privilegeCategory?.id);
+                  //                }}
+                  //         >
+                  //         {data?.privilegeCategory?.category}
+                  //         </div>
+                  //         );
+                  //         })}
+                  //       </div> */}
 
                   {showPrivilegeResetError && (
                     <div
@@ -2609,6 +2609,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                onClick={() => {
+                                  setShowPrivileges(true);
+                                  handleChange(data?.id);
+                                }}
                               >
                                 {selectedPrivilegesForDisplayMultiple
                                   ?.map((data) => data?.id)
@@ -3012,6 +3016,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                onClick={() => {
+                                  setShowPrivileges(true);
+                                  handleChange(data?.id);
+                                }}
                               >
                                 {selectedPrivilegesForDisplayMultiple
                                   ?.map((data) => data?.id)
@@ -3172,7 +3180,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   </div>
                   {staffPrivilege?.map((data, index) => (
                     <>
-                      <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}>
+                      <div className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                        onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
+                       >
                         {selectedAdditionalPrivilegesForDisplayMultiple?.map(data => data?.id)?.includes(data?.id) ? (
                           <div className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 15, color: '#FFFFFF' }} /></div>
                         ) : (
@@ -3319,8 +3329,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       Privilege Category you have at the Other Hospital
                     </div>
                     <div className={style.chipsContainer}>
-                      {/* {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
-                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer} ${hospitalPrivilege !== data?.privilegeCategory?.category ? style.privilegeCategoryChipsDisabled : ''} `} onClick={() => {
+                      {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
+                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} 
+                        ${style.cursorPointer} `} onClick={() => {
                           setHospitalPrivilege(data?.privilegeCategory?.category);
                           setHospitalPrivilegeCategory({
                             "id": data?.privilegeCategory?.id,
@@ -3328,39 +3339,39 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             "type": data?.privilegeCategory?.type
                           })
                         }}>{data?.privilegeCategory?.category}</div>
-                      ))} */}
-                      {privilegeCategories
-    ?.filter(
-      (filterData) =>
-        filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" &&
-        filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges"
-    )
-    ?.map((data) => {
-      const isSelected = hospitalPrivilege === data?.privilegeCategory?.category;
-      const isDisabled = hospitalPrivilege && !isSelected;
+                      ))}
+                      {/* {privilegeCategories
+                        ?.filter(
+                            (filterData) =>
+                            filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" &&
+                            filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges"
+                            )
+                            ?.map((data) => {
+                              const isSelected = hospitalPrivilege === data?.privilegeCategory?.category;
+                              const isDisabled = hospitalPrivilege && !isSelected;
 
-      return (
-        <div
-          key={data?.privilegeCategory?.id}
-          className={`${style.privilegeCategoryChips} 
-                      ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
-                      ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
-                      ${!isDisabled ? style.cursorPointer : ''}`}
-          onClick={() => {
-            if (!isDisabled) {
-              setHospitalPrivilege(data?.privilegeCategory?.category);
-              setHospitalPrivilegeCategory({
-                id: data?.privilegeCategory?.id,
-                name: data?.privilegeCategory?.category,
-                type: data?.privilegeCategory?.type,
-              });
-            }
-          }}
-        >
-          {data?.privilegeCategory?.category}
-        </div>
-      );
-    })}
+                            return (
+                              <div
+                                  key={data?.privilegeCategory?.id}
+                                  className={`${style.privilegeCategoryChips} 
+                                        ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
+                                        ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
+                                        ${!isDisabled ? style.cursorPointer : ''}`}
+                                  onClick={() => {
+                                    if (!isDisabled) {
+                                      setHospitalPrivilege(data?.privilegeCategory?.category);
+                                      setHospitalPrivilegeCategory({
+                                        id: data?.privilegeCategory?.id,
+                                        name: data?.privilegeCategory?.category,
+                                        type: data?.privilegeCategory?.type,
+                                        });
+                              }
+                              }}
+                              >
+                              {data?.privilegeCategory?.category}
+                              </div>
+                              );
+                            })} */}
                     </div>
                   </div>
                   <div

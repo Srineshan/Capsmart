@@ -30,34 +30,35 @@
     position: relative;
 }
 
-// .stickyContainer {
-//     position: fixed;
-//     right: 100px;
-//     left: calc(75% - 45px);
-//     bottom: 0;
-//     z-index: 10;
-//     padding: 20px;
-//     background: $secondarycolor 0% 0% no-repeat padding-box;
-//     grid-column: 2 / 3;
-
-//     @media (max-width: 948px) {
-//         position: fixed;
-//         left: auto; 
-//         right: auto;
-//         bottom: 0;
-//         z-index: 10;
-//         padding: 20px;
-//         background: $secondarycolor 0% 0% no-repeat padding-box;
-//         grid-column: 2 / 3;
-//      }
-// }
-
-.stickyContainer {
-    position: sticky; 
-    top: 0;
+.stickyContainer1 {
+    position: fixed;
+    right: 100px;
+    left: calc(75% - 45px);
     bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
+    padding: 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    grid-column: 2 / 3;
+
+    @media (max-width: 948px) {
+        position: fixed;
+        left: auto; 
+        right: auto;
+        bottom: 0;
+        z-index: 10;
+        padding: 20px;
+        background: $secondarycolor 0% 0% no-repeat padding-box;
+        grid-column: 2 / 3;
+     }
+}
+
+.stickyContainer {
+    position: fixed;
+    right: 111px;
+    left: calc(75% - 54px);
+    bottom: 0;
+    z-index: 10;
+    padding: 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     grid-column: 2 / 3;
 }
