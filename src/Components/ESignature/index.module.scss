@@ -131,10 +131,10 @@
 }
 
 .eSignImg {
-    width: auto;
+    max-width: 200px;
     max-height: 32px !important;
     object-fit: contain;
-   
+
 }
 
 .border:before {

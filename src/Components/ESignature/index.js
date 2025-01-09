@@ -7,8 +7,8 @@ import { useParams } from "react-router-dom";
 const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm }) => {
   const [formIndex, setFormIndex] = useState();
   const [applicationId, setApplicationId] = useState(
-      sessionStorage.getItem("applicationId")
-    );
+    sessionStorage.getItem("applicationId")
+  );
   const [form, setForm] = useState();
   const { section, step } = useParams()
 
@@ -48,7 +48,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   console.log("stylesign", eSignTypeContentStyle);
   console.log("textsign", eSignTypeContent);
   console.log("Esign", eSignImg);
-  console.log("formIndex",form)
+  console.log("formIndex", form)
   return (
     <>
       <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
@@ -74,7 +74,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                 src={eSignImg?.fileURL}
                 alt="Signature"
                 className={style.eSignImg}
-              />  
+              />
             ) : (
               <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>
                 {eSignTypeContent || ""}
@@ -101,7 +101,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
         </div>
         <div className={style.signatureData}>
           {showData && encData && encData.length > 0
-            ? ` ${encData.substring(0, 35)}.....`
+            ? ` ${encData.substring(0, 15)}.....`
             : ""}
         </div>
       </div>
