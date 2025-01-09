@@ -24,6 +24,7 @@ import { format } from 'date-fns';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import FileWithFields from '../../../Components/FileWithFields';
+import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -62,17 +63,19 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [applicationDocumentId, setApplicationDocumentId] = useState('');
     const [isContinueEnabled, setIsContinueEnabled] = useState(false);
     const [selectedUpload, setSelectedUpload] = useState('');
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [selectedFile, setselectedFile] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
-            if (basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined) {
-                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME);
+            if (basicForm?.forms[formIndex]?.data !== null) {
+                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : basicForm?.forms?.[formIndex]?.data?.cmeCertificates !== undefined ? 'Yes' : 'No');
             }
-            if (basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined) {
-                setYesOrNoCMETranscript(basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript);
+            if (basicForm?.forms[formIndex]?.data !== null) {
+                setYesOrNoCMETranscript(basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : 'No');
             }
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
@@ -145,6 +148,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
 
     const getIsOpenFileWithFields = (value) => {
         setShowFileWithFields(value);
+    }
+
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const getFormSchema = async () => {
@@ -287,6 +294,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     };
 
     const handleContinue = async () => {
+        let tempData = basicForm?.forms?.[formIndex]?.data;
+        tempData.yesOrNoCME = yesOrNoCME;
+        tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: basicForm?.forms?.[formIndex]?.data,
@@ -383,25 +393,20 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 </>
                             )}
                         </div>
-                        {yesOrNoCMETranscript === 'Yes' && (
+                        {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined && yesOrNoCMETranscript !== 'No' && (
                             <>
-                                {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName !== undefined && (
+                                {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
                                     <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
                                         <div><strong>CME / CEU Transcript</strong></div>
-                                        <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName}</div>
+                                        <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                                         <img
                                             src={VerifiedImage}
                                             alt=""
                                             className={`${style.imgIcon} ${style.cursorPointer}`}
-                                        // onClick={() => {
-                                        //     setShowFileDisplayDialog(true); setselectedFile(
-                                        //         getValueByPath(
-                                        //             basicForm,
-                                        //             `${basicpath}.${baseKey}.${fieldKey}`
-                                        //         )
-                                        //     );
-                                        // }
-                                        // }
+                                            onClick={() => {
+                                                setShowFileDisplayDialog(true); setselectedFile(basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
+                                            }
+                                            }
                                         />
                                     </div>
                                 )}
@@ -412,9 +417,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                             <div className={`${style.twoCol} ${style.marginTop}`}>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Your Total</div>
-                                                    <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} Hours</div>
-                                                    {(40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours) > 0 && (
-                                                        <div className={style.hourRemainingText}>{40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} more needed</div>
+                                                    <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} Hours</div>
+                                                    {(40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                        <div className={style.hourRemainingText}>{40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                                                     )}
                                                 </div>
                                                 <div className={style.cmeHourCard}>
@@ -497,7 +502,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 </>
                             )}
                         </div>
-                        {yesOrNoCME === 'Yes' && (
+                        {basicForm?.forms?.[formIndex]?.data?.cmeCertificates !== undefined && yesOrNoCME !== 'No' && (
                             <>
                                 {formSchema !== undefined && 'cmeCertificates' in formSchema?.properties && (
                                     <ApplicationFieldCard object={formSchema?.properties?.cmeCertificates} gridStyle={style.EducationGrid} baseKey={'cmeCertificates'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} addMoreType={true} formId={basicForm?.forms?.[formIndex]?.id} getIsSubmitClicked={getIsSubmitClicked} applicationId={applicationId} tableGrid={style.tableGrid} warningFields={warningFields} getMissingFields={getMissingFields} showValidationDialog={showValidationDialog} setShowValidationDialog={setShowValidationDialog} isAddMore={isAddMore} setIsAddMore={setIsAddMore} formSchema={formSchemaWholeObject}
@@ -590,6 +595,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             {/* {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )} */}
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
         </div>
     )
 }
