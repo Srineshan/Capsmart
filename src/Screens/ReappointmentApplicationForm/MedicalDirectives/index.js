@@ -495,11 +495,11 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     )}
                                 </div>
                                 {(attestClicked || medicalDirectivesStatus === 'completed') && (
-                                    <div className={`${style.marginTop10} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`}>
+                                    <div className={`${style.marginTop10} `}>
                                         <div>
                                             <div className={`${style.checkGrid}`}>
                                                 {formContent?.disclaimer?.content !== null && (
-                                                    <CommonCheckBox checked={isChecked} onChange={(medicalDirectivesStatus !== 'completed') ? (e) => { handleIsChecked(e.target.checked) } : () => { }} bigCheckbox={true} />
+                                                    <CommonCheckBox checked={isChecked} onChange={(e) => { handleIsChecked(e.target.checked) }} bigCheckbox={true} />
                                                 )}
                                                 <div
                                                     className={`${style.leftAlign} ${style.marginTop}`}
@@ -508,7 +508,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             </div>
                                             {formSchemaWholeObject?.esignatureRequired && (
                                                 <div className={style.twoCol}>
-                                                    <div onClick={(isChecked && medicalDirectivesStatus !== 'completed') ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                    <div onClick={(isChecked) ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
                                                     >
                                                         <ESignature
                                                             userName={isSigned ? name : ""}
