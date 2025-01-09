@@ -2528,20 +2528,47 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     label={"What would you like to change your current Privilege Category to?"}
                     required={true}
                   />
-                  <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                  {/* <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                     {privilegeCategories?.map(data => {
                       let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
                       let isDisabled = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
+                  
                       return (
                         <div className={`${style.privilegeCategoryChips} ${selectedPrivilegeCategory === data?.privilegeCategory?.id ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}
-                      ${isDisabled ? style.disabledButton : ''}`}
+                         ${isDisabled ? style.disabledButton : ''}`}
                           onClick={isDisabled ? () => { } : () => {
                             setShowPrivilegeResetError(data?.inheritExistingPrivilegeSets ? false : true)
                             setSelectedPrivilegeCategory(data?.privilegeCategory?.id);
                           }}>{data?.privilegeCategory?.category}</div>
                       )
                     })}
-                  </div>
+                  </div> */}
+                  <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+  {privilegeCategories?.map((data) => {
+    //  let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
+    //  let isDisable = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
+    const isSelected = selectedPrivilegeCategory === data?.privilegeCategory?.id;
+    const isDisabled = selectedPrivilegeCategory && !isSelected;
+
+    return (
+      <div
+        key={data?.privilegeCategory?.id}
+        className={`${style.privilegeCategoryChips} 
+                    ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
+                    ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
+                    ${!isDisabled ? style.cursorPointer : ''}
+                    `}
+        onClick={isDisabled ? () => {} : () => {
+          setShowPrivilegeResetError(data?.inheritExistingPrivilegeSets ? false : true);
+          setSelectedPrivilegeCategory(data?.privilegeCategory?.id);
+        }}
+      >
+        {data?.privilegeCategory?.category}
+      </div>
+    );
+  })}
+</div>
+
                   {showPrivilegeResetError && (
                     <div
                       className={`${style.privilegeWarningPart} ${style.marginTop}`}
@@ -2620,7 +2647,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title="Click To Request">
-                                    <img
+                                    {/* <img
                                       src={BlueSign}
                                       alt=""
                                       className={`${style.docTypeImgStyle} ${style.marginLeft}`}
@@ -2628,7 +2655,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                         setShowPrivileges(true);
                                         handleChange(data?.id);
                                       }}
-                                    />
+                                    /> */}
+                                    <button
+                                      className={`${style.addButton} ${style.marginLeft}`}
+                                      onClick={() => {
+                                        setShowPrivileges(true);
+                                        handleChange(data?.id);
+                                      }}
+                                    >  ADD
+                                    </button>
                                   </Tooltip>
                                 )}
                               </div>
@@ -3017,15 +3052,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title="Click To Request">
-                                    <img
+                                    {/* <img
                                       src={BlueSign}
                                       alt=""
                                       className={`${style.docTypeImgStyle} ${style.marginLeft}`}
                                       onClick={() => {
                                         setShowPrivileges(true);
                                         handleChange(data?.id);
+                                      }} 
+                                    /> */}
+                                    <button
+                                      className={`${style.addButton} ${style.marginLeft}`}
+                                      onClick={() => {
+                                        setShowPrivileges(true);
+                                        handleChange(data?.id);
                                       }}
-                                    />
+                                    >  ADD
+                                    </button>
                                   </Tooltip>
                                 )}
                               </div>
@@ -3142,7 +3185,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           </Tooltip>
                         ) : (
                           <Tooltip title="Click To Request">
-                            <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }} />
+                            {/* <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }} /> */}
+                            <button
+                                      className={`${style.addButton} ${style.marginLeft}`}
+                                      onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
+                                    >  ADD
+                                    </button>
                           </Tooltip>
                         )}
                       </div>
@@ -3271,8 +3319,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       Privilege Category you have at the Other Hospital
                     </div>
                     <div className={style.chipsContainer}>
-                      {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
-                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}`} onClick={() => {
+                      {/* {privilegeCategories?.filter(filterData => filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" && filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges")?.map(data => (
+                        <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.privilegeCategory?.category ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer} ${hospitalPrivilege !== data?.privilegeCategory?.category ? style.privilegeCategoryChipsDisabled : ''} `} onClick={() => {
                           setHospitalPrivilege(data?.privilegeCategory?.category);
                           setHospitalPrivilegeCategory({
                             "id": data?.privilegeCategory?.id,
@@ -3280,7 +3328,39 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             "type": data?.privilegeCategory?.type
                           })
                         }}>{data?.privilegeCategory?.category}</div>
-                      ))}
+                      ))} */}
+                      {privilegeCategories
+    ?.filter(
+      (filterData) =>
+        filterData?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" &&
+        filterData?.privilegeCategory?.category !== "Courtesy Staff without Admitting Privileges"
+    )
+    ?.map((data) => {
+      const isSelected = hospitalPrivilege === data?.privilegeCategory?.category;
+      const isDisabled = hospitalPrivilege && !isSelected;
+
+      return (
+        <div
+          key={data?.privilegeCategory?.id}
+          className={`${style.privilegeCategoryChips} 
+                      ${isSelected ? style.privilegeCategoryChipsSelected : ''} 
+                      ${isDisabled ? style.privilegeCategoryChipsDisabled : ''} 
+                      ${!isDisabled ? style.cursorPointer : ''}`}
+          onClick={() => {
+            if (!isDisabled) {
+              setHospitalPrivilege(data?.privilegeCategory?.category);
+              setHospitalPrivilegeCategory({
+                id: data?.privilegeCategory?.id,
+                name: data?.privilegeCategory?.category,
+                type: data?.privilegeCategory?.type,
+              });
+            }
+          }}
+        >
+          {data?.privilegeCategory?.category}
+        </div>
+      );
+    })}
                     </div>
                   </div>
                   <div

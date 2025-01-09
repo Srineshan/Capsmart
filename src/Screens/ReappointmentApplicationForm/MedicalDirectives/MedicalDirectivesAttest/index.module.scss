@@ -45,7 +45,8 @@
 
 .stickyContainer {
     position: sticky; 
-    top: 20px;
+    top: 0;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
@@ -162,7 +163,7 @@
     flex-direction: row;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 948px) {
     .screenPadding {
         padding: 10px;
         overflow: scroll;

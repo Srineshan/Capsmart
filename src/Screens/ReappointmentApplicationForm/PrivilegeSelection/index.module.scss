@@ -25,7 +25,8 @@
 
 .stickyContainer {
     position: sticky; 
-    top: 20px;
+    top: 0;
+    bottom: 0;
     z-index: 10;
     padding: 0 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
@@ -484,6 +485,22 @@
     color: $secondarycolor;
 }
 
+.privilegeCategoryChipsDisabled {
+    background: #1D24370A 0% 0% no-repeat padding-box;
+    border: 1px solid #1D24374D;
+    color: #171A1A;
+}
+
+.addButton {
+    border: 0.5px solid $primarycolor;
+    border-radius: 5px;
+    width: auto;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+    font: normal normal normal 14px/18px proxima-nova;
+    cursor: pointer;
+  }  
+
 .chipsContainer {
     width: 100%;
     padding: 5px;
@@ -614,7 +631,7 @@
 
 .privilegeConfirmationGrid {
     display: grid;
-    grid-template-columns: 3% 89% 5%;
+    grid-template-columns: 3% 84% 10%;
     gap: 1%;
 }
 

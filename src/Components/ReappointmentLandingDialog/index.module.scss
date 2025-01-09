@@ -388,17 +388,18 @@
 }
 
 .imageCard {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    width: auto;
+    height: auto;
+    // overflow: hidden;
+    object-fit: cover;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .reappointmentLandingImage {
-    width: 100%;
-    height: 100%;
+    width: auto;
+    height: auto;
     object-fit: cover;
 }
 
@@ -414,18 +415,56 @@
     opacity: 0.5;
 }
 
-@media (min-width: 1114px) {
+// @media (min-width: 1114px) {
+//     .reappointmentGrid {
+//         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//         // grid-template-columns: repeat(2, 1fr);
+//         gap: 5px;
+//     }
+
+//     .reappointmentLandingImage {
+//         width: auto;
+//         height: auto;
+//         object-fit: cover;
+//     }
+
+//     .descriptionStyle {
+//         font: normal normal normal 20px proxima-nova;
+//     }
+// }
+
+// @media (min-width: 900px) {
+//     .reappointmentGrid {
+//         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//         // grid-template-columns: repeat(2, 1fr);
+//         gap: 5px;
+//     }
+
+//     .reappointmentLandingImage {
+//         width: auto;
+//         height: auto;
+//         object-fit: cover;
+//     }
+
+//     .descriptionStyle {
+//         font: normal normal normal 18px/20px proxima-nova;
+//     }
+// }
+
+@media (min-width: 768px) {
     .reappointmentGrid {
-        // grid-template-columns: 100%;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        // grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .reappointmentLandingImage {
+        width: auto;
+        height: auto;
+        object-fit: cover;
     }
 
     .descriptionStyle {
-        text-align: center;
-    }
-
-    .continue {
-        width: 100%;
+        font: normal normal normal 18px proxima-nova;
     }
 }
