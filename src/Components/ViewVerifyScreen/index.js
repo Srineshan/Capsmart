@@ -1697,7 +1697,7 @@ const NewActiveApplication = ({
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
   const allVerifiedMD = form?.forms[9]?.data?.table?.every(item => item.isVerified === true);
 
-  const buttonStyle = (isUploadYourDoc && !allVerified) || (isMedicalDirectives && !allVerifiedMD) ? { opacity: 0.5, pointerEvents: 'none' } : {};
+  const buttonStyle = (isUploadYourDoc && !allVerified)  ? { opacity: 0.5, pointerEvents: 'none' } : {};
 
 
   const getButtonStyle = () => {
@@ -3948,10 +3948,19 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     )}
-                    <div className={`${style.cardTitle}  ${style.marginTop30}`}>
+                    {/* <div className={`${style.cardTitle}  ${style.marginTop30}`}>
                     Requested Privilege Set(s) for Reappointment
+                  </div> */}
+                  {(selectedPrivilegeForDisplay?.length > 0 || 
+                  selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
+                    <>
+                  <div className={`${style.cardTitle} ${style.marginTop30}`}>
+                    Requested Privilege Sets for Reappointment
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
+                  </>
+                )}
+                  {/* <div className={`${style.borderStyleTiles}`}></div> */}
 
                   {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
                     <div key={dataIndex}>
@@ -4009,9 +4018,12 @@ const NewActiveApplication = ({
                     </div>
                   ))}
               <>
-               <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
-               Advanced Privileges
+              {(selectedAdditionalPrivilegeForDisplay?.length > 0 || 
+                  selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.restrictedPrivileges) && (
+                  <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
+                    Advanced Privileges
                   </div>
+                )}
                   {
               selectedAdditionalPrivilegeForDisplay?.map((data) => 
                 ( <div>
@@ -6469,6 +6481,33 @@ const NewActiveApplication = ({
                                               )}
                                             </>
                                           )}
+                                          {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
+                                                    <div className={style.padding20}>
+                                                      <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                                                        Application Payment Status
+                                                        <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
+                                                          {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
+                                                        </span>
+                                                      </div>
+                                                      <div className={`${style.threeColumnGrid}`}>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Amount</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || "-"}</div>
+                                                        </div>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Transaction ID / Confirmation Number</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.receiptId || "-"}</div>
+                                                        </div>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Payment Date & Time</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  )}
                                         </>
                                       )}
                                     </div>))}
