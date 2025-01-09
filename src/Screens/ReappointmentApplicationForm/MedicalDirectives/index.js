@@ -25,6 +25,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import TableTwo from '../../../Components/TableDesignTwo';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import { Tooltip } from '@mui/material';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -344,7 +345,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         // console.log("Idschecked" + checkedIds)
     };
 
-    console.log(selectedIds?.map(data => data?.id), 'selectedIds', selectedMedicalDirectiveList, selectedMedicalDirectiveList?.map(innerData => selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)))
+    console.log(selectedIds, 'selectedIds', selectedMedicalDirectiveList, selectedMedicalDirectiveList?.map(innerData => selectedIds?.map(data => data?.id).includes(innerData?.medicalDirective?.id)))
 
     const getMedicalDirectiveTable = () => {
         let temp = [];
@@ -412,16 +413,20 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 </div> */}
                                 {/* )} */}
                                 {allMedicalDirectives?.pending?.length !== 0 && (
-                                    <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
-                                        <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                        <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
-                                    </div>
+                                    <Tooltip title="Click to attest" arrow>
+                                        <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
+                                            <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                            <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
+                                        </div>
+                                    </Tooltip>
                                 )}
                                 {allMedicalDirectives?.reviewInprogress?.length !== 0 && (
-                                    <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('inprogress'); setSelectedMedicalDirectiveList(allMedicalDirectives?.reviewInprogress) }}>
-                                        <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                        <div className={style.marginLeft}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
-                                    </div>
+                                    <Tooltip title="Click to attest" arrow>
+                                        <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('inprogress'); setSelectedMedicalDirectiveList(allMedicalDirectives?.reviewInprogress) }}>
+                                            <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                            <div className={style.marginLeft}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
+                                        </div>
+                                    </Tooltip>
                                 )}
                                 {allMedicalDirectives?.completed?.length !== 0 && (
                                     <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('completed'); setSelectedMedicalDirectiveList(allMedicalDirectives?.completed) }}>
@@ -441,7 +446,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}><img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All</div>
                                     {/* )} */}
                                 </div>
-                                <div className={style.marginTop}>
+                                <div>
                                     {medicalDirectivesStatus === 'completed' ? (
                                         <TableTwo
                                             tableHeaderValues={[
@@ -484,6 +489,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             tableSortValues={[]}
                                             heading={"There are no Record for you to manage"}
                                             onClickFunction={() => { }}
+                                            checkedIds={selectedIds?.map(data => data?.id)}
                                             handleCheckboxClick={handleCheckboxClick}
                                         />
                                     )}

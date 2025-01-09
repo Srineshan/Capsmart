@@ -218,6 +218,9 @@ const MedicalDirectivesAttest = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {(!isScrolledToBottom) && (
+                                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                        )}
                                         <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div>
                                     </div>
                                 </Tooltip>

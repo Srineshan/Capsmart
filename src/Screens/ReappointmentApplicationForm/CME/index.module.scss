@@ -48,12 +48,12 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
-    opacity: 1; 
+    opacity: 1;
 }
 
 .continue {
@@ -71,9 +71,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -298,13 +298,14 @@
     grid-template-columns: 40% 60%;
     gap: 20px;
 
-@media (max-width: 1150px) {
-    grid-template-columns: 1fr; 
-}
+    @media (max-width: 1150px) {
+        grid-template-columns: 1fr;
+    }
 }
 
-.cmeCard, .hoursCard {
-    margin-bottom: 20px; 
+.cmeCard,
+.hoursCard {
+    margin-bottom: 20px;
 }
 
 .dateTitle {
@@ -389,6 +390,14 @@
     cursor: pointer;
 }
 
+.reappointmentButtonOutlined:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
 .reappointmentButtonEdit {
     background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 8px;
@@ -398,6 +407,14 @@
     min-width: 200px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+}
+
+.reappointmentButtonEdit:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .cardTitle {
@@ -440,7 +457,7 @@
 
 .eSignDialogBackground {
     background: #ffffff 0% 0% no-repeat padding-box;
-    padding: 20px 20px 0px 20px;
+    padding: 10px 20px 0px 20px;
     border-radius: 20px !important;
 }
 

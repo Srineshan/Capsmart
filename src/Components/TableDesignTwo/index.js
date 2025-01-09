@@ -527,10 +527,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         : tableData?.type === "checkbox" ? (
                                             <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                                 <CommonCheckBox
-                                                    checked={checkedIds?.includes(data.id)}
-                                                    onChange={() => handleCheckboxClick(data.id, data)}
+                                                    checked={checkedIds?.includes(data?.id || data?.medicalDirective?.id)}
+                                                    onChange={() => handleCheckboxClick(data?.id, data)}
                                                     color="primary"
-                                                    inputProps={{ 'aria-label': `Select ${data.name}` }}
+                                                    inputProps={{ 'aria-label': `Select ${data?.name}` }}
                                                 />
                                             </div>
                                         )
