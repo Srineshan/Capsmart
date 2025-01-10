@@ -328,14 +328,25 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   </ThemeProvider>
                 </div>
                 <div >
-                  <div
+                  {/* <div
                     className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
                     onClick={processReappointment !== '' ? () => {
                       handleContinue();
                     } : () => { }}
                   >
                     CONTINUE
-                  </div>
+                  </div> */}
+                  <button
+                    className={`${style.continue} ${style.marginTop}
+                    //  ${processReappointment !== '' ? '' : style.disable}`
+                    }
+                    onClick={processReappointment !== '' ? () => {
+                      handleContinue();
+                    } : () => { }}
+                    disabled={processReappointment === ''}
+                  >
+                    CONTINUE
+                  </button>
                 </div>
               </div>
             </div>
