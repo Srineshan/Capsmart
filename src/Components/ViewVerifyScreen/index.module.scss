@@ -4941,6 +4941,14 @@ input[type="number"] {
   // font-size: 16px;
 }
 
+.privilegeHeading1 {
+  text-align: left;
+  font: normal normal bold 20px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+  // font-size: 16px;
+}
+
 .privilegeHeadingTitle {
   font: normal normal medium 18px/24px Proxima Nova;
   letter-spacing: 0px;
@@ -4953,9 +4961,6 @@ input[type="number"] {
   padding: 30px;
 }
 
-.padding20 {
-  padding: 20px;
-}
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
@@ -5344,4 +5349,30 @@ input[type="number"] {
   color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.acknowledgmentErrorTextStyle{
+  font: normal normal 600 24px Proxima Nova;
+  font-style: italic;
+  text-align: center;
+  margin-top: 20px;
+  color: $statusred;
+}
+
+.medicalHistoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.medicalHistoryGrid> :nth-child(1) {
+  grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(2) {
+  grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(3) {
+  grid-column: 1 / -1;
 }

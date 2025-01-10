@@ -5,6 +5,7 @@ import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
+import LoadingScreen from "../LoadingScreen";
 
 import style from './index.module.scss'
 
@@ -12,6 +13,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const componentRef = useRef(null);
     const PDFRef = createRef();
 
@@ -19,6 +21,16 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
         console.log("filesssssssssssssssss" ,file);
         // getPreApplicationTask();
       }, []);
+
+      useEffect(() => {
+              if (file?.fileURL) {
+                  setIsLoading(true);
+                  const timer = setTimeout(() => {
+                      setIsLoading(false);
+                  }, 500);
+                  return () => clearTimeout(timer);
+              }
+          }, [file?.fileURL]);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -35,6 +47,12 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
       });
 
     return (
+        <>
+        {isLoading && (
+          <div  className={style.loadingOverlay}>
+            <LoadingScreen/>
+          </div>
+        )}
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false} ref={PDFRef}>
             <div>
                 <div className={Classes.DIALOG_BODY}>
@@ -94,6 +112,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
 
             </div>
         </Dialog >
+        </>
     )
 }
 
