@@ -338,7 +338,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   </div> */}
                   <button
                     className={`${style.continue} ${style.marginTop}
-                    //  ${processReappointment !== '' ? '' : style.disable}`
+                     ${processReappointment !== '' ? '' : style.disable}`
                     }
                     onClick={processReappointment !== '' ? () => {
                       handleContinue();

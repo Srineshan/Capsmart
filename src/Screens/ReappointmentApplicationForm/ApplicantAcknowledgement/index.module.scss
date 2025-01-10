@@ -20,15 +20,6 @@
     position: relative;
 }
 
-// .stickyContainer {
-//     position: sticky; 
-//     top: 20px;
-//     z-index: 10;
-//     padding: 0 20px 20px 20px;
-//     background: $secondarycolor 0% 0% no-repeat padding-box;
-//     grid-column: 2 / 3;
-// }
-
 .stickyContainer {
     position: fixed;
     bottom: 0;
@@ -36,8 +27,21 @@
     padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     right: 100px;
-    width: calc(25% - 45px);
+    width: calc(25% - 50px);
 }
+
+@media (max-width: 1160px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -132,6 +136,10 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .twoColForButton {
@@ -254,34 +262,34 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
-    .applicationScreenGrid {
-        grid-template-columns: 1fr;
-    }
+// @media (max-width: 1024px) {
+//     .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
-}
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
+// }
 
-@media (max-width: 768px) {
-    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-    }
+// @media (max-width: 768px) {
+//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
+//         grid-template-columns: 1fr;
+//         padding: 0;
+//     }
 
-    .siteDisplayGrid {
-        grid-template-columns: 1fr;
-    }
-}
+//     .siteDisplayGrid {
+//         grid-template-columns: 1fr;
+//     }
+// }
 
-@media (max-width: 480px) {
-    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-    }
+// @media (max-width: 480px) {
+//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
+//         grid-template-columns: 1fr;
+//         padding: 0;
+//     }
 
-    .siteDisplayGrid {
-        grid-template-columns: 1fr;
-    }
-}
+//     .siteDisplayGrid {
+//         grid-template-columns: 1fr;
+//     }
+// }

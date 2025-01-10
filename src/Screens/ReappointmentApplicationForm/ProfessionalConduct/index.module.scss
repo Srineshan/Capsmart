@@ -22,8 +22,21 @@
     padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     right: 100px;
-    width: calc(25% - 45px);
+    width: calc(25% - 50px);
 }
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -215,31 +228,31 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1024px) {
-    .applicationScreenGrid {
-        grid-template-columns: 1fr;
-    }
+// @media (max-width: 1024px) {
+//     .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
-}
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
+// }
 
-@media (max-width: 768px) {
-    .applicationScreenGrid {
-        grid-template-columns: 1fr;
-        padding: 0;
-    }
+// @media (max-width: 768px) {
+//     .applicationScreenGrid {
+//         grid-template-columns: 1fr;
+//         padding: 0;
+//     }
 
-    .stickyContainer {
-        grid-column: 1 / 2;
-    }
+//     .stickyContainer {
+//         grid-column: 1 / 2;
+//     }
 
-    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid, .conductGrid {
-        grid-template-columns: 1fr;
-    }
+//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid, .conductGrid {
+//         grid-template-columns: 1fr;
+//     }
 
-    .twoColForButton {
-        gap: 15px;
-    }
-}
+//     .twoColForButton {
+//         gap: 15px;
+//     }
+// }

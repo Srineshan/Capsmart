@@ -26,8 +26,21 @@
     padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     right: 100px;
-    width: calc(25% - 45px);
+    width: calc(25% - 50px);
 }
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
