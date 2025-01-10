@@ -246,12 +246,9 @@ const headerValues = [
   return (
 <>
  {isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+     <div  className={style.loadingOverlay}>
+       <LoadingScreen/>
+     </div>
     )}
  {/* {!isLoadingImage && ( */}
 

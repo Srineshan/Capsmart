@@ -1124,12 +1124,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   return (
 <>
  {isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
     )}
 
  {!isLoadingImage && (

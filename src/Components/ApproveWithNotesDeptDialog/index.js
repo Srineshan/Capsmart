@@ -466,18 +466,15 @@ const handleCheckboxChange = (checkboxName) => (event) => {
     <>
     {isLoadingImageDocs && (
          <div
-           className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+           className={`${style.loadingOverlay}`}
          >
            <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
          </div>
        )}
     {isLoadingImage && (
-        //  <div
-        //    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-        //  >
-        //    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-        //  </div>
-        <LoadingScreen />
+        <div  className={style.loadingOverlay}>
+          <LoadingScreen/>
+        </div>
        )}
    
     {!isLoadingImage && (

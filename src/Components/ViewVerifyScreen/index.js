@@ -93,8 +93,8 @@ const NewActiveApplication = ({
   reappointmentChangesCommentsBox,
   notesCommentsBox,
   getNotesDialog,
-  staffView
-
+  staffView,
+  getPaymentDisplayBox
 
 }) => {
   console.log("contract Type", contractType);
@@ -928,6 +928,10 @@ const NewActiveApplication = ({
     getNotesDialog(true);
   };
 
+  const onClickPaymentFunction = () => {
+    getPaymentDisplayBox(true);
+  };
+
   const onClickApprovalFunction = () => {
     getApprovalNotesCommentBox(true);
   };
@@ -1691,7 +1695,7 @@ const NewActiveApplication = ({
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
   const paymentmentDate = form?.payment?.paidDateTime;
-  const paymentmentPaidDate = paymentmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
   const isMedicalDirectives = form?.forms[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
@@ -3339,15 +3343,16 @@ const NewActiveApplication = ({
                   <div className={`${style.twoCol} ${style.marginTop20}`}>
                     <div className={style.cmeHourCard}>
                       <div className={style.totalText}>Your Total</div>
-                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} Hours</div>
+                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                      <div className={style.totalText}>Credits / Hours</div>
                       {(40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
                         <div className={style.hourRemainingText}>{40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                       )}
                     </div>
                     <div className={style.cmeHourCard}>
-                      <div className={style.totalText}>Required</div>
-                      <div className={style.hourText}>40 Hours</div>
-                      <div className={style.hourRemainingText}></div>
+                        <div className={style.totalText}>Required</div>
+                        <div className={style.hourText}>40</div>
+                        <div className={style.totalText}>Credits / Hours</div>
                     </div>
                   </div>
                 </div>
@@ -3539,7 +3544,10 @@ const NewActiveApplication = ({
           </>
         );
       case "ApplicantAcknowledgement":
-        return (
+        const fileURL = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return  fileURL ? (
           <>
             <iframe
               src={`${form?.forms?.[formIndex]?.uploadedFiles[
@@ -3551,6 +3559,8 @@ const NewActiveApplication = ({
             // style={{ width: "100%", height: "600px", objectFit: "cover }}
             ></iframe>
           </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
         );
       case "ProfessionalConduct":
         return (
@@ -3629,7 +3639,7 @@ const NewActiveApplication = ({
                   object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.disclosures}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
-                  gridStyle={style.conductGrid}
+                  gridStyle={style.medicalHistoryGrid}
                   baseKey={"disclosures"}
                   collapsableQuestionCard={true}
                   isPOD={true}
@@ -3965,7 +3975,7 @@ const NewActiveApplication = ({
                   {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
                     <div key={dataIndex}>
                     <div
-                      className={`${style.privilegeHeading} ${style.fontSize} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
                     >
                       {data?.privilegeSetTitle}
                     </div>
@@ -3984,6 +3994,7 @@ const NewActiveApplication = ({
                               <div className={style.itemLeft}>{privilege?.title || ""}</div>
                             </div>
                           ))}
+                        
                         </div>
                       ))}
                       <div className={style.twoCol}>
@@ -4015,6 +4026,9 @@ const NewActiveApplication = ({
                       </>
                     )}
                   </div>
+                  {dataIndex !== selectedPrivilegeForDisplay.length - 1 && (
+                    <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
+                  )}
                     </div>
                   ))}
               <>
@@ -4025,10 +4039,10 @@ const NewActiveApplication = ({
                   </div>
                 )}
                   {
-              selectedAdditionalPrivilegeForDisplay?.map((data) => 
-                ( <div>
+              selectedAdditionalPrivilegeForDisplay?.map((data,dataIndex) => 
+                ( <div key={dataIndex}>
                   <div
-                      className={`${style.privilegeHeading} ${style.fontSize} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
                     >
                       {data?.privilegeSetTitle}
                     </div>
@@ -4096,6 +4110,9 @@ const NewActiveApplication = ({
                     </>
                   )}
                 </div>
+                {dataIndex !== selectedAdditionalPrivilegeForDisplay.length - 1 && (
+                    <div className={`${style.borderStyleTiles}  ${style.marginTop10}`}></div>
+                  )}
               </div>)
               )}
                 {/* <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
@@ -4280,7 +4297,7 @@ const NewActiveApplication = ({
                         <div className={style.greyDotTextStyle}>
                           Application Payment Status
                         </div>
-                        <div> payment ID:{" "}
+                        <div className={style.cursorPointer} onClick={onClickPaymentFunction}> payment ID:{" "}
                         <span className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || "-"}</span>
                       </div>
                       </div>
@@ -5436,35 +5453,6 @@ const NewActiveApplication = ({
                                                     )
                                                   )}
 
-                                                  {/* // Check for 'PrivilegeSelection' schemaCategory and render the payment status UI */}
-                                                  {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
-                                                    <div className={style.padding20}>
-                                                      <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
-                                                        Application Payment Status
-                                                        <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
-                                                          {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
-                                                        </span>
-                                                      </div>
-                                                      <div className={`${style.threeColumnGrid}`}>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Amount</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || "-"}</div>
-                                                        </div>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Transaction ID / Confirmation Number</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.receiptId || "-"}</div>
-                                                        </div>
-                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
-                                                          <div>Payment Date & Time</div>
-                                                          <div className={`${style.borderStyleTiles}`}></div>
-                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  )}
-
                                                 </div>
                                               );
                                             })()
@@ -6490,7 +6478,7 @@ const NewActiveApplication = ({
                                               )}
                                             </>
                                           )}
-                                          {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
+                                          {/* {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
                                                     <div className={style.padding20}>
                                                       <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                                                         Application Payment Status
@@ -6516,7 +6504,7 @@ const NewActiveApplication = ({
                                                         </div>
                                                       </div>
                                                     </div>
-                                                  )}
+                                                  )} */}
                                         </>
                                       )}
                                     </div>))}
