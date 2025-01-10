@@ -188,9 +188,11 @@ const MedicalDirectivesAttest = () => {
                         </div>
                     </div>
                     <div>
-                        <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
-                        </div>
+                        {!isScrolledToBottom && (
+                            <div className={style.medicalDirectivesCard}>
+                                <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
+                            </div>
+                        )}
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
                             <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
@@ -254,7 +256,7 @@ const MedicalDirectivesAttest = () => {
                                 </>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
                             <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
                                 <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>

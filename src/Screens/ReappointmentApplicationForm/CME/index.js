@@ -25,6 +25,7 @@ import ReappointmentProgressCard from '../../../Components/ReappointmentProgress
 import WelcomeCard from '../../../Components/WelcomeCard';
 import FileWithFields from '../../../Components/FileWithFields';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
+import DeleteIcon from './../../../images/deleteHcRow.png';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -246,6 +247,25 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         // } 
     }
 
+    const handleCMETranscriptDelete = async () => {
+        let tempData = basicForm?.forms?.[formIndex]?.data;
+        delete tempData.cmeTranscripts;
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: tempData,
+            unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+            acknowledged: basicForm?.forms?.[formIndex]?.acknowledged
+        }
+        await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                getPreApplication()
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
     const changeHandler = async (event) => {
         setIsLoading(true);
         setFiles(event);
@@ -408,6 +428,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                             }
                                             }
                                         />
+                                        <img src={DeleteIcon} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={() => { handleCMETranscriptDelete() }} />
                                     </div>
                                 )}
                                 <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>

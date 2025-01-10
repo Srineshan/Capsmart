@@ -300,7 +300,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     getPreApplication()
                     SuccessToaster("Application Updated Successfully");
                     if (sessionStorage.getItem('fromSummary') === "true") {
-                        navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
+                        sessionStorage.removeItem('fromSummary')
+                        navigate(-1);
+                        // navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
                     }
                     else {
                         navigate(navigateURL)
@@ -314,7 +316,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
         else {
             if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
+                sessionStorage.removeItem('fromSummary')
+                navigate(-1);
+                // navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
             }
             else {
                 navigate(navigateURL)
@@ -380,7 +384,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
         temp.push({
             "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
-                <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
+                <div className={`${style.continue} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)}>SIGN</div>
+                // <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
             ), 'isShowHoverText': medicalDirectivesStatus === 'completed' ? false : true, 'hoverText': selectedMedicalDirectiveList?.map(innerData => 'Click to attest')
         });
         console.log(temp, selectedMedicalDirectiveList)
@@ -416,7 +421,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <Tooltip title="Click to attest" arrow>
                                         <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
                                             <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                            <div className={style.marginLeft}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
+                                            <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
                                         </div>
                                     </Tooltip>
                                 )}
@@ -424,14 +429,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     <Tooltip title="Click to attest" arrow>
                                         <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('inprogress'); setSelectedMedicalDirectiveList(allMedicalDirectives?.reviewInprogress) }}>
                                             <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                            <div className={style.marginLeft}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
+                                            <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
                                         </div>
                                     </Tooltip>
                                 )}
                                 {allMedicalDirectives?.completed?.length !== 0 && (
                                     <div className={`${style.completedCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('completed'); setSelectedMedicalDirectiveList(allMedicalDirectives?.completed) }}>
                                         <div className={`${style.iconBackgroundCompleted} ${style.verticalAlignCenter} ${style.justifyCenter}`}><CheckCircleOutlineIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                        <div className={style.marginLeft}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
+                                        <div className={`${style.marginLeft} ${style.textTransform}`}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                     </div>
                                 )}
                                 {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
@@ -445,10 +450,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     {/* {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && ( */}
                                     <button className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
-                                         disabled={selectedIds?.length === 0} >
+                                        disabled={selectedIds?.length === 0} >
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
-                                        </button> 
-                                        
+                                    </button>
+
                                     {/* )} */}
                                 </div>
                                 <div>
