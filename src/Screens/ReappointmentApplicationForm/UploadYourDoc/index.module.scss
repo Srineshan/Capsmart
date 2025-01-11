@@ -29,7 +29,7 @@
     width: calc(25% - 50px);
 }
 
-@media (max-width: 948px) {
+@media (max-width: 1294px) {
     .stickyContainer {
         position: fixed;
         bottom: 0;
@@ -99,6 +99,11 @@
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
     padding: 20px;
+
+    @media (max-width: 1130px) {
+        overflow-x: auto; 
+        overflow-y: hidden;
+     }
 }
 
 .progressStyle {
@@ -174,6 +179,10 @@
     display: grid;
     grid-template-columns: 80% 18%;
     gap: 1%;
+
+    @media (max-width: 1130px) {
+        overflow: scroll;
+     }
 }
 
 
@@ -226,6 +235,10 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .twoColForButton {
@@ -275,7 +288,22 @@
     display: grid;
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
+    border-collapse: collapse;
+
+     @media (max-width: 1130px) { 
+        overflow-x: scroll !important; 
+     }
 }
+
+.contractScrollStyle {
+    overflow-x: auto !important;
+  }
+  
+  @media (max-width: 1130px) {
+    .contractScrollStyle {
+      overflow-x: scroll !important;
+    }
+  }
 
 .fullWidth {
     width: 100%;
@@ -348,6 +376,10 @@
     height: auto;
     width: 40%;
     object-fit: contain;
+
+    @media (max-width: 1130px) {
+        width: 20%;
+    }
 }
 
 .loadingOverlay {
@@ -393,7 +425,11 @@
 
 .eSignDialog {
     height: 75%;
-    width: 40% !important;
+    width: 40%;
+    @media (max-width: 1130px) {
+        height: auto;
+        width: auto;
+    }
 }
 
 .eSignDialogBackground {
@@ -405,6 +441,11 @@
 .crossStyle {
     height: 18px;
     width: 18px;
+
+    @media (max-width: 1130px) {
+        height: 16px;
+        width: 16px;
+    }    
 }
 
 .continueValidation {
@@ -421,6 +462,13 @@
     width: 240px;
 }
 
+.continueValidation:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
+}
+
 .saveInProgressValidation {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -434,6 +482,14 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+}
+
+.saveInProgressValidation:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .eSignatureOnFileCard {
@@ -478,7 +534,7 @@
     grid-template-columns: 49% 24% 24%;
     gap: 1%;
 
-    @media (max-width: 1150px) {
+    @media (max-width: 1130px) {
         grid-template-columns: 1fr; 
     }
 }

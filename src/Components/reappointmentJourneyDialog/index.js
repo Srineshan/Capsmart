@@ -58,10 +58,10 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                             )}
                         </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
-                            <div className={style.verticalAlignCenter}>
+                            <div className={`${style.imageCard} ${style.verticalAlignCenter}`}>
                                 <img src={img} alt="step" className={style.journeyImg} />
                             </div>
-                            <div className={style.verticalSpaceBetween}>
+                            <div className={`${style.contentCard} ${style.verticalSpaceBetween}`}>
                                 <div>
                                     {basicForm?.forms?.map((data, index) => (formIndex >= index) && (
                                         <>

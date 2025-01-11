@@ -426,35 +426,18 @@
     text-decoration: underline;
 }
 
-.tableContainer {
-    width: auto;
-    overflow-x: auto;
-}
+// .tableContainer {
+//     width: auto;
+//     overflow-x: auto;
 
-.table {
-    width: auto;
-    border-collapse: collapse;
-    overflow-x: auto;
-}
-
-// @media (max-width: 1000px) {
-//     .tableHeaderFontStyle {
-//         font-size: 18px;
-//         padding: 8px;
-//     }
-//     .tableDataFontStyle{
-//         font-size: 16px;
-//         padding: 6px;
+//     @media (max-width: 1130px) {
+//         width: auto;
+//         overflow-x: scroll !important; 
 //     }
 // }
 
-// @media (max-width: 768px) {
-//     .tableHeaderFontStyle{
-//         font-size: 14px;
-//         padding: 6px;
-//     }
-//     .tableDataFontStyle {
-//         font-size: 12px;
-//         padding: 4px;
-//     }
+// .table {
+//     width: auto;
+//     border-collapse: collapse;
+//     overflow-x: scroll !important;
 // }
