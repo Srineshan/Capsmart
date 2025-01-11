@@ -450,10 +450,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     {/* {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && ( */}
                                     <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
-                                        disabled={selectedIds?.length === 0} >
+                                     >
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
-                                        </button> 
-                                        
+                                    </div>
+
                                     {/* )} */}
                                 </div>
                                 <div>
