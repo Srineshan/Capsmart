@@ -7,6 +7,7 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import style from './index.module.scss';
+import LoadingScreen from "../LoadingScreen";
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -15,6 +16,17 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const componentRef = useRef(null);
     const PDFRef = createRef();
     const [applicationId, setApplicationId] = useState(sessionStorage.getItem("applicationId"));
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (file?.fileURL) {
+            setIsLoading(true);
+            const timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [file?.fileURL]);
 
     useEffect(() => {
         console.log("filesssssssssssssssss", file);
@@ -30,40 +42,58 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setIsExpanded(!isExpanded);
     };
 
+    //Looping Condition
+
+    // const handlePrevious = () => {
+    //     if (selectedFileIndex > 0) {
+    //         setSelectedFileIndex(selectedFileIndex - 1);
+    //     } else {
+    //         setSelectedFileIndex(fileArray.length - 1);
+    //     }
+    // };
+
+    // const handleNext = () => {
+    //     if (selectedFileIndex < fileArray.length - 1) {
+    //         setSelectedFileIndex(selectedFileIndex + 1);
+    //     } else {
+    //         setSelectedFileIndex(0);
+    //     }
+    // };
+
     const handlePrevious = () => {
         if (selectedFileIndex > 0) {
+            setIsLoading(true); 
             setSelectedFileIndex(selectedFileIndex - 1);
-        } else {
-            setSelectedFileIndex(fileArray.length - 1);
+            setIsLoading(false); 
         }
     };
 
     const handleNext = () => {
         if (selectedFileIndex < fileArray.length - 1) {
+            setIsLoading(true); 
             setSelectedFileIndex(selectedFileIndex + 1);
-        } else {
-            setSelectedFileIndex(0);
+            setIsLoading(false); 
         }
     };
 
-    useEffect(() => {
-        console.log("1234567:", file);
+    // useEffect(() => {
+    //     console.log("1234567:", file);
 
-        if (typeof file === "function") {
-            file();
-            console.log("123456789:", file);
-        }
-    }, [file]);
+    //     if (typeof file === "function") {
+    //         file();
+    //         console.log("123456789:", file);
+    //     }
+    // }, [file]);
 
-    const reactToPrintContent = useCallback(() => {
-        return componentRef.current;
-    }, [componentRef.current]);
+    // const reactToPrintContent = useCallback(() => {
+    //     return componentRef.current;
+    // }, [componentRef.current]);
 
-    const handlePrintClick = useReactToPrint({
-        content: reactToPrintContent,
-        documentTitle: "Staff Application",
-        removeAfterPrint: true,
-    });
+    // const handlePrintClick = useReactToPrint({
+    //     content: reactToPrintContent,
+    //     documentTitle: "Staff Application",
+    //     removeAfterPrint: true,
+    // });
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
@@ -96,13 +126,19 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     };
 
     return (
+        <>
+         {isLoading && (
+            <div className={style.loadingOverlay}>
+                <LoadingScreen />
+            </div>
+        )}
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false} ref={PDFRef}>
             <div>
                 <div className={Classes.DIALOG_BODY}>
                     <div className={style.spaceBetween}>
                         <div className={style.heading}>Verification of Data & Documents</div>
                         <div className={style.displayInRow}>
-                            <div
+                            {/* <div
                                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
                             >
                                 <PrintOutlinedIcon
@@ -112,7 +148,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     }}
                                     onClick={handlePrintClick}
                                 />
-                            </div>
+                            </div> */}
                             <img
                                 src={CrossPink}
                                 alt="cross"
@@ -123,47 +159,54 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                     </div>
                     <div className={`${style.textStyle}`}>Verification of this section requires you to verify the associated Data & Documents ({fileArray.length})</div>
                     <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <div className={`${style.purpleButton} ${style.cursorPointer}`} onClick={handlePrevious}>
+                        <div className={`${style.purpleButton} ${selectedFileIndex === 0 ? style.disabledButton : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                 PREVIOUS
                             </div>
                         </div>
-                        <div className={`${style.purpleButton} ${style.cursorPointer}`} onClick={handleNext}>
+                        <div className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`} onClick={handleNext}>
                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                 NEXT
                             </div>
                         </div>
                     </div>
-                    <div className={` ${style.threeColGrid} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
-                        <div className={`${style.titleTextStyle}`}>{file?.documentType}</div>
+                    <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
+                        <div className={`${style.heading}`}>{file?.documentType}</div>
                         <div className={`${style.heading}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
-                        {file?.isVerified === true ? (
-                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                    </div>
+                        {!isLoading && (
+                    <div className={style.marginTop}>
+                        {file?.fileType === 'application/pdf' ? (
+                            <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>
+                        ) : file?.fileType?.startsWith("image/") ? (
+                            <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                        ) :  <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>}
+                    </div>
+                        )}
+                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                        <div className={`${style.CloseButton} ${style.cursorPointer}`} onClick={() => { getIsOpen(false); }}>
+                                <div className={`${style.closeTextStyle} ${style.alignCenter}`}>
+                                CLOSE
+                                </div>
+                            </div>
+                    {file?.isVerified === true ? (
+                            <div className={`${style.greenButtonVerify} ${style.cursorPointer}`}>
                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                     VERIFIED
                                 </div>
                             </div>
                         ) : (
-                            <div className={`${style.purpleButton} ${style.cursorPointer}`} onClick={handleDocVerify}>
+                            <div className={`${style.purpleButtonVerify} ${style.cursorPointer}`} onClick={handleDocVerify}>
                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                     VERIFY
                                 </div>
                             </div>
                         )}
-                    </div>
-                    <div className={style.marginTop}>
-                        {file?.fileType === 'application/pdf' ? (
-                            <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>
-                        ) : file?.fileType?.startsWith("image/") ? (
-                            <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
-                        ) : ''}
-                    </div>
-                    <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div>
-                    </div>
+                        </div>
                 </div>
             </div>
         </Dialog>
+        </>
     );
 };
 

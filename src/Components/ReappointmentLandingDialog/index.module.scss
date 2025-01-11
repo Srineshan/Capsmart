@@ -182,10 +182,10 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
-    opacity: 1; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .saveInProgress {
@@ -204,12 +204,12 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
-    opacity: 1; 
+    opacity: 1;
 }
 
 .displayInRow {
@@ -333,6 +333,18 @@
     border-radius: 15px !important;
 }
 
+@media (min-width: 768px) {
+    .customWidth {
+      width: 60%;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .customWidth {
+      width: 40%;
+    }
+  }
+
 .heading span {
     display: inline-block;
     margin-top: -4px;
@@ -378,7 +390,8 @@
 .imageCard {
     width: auto;
     height: auto;
-    object-fit: contain;
+    // overflow: hidden;
+    object-fit: cover;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -387,41 +400,7 @@
 .reappointmentLandingImage {
     width: auto;
     height: auto;
-    object-fit: contain;
-}
-
-@media (max-width: 1050px) {
-    .imageCard {
-        width: 100%; 
-        height: 100%;
-    }
-
-    .reappointmentLandingImage {
-        width: 100%; 
-        height: 100%;
-        max-width: none; 
-    }
-
-    .descriptionStyle {
-        font: normal normal normal 18px proxima-nova;
-    }
-}
-
-@media (max-width: 850px) {
-    .imageCard {
-        width: 100%; 
-        height: 100%;
-    }
-
-    .reappointmentLandingImage {
-        width: 100%; 
-        height: 100%;
-        max-width: none; 
-    }
-
-    .descriptionStyle {
-        font: normal normal normal 16px proxima-nova;
-    }
+    object-fit: cover;
 }
 
 .reappointmentCard {
@@ -432,11 +411,60 @@
 }
 
 .disable {
-    opacity: 0.5 !important; 
-    cursor: not-allowed !important;
+    cursor: not-allowed;
+    opacity: 0.5;
 }
 
-.disabled:hover {
-    opacity: 0.5 !important; 
-    cursor: not-allowed !important;
+// @media (min-width: 1114px) {
+//     .reappointmentGrid {
+//         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//         // grid-template-columns: repeat(2, 1fr);
+//         gap: 5px;
+//     }
+
+//     .reappointmentLandingImage {
+//         width: auto;
+//         height: auto;
+//         object-fit: cover;
+//     }
+
+//     .descriptionStyle {
+//         font: normal normal normal 20px proxima-nova;
+//     }
+// }
+
+// @media (min-width: 900px) {
+//     .reappointmentGrid {
+//         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//         // grid-template-columns: repeat(2, 1fr);
+//         gap: 5px;
+//     }
+
+//     .reappointmentLandingImage {
+//         width: auto;
+//         height: auto;
+//         object-fit: cover;
+//     }
+
+//     .descriptionStyle {
+//         font: normal normal normal 18px/20px proxima-nova;
+//     }
+// }
+
+@media (min-width: 768px) {
+    .reappointmentGrid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        // grid-template-columns: repeat(2, 1fr);
+        gap: 5px;
+    }
+
+    .reappointmentLandingImage {
+        width: auto;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .descriptionStyle {
+        font: normal normal normal 18px proxima-nova;
+    }
 }

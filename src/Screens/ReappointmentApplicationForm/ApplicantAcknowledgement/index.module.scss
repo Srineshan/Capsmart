@@ -65,9 +65,9 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -88,9 +88,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -261,6 +261,27 @@
     color: #2C2C2C;
 }
 
+
+.fileLoadingStyle {
+    height: 200px;
+    width: 40%;
+    object-fit: contain;
+}
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+
 /* Responsive adjustments */
 // @media (max-width: 1024px) {
 //     .applicationScreenGrid {
@@ -272,22 +293,22 @@
 //     }
 // }
 
-// @media (max-width: 768px) {
-//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
-//         grid-template-columns: 1fr;
-//         padding: 0;
-//     }
+@media (max-width: 768px) {
+    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
+        grid-template-columns: 1fr;
+        padding: 0;
+    }
 
 //     .siteDisplayGrid {
 //         grid-template-columns: 1fr;
 //     }
 // }
 
-// @media (max-width: 480px) {
-//     .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
-//         grid-template-columns: 1fr;
-//         padding: 0;
-//     }
+@media (max-width: 480px) {
+    .twoCol, .twoColForButton, .threeColForButton, .fourCol, .healthCareGrid {
+        grid-template-columns: 1fr;
+        padding: 0;
+    }
 
 //     .siteDisplayGrid {
 //         grid-template-columns: 1fr;

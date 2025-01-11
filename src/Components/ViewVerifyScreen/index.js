@@ -93,8 +93,8 @@ const NewActiveApplication = ({
   reappointmentChangesCommentsBox,
   notesCommentsBox,
   getNotesDialog,
-  staffView
-
+  staffView,
+  getPaymentDisplayBox
 
 }) => {
   console.log("contract Type", contractType);
@@ -305,6 +305,15 @@ const NewActiveApplication = ({
     setSelectedRow(files);
     setSelectedRowTableName("table");
     setSelectedFormId(form?.forms?.[1]?.id);
+  };
+
+  const handleVerifyClickMD = (files, index) => {
+    setFileArray(files);
+    setSelectedFileIndex(index);
+    setShowFileVerifyDialog(true);
+    setSelectedRow(files);
+    setSelectedRowTableName("table");
+    setSelectedFormId(form?.forms?.[9]?.id);
   };
 
 
@@ -919,6 +928,10 @@ const NewActiveApplication = ({
     getNotesDialog(true);
   };
 
+  const onClickPaymentFunction = () => {
+    getPaymentDisplayBox(true);
+  };
+
   const onClickApprovalFunction = () => {
     getApprovalNotesCommentBox(true);
   };
@@ -1389,6 +1402,10 @@ const NewActiveApplication = ({
   //   }
 
   const getApplicantValues = (array, index) => {
+    if (!array || !Array.isArray(array)) {
+      console.error("Array is undefined or not an array:", array);
+      return [];
+  }
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
@@ -1468,229 +1485,163 @@ const NewActiveApplication = ({
     return temp;
   }
 
-  const getMedicalDirectiveTable = () => {
+  // const getMedicalDirectiveTable = () => {
+  //   let temp = [];
+  //   temp.push({
+  //     "type": "icon", "icon": medicalDirectives?.map(innerData =>
+  //       <div
+  //       //  className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
+  //       // ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}
+  //       >
+  //         {innerData?.status === 'COMPLETED' ? (
+  //           <CheckCircleRoundedIcon sx={{ fontSize: 20, color: `#25BF6A` }} />
+  //         ) : (
+  //           <WarningAmberRoundedIcon sx={{ fontSize: 20, color: `#FF6562` }} />
+  //         )}
+  //       </div>
+  //       // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
+  //     ), 'isShowHoverText': false
+  //   });
+  //   temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': () => { } });
+  //   temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': () => { } });
+  //   temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': () => { } });
+  //   temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': () => { } });
+
+  //   temp.push({
+  //     "type": "icon", "icon": medicalDirectives?.map(innerData =>
+  //       <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
+  //     ), 'isShowHoverText': false
+  //   });
+
+  //   // temp.push({
+  //   //   "type": "icon",
+  //   //   "icon": medicalDirectives?.map((innerData, index) => (
+  //   //     innerData?.isVerified === true
+  //   //       ? (
+  //   //         <div className={`${style.greenButton} ${style.cursorPointer}`}>
+  //   //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+  //   //             Verified
+  //   //           </div>
+  //   //         </div>
+  //   //       ) : (
+  //   //         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+  //   //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+  //   //             onClick={() => handleVerifyClickDocs(medicalDirectives, index)}
+  //   //           >
+  //   //             Verify
+  //   //           </div>
+  //   //         </div>
+  //   //       )
+  //   //   ))
+  //   // });
+  //   return temp;
+  // }
+
+
+  const getMedicalDirectiveTable = (array, index) => {
+    if (!array || !Array.isArray(array)) {
+      console.error("Array is undefined or not an array:", array);
+      return [];
+  }
+    let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
-    temp.push({
-      "type": "icon", "icon": medicalDirectives?.map(innerData =>
-        <div
-        //  className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : innerData?.status === 'PAST_DUE' ? style.iconBackgroundColorRed : style.iconBackgroundColor} 
-        // ${style.verticalAlignCenter} ${style.justifyCenterReappointment}`}
-        >
-          {innerData?.status === 'COMPLETED' ? (
-            <CheckCircleRoundedIcon sx={{ fontSize: 20, color: `#25BF6A` }} />
-          ) : (
-            <WarningAmberRoundedIcon sx={{ fontSize: 20, color: `#FF6562` }} />
-          )}
-        </div>
-        // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
-      ), 'isShowHoverText': false
-    });
-    temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': () => { } });
-    temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': () => { } });
-    temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': () => { } });
-    temp.push({ "type": "text", "value": medicalDirectives?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': () => { } });
-
-    temp.push({
-      "type": "icon", "icon": medicalDirectives?.map(innerData =>
-        <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
-      ), 'isShowHoverText': false
-    });
-
-    // temp.push({
-    //   "type": "icon",
-    //   "icon": medicalDirectives?.map((innerData, index) => (
-    //     innerData?.isVerified === true
-    //       ? (
-    //         <div className={`${style.greenButton} ${style.cursorPointer}`}>
-    //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-    //             Verified
-    //           </div>
-    //         </div>
-    //       ) : (
-    //         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-    //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-    //             onClick={() => handleVerifyClickDocs(medicalDirectives, index)}
-    //           >
-    //             Verify
-    //           </div>
-    //         </div>
-    //       )
-    //   ))
-    // });
+    console.log(array, 'arrayyyyyy1233')
+    // console.log(array[data],"@@@@@@@@@");
+    
+    console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
+    
+    Object.keys(schema?.properties?.medicalDirectives?.tableHeaders || {})?.map((data, index) => {
+      // temp.push({
+      //     "type": "icon",
+      //     "icon": array?.map(innerData =>
+      //        <CheckCircleRoundedIcon style={{ fontSize: 20,color: `#25BF6A` }}  onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData?.file) }} />),
+      //     'isShowHoverText': false
+      //   });
+      if (data === "file") {
+        temp.push({
+          "type": "icon",
+          "icon": array?.map(innerData =>
+            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />),
+          'isShowHoverText': false
+        });
+      } else {
+        if (data === "valid") {
+          temp.push({
+            "type": "icon",
+            "icon": array?.map(innerData => innerData[data] ?
+              <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
+              : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
+            'isShowHoverText': false
+          });
+        }
+        //  else if (data === "verified") {
+        //   // Check if staffView is true
+        //   if (!staffView) {
+        //     console.log("staffView is true");
+        //     console.log("StaffView", staffView)
+        //     // If staffView is true, push the CheckCircleRoundedIcon
+        //     // temp.push({
+        //     //   "type": "icon",
+        //     //   "icon": array?.map((innerData, index) => (
+        //     //     innerData?.isVerified === true
+        //     //       ? (
+        //     //         <div className={`${style.greenButton} ${style.cursorPointer}`}>
+        //     //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+        //     //             Verified
+        //     //           </div>
+        //     //         </div>
+        //     //       ) : (
+        //     //         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+        //     //           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+        //     //             onClick={() => handleVerifyClickMD(array, index)}
+        //     //           >
+        //     //             Verify
+        //     //           </div>
+        //     //         </div>
+        //     //       )
+        //     //   ))
+        //     // });
+        //        temp.push({
+        //         "type": "icon", "icon": medicalDirectives?.map(innerData =>
+        //           <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
+        //         ), 'isShowHoverText': false
+        //       });
+        //   }
+        //   else {
+        //     temp.push({
+        //       "type": "icon",
+        //       "icon": array?.map((innerData, index) => (
+        //         <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
+        //       )),
+        //       'isShowHoverText': false
+        //     });
+        //   }
+        // }
+        else {
+          temp.push({
+            "type": "text",
+            "value": array.map(innerData =>
+              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+                {innerData[data]}
+              </div>
+            )
+          });
+        }
+      }
+      // temp.push({
+      //   "type": "text",
+      //   "value": array.map(innerData =>
+      //     <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+      //       {innerData[data]}
+      //     </div>
+      //   )
+      // });
+    })
     return temp;
   }
 
-  // const getMedicalDirectiveTable = (array, index) => {
-  //   // let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[9]?.formSchema?.schema
-  //   let schema = applicationType === "NEW" ? formSchema : form?.forms?.[9]?.data?.table
-  //   let temp = [];
-  //   console.log(array, 'arrayyyyyy1111')
-  //   console.log("schemaaaa",schema)
-  //   console.log("allFormSchemas?.[index]?.formSchema?.schema1",allFormSchemas?.[9]?.formSchema?.schema);
-  //   Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
 
-  //     temp.push({
-  //       "type": "icon",
-  //       "icon": schema?.map((innerData, index) => (
-  //         <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-  //       )),
-  //       'isShowHoverText': false
-  //     });
-      
-  //     // if (data === "file") {
-  //       temp.push({
-  //         "type": "icon",
-  //         "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-  //           <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-  //           : innerData?.fileType?.startsWith("image/") ?
-  //             <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-  //             : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
-  //         'isShowHoverText': false
-  //       });
-  //     // } else {
-  //       // if (data === "valid") {
-  //         temp.push({
-  //           "type": "icon",
-  //           "icon": array?.map(innerData => innerData[data] ?
-  //             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
-  //             : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
-  //           'isShowHoverText': false
-  //         });
-  //       // } else if (data === "verified") {
-  //         // Check if staffView is true
-  //         // if (!staffView) {
-  //           console.log("staffView is true");
-  //           console.log("StaffView", staffView)
-  //           // If staffView is true, push the CheckCircleRoundedIcon
-  //           temp.push({
-  //             "type": "icon",
-  //             "icon": array?.map((innerData, index) => (
-  //               innerData?.isVerified === true
-  //                 ? (
-  //                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
-  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-  //                       Verified
-  //                     </div>
-  //                   </div>
-  //                 ) : (
-  //                   <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-  //                       onClick={() => handleVerifyClickDocs(array, index)}
-  //                     >
-  //                       Verify
-  //                     </div>
-  //                   </div>
-  //                 )
-  //             ))
-  //           });
-
-  //         // }
-  //         // else {
-  //           temp.push({
-  //             "type": "icon",
-  //             "icon": array?.map((innerData, index) => (
-  //               <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-  //             )),
-  //             'isShowHoverText': false
-  //           });
-  //         // }
-  //       // }
-  //       // else {
-  //         temp.push({
-  //           "type": "text",
-  //           "value": schema.map(innerData =>
-  //             <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-  //               {innerData.title}
-  //             </div>
-  //           )
-  //         });
-  //       // }
-  //     // }
-  //   })
-  //   return temp;
-  // }
-
-  // const getMedicalDirectiveTable = (array, index) => {
-  //   let schema1 = applicationType === "NEW" ? formSchema : form?.forms?.[9]?.data?.table
-  //   let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
-  //   let temp = [];
-  //   console.log(array, 'arrayyyyyy')
-  //   console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
-    
-  //   Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-  //     if (data === "file") {
-  //       temp.push({
-  //         "type": "icon",
-  //         "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-  //           <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-  //           : innerData?.fileType?.startsWith("image/") ?
-  //             <img src={ImgDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-  //             : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />),
-  //         'isShowHoverText': false
-  //       });
-  //     } else {
-  //       if (data === "valid") {
-  //         temp.push({
-  //           "type": "icon",
-  //           "icon": array?.map(innerData => innerData[data] ?
-  //             <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />
-  //             : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562` }} />),
-  //           'isShowHoverText': false
-  //         });
-  //       } else if (data === "verified") {
-  //         // Check if staffView is true
-  //         if (!staffView) {
-  //           console.log("staffView is true");
-  //           console.log("StaffView", staffView)
-  //           // If staffView is true, push the CheckCircleRoundedIcon
-  //           temp.push({
-  //             "type": "icon",
-  //             "icon": array?.map((innerData, index) => (
-  //               innerData?.isVerified === true
-  //                 ? (
-  //                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
-  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-  //                       Verified
-  //                     </div>
-  //                   </div>
-  //                 ) : (
-  //                   <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-  //                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-  //                       onClick={() => handleVerifyClickDocs(array, index)}
-  //                     >
-  //                       Verify
-  //                     </div>
-  //                   </div>
-  //                 )
-  //             ))
-  //           });
-
-  //         }
-  //         else {
-  //           temp.push({
-  //             "type": "icon",
-  //             "icon": array?.map((innerData, index) => (
-  //               <CheckCircleRoundedIcon style={{ fontSize: 20, color: '#25BF6A' }} />
-  //             )),
-  //             'isShowHoverText': false
-  //           });
-  //         }
-  //       }
-  //       else {
-  //         temp.push({
-  //           "type": "text",
-  //           "value": array.map(innerData =>
-  //             <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
-  //               {innerData[data]}
-  //             </div>
-  //           )
-  //         });
-  //       }
-  //     }
-  //   })
-  //   return temp;
-  // }
-
+ 
   const getFileFields = (value) => {
     console.log(value);
     setFileFields(value);
@@ -1744,11 +1695,13 @@ const NewActiveApplication = ({
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
   const paymentmentDate = form?.payment?.paidDateTime;
-  const paymentmentPaidDate = paymentmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
+  const isMedicalDirectives = form?.forms[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
+  const allVerifiedMD = form?.forms[9]?.data?.table?.every(item => item.isVerified === true);
 
-  const buttonStyle = isUploadYourDoc && !allVerified ? { opacity: 0.5, pointerEvents: 'none' } : {};
+  const buttonStyle = (isUploadYourDoc && !allVerified)  ? { opacity: 0.5, pointerEvents: 'none' } : {};
 
 
   const getButtonStyle = () => {
@@ -3368,16 +3321,16 @@ const NewActiveApplication = ({
                   subHeading={'For this application you are required to provide information on the CME transcript.'}
                   subHeading2={'You will not be able to submit your application if this is not provided.'} />
               )}
-            {form?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName !== undefined && (
+            { form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
               <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
                 <div><strong>CME / CEU Transcript</strong></div>
-                <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file?.fileName}</div>
+                <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                 <img
                   src={VerifiedImage}
                   alt=""
                   className={`${style.imgIcon} ${style.cursorPointer}`}
                   onClick={() => {
-                    setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.file);
+                    setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
                   }
                   }
                 />
@@ -3390,15 +3343,16 @@ const NewActiveApplication = ({
                   <div className={`${style.twoCol} ${style.marginTop20}`}>
                     <div className={style.cmeHourCard}>
                       <div className={style.totalText}>Your Total</div>
-                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} Hours</div>
-                      {(40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours) > 0 && (
-                        <div className={style.hourRemainingText}>{40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.[0]?.creditOrHours} more needed</div>
+                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                      <div className={style.totalText}>Credits / Hours</div>
+                      {(40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                        <div className={style.hourRemainingText}>{40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                       )}
                     </div>
                     <div className={style.cmeHourCard}>
-                      <div className={style.totalText}>Required</div>
-                      <div className={style.hourText}>40 Hours</div>
-                      <div className={style.hourRemainingText}></div>
+                        <div className={style.totalText}>Required</div>
+                        <div className={style.hourText}>40</div>
+                        <div className={style.totalText}>Credits / Hours</div>
                     </div>
                   </div>
                 </div>
@@ -3454,11 +3408,11 @@ const NewActiveApplication = ({
                 "Title",
                 "MD ID",
                 "Type",
-                "Attestation Due Date",
+                "Attestation Date",
                 "",
               ]}
-              tableDataValues={getMedicalDirectiveTable()}
-              tableData={medicalDirectives}
+              tableDataValues={getMedicalDirectiveTable(form?.forms?.[formIndex]?.data?.table, index)}
+              tableData={form?.forms?.[formIndex]?.data?.table || []}
               gridStyle={style.medicalDirectivesGridStyle}
               actions={[]}
               // scrollStyle={style.contractScrollStyle}
@@ -3590,7 +3544,10 @@ const NewActiveApplication = ({
           </>
         );
       case "ApplicantAcknowledgement":
-        return (
+        const fileURL = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return  fileURL ? (
           <>
             <iframe
               src={`${form?.forms?.[formIndex]?.uploadedFiles[
@@ -3602,6 +3559,8 @@ const NewActiveApplication = ({
             // style={{ width: "100%", height: "600px", objectFit: "cover }}
             ></iframe>
           </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
         );
       case "ProfessionalConduct":
         return (
@@ -3680,7 +3639,7 @@ const NewActiveApplication = ({
                   object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.disclosures}
                   basicForm={form}
                   stepPath={`forms[${formIndex}].data`}
-                  gridStyle={style.conductGrid}
+                  gridStyle={style.medicalHistoryGrid}
                   baseKey={"disclosures"}
                   collapsableQuestionCard={true}
                   isPOD={true}
@@ -3968,7 +3927,7 @@ const NewActiveApplication = ({
                 </div>
               </div>
             </div>
-            <div className={`${style.cardTitle} ${style.marginTop10}`}>
+            <div className={`${style.cardTitle} ${style.marginTop30}`}>
                     Do you want to keep your current Privilege Category?
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
@@ -3978,11 +3937,11 @@ const NewActiveApplication = ({
                       >
                         <div className={style.privilegeHeading}>
                           {privilegeChangeYesOrNo === "Yes" ? (
-                            <div className={style.privilegeHeading}>
+                            <div className= {`${style.fontSize}`}>
                               Same as Before
                             </div>
                           ) : (
-                            <div className={style.privilegeHeading}>
+                            <div className={`${style.privilegeHeading} ${style.marginTop10} ${style.fontSize}`}>
                               Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
                           ? form?.basicDetails?.priorPrivilegeCategory
                             ?.name
@@ -3999,21 +3958,30 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     )}
-                    <div className={`${style.cardTitle}  ${style.marginTop10}`}>
+                    {/* <div className={`${style.cardTitle}  ${style.marginTop30}`}>
                     Requested Privilege Set(s) for Reappointment
+                  </div> */}
+                  {(selectedPrivilegeForDisplay?.length > 0 || 
+                  selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
+                    <>
+                  <div className={`${style.cardTitle} ${style.marginTop30}`}>
+                    Requested Privilege Sets for Reappointment
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
+                  </>
+                )}
+                  {/* <div className={`${style.borderStyleTiles}`}></div> */}
 
                   {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
                     <div key={dataIndex}>
                     <div
-                      className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
                     >
                       {data?.privilegeSetTitle}
                     </div>
                       {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                        <div key={catIndex}>
-                          <div className={style.flex}>
+                        <div key={catIndex} >
+                          <div className={`${style.flex}`}>
                             <div className={style.itemLeft}>
                               <strong>{categories?.category || ""}</strong>
                             </div>
@@ -4026,6 +3994,7 @@ const NewActiveApplication = ({
                               <div className={style.itemLeft}>{privilege?.title || ""}</div>
                             </div>
                           ))}
+                        
                         </div>
                       ))}
                       <div className={style.twoCol}>
@@ -4034,12 +4003,12 @@ const NewActiveApplication = ({
                         <div>
                           <ESignature
                             userName={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.name || ""
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
                             }
                             encData={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.esign || ""
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                             }
-                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign}
+                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
                             showDatais={true}
                           />
                         </div>
@@ -4048,7 +4017,7 @@ const NewActiveApplication = ({
                             <div className={style.dateTitle}>Date:</div>
                             <div className={`${style.date} ${style.marginLeft}`}>
                               {
-                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.restrictedPrivileges?.esign?.signedDate ||
+                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
                                 ""
                               }
                             </div>
@@ -4057,21 +4026,27 @@ const NewActiveApplication = ({
                       </>
                     )}
                   </div>
+                  {dataIndex !== selectedPrivilegeForDisplay.length - 1 && (
+                    <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
+                  )}
                     </div>
                   ))}
               <>
-               <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
-               Advanced Privileges
+              {(selectedAdditionalPrivilegeForDisplay?.length > 0 || 
+                  selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.restrictedPrivileges) && (
+                  <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
+                    Advanced Privileges
                   </div>
+                )}
                   {
-              selectedAdditionalPrivilegeForDisplay?.map((data) => 
-                ( <div>
+              selectedAdditionalPrivilegeForDisplay?.map((data,dataIndex) => 
+                ( <div key={dataIndex}>
                   <div
-                      className={`${style.privilegeHeading} ${style.marginTop10} ${style.marginLeft30}`}
+                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
                     >
                       {data?.privilegeSetTitle}
                     </div>
-                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories) => {
+                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories) => {
                   return (
                 <div>
                   <div className={style.flex}>
@@ -4135,9 +4110,12 @@ const NewActiveApplication = ({
                     </>
                   )}
                 </div>
+                {dataIndex !== selectedAdditionalPrivilegeForDisplay.length - 1 && (
+                    <div className={`${style.borderStyleTiles}  ${style.marginTop10}`}></div>
+                  )}
               </div>)
               )}
-                <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                {/* <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                 Application Payment Status
                 <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
                   {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
@@ -4160,7 +4138,7 @@ const NewActiveApplication = ({
                   <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
                 </div>
 
-                </div>
+                </div> */}
                 </>
         </>
         );
@@ -4319,8 +4297,8 @@ const NewActiveApplication = ({
                         <div className={style.greyDotTextStyle}>
                           Application Payment Status
                         </div>
-                        <div> payment ID:{" "}
-                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || ""}</span>
+                        <div className={style.cursorPointer} onClick={onClickPaymentFunction}> payment ID:{" "}
+                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || "-"}</span>
                       </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
@@ -5358,6 +5336,7 @@ const NewActiveApplication = ({
                                     <>
                                       {credApproval?.some((newData) => {
                                         console.log("newData.approvalRequired:", newData.approvalRequired);
+                                        console.log("newData id:", data.id);
                                         return newData.schemaId === data.id && newData.approvalRequired;
                                       }) ? (
                                         <>
@@ -5413,7 +5392,7 @@ const NewActiveApplication = ({
 
                                               return (
                                                 <div>
-                                                  {form?.forms[index]?.schemaCategory !== 'UploadYourDoc' ? (
+                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                     isMatch ? (
                                                       <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
@@ -5426,7 +5405,37 @@ const NewActiveApplication = ({
                                                           <div
                                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                             onClick={() => {
-                                                              if (!(isUploadYourDoc && !allVerified)) {
+                                                                handleStepsVerify(form?.forms[index]?.id);
+                                                            }}
+                                                          >
+                                                            Verify
+                                                          </div>
+                                                        </div>
+                                                      ) : (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                            Verified
+                                                          </div>
+                                                        </div>
+                                                      )
+                                                    )
+                                                  )}
+                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' && (
+                                                    isMatch ? (
+                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          Verified
+                                                        </div>
+                                                      </div>
+                                                    ) : (
+                                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
+                                                          <div
+                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                            onClick={() => {
+                                                              if (
+                                                                !(isUploadYourDoc && !allVerified)
+                                                              ) {
                                                                 handleStepsVerify(form?.forms[index]?.id);
                                                               }
                                                             }}
@@ -5442,29 +5451,8 @@ const NewActiveApplication = ({
                                                         </div>
                                                       )
                                                     )
-                                                  ) : (
-                                                    form?.forms[index]?.status !== "APPROVED" ? (
-                                                      <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
-                                                        <div
-                                                          className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                          onClick={() => {
-                                                            if (!(isUploadYourDoc && !allVerified)) {
-                                                              handleStepsVerify(form?.forms[index]?.id);
-                                                            }
-                                                          }}
-                                                        >
-                                                          Verify
-                                                        </div>
-                                                      </div>
-                                                    ) : (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Verified
-                                                        </div>
-                                                      </div>
-                                                    )
-                                                  )
-                                                  }
+                                                  )}
+
                                                 </div>
                                               );
                                             })()
@@ -6490,6 +6478,33 @@ const NewActiveApplication = ({
                                               )}
                                             </>
                                           )}
+                                          {/* {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
+                                                    <div className={style.padding20}>
+                                                      <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                                                        Application Payment Status
+                                                        <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
+                                                          {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
+                                                        </span>
+                                                      </div>
+                                                      <div className={`${style.threeColumnGrid}`}>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Amount</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.currency || ""} {form?.payment?.fee || "-"}</div>
+                                                        </div>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Transaction ID / Confirmation Number</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{form?.payment?.receiptId || "-"}</div>
+                                                        </div>
+                                                        <div className={`${style.alignStart} ${style.marginTop10}`}>
+                                                          <div>Payment Date & Time</div>
+                                                          <div className={`${style.borderStyleTiles}`}></div>
+                                                          <div className={`${style.marginLeft30} ${style.marginTop10}`}>{paymentmentPaidDate || ""}</div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  )} */}
                                         </>
                                       )}
                                     </div>))}

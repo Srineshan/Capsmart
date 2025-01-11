@@ -153,16 +153,17 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       );
       setPaymentInfo(response.data)
       savePaymentInfo(response.data)
+      handleDownload(response.data)
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
         }`
       );
     }
-    handleDownload()
+
   };
 
-  const addNewDocument = async (file) => {
+  const addNewDocument = async (file, data) => {
     console.log(file, file?.name, 'Test')
     let fileName = {
       "fileName": 'acknowledgement.pdf'
@@ -180,7 +181,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
-        handleSavePDF(response?.data)
+        handleSavePDF(response?.data, data)
         uploadedFile = response?.data;
       } catch (error) {
         console.error(error);
@@ -198,38 +199,38 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     }
   }
 
-  const handleSavePDF = async (file) => {
+  const handleSavePDF = async (file, data) => {
     let temp = {
       "payee": {
         "name": {
-          "firstName": paymentInfo?.card?.name,
+          "firstName": data?.card?.name,
           "lastName": "string",
           "middleName": "string"
         },
         "email": {
-          "officialEmail": paymentInfo?.shipping?.email_address
+          "officialEmail": data?.shipping?.email_address
         },
-        "mobileNumber": paymentInfo?.shipping?.phone_number,
+        "mobileNumber": data?.shipping?.phone_number,
         "address": {
-          "streetName": paymentInfo?.shipping?.address_line1,
-          "city": paymentInfo?.shipping?.city,
-          "province": paymentInfo?.shipping?.province,
-          "pinCode": paymentInfo?.shipping?.postal_code
+          "streetName": data?.shipping?.address_line1,
+          "city": data?.shipping?.city,
+          "province": data?.shipping?.province,
+          "pinCode": data?.shipping?.postal_code
         }
       },
-      "fee": paymentInfo?.amount,
+      "fee": data?.amount,
       "tax": 0,
-      "total": paymentInfo?.amount,
+      "total": data?.amount,
       "currency": paymentListData?.[0]?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
-      "paidDateTime": format(new Date(paymentInfo?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
-      "paymentMethod": paymentInfo?.payment_method,
-      "cardNumber": paymentInfo?.card?.last_four,
-      "receiptId": paymentInfo?.order_number,
+      "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paymentMethod": data?.payment_method,
+      "cardNumber": data?.card?.last_four,
+      "receiptId": data?.order_number,
       "paymentApplicable": true,
       "paymentCompleted": true,
-      "invoice": file
+      "invoice": file?.file
     }
 
     try {
@@ -240,7 +241,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     continueClick();
   }
 
-  const handleDownload = () => {
+  const handleDownload = (data) => {
     const element = targetRef.current;
     const opt = {
       margin: 0.5,
@@ -259,7 +260,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     //     _element.classList.remove('applicationCardScrollStyle');
     // });
     html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
-      addNewDocument(pdfBlob);
+      addNewDocument(pdfBlob, data);
     });
   };
 

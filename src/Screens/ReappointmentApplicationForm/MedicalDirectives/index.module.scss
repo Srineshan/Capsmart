@@ -72,9 +72,9 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -95,9 +95,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -337,6 +337,7 @@
     font: normal normal bold 23px/26px proxima-nova;
     color: #1C8F00;
     text-align: left;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .pendingCard {
@@ -348,6 +349,7 @@
     font: normal normal bold 23px/26px proxima-nova;
     color: #1D2437;
     text-align: left;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .reviewInProgressCard {
@@ -359,6 +361,7 @@
     font: normal normal bold 23px/26px proxima-nova;
     color: #1D2437;
     text-align: left;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .pastDueCard {
@@ -370,6 +373,18 @@
     font: normal normal bold 23px/26px proxima-nova;
     color: #1D2437;
     text-align: left;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+// .pastDueCard:hover,
+// .reviewInProgressCard:hover,
+// .completedCard:hover {
+//     transform: scale(1.01);
+// }
+
+.textTransform:hover {
+    color: $primarycolor;
+    transform: scale(1.01);
 }
 
 .iconBackgroundCompleted {

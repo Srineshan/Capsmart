@@ -36,7 +36,7 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 10px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
 }
 
 .medicalDirectivesCard {
@@ -53,7 +53,7 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 8px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 10px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
 }
 
 .stickyContainer {
@@ -179,9 +179,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -204,7 +204,7 @@
     flex-direction: row;
 }
 
-@media (max-width: 950px) {
+@media (max-width: 948px) {
     .screenPadding {
         padding: 10px;
         overflow: scroll;

@@ -108,6 +108,10 @@ body::-webkit-scrollbar {
   font-weight: 400;
 }
 
+.fontSize{
+  font-size: 16px;
+}
+
 .buttonCardStyle {
   height: 50px;
   // width: 270px;
@@ -3416,6 +3420,7 @@ input[type="number"] {
   width: 96%;
   margin-left: 2%;
   border: 0.400000006px solid $secondarycolor;
+  box-shadow: 0px 5px 20px #52575D29;
   border-radius: 2px;
   padding: 10px;
 }
@@ -4761,7 +4766,7 @@ input[type="number"] {
 
 .medicalDirectivesGridStyle {
   display: grid;
-  grid-template-columns: 5% 51% 10% 10% 15% 3%;
+  grid-template-columns: 5% 53% 10% 10% 18%;
   gap: 1%;
 }
 
@@ -4933,6 +4938,15 @@ input[type="number"] {
   font: normal normal medium 18px/24px proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
+  // font-size: 16px;
+}
+
+.privilegeHeading1 {
+  text-align: left;
+  font: normal normal bold 20px proxima-nova;
+  letter-spacing: 0px;
+  color: #1D2437;
+  // font-size: 16px;
 }
 
 .privilegeHeadingTitle {
@@ -5219,7 +5233,8 @@ input[type="number"] {
 }
 
 .cmeCard {
-  background: #14358F14 0% 0% no-repeat padding-box;
+  // background: #14358F14 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #14358F1F;
   border-radius: 12px;
   padding: 20px;
@@ -5334,4 +5349,30 @@ input[type="number"] {
   color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.acknowledgmentErrorTextStyle{
+  font: normal normal 600 24px Proxima Nova;
+  font-style: italic;
+  text-align: center;
+  margin-top: 20px;
+  color: $statusred;
+}
+
+.medicalHistoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.medicalHistoryGrid> :nth-child(1) {
+  grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(2) {
+  grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(3) {
+  grid-column: 1 / -1;
 }

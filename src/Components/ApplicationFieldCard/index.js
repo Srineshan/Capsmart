@@ -1678,10 +1678,20 @@ const ApplicationFieldCard = ({
           // Check if the birthday should be less than today
           const shouldSetMaxDateForBirthday = object?.customValidations?.some(
             (validation) =>
-              validation.condition === "Date1LessThanCurrentDate" &&
+              validation.condition === "Age_GreaterThan25LessThan100" &&
               `${baseKey}.${fieldKey}` === validation.parameters.date1
           );
-
+          const currentDate = new Date();
+          const maxDateForBirthday = new Date(
+            currentDate.getFullYear() - 25,
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          const minDateForBirthday = new Date(
+            currentDate.getFullYear() - 100,
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
           // Final minDate logic
           const minDate = (() => {
             if (shouldSetMinDateToToday) {
@@ -1690,10 +1700,14 @@ const ApplicationFieldCard = ({
             if (minDateForDate2) {
               return minDateForDate2; // Date2 > Date1 logic
             }
+            if(shouldSetMaxDateForBirthday) {
+              return minDateForBirthday
+            }
             return null; // Default
           })();
 
-          const maxDate = shouldSetMaxDateForBirthday ? new Date() : null;
+          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : null;
+
 
 
           console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
@@ -2650,6 +2664,7 @@ const ApplicationFieldCard = ({
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
+    setIsChanged(false);
   };
 
   const isValidDateString = (dateString) => {

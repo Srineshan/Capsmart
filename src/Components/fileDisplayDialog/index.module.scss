@@ -73,13 +73,6 @@
     width: 240px;
 }
 
-.continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
-    opacity: 1;
-}
-
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -95,14 +88,6 @@
     width: 240px;
 }
 
-.saveInProgress:hover { 
-    background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
-    border: 0.5px solid #9AAFB5;
-    border-radius: 8px;
-    opacity: 1; 
-}
-
 .displayInRow {
     display: flex;
     align-items: center; 
@@ -114,6 +99,7 @@
     display: flex;
     justify-content: center;
 }
+
 
 .crossStyle {
     height: 20px; 
@@ -144,3 +130,16 @@
 // .objectFitContain {
 //     object-fit: contain;
 // }
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }

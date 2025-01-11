@@ -186,7 +186,7 @@ import style from "./index.module.scss";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
+const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -259,12 +259,9 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
   return (
     <>
     {isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+      <div  className={style.loadingOverlay}>
+          <LoadingScreen/>
+      </div>
     )}
     {!isLoadingImage && (
     <Dialog
@@ -431,5 +428,5 @@ const NotesCommentsDialog = ({ getIsOpen,selectedTab}) => {
   );
 };
 
-export default NotesCommentsDialog;
+export default ReappointmentChangesDialog;
 

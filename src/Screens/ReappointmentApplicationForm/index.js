@@ -24,6 +24,7 @@ import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 import LoadingScreen from '../../Components/LoadingScreen';
+import { dataLoadingGIF } from '../../utils/formatting';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
@@ -116,15 +117,24 @@ const ReappointmentApplicationForm = () => {
 
     console.log(section, step, atob(step))
 
-    if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
-        return <LoadingScreen />;
-    }
+    // if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
+    //     return <LoadingScreen />;
+    // }
 
     return (
-        <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
-            <div className={style.screenPadding}>
-                {StepDisplay()}
+        <div>
+            {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
+            <div className={style.screenBackground}>
+                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+                <div className={style.screenPadding}>
+                    {StepDisplay()}
+                </div>
             </div>
         </div>
     )

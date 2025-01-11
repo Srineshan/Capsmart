@@ -513,12 +513,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       </div>
     )}
  {isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
     )}
 
  {!isLoadingImage && (
@@ -723,7 +720,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                       <div className={`${style.threeColumnGrid}`}>
                       <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
                         <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file.fileName}</div>
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
                       </div>
                       <div>
                       <CommonInputField

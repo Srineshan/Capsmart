@@ -207,18 +207,15 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
 <>
 {isLoadingImageDocs && (
       <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+        className={`${style.loadingOverlay}`}
       >
         <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
       </div>
     )}
-{isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+   {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
     )}
 {!isLoadingImage && (
     <Dialog
@@ -396,7 +393,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                       <div className={`${style.threeColumnGrid}`}>
                       <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
                         <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file.fileName}</div>
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
                       </div>
                       <div>
                       <CommonInputField
