@@ -128,10 +128,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getIsOpen = (value) => {
@@ -685,7 +687,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             onChange={handleFileChange}
                             style={{ display: "none" }} // Hide the actual file input
                         />
-                         {((basicForm?.forms?.[formIndex]?.data !== null &&
+                        {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <>
                                 {/* <div
