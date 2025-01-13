@@ -659,7 +659,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         </div>
                         {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
-                           <div className={style.contractScrollStyle}>
+                            <div className={style.tableContainer}>
                             <TableTwo
                                 tableHeaderValues={[
                                     "",
@@ -674,7 +674,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 tableData={tempValue?.table || []}
                                 gridStyle={style.gridStyle}
                                 actions={actions}
-                                scrollStyle={style.contractScrollStyle}
+                                // scrollStyle={style.contractScrollStyle}
                                 tableSortValues={[]}
                                 heading={"You have not yet uploaded any documents."}
                                 onClickFunction={() => { }}
@@ -883,7 +883,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 canEscapeKeyClose={false}
             >
                 <div>
-                    <div>
+                    <div className={Classes.DIALOG_BODY}>
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>
                                 You are missing some required documents

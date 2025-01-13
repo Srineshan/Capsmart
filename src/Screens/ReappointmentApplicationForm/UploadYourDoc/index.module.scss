@@ -17,6 +17,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 1120px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .stickyContainer {
@@ -29,9 +33,22 @@
     width: calc(25% - 50px);
 }
 
-@media (max-width: 1294px) {
+// @media (max-width: 1294px) {
+//     .stickyContainer {
+//         position: fixed;
+//         bottom: 0;
+//         left: auto;
+//         right: auto;
+//         width: auto; 
+//         padding: 0px 20px 20px 20px; 
+//         margin: 0 auto; 
+//         box-sizing: border-box;
+//     }
+//  }
+
+@media (max-width: 1280px) {
     .stickyContainer {
-        position: fixed;
+        position: sticky;
         bottom: 0;
         left: auto;
         right: auto;
@@ -99,11 +116,6 @@
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
     padding: 20px;
-
-    @media (max-width: 1130px) {
-        overflow-x: auto; 
-        overflow-y: hidden;
-     }
 }
 
 .progressStyle {
@@ -245,6 +257,10 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+
+    @media (max-width: 1280px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .threeColForButton {
@@ -284,16 +300,43 @@
     color: #2C2C2C;
 }
 
-.gridStyle {
+// .tableContainer {
+//     position: relative;
+//     overflow-x: auto; 
+//     overflow-y: hidden; 
+//     border-collapse: collapse;
+//     white-space: nowrap; 
+//   }
+
+.tableContainer {
+    overflow-x: auto;
+    // min-width: 820px;
+}
+
+  .gridStyle {
     display: grid;
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
-    border-collapse: collapse;
 
-     @media (max-width: 1130px) { 
-        overflow-x: scroll !important; 
-     }
-}
+    @media (max-width: 1130px) {
+        // min-width: 820px;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+    }
+  }
+  
+//   @media (max-width: 1130px) {
+//     .tableContainer {
+//         overflow-x: scroll !important;  
+//         overflow: hidden !important; 
+//     }
+
+//     .gridStyle { 
+//         overflow-x: scroll !important;  
+//         overflow: hidden !important; 
+//     }
+//   }
+
 
 .contractScrollStyle {
     overflow-x: auto !important;
@@ -540,23 +583,6 @@
 }
 
 /* Responsive adjustments */
-// @media (max-width: 1024px) {
-//     .applicationScreenGrid {
-//         grid-template-columns: 1fr;
-//     }
-
-//     .stickyContainer {
-//         grid-column: 1 / 2;
-//     }
-
-//     .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
-//         grid-template-columns: 1fr;
-//     }
-
-//     .twoColForButton {
-//         gap: 15px;
-//     }
-// }
 
 // @media (max-width: 768px) {
 //     .applicationScreenGrid {
