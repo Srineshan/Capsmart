@@ -308,21 +308,21 @@
 //     white-space: nowrap; 
 //   }
 
-.tableContainer {
-    overflow-x: auto;
-    // min-width: 820px;
-}
+// .tableContainer {
+//     overflow-x: auto;
+//     min-width: 820px;
+// }
 
   .gridStyle {
     display: grid;
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
 
-    @media (max-width: 1130px) {
-        // min-width: 820px;
-        overflow-x: auto !important;
-        overflow-y: hidden;
-    }
+    // @media (max-width: 1130px) {
+    //     // min-width: 820px;
+    //     overflow-x: auto !important;
+    //     overflow-y: hidden;
+    // }
   }
   
 //   @media (max-width: 1130px) {
