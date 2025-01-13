@@ -637,11 +637,20 @@
     opacity: 1;
 }
 
+.addButton {
+    border: 0.5px solid $primarycolor;
+    border-radius: 5px;
+    width: auto;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+    font: normal normal normal 14px/18px proxima-nova;
+    cursor: pointer;
+  }
+
 .privilegeConfirmationGrid {
     display: grid;
-    grid-template-columns: 3% 89% 5%;
+    grid-template-columns: 3% 84% 10%;
     gap: 1%;
-    transition: background-color 0.3s ease;
 }
 
 .privilegeConfirmationGrid:hover {
