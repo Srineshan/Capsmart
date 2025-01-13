@@ -21,6 +21,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 820px){
+        grid-template-columns: 1fr;
+    }
 }
 
 .stickyContainer {
@@ -30,8 +34,34 @@
     padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     right: 100px;
-    width: calc(25% - 45px);
+    width: calc(25% - 50px);
 }
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+}
+
+    @media (max-width: 820px) {
+        .stickyContainer {
+            position: sticky;
+            bottom: 0;
+            left: auto;
+            right: auto;
+            width: auto; 
+            padding: 20px 20px 20px 20px; 
+            margin: 0 auto; 
+            box-sizing: border-box;
+        }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -106,12 +136,22 @@
 
 .disabled {
     cursor: not-allowed !important;
-    opacity: 0.4;
+    opacity: 0.4 !important;
+}
+
+.disabled :hover {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
 }
 
 .disabledButton {
+    opacity: 0.5 !important; 
     cursor: not-allowed !important;
-    opacity: 0.4;
+}
+
+.disabledButton :hover {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
 }
 
 .twoColForButton {
@@ -614,11 +654,20 @@
     opacity: 1;
 }
 
+.addButton {
+    border: 0.5px solid $primarycolor;
+    border-radius: 5px;
+    width: auto;
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    color: #FFFFFF;
+    font: normal normal normal 14px/18px proxima-nova;
+    cursor: pointer;
+  }
+
 .privilegeConfirmationGrid {
     display: grid;
-    grid-template-columns: 3% 89% 5%;
+    grid-template-columns: 3% 84% 10%;
     gap: 1%;
-    transition: background-color 0.3s ease;
 }
 
 .privilegeConfirmationGrid:hover {

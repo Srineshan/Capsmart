@@ -661,6 +661,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         </div>
                         {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
+                            <div className={style.tableContainer}>
                             <TableTwo
                                 tableHeaderValues={[
                                     "",
@@ -680,6 +681,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 heading={"You have not yet uploaded any documents."}
                                 onClickFunction={() => { }}
                             />
+                            </div>
                         )}
                         <input
                             type="file"

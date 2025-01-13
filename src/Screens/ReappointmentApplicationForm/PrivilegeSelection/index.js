@@ -2662,7 +2662,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title="Click To Request">
-                                    <img
+                                    {/* <img
                                       src={BlueSign}
                                       alt=""
                                       className={`${style.docTypeImgStyle} ${style.marginLeft}`}
@@ -2670,7 +2670,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                         setShowPrivileges(true);
                                         handleChange(data?.id);
                                       }}
-                                    />
+                                    /> */}
+                                    <button
+                                      className={`${style.addButton} ${style.marginLeft}`}
+                                      onClick={() => {
+                                        setShowPrivileges(true);
+                                        handleChange(data?.id);
+                                      }}
+                                    >  ADD
+                                    </button>
                                   </Tooltip>
                                 )}
                               </div>
@@ -3056,7 +3064,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                       >
-                        <div
+                        <button
                           className={`${style.reappointmentButton} ${style.marginLeft
                             } ${selectedPrivilegesForCourtesy !== ""
                               ? ""
@@ -3072,9 +3080,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                 setIsUpdateClicked(true);
                               }
                           }
+                          disabled={selectedPrivilegesForCourtesy === ""}
                         >
                           UPDATE
-                        </div>
+                        </button>
                         <div
                           className={`${style.reappointmentButtonOutlined}`}
                           onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
@@ -3127,12 +3136,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   />
                                 </div>
                               ) : (
-                                <div
+                                <div>
+                                  {/* <div
                                   className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                                 >
                                   <WarningAmberIcon
                                     sx={{ fontSize: 15, color: "#FFFFFF" }}
                                   />
+                                </div> */}
                                 </div>
                               )}
                               <div className={style.privilegeHeading}>
@@ -3155,7 +3166,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                 </Tooltip>
                               ) : (
                                 <Tooltip title="Click To Request">
-                                  <img
+                                  {/* <img
                                     src={BlueSign}
                                     alt=""
                                     className={`${style.docTypeImgStyle} ${style.marginLeft}`}
@@ -3163,7 +3174,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                       setShowPrivileges(true);
                                       handleChange(data?.id);
                                     }}
-                                  />
+                                  /> */}
+                                  <button
+                                    className={`${style.addButton} ${style.marginLeft}`}
+                                    onClick={() => {
+                                      setShowPrivileges(true);
+                                      handleChange(data?.id);
+                                    }}
+                                  >  ADD
+                                  </button>
                                 </Tooltip>
                               )}
                             </div>
@@ -3217,7 +3236,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 </div>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                  onClick={() => { setIsEditAdditionalPrivileges(false); setAdditionalPrivilegeChangeYesOrNo('No'); setIsAdditionalPrivilegeCategoryChanging(false); }}
+                  onClick={() => { setIsEditAdditionalPrivileges(false); setAdditionalPrivilegeChangeYesOrNo('No'); setIsAdditionalPrivilegeCategoryChanging(false); setShowAdditionalPrivilegesForSign(true); }}
                 >
                   NO
                 </div>
@@ -3282,7 +3301,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           </Tooltip>
                         ) : (
                           <Tooltip title="Click To Request">
-                            <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }} />
+                            {/* <img src={BlueSign} alt="" className={`${style.docTypeImgStyle} ${style.marginLeft}`} onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }} /> */}
+                            <button
+                              className={`${style.addButton} ${style.marginLeft}`}
+                              onClick={() => { setShowAdditionalPrivileges(true); handleChangeAdditional(data?.id) }}
+                            >  ADD
+                            </button>
                           </Tooltip>
                         )}
                       </div>
@@ -3428,7 +3452,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   <div
                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                   >
-                    <div
+                    <button
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
@@ -3445,10 +3469,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             handleSubmit()
                           }
                       }
+                      disabled={hospitalName === "" || hospitalPrivilege === ""}
                     >
                       SAVE & CLOSE
-                    </div>
-                    <div
+                    </button>
+                    <button
                       className={`${style.reappointmentButton} ${style.marginLeft
                         } ${(hospitalName === "" || hospitalPrivilege === "")
                           ? style.disabledButton
@@ -3464,9 +3489,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             handleSubmit()
                           }
                       }
+                      disabled={hospitalName === "" || hospitalPrivilege === ""}
                     >
                       SAVE & ADD MORE
-                    </div>
+                    </button>
                     <div
                       className={`${style.reappointmentButtonOutlined}`}
                       onClick={() => { setPrivilegesMaintainedInOtherHositals(false); setIsEditPrivilegeAtOtherHospitals(false); setHospitalName(''); setHospitalPrivilege(''); setHospitalPrivilegeCategory(''); setPrivilegeAtOtherHospitalYesOrNo('') }}
@@ -3492,7 +3518,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               email={"{Email}"}
             />
           </div>
-          <div className={`${style.stickyContainer} `}>
+          <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog
+            ? style.hiddenStickyContainer : ""}`}>
             <div
               className={`${style.saveInProgress} ${style.marginTop}`}
               onClick={() => getIsSaveInProgressOpen(true)}
@@ -3544,7 +3571,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <div
+              <button
                 className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                   ?.restrictedPrivileges?.esign !== null &&
                   selectedPrivilegeForDisplay?.[0]?.privilegeDetails
@@ -3607,9 +3634,21 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     }
                     : () => { }
                 }
+                disabled={
+                  !(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
+                    ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)))
+                }
               >
                 CONTINUE
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -3640,34 +3679,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                  ?.restrictedPrivileges?.esign !== null &&
-                  selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== undefined) ||
-                  selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                  0 ||
-                  (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                    ?.privileges?.length === 0 &&
+              <button
+                className={`${style.reappointmentButton} ${style.marginLeft}
+                 ${((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== null &&
                     selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length !== undefined)) &&
-                  ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                    ?.corePrivileges?.esign !== null &&
+                      ?.restrictedPrivileges?.esign !== undefined) ||
                     selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.esign !== undefined) ||
-                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                    0 ||
                     (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                      ?.length === 0 &&
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length === 0 &&
                       selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined))
-                  ? ""
-                  : style.disabledButton
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)) &&
+                    ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
+                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
+                    ? ""
+                    : style.disabledButton
                   }`}
                 onClick={
                   ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
@@ -3703,9 +3743,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     }
                     : () => { }
                 }
+                disabled={!(((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
+                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length !== undefined)) &&
+                  ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                    ?.corePrivileges?.esign !== null &&
+                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.esign !== undefined) ||
+                    selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length === 0 &&
+                      selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)))
+                }
               >
                 CONTINUE
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -3766,34 +3832,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                  ?.restrictedPrivileges?.esign !== null &&
-                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== undefined) ||
-                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                  0 ||
-                  (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                    ?.privileges?.length === 0 &&
+              <button
+                className={`${style.reappointmentButton} ${style.marginLeft} 
+                ${((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== null &&
                     selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length !== undefined)) &&
-                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.corePrivileges?.esign !== null &&
+                      ?.restrictedPrivileges?.esign !== undefined) ||
                     selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.esign !== undefined) ||
-                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                    0 ||
                     (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                      ?.length === 0 &&
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length === 0 &&
                       selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined))
-                  ? ""
-                  : style.disabledButton
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)) &&
+                    ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
+                    ? ""
+                    : style.disabledButton
                   }`}
                 onClick={
                   ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
@@ -3833,9 +3900,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     }
                     : () => { }
                 }
+                disabled={!(((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length !== undefined)) &&
+                  ((selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.corePrivileges?.esign !== null &&
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== undefined) ||
+                    selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length === 0 &&
+                      selectedPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined))
+                )}
               >
                 {selectedPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -3870,34 +3963,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             <div
               className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              <div
-                className={`${style.reappointmentButton} ${style.marginLeft} ${((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                  ?.restrictedPrivileges?.esign !== null &&
-                  selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.esign !== undefined) ||
-                  selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
-                  0 ||
-                  (selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                    ?.privileges?.length === 0 &&
+              <button
+                className={`${style.reappointmentButton} ${style.marginLeft} 
+                ${((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== null &&
                     selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
-                      ?.privileges?.length !== undefined)) &&
-                  ((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                    ?.corePrivileges?.esign !== null &&
+                      ?.restrictedPrivileges?.esign !== undefined) ||
                     selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.esign !== undefined) ||
-                    selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                    0 ||
                     (selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
-                      ?.length === 0 &&
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length === 0 &&
                       selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
-                        ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined))
-                  ? ""
-                  : style.disabledButton
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined)) &&
+                    ((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== null &&
+                      selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.esign !== undefined) ||
+                      selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                      (selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                        ?.length === 0 &&
+                        selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined))
+                    ? ""
+                    : style.disabledButton
                   }`}
                 onClick={
                   ((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
@@ -3937,9 +4031,35 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     }
                     : () => { }
                 }
+                disabled={!(((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                  ?.restrictedPrivileges?.esign !== null &&
+                  selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.esign !== undefined) ||
+                  selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                  0 ||
+                  (selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                    ?.privileges?.length === 0 &&
+                    selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges?.length !== undefined)) &&
+                  ((selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                    ?.corePrivileges?.esign !== null &&
+                    selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.esign !== undefined) ||
+                    selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                    (selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                      ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length === 0 &&
+                      selectedAdditionalPrivilegeForDisplay?.[indexForSign]?.privilegeDetails
+                        ?.corePrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length !== undefined))
+                )}
               >
                 {selectedAdditionalPrivilegeForDisplay?.length === indexForSign + 1 ? `CONTINUE` : 'NEXT'}
-              </div>
+              </button>
             </div>
           </div>
         </div>

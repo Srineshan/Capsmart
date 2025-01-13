@@ -17,6 +17,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 1120px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .stickyContainer {
@@ -26,8 +30,34 @@
     padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
     right: 100px;
-    width: calc(25% - 45px);
+    width: calc(25% - 50px);
 }
+
+// @media (max-width: 1294px) {
+//     .stickyContainer {
+//         position: fixed;
+//         bottom: 0;
+//         left: auto;
+//         right: auto;
+//         width: auto; 
+//         padding: 0px 20px 20px 20px; 
+//         margin: 0 auto; 
+//         box-sizing: border-box;
+//     }
+//  }
+
+@media (max-width: 1280px) {
+    .stickyContainer {
+        position: sticky;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -161,6 +191,10 @@
     display: grid;
     grid-template-columns: 80% 18%;
     gap: 1%;
+
+    @media (max-width: 1130px) {
+        overflow: scroll;
+     }
 }
 
 
@@ -213,12 +247,20 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+
+    @media (max-width: 1280px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .threeColForButton {
@@ -258,11 +300,53 @@
     color: #2C2C2C;
 }
 
-.gridStyle {
+// .tableContainer {
+//     position: relative;
+//     overflow-x: auto; 
+//     overflow-y: hidden; 
+//     border-collapse: collapse;
+//     white-space: nowrap; 
+//   }
+
+// .tableContainer {
+//     overflow-x: auto;
+//     min-width: 820px;
+// }
+
+  .gridStyle {
     display: grid;
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
-}
+
+    // @media (max-width: 1130px) {
+    //     // min-width: 820px;
+    //     overflow-x: auto !important;
+    //     overflow-y: hidden;
+    // }
+  }
+  
+//   @media (max-width: 1130px) {
+//     .tableContainer {
+//         overflow-x: scroll !important;  
+//         overflow: hidden !important; 
+//     }
+
+//     .gridStyle { 
+//         overflow-x: scroll !important;  
+//         overflow: hidden !important; 
+//     }
+//   }
+
+
+.contractScrollStyle {
+    overflow-x: auto !important;
+  }
+  
+  @media (max-width: 1130px) {
+    .contractScrollStyle {
+      overflow-x: scroll !important;
+    }
+  }
 
 .fullWidth {
     width: 100%;
@@ -335,6 +419,10 @@
     height: auto;
     width: 40%;
     object-fit: contain;
+
+    @media (max-width: 1130px) {
+        width: 20%;
+    }
 }
 
 .loadingOverlay {
@@ -351,8 +439,13 @@
 }
 
 .disabledButton {
-    cursor: not-allowed;
-    opacity: 0.4;
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
+}
+
+.disabledButton :hover {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
 }
 
 .heading {
@@ -375,7 +468,11 @@
 
 .eSignDialog {
     height: 75%;
-    width: 40% !important;
+    width: 40%;
+    @media (max-width: 1130px) {
+        height: auto;
+        width: auto;
+    }
 }
 
 .eSignDialogBackground {
@@ -387,6 +484,11 @@
 .crossStyle {
     height: 18px;
     width: 18px;
+
+    @media (max-width: 1130px) {
+        height: 16px;
+        width: 16px;
+    }    
 }
 
 .continueValidation {
@@ -403,6 +505,13 @@
     width: 240px;
 }
 
+.continueValidation:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
+}
+
 .saveInProgressValidation {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -416,6 +525,14 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+}
+
+.saveInProgressValidation:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .eSignatureOnFileCard {
@@ -460,29 +577,12 @@
     grid-template-columns: 49% 24% 24%;
     gap: 1%;
 
-    @media (max-width: 1150px) {
-        grid-template-columns: 1fr;
+    @media (max-width: 1130px) {
+        grid-template-columns: 1fr; 
     }
 }
 
 /* Responsive adjustments */
-// @media (max-width: 1024px) {
-//     .applicationScreenGrid {
-//         grid-template-columns: 1fr;
-//     }
-
-//     .stickyContainer {
-//         grid-column: 1 / 2;
-//     }
-
-//     .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
-//         grid-template-columns: 1fr;
-//     }
-
-//     .twoColForButton {
-//         gap: 15px;
-//     }
-// }
 
 // @media (max-width: 768px) {
 //     .applicationScreenGrid {

@@ -31,17 +31,6 @@
     justify-content: space-between;
 }
 
-@media (max-width: 768px) {
-    .twoCol {
-        grid-template-columns: 100%;
-        gap: 10px;
-    }
-
-    .completedItemsText {
-        text-align: center;
-    }
-}
-
 .eSignDialog {
     height: 75%;
     width: 80% !important;
@@ -66,12 +55,11 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
-    transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover {
+.saveInProgress:hover { 
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052;
+    box-shadow: 0px 3px 12px #00000052; 
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -89,13 +77,12 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
-    transition: background-color 0.3s ease;
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052;
-    border-radius: 8px;
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
     opacity: 1;
 }
 
@@ -111,7 +98,6 @@
     justify-content: center;
 }
 
-
 .crossStyle {
     height: 18px;
     width: 18px;
@@ -123,7 +109,7 @@
 
 .verticalAlignCenter {
     display: flex;
-    width: auto;
+    width:auto;
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -131,9 +117,70 @@
 
 .twoCol {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 10px;
+
+    @media (max-width: 1150px) {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    
+    @media (max-width: 1120px) {
+        grid-template-columns: 1fr;
+    }
 }
+
+.imageCard {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.journeyImg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+// @media (max-width: 1150px) {
+//     .imageCard {
+//         width: auto;
+//         height: auto;
+//         object-fit: contain;
+//     }
+
+//     .journeyImg {
+//         width: auto;
+//         height: auto;
+//         object-fit: contain;
+//         max-width: none; 
+//     }
+
+//     .completedItemsText {
+//         font: normal normal normal 17px proxima-nova;
+//     }
+// }
+
+// @media (max-width: 850px) {
+//     .imageCard {
+//         width: auto;
+//         height: auto;
+//         object-fit: contain;
+//     }
+
+//     .journeyImg {
+//         width: auto;
+//         height: auto;
+//         object-fit: contain;
+//         max-width: none; 
+//     }
+
+//     .completedItemsText {
+//         font: normal normal normal 16px proxima-nova;
+//     }
+// }
 
 .completedItemsText {
     text-align: left;
@@ -141,6 +188,8 @@
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 0.7;
+    width: auto;
+    word-wrap: break-word;
     transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
@@ -149,9 +198,6 @@
     opacity: 1;
     width: auto;
     word-wrap: break-word;
-    transform: scale(1.01);
-    font-weight: bold;
-    color: $primarycolor;
 }
 
 .completedItemsTextRed {

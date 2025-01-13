@@ -25,6 +25,10 @@
     grid-template-columns: 2.5fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 1240px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .applicationCardStyle {
@@ -40,6 +44,15 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 8px;
     border: 0.4000000059604645px solid #e5e6e6;
+    padding: 10px 20px 20px 20px;
+    overflow: scroll;
+}
+
+.medicalDirectivesCard1 {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 8px;
+    border: 0.4000000059604645px solid #e5e6e6;
     padding: 20px 20px 20px 20px;
 }
 
@@ -49,10 +62,22 @@
     left: calc(75% - 77px);
     bottom: 0;
     z-index: 10;
-    padding: 20px;
+    padding: 0px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    grid-column: 2 / 3;
 }
+
+@media (max-width: 1240px) {
+    .stickyContainer {
+        position: sticky;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -89,6 +114,15 @@
     color: #2C2C2C;
 }
 
+.description1 {
+    display: flex;
+    width: auto;
+    word-wrap: break-word;
+    text-align: left;
+    font: normal normal normal 14px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
 .mdIDStyle {
     text-align: left;
     font: normal normal normal 16px/23px proxima-nova;
@@ -121,7 +155,12 @@
 
 .disabled {
     cursor: not-allowed !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
+}
+
+.disabled :hover {
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
 }
 
 .continue {
@@ -135,6 +174,7 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    // width: auto;
     transition: background-color 0.3s ease;
 }
 
@@ -164,7 +204,7 @@
     flex-direction: row;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 948px) {
     .screenPadding {
         padding: 10px;
         overflow: scroll;
