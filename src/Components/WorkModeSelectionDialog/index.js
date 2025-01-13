@@ -65,7 +65,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Staff Manager"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${style.roleTitle}`}>Staff Manager</p>
+                  <p className={`${style.roleTitle} ${style.marginTop10}`}>Staff Manager</p>
                 </div>
               )}
               {userRole?.includes("Department Head") && (
@@ -78,7 +78,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Department Head"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${style.roleTitle}`}>Department Head</p>
+                  <p className={`${style.roleTitle}  ${style.marginTop10}`}>Department Head</p>
                 </div>
               )}
               {userRole?.includes("Credentialing Committee") && (
@@ -91,9 +91,31 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Credentialing Committee"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${style.roleTitle}`}>Credentialing Committee</p>
+                  <p className={`${style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee</p>
                 </div>
               )}
+              {/* <div
+                  className={`${style.justifyItem}`}
+                  onClick={() => handleWorkModeSelection("Credentialing Committee")}
+                >
+                  <img
+                    src={UserLogo4}
+                    alt="Credentialing Committee"
+                    className={`${style.crossStyle} ${style.cursorPointer}`}
+                  />
+                  <p className={`${style.roleTitle}`}>Credentialing Committee</p>
+                </div>
+                <div
+                  className={`${style.justifyItem}`}
+                  onClick={() => handleWorkModeSelection("Credentialing Committee")}
+                >
+                  <img
+                    src={UserLogo4}
+                    alt="Credentialing Committee"
+                    className={`${style.crossStyle} ${style.cursorPointer}`}
+                  />
+                  <p className={`${style.roleTitle}`}>Credentialing Committee</p>
+                </div> */}
             </div>
             <div className={`${style.marginTop10}`}>
               <p className={style.poweredBy}>© HapiCare</p>

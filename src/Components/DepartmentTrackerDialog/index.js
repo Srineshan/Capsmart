@@ -48,6 +48,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationVie
   const onClickViewFunction = (data) => {
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", data?.id);
+    getIsOpen(false);
   };
 
   useEffect(() => {
@@ -89,8 +90,8 @@ const headerValues = [
     {
       data: "View",
       requiredValue: "boolean",
-      // onClick: onClickViewFunction,
-      onClick: "",
+      onClick: onClickViewFunction,
+      // onClick: "",
     },
     // {
     //   data: "Request For Clarification",
