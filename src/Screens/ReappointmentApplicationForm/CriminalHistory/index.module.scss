@@ -13,6 +13,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 768px){
+        grid-template-columns: 1fr;
+    }
 }
 
 .stickyContainer {
@@ -37,6 +41,14 @@
         box-sizing: border-box;
     }
  }
+
+ @media (max-width: 768px) {
+    .stickyContainer {
+        position: sticky;
+        bottom: 0; 
+        padding: 20px 20px 20px 20px; 
+    }
+}
 
 .hiddenStickyContainer {
     opacity: 0;

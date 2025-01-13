@@ -28,28 +28,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
-}
 
-.stickyContainer1 {
-    position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 0;
-    z-index: 10;
-    padding: 20px;
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    grid-column: 2 / 3;
-
-    @media (max-width: 948px) {
-        position: fixed;
-        left: auto; 
-        right: auto;
-        bottom: 0;
-        z-index: 10;
-        padding: 20px;
-        background: $secondarycolor 0% 0% no-repeat padding-box;
-        grid-column: 2 / 3;
-     }
+    @media (max-width: 768px){
+        grid-template-columns: 1fr;
+    }
 }
 
 .stickyContainer {
@@ -74,6 +56,17 @@
         box-sizing: border-box;
     }
  }
+
+ @media (max-width: 768px) {
+    .stickyContainer {
+        position: sticky;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        float: right;         
+    }
+}
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -164,17 +157,47 @@
     gap: 20px;
 }
 
+/* Hide toggle button on larger screens */
+.toggleButton {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .toggleButton {
+      display: block;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+  
+    .infoContainer {
+      display: none; /* Hide by default on small screens */
+      position: fixed;
+      top: 50px;
+      left: 10px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 999;
+      width: calc(100% - 20px);
+    }
+  
+    .infoContainer.show {
+      display: block; /* Show when toggle is active */
+    }
+  }    
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-}
-
-@media (max-width: 768px) {
-    .twoColForButton {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
 }
 
 .threeColForButton {

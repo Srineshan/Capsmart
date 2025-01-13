@@ -45,6 +45,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [updateFrom, setUpdateFrom] = useState('');
     const [yesOrNoDemographic, setYesOrNoDemographic] = useState('');
     const [yesOrNoAddress, setYesOrNoAddress] = useState('');
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -653,13 +654,22 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div> */}
                 </div>
+
+                <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                    {showInfo ? "Hide Info" : "Show Info"}
+                </div>
                 <div>
+                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                     <ApplicationAssistanceCard
                         user={"Neena Greenly"}
                         designation={"{Designation}"}
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
+                    <div className={style.marginTop}>
+                         <ApplicationReferenceDocuments />
+                    </div>
+                    </div>
                     {/* <div className={style.twoColForButton}>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop}`}
@@ -668,6 +678,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             SKIP FOR NOW
                         </div> */}
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                         <div className={style.twoColForButton1}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop10}`}
@@ -675,7 +686,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             SAVE IN PROGRESS
                         </div>
-                        {/* </div> */}
+                         </div> 
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
@@ -691,10 +702,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         </div> */}
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
                         </div>
+                        
                     </div>
-                    <div className={style.marginTop}>
+                    {/* <div className={`${style.infoContainer} ${showInfo ? style.show : ""} ${style.marginTop}`}>
                         <ApplicationReferenceDocuments />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* {isOpen && <AIAssistantDialog getIsOpen={getIsOpen} />} */}
