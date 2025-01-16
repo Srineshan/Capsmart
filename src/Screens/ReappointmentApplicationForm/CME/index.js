@@ -440,13 +440,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                     <div className={style.totalText}>Your Total</div>
                                                     <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
                                                     <div className={style.totalText}>Credits / Hours</div>
-                                                    {(40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
-                                                        <div className={style.hourRemainingText}>{40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                                                    {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                        <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                                                     )}
                                                 </div>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Required</div>
-                                                    <div className={style.hourText}>40</div>
+                                                    <div className={style.hourText}>25</div>
                                                     <div className={style.totalText}>Credits / Hours</div>
                                                 </div>
                                             </div>

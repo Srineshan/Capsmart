@@ -65,7 +65,7 @@ const CommonSelectField = ({ value, onChange, className, firstOptionLabel, first
                                 <MenuItem value={firstOptionValue}>{firstOptionLabel}</MenuItem>
                             )}
                             {valueList?.map((data, index) => (
-                                <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : "", opacity: disabledList[index] ? 0.7 : 1 }}>{labelList[index]}</MenuItem>
+                                <MenuItem value={data} key={index} disabled={disabledList[index]} style={{ backgroundColor: menuColor ? menuColor[index] : "", opacity: disabledList[index] ? 0.4 : 1 }}>{labelList[index]}</MenuItem>
                             ))}
                         </Select>
                         {/* <div>

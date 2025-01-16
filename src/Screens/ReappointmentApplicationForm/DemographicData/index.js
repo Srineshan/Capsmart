@@ -536,26 +536,6 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
                                         </div>
                                         <CommonDivider />
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress2}
-                                                gridStyle={style.mailingAddressGrid}
-                                                baseKey={"contactAddress2"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
-                                                formSchema={formSchemaWholeObject}
-                                            />
-
-                                        </div>
-                                        <CommonDivider />
                                         {/* </div>
                                         <div className={`${style.applicationCardStyle} ${style.marginTop} `}> */}
                                         <div className={` ${style.marginTop}`}>
@@ -577,6 +557,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             />
                                         </div>
                                         {/* </div> */}
+                                        <CommonDivider />
+                                        <div className={` ${style.marginTop}`}>
+                                            {/* {showDemographicInfo && ( */}
+                                            <ApplicationFieldCard
+                                                object={formSchema?.properties?.contactAddress2}
+                                                gridStyle={style.mailingAddressGrid}
+                                                baseKey={"contactAddress2"}
+                                                basicForm={basicForm}
+                                                setBasicForm={setBasicForm}
+                                                stepPath={`forms[${formIndex}].data`}
+                                                isEdited={isContactInfoEdited}
+                                                setIsEdited={setIsContactInfoEdited}
+                                                getAllPath={getAllPath}
+                                                getAllLabels={getAllLabelsContactAddress}
+                                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                warningFields={warningFields}
+                                                formSchema={formSchemaWholeObject}
+                                            />
+
+                                        </div>
                                     </div>
                                 )}
                                 {!viewContactInfo ? (
