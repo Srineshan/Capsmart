@@ -122,9 +122,9 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
     if (sessionToken) {
       cookie.set('authorization', sessionToken, {
         path: '/',
-        // maxAge: 7 * 24 * 60 * 60, 
-        // secure: true,
-        // sameSite: 'strict',
+        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+        secure: true,
+        sameSite: 'none',
       });
       navigate('/')
     }
