@@ -9,7 +9,7 @@
 }
 
 .referenceDocumentCard {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     opacity: 0.75;
@@ -78,4 +78,10 @@
     height: 20px;
     width: 20px;
     border-radius: 50%;
+}
+
+.documentsGrid {
+    display: grid;
+    grid-template-columns: 91% 8%;
+    gap: 1%;
 }

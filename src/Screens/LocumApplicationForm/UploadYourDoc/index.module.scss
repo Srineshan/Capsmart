@@ -95,7 +95,7 @@
 }
 
 .dragAndDropBox {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 30px;
@@ -147,7 +147,7 @@
 
 
 .requiredDocumentCard {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 10px 15px;
@@ -219,7 +219,7 @@
 }
 
 .uploadBorderStyle {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 2px dashed $secondarycolor;
     border-radius: 4px;
     padding: 20px;

@@ -53,16 +53,16 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                             <div className={style.heading}>{title}</div>
                             {errorSchema !== '' && (
                                 <div className={style.displayInRow}>
-                                    <div className={style.completedItemsTextRed}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
-                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }} />
+                                    <div className={style.completedItemsTextRed} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
+                                    {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                 </div>
                             )}
                         </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
-                            <div className={style.verticalAlignCenter}>
+                            <div className={`${style.imageCard} ${style.verticalAlignCenter}`}>
                                 <img src={img} alt="step" className={style.journeyImg} />
                             </div>
-                            <div className={style.verticalSpaceBetween}>
+                            <div className={`${style.contentCard} ${style.verticalSpaceBetween}`}>
                                 <div>
                                     {basicForm?.forms?.map((data, index) => (formIndex >= index) && (
                                         <>
@@ -76,12 +76,12 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             )}
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
-                                                    <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`}>{data?.title}</div>
-                                                    <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} />
+                                                    <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                    {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                                 </div>
                                                 <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
                                             </div>
-                                            {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
+                                            {/* {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
                                                 <>
                                                     <div className={style.spaceBetween}>
                                                         <div className={`${style.completedItemsText} ${style.marginLeft}`}>LMS</div>
@@ -96,7 +96,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                                         <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
                                                     </div>
                                                 </>
-                                            )}
+                                            )} */}
                                         </>
                                     ))}
                                 </div>

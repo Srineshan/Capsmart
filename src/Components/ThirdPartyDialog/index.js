@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Dialog, Classes } from "@blueprintjs/core";
 import Cards from 'react-credit-cards-2';
 import axios from "axios";
-
+import html2pdf from "html2pdf.js";
 import style from "./index.module.scss";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { TextField } from "@mui/material";
 import { formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
+import { PUT, POST } from "../../Screens/dataSaver";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
 
 const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   const [state, setState] = useState({
@@ -16,11 +19,14 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     name: '',
     focus: '',
   });
+  const { applicationId, section, step } = useParams()
   const merchantId = "383612842";
   const apiPasscode = "c3c57e781e63444fB66d87caDeC54AC5";
   const base64ApiKey = btoa(`${merchantId}:${apiPasscode}`);
   const [paymentStatus, setPaymentStatus] = useState(null);
-
+  const [paymentInfo, setPaymentInfo] = useState(null);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const targetRef = useRef();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -71,7 +77,6 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       setPaymentStatus(
         `Payment Successful! Transaction ID: ${response.data.id}`
       );
-      continueClick();
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
@@ -89,27 +94,34 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
           "middleName": "string"
         },
         "email": {
-          "officialEmail": "string"
+          "officialEmail": data?.shipping?.email_address
         },
-        "mobileNumber": "string",
+        "mobileNumber": data?.shipping?.phone_number,
         "address": {
-          "streetName": "string",
-          "city": "string",
-          "province": "string",
-          "pinCode": "string"
+          "streetName": data?.shipping?.address_line1,
+          "city": data?.shipping?.city,
+          "province": data?.shipping?.province,
+          "pinCode": data?.shipping?.postal_code
         }
       },
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
+      "currency": paymentListData?.[0]?.currencyType,
+      "quantity": 1,
+      "product": "Reappointment Application Fee",
+      "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paymentMethod": data?.payment_method,
+      "cardNumber": data?.card?.last_four,
+      "receiptId": data?.order_number,
+      "paymentApplicable": true,
       "paymentCompleted": true
+    };
+    try {
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+    } catch (error) {
+      console.log(error);
     }
-    // try {
-    //   await PUT(`application-management-service/application/${applicationId}/payment`, temp);
-    //   console.log(response);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   }
 
   const getPaymentTransaction = async (id) => {
@@ -135,16 +147,121 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
           "Content-Type": "application/json",
         },
       });
+      setShowReceipt(true);
       setPaymentStatus(
         `Payment Successful! Transaction ID: ${response.data.id}`
       );
+      setPaymentInfo(response.data)
       savePaymentInfo(response.data)
+      handleDownload(response.data)
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
         }`
       );
     }
+
+  };
+
+  const addNewDocument = async (file, data) => {
+    console.log(file, file?.name, 'Test')
+    let fileName = {
+      "fileName": 'acknowledgement.pdf'
+    };
+    const formData = new FormData();
+
+    if (file !== null) {
+      const blob = new Blob([file], { type: `application/pdf` });
+      formData.append('files', new Blob([JSON.stringify(fileName)], {
+        type: "application/json"
+      }));
+      formData.append('documents', blob, fileName?.fileName);
+
+      let uploadedFile = {};
+      try {
+        const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
+        console.log(response?.data);
+        handleSavePDF(response?.data, data)
+        uploadedFile = response?.data;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+
+      // try {
+      //   const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
+      //   console.log(response?.data);
+      //   return response?.data;
+      // } catch (error) {
+      //   console.error(error);
+      //   return null;
+      // }
+    }
+  }
+
+  const handleSavePDF = async (file, data) => {
+    let temp = {
+      "payee": {
+        "name": {
+          "firstName": data?.card?.name,
+          "lastName": "string",
+          "middleName": "string"
+        },
+        "email": {
+          "officialEmail": data?.shipping?.email_address
+        },
+        "mobileNumber": data?.shipping?.phone_number,
+        "address": {
+          "streetName": data?.shipping?.address_line1,
+          "city": data?.shipping?.city,
+          "province": data?.shipping?.province,
+          "pinCode": data?.shipping?.postal_code
+        }
+      },
+      "fee": data?.amount,
+      "tax": 0,
+      "total": data?.amount,
+      "currency": paymentListData?.[0]?.currencyType,
+      "quantity": 1,
+      "product": "Reappointment Application Fee",
+      "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paymentMethod": data?.payment_method,
+      "cardNumber": data?.card?.last_four,
+      "receiptId": data?.order_number,
+      "paymentApplicable": true,
+      "paymentCompleted": true,
+      "invoice": file?.file
+    }
+
+    try {
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+    } catch (error) {
+      console.log(error);
+    }
+    continueClick();
+  }
+
+  const handleDownload = (data) => {
+    const element = targetRef.current;
+    const opt = {
+      margin: 0.5,
+      filename: "page.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: true,
+      },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+    };
+    // const nestedElements = element.querySelectorAll('.applicationCardScrollStyle');
+    // nestedElements.forEach((_element) => {
+    //     _element.classList.remove('applicationCardScrollStyle');
+    // });
+    html2pdf().set(opt).from(element).outputPdf("blob").then((pdfBlob) => {
+      addNewDocument(pdfBlob, data);
+    });
   };
 
   return (
@@ -246,6 +363,38 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
             />
           </div>
           {paymentStatus && <p>{paymentStatus}</p>}
+          {showReceipt && (
+            <div className={`${style.receiptContainer}`} ref={targetRef}>
+              {/* Header */}
+              <div className={style.receiptHeader}>
+                <h2>Payment Receipt</h2>
+              </div>
+
+              {/* Receipt Details */}
+              <div className={style.receiptDetails}>
+                <h3>Transaction Details</h3>
+                <p>
+                  <strong>Description:</strong> Reappointment Application Fee
+                </p>
+                <p>
+                  <strong>Transaction ID:</strong> {paymentInfo?.order_number}
+                </p>
+                <p>
+                  <strong>Date Paid:</strong> {format(new Date(paymentInfo?.created || new Date()), "MMM dd, yyyy HH:mm:ss")}
+                </p>
+                <p>
+                  <strong>Amount Paid:</strong> {paymentInfo?.amount}
+                </p>
+                <p>
+                  <strong>Card Number:</strong>{" "}
+                  <span
+                  >
+                    {paymentInfo?.card?.last_four}
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
           {/* </form> */}
           <div className={`${style.continue} ${style.marginLeft} ${style.marginTop}`} onClick={() => { submitPayment(); }} >PAY</div>
         </div>

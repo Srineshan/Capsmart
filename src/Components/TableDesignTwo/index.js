@@ -31,7 +31,6 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-
 const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
@@ -59,7 +58,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [clickedIndex, setClickedIndex] = useState(null);
     const [applicationType, setApplicationType] = useState(() =>
         sessionStorage.getItem('applicationCreationType') || 'NEW'
-      );
+    );
 
     //working - 1
     // const initialCheckboxState = tableData.reduce((acc, item) => ({
@@ -105,6 +104,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_TYPE: 'Staff Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
+        SUBMITTED_DATE: 'Submitted',
         APPLICANT_ID: 'Applicant ID',
         REAPPOINTMENT_STATUS: 'Reappointment'
     }
@@ -117,6 +117,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Staff Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
+        'Submitted': 'SUBMITTED_DATE',
         'Applicant ID': 'APPLICANT_ID',
         'Reappointment': 'REAPPOINTMENT_STATUS'
     }
@@ -489,7 +490,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     }
 
     return (
-        <div>
+        <div className={style.tableContainer}>
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
@@ -530,12 +531,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         </div>
                                     )
                                         : tableData?.type === "checkbox" ? (
-                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.responsive}`}>
                                                 <CommonCheckBox
-                                                    checked={checkedIds?.includes(data.id)}
-                                                    onChange={() => handleCheckboxClick(data.id)}
+                                                    checked={checkedIds?.includes(data?.id || data?.medicalDirective?.id)}
+                                                    onChange={() => handleCheckboxClick(data?.id, data)}
                                                     color="primary"
-                                                    inputProps={{ 'aria-label': `Select ${data.name}` }}
+                                                    inputProps={{ 'aria-label': `Select ${data?.name}` }}
                                                 />
                                             </div>
                                         )

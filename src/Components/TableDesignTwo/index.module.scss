@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .tableHeader {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    background: $tableheadbg 0% 0% no-repeat padding-box;
     min-height: 48px;
     width: 100%;
     // margin-left: 2%;
@@ -48,7 +48,7 @@
 }
 
 .tableHeaderFontStyle {
-    font: normal normal 600 20px proxima-nova;
+    font: normal normal 600 20px/20px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
@@ -75,7 +75,7 @@
 }
 
 .alternativeBackgroundColor {
-    background-color: #F5F5F8 !important;
+    background-color: $secondarycolor !important;
 }
 
 .displayInRow {
@@ -180,7 +180,7 @@
 .actionCard {
     background: #D8D7EE 0% 0% no-repeat padding-box;
     opacity: 0.99;
-    width: 40px;
+    width: clamp(20px, 10vw, 40px);
 }
 
 .actionsIcon {
@@ -425,3 +425,19 @@
     font-size: 17px;
     text-decoration: underline;
 }
+
+// .tableContainer {
+//     width: auto;
+//     overflow-x: auto;
+
+//     @media (max-width: 1130px) {
+//         width: auto;
+//         overflow-x: scroll !important; 
+//     }
+// }
+
+// .table {
+//     width: auto;
+//     border-collapse: collapse;
+//     overflow-x: scroll !important;
+// }

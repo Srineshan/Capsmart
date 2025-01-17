@@ -124,6 +124,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   const [isLoading, setIsLoading] = useState(false);
   const [uploadFileData, setUploadFileData]= useState('');
   const [documentDesc, setDocumentDesc] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
     const dropzoneStyle = {
         width: "100%",
         height: "auto",
@@ -134,6 +135,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       };
 
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
   const getDeclineMailDialog = (value) => {
     setShowDeclineMailDialog(value);
     getApplicationDeclineDialog(false);
@@ -148,7 +150,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [isChecked, notes, isSigned]);
+  }, [isChecked, notes, isSigned, documentTitle, uploadFileData]);
 
   useEffect(() => {
     setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
@@ -176,50 +178,52 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
   };
 
    const changeHandler = async (event) => {
-      console.log("Event received:", event);
-      setIsLoading(true);
-      const filesArray = Array.from(event);
-      console.log("Converted files array:", filesArray);
-      setFiles(filesArray);
-    
-      const formData = new FormData();
-      let fileNameArray = [];
-    
-      filesArray.forEach(file => {
-        const fileInfo = {
-          "filePath": file.path || '', 
-          "fileName": file.name,
-          "fileURL": "",  
-          "fileType": file.type,
-          "classification": "",  
-          "verified": true,     
-          "valid": true         
-        };
-        fileNameArray.push(fileInfo);
-        formData.append('documents', file);
-      });
-    
-      const blob = new Blob([JSON.stringify(fileNameArray)], {
-        type: "application/json"
-      });
-      formData.append('files', blob);
-    
-      try {
-        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-        console.log("API Response:", response);
-        SuccessToaster('File Uploaded Successfully');
-        console.log("Response data:", response?.data);
-        setUploadFileData(response?.data)
-    
-        setIsLoading(false);
-        return response?.data;
-      } catch (error) {
-        ErrorToaster('File Upload Failed');
-        console.error("Error:", error);
-        setIsLoading(false);
-        return null;
-      }
-    };  
+             console.log("Event received:", event);
+             const filesArray = Array.from(event);
+             console.log("Converted files array:", filesArray);
+             setFiles(filesArray);
+           
+             const formData = new FormData();
+             let fileNameArray = [];
+           
+             filesArray.forEach(file => {
+               const fileInfo = {
+                 "filePath": file.path || '', 
+                 "fileName": file.name,
+                 "fileURL": "",  
+                 "fileType": file.type,
+                 "classification": "",  
+                 "verified": true,     
+                 "valid": true ,     
+               };
+               fileNameArray.push(fileInfo);
+               formData.append('documents', file);
+             });
+           
+             const blob = new Blob([JSON.stringify(fileNameArray)], {
+               type: "application/json"
+             });
+             formData.append('files', blob);
+           
+             try {
+              setIsLoadingImageDocs(true);
+               const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+               console.log("API Response:", response);
+               SuccessToaster('File Uploaded Successfully');
+               console.log("Response data:", response?.data);
+               setUploadFileData(prevData => {
+                 // Merge previous data with new data
+                 return [...(prevData || []), ...(response?.data || [])];
+               });
+               setIsLoadingImageDocs(false);
+               return response?.data;
+             } catch (error) {
+               ErrorToaster('File Upload Failed');
+               console.error("Error:", error);
+               setIsLoading(false);
+               return null;
+             }
+           };  
 
   useEffect(() => {
     if (name && dateTime) {
@@ -253,9 +257,10 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const handleApplicationReject = async () => {
     try {
-      let files = (uploadFileData || []).map(file => ({
+      const files = (uploadFileData || []).map((file, index) => ({
         ...file,              
-        description: documentDesc || "", 
+        description: documentDesc[index] || "",
+        title: documentTitle[index] || "", 
       }));
       const payload = {
         notes: {
@@ -311,13 +316,31 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     }
   };
 
+  // const checkApproveEnabled = () => {
+  //   const hasValidComments = notes.trim() !== '';
+  //   // const hasValidSignature = formDetails?.esignatureRequired ? isSigned : true;
+  //   // setIsApproveEnabled(isChecked.isChecked && hasValidComments && isSigned);
+  //   setIsApproveEnabled(hasValidComments);
+    
+  // };
+
   const checkApproveEnabled = () => {
     const hasValidComments = notes.trim() !== '';
-    // const hasValidSignature = formDetails?.esignatureRequired ? isSigned : true;
-    // setIsApproveEnabled(isChecked.isChecked && hasValidComments && isSigned);
-    setIsApproveEnabled(hasValidComments);
     
+    // Check if there are any uploaded files
+    if (uploadFileData.length > 0) {
+      // For files, check if all documents have titles
+      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+        documentTitle[index] && documentTitle[index].trim() !== ''
+      );
+      
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+    } else {
+      // If no files are uploaded, only check for valid comments
+      setIsApproveEnabled(hasValidComments);
+    }
   };
+
 
   const checkRequirements = () => {
       return isChecked.isChecked
@@ -355,14 +378,19 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   return (
     <div>
+       {isLoadingImageDocs && (
+      <div
+        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+
+    )}
       
  {isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
     )}
 {!isLoadingImage && (
       <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
@@ -488,7 +516,18 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                       placeholder: "Enter comments / notes ",
                       toolbar: {
                         shouldNotGroupWhenFull: true,
-                        sticky: true
+                        sticky: true,
+                        items: [
+                          'undo', 'redo',
+                          '|',
+                          'heading',
+                          '|',
+                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                          '|',
+                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                          '|',
+                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                      ],
                       },
                       autoGrow: false,
                     }}
@@ -526,7 +565,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                                   Upload any supporting documents
                                 </div>
                                 <div className={`${style.marginLeftRight20}`}>
-                                  click to upload
+                                  Click To Upload
                                 </div>
                                 </div>
                             </div>
@@ -536,29 +575,46 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                     </Dropzone>
                   </>
                   </div>
-                  {files.length > 0 && (
-                <div className={style.twoColumnGrid}>
-                      <div className={`${style.displayInRow} ${style.referenceCardStyle1} ${style.alignItem} ${style.marginTop10} ${style.marginBottom10}`}>
-                        <DescriptionIcon className={`${style.docsIcon}`} />
-                        {files.length > 0 ? (
-                          files.map((file, index) => (
-                            <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                          ))
-                        ) : (
-                          <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                        )}
+                  {uploadFileData.length > 0 && (
+                <div>
+                  {uploadFileData.map((file, index) => (
+                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                      <div className={`${style.threeColumnGrid}`}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyleDocs}`}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
                       </div>
-                      <div className={style.marginTop10}>
+                      <div>
                       <CommonInputField
-                            value={documentDesc}
-                            onChange={(e) => setDocumentDesc(e.target.value)}
-                            type="text"
-                            placeholder="Description (Optional)"
-                            className={`${style.referenceCardStyleDescription}`}
+                        value={documentTitle[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentTitle = [...documentTitle];
+                          newDocumentTitle[index] = e.target.value;
+                          setDocumentTitle(newDocumentTitle);
+                        }}
+                        type="text"
+                        placeholder="Title*"
+                        className={style.referenceCardStyleDescription}
                       />
                       </div>
+                      <div>
+                      <CommonInputField
+                        value={documentDesc[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentDesc = [...documentDesc];
+                          newDocumentDesc[index] = e.target.value;
+                          setDocumentDesc(newDocumentDesc);
+                        }}
+                        type="text"
+                        placeholder="Description (Optional)"
+                        className={style.referenceCardStyleDescription}
+                      />
                       </div>
-                    )}
+                    </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               {/* <div className={`${style.marginTop10}`}>
               <CommonCheckBox
                   className={`${style.marginTop}`}
@@ -606,7 +662,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 CONTINUE
               </button>
             </div> */}
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
+            <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
                <div className={style.reviewButton}>NOT RECOMMENDED</div>
             </div>
           </div>

@@ -36,11 +36,11 @@
     border-radius: 20px !important;
 }
 
-// .eSignImg {
-//     width: 80%;
-//     height: 80%;
-//     object-fit: contain;
-// }
+.eSignImg {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
 
 .description {
     text-align: left;
@@ -61,6 +61,14 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .saveInProgress {
@@ -76,6 +84,15 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .displayInRow {

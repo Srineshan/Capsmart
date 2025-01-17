@@ -53,7 +53,6 @@ const ApplicationFieldCard = ({
   isBasicPath,
   stepPath,
   formId,
-  formIndex,
   priorData,
   getIsSubmitClicked,
   applicationId,
@@ -85,6 +84,7 @@ const ApplicationFieldCard = ({
 }) => {
   const [calendarStart, setCalendarStart] = useState(false);
   const { section, step } = useParams();
+  const [formIndex, setFormIndex] = useState();
   // const [isAddMore, setIsAddMore] = useState(
   //     addMoreOpenBydefault ? true : false
   // );
@@ -108,6 +108,12 @@ const ApplicationFieldCard = ({
     renderObjectFields(object);
     console.log("entered");
   }, [basicForm, isAddMore]);
+
+  useEffect(() => {
+    if (step !== undefined && basicForm !== undefined) {
+      setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    }
+  }, [step])
 
   const getValueByPath = (obj, path) => {
     const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -179,35 +185,36 @@ const ApplicationFieldCard = ({
       for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
         try {
           if (
-            response?.data[triggerIndex]?.classification !== null &&
+            response?.data[triggerIndex]?.documentType !== null &&
             formSchema?.requiredDocuments?.length !== 0
           ) {
             await PUT(
-              `application-management-service/application/${applicationId}/form/updateData`,
+              `application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`,
               {
                 documentType:
-                  response?.data[triggerIndex]?.classification !== null
-                    ? response?.data[triggerIndex]?.classification
+                  response?.data[triggerIndex]?.documentType !== null
+                    ? response?.data[triggerIndex]?.documentType?.name
                     : "",
                 fileSize: `${(
                   event[triggerIndex]?.size /
                   (1024 * 1024)
                 ).toFixed(2)} Mb`,
-                fileURL: response?.data[triggerIndex]?.fileURL,
-                fileType: response?.data[triggerIndex]?.fileType,
+                fileURL: response?.data[triggerIndex]?.file?.fileURL,
+                fileType: response?.data[triggerIndex]?.file?.fileType,
                 fileUploaded: event[triggerIndex]?.name,
                 requirement:
-                  response?.data[triggerIndex]?.classification !== null
+                  response?.data[triggerIndex]?.documentType !== null
                     ? basicForm?.documentsRequired?.filter(
                       (data) =>
                         data?.document?.name ===
-                        response?.data[triggerIndex]?.classification
+                        response?.data[triggerIndex]?.documentType?.name
                     )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
                 valid: response?.data[triggerIndex]?.valid,
                 verified: response?.data[triggerIndex]?.verified,
+                rowId: response?.data[triggerIndex]?.id
               }
             );
           }
@@ -261,7 +268,8 @@ const ApplicationFieldCard = ({
         file = await addNewDocument(value);
       }
       console.log(file);
-      current[lastKey] = file;
+      current[lastKey] = file?.file;
+      current['rowId'] = file?.id;
       setIsLoading(false);
     } else {
       current[lastKey] = value;
@@ -957,32 +965,33 @@ const ApplicationFieldCard = ({
         SuccessToaster("File Uploaded Successfully");
         try {
           if (
-            response?.data?.classification !== null &&
+            response?.data?.documentType !== null &&
             formSchema?.requiredDocuments?.length !== 0
           ) {
             await PUT(
               `application-management-service/application/${applicationId}/form/updateData`,
               {
                 documentType:
-                  response?.data?.classification !== null
-                    ? response?.data?.classification
+                  response?.data?.documentType !== null
+                    ? response?.data?.documentType?.name
                     : "",
                 fileSize: `${(file?.size / (1024 * 1024)).toFixed(2)} Mb`,
-                fileURL: response?.data?.fileURL,
-                fileType: response?.data?.fileType,
+                fileURL: response?.data?.file?.fileURL,
+                fileType: response?.data?.file?.fileType,
                 fileUploaded: file?.name,
                 requirement:
-                  response?.data?.classification !== null
+                  response?.data?.documentType !== null
                     ? basicForm?.documentsRequired?.filter(
                       (data) =>
                         data?.document?.name ===
-                        response?.data?.classification
+                        response?.data?.documentType?.name
                     )?.[0]?.required
                       ? "Required"
                       : "Recommended"
                     : "",
                 valid: response?.data?.valid,
                 verified: response?.data?.verified,
+                rowId: response?.data?.id
               }
             );
           }
@@ -1556,6 +1565,22 @@ const ApplicationFieldCard = ({
                     }}
                     config={{
                       placeholder: "Type your content here...",
+                      toolbar: {
+                        shouldNotGroupWhenFull: true,
+                        sticky: true,
+                        items: [
+                          'undo', 'redo',
+                          '|',
+                          'heading',
+                          '|',
+                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                          '|',
+                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                          '|',
+                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                      ],
+                      },
+                      autoGrow: false,
                     }}
                   />
                 </div>
@@ -1669,10 +1694,20 @@ const ApplicationFieldCard = ({
           // Check if the birthday should be less than today
           const shouldSetMaxDateForBirthday = object?.customValidations?.some(
             (validation) =>
-              validation.condition === "Date1LessThanCurrentDate" &&
+              validation.condition === "Age_GreaterThan25LessThan100" &&
               `${baseKey}.${fieldKey}` === validation.parameters.date1
           );
-
+          const currentDate = new Date();
+          const maxDateForBirthday = new Date(
+            currentDate.getFullYear() - 25,
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          const minDateForBirthday = new Date(
+            currentDate.getFullYear() - 100,
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
           // Final minDate logic
           const minDate = (() => {
             if (shouldSetMinDateToToday) {
@@ -1681,10 +1716,14 @@ const ApplicationFieldCard = ({
             if (minDateForDate2) {
               return minDateForDate2; // Date2 > Date1 logic
             }
+            if(shouldSetMaxDateForBirthday) {
+              return minDateForBirthday
+            }
             return null; // Default
           })();
 
-          const maxDate = shouldSetMaxDateForBirthday ? new Date() : null;
+          const maxDate = shouldSetMaxDateForBirthday ? maxDateForBirthday : null;
+
 
 
           console.log("shouldSetMinDateToToday:", shouldSetMinDateToToday);
@@ -1833,6 +1872,9 @@ const ApplicationFieldCard = ({
             );
           }
         case "radiobutton":
+          if (isPOD) {
+            return null;
+          }
           return (
             <div
               className={`${style.spaceBetween} ${style.verticalAlignCenter}`}
@@ -1882,11 +1924,10 @@ const ApplicationFieldCard = ({
           if (fieldData.priorDataComparisonNeeded === true) {
             const priorData = basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]]?.[fieldKey];
             const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
-            const isConflict = priorData !== undefined && currentValue !== priorData;
-            console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData)
+            const isConflict = priorData !== undefined && priorData !== null && currentValue !== undefined && currentValue !== null && currentValue !== priorData;
             let isIssueResolved = basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== undefined && basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== null;
             let isShowAdditionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.if?.properties?.[fieldKey]?.const;
-            console.log(isShowAdditionalFields)
+            console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData, currentValue !== priorData, currentValue, priorData, basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]], basicForm?.forms?.[formIndex], formIndex, isShowAdditionalFields, priorData !== undefined, priorData !== null, currentValue !== undefined, currentValue !== null, currentValue !== priorData, isShowAdditionalFields !== currentValue)
             if (isConflict && !showPriorDataDialog && !isIssueResolved && isShowAdditionalFields !== currentValue) {
               setDisclosureBaseKey(baseKey?.split('.')?.[1])
               setDisclosureFieldKey(fieldKey)
@@ -1894,6 +1935,7 @@ const ApplicationFieldCard = ({
               setShowPriorDataDialog(true)
             }
           }
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -1924,33 +1966,39 @@ const ApplicationFieldCard = ({
                   </span> */}
                 </div>
               </div>
-              <CommonRadio
-                className={style.leftAlign}
-                value={
-                  getValueByPath(
-                    basicForm,
-                    `${basicpath}.${baseKey}.${fieldKey}`
-                  ) || null
-                }
-                onChange={
-                  isPOD
-                    ? () => { }
-                    : (e) => handleChange(fieldKey, e.target.value, baseKey)
-                }
-                radioValue={fieldData.enum}
-                label={fieldData.enum}
-                required={
-                  isLableEmpty(fieldData.label)
-                    ? false
-                    : object.required?.includes(fieldKey) ||
-                    (parentData !== null
-                      ? parentData.required?.includes(fieldKey)
-                      : false)
-                }
-                warning={warningFields
-                  ?.map((data) => data?.key)
-                  ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
-              />
+              {isPOD ? (
+                <span className={currentValue === 'Yes' ? style.RadiobuttonYesStyle : style.RadiobuttonNoStyle}>
+                  {currentValue}
+                </span>
+              ) : (
+                <CommonRadio
+                  className={style.leftAlign}
+                  value={
+                    getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) || null
+                  }
+                  onChange={
+                    isPOD
+                      ? () => { }
+                      : (e) => handleChange(fieldKey, e.target.value, baseKey)
+                  }
+                  radioValue={fieldData.enum}
+                  label={fieldData.enum}
+                  required={
+                    isLableEmpty(fieldData.label)
+                      ? false
+                      : object.required?.includes(fieldKey) ||
+                      (parentData !== null
+                        ? parentData.required?.includes(fieldKey)
+                        : false)
+                  }
+                  warning={warningFields
+                    ?.map((data) => data?.key)
+                    ?.includes(`${basicpath}.${baseKey}.${fieldKey}`)}
+                />
+              )}
             </div>
           );
 
@@ -2632,6 +2680,7 @@ const ApplicationFieldCard = ({
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
+    setIsChanged(false);
   };
 
   const isValidDateString = (dateString) => {
@@ -2955,7 +3004,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
-                          <div
+                          <button
                             className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
                               }`}
                             onClick={
@@ -2965,9 +3014,10 @@ const ApplicationFieldCard = ({
                                 }
                                 : () => { }
                             }
+                             disabled={!isEdited}
                           >
                             UPDATE
-                          </div>
+                          </button>
                         </div>
                         <div>
                           <div
@@ -3000,7 +3050,7 @@ const ApplicationFieldCard = ({
                   </div>
                 ) : (
                   <>
-                    <div
+                    {/* <div
                       className={`${style.viewMyInfoText} ${style.cursorPointer}`}
                       onClick={() => {
                         setIsChanged(true);
@@ -3008,9 +3058,9 @@ const ApplicationFieldCard = ({
                       }}
                     >
                       View my information on file
-                    </div>
+                    </div> */}
                     <div
-                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
                       <div
                         className={`${yesOrNoDemographic === "Yes"

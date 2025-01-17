@@ -8,6 +8,7 @@ import style from "./index.module.scss";
 import CommonTextField from "../CommonFields/CommonTextField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import CommonSelectField from '../CommonFields/CommonSelectField';
+import CommonInputField from "../CommonFields/CommonInputField";
 import ESignature from "../ESignature";
 import CryptoJS from 'crypto-js';
 import { format ,sub,add} from 'date-fns';
@@ -52,6 +53,10 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [uploadFileData, setUploadFileData]= useState('');
+  const [documentDesc, setDocumentDesc] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
+  const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
+   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const dropzoneStyle = {
       width: "100%",
       height: "auto",
@@ -61,10 +66,11 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       borderRadius: 5,
     };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
-  const isApproveEnabled = 
-    // userRoleComments.trim() !== '' && 
-  selectedDateForDept !== null && 
-  selectedRoleCred !== '';
+  // const isApproveEnabled = 
+  //   // userRoleComments.trim() !== '' && 
+  // selectedDateForDept !== null && 
+  // selectedRoleCred !== '' &&
+  // documentTitle !== '';
 
   // useEffect(() => {
   //   if (dateFormat) {
@@ -131,50 +137,52 @@ useEffect(() => {
   }, [name, dateTime, publicKey]);
 
   const changeHandler = async (event) => {
-    console.log("Event received:", event);
-    setIsLoading(true);
-    const filesArray = Array.from(event);
-    console.log("Converted files array:", filesArray);
-    setFiles(filesArray);
-  
-    const formData = new FormData();
-    let fileNameArray = [];
-  
-    filesArray.forEach(file => {
-      const fileInfo = {
-        "filePath": file.path || '', 
-        "fileName": file.name,
-        "fileURL": "",  
-        "fileType": file.type,
-        "classification": "",  
-        "verified": true,     
-        "valid": true         
-      };
-      fileNameArray.push(fileInfo);
-      formData.append('documents', file);
-    });
-  
-    const blob = new Blob([JSON.stringify(fileNameArray)], {
-      type: "application/json"
-    });
-    formData.append('files', blob);
-  
-    try {
-      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-      console.log("API Response:", response);
-      SuccessToaster('File Uploaded Successfully');
-      console.log("Response data:", response?.data);
-      setUploadFileData(response?.data)
-  
-      setIsLoading(false);
-      return response?.data;
-    } catch (error) {
-      ErrorToaster('File Upload Failed');
-      console.error("Error:", error);
-      setIsLoading(false);
-      return null;
-    }
-  };  
+                  console.log("Event received:", event);
+                  const filesArray = Array.from(event);
+                  console.log("Converted files array:", filesArray);
+                  setFiles(filesArray);
+                
+                  const formData = new FormData();
+                  let fileNameArray = [];
+                
+                  filesArray.forEach(file => {
+                    const fileInfo = {
+                      "filePath": file.path || '', 
+                      "fileName": file.name,
+                      "fileURL": "",  
+                      "fileType": file.type,
+                      "classification": "",  
+                      "verified": true,     
+                      "valid": true ,     
+                    };
+                    fileNameArray.push(fileInfo);
+                    formData.append('documents', file);
+                  });
+                
+                  const blob = new Blob([JSON.stringify(fileNameArray)], {
+                    type: "application/json"
+                  });
+                  formData.append('files', blob);
+                
+                  try {
+                    setIsLoadingImageDocs(true);
+                    const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+                    console.log("API Response:", response);
+                    SuccessToaster('File Uploaded Successfully');
+                    console.log("Response data:", response?.data);
+                    setUploadFileData(prevData => {
+                      // Merge previous data with new data
+                      return [...(prevData || []), ...(response?.data || [])];
+                    });
+                    setIsLoadingImageDocs(false);
+                    return response?.data;
+                  } catch (error) {
+                    ErrorToaster('File Upload Failed');
+                    console.error("Error:", error);
+                    setIsLoading(false);
+                    return null;
+                  }
+                };  
 
 
   // useEffect(() => {
@@ -242,6 +250,29 @@ useEffect(() => {
  
   // };
 
+  useEffect(() => {
+    checkApproveEnabled();
+  }, [userRoleComments, documentTitle, selectedDateForDept, selectedRoleCred, uploadFileData]);
+
+  const checkApproveEnabled = () => {
+    const hasValidComments = userRoleComments.trim() !== '';
+    const hasValidDate = selectedDateForDept !== null ; 
+    const hasValidMember = selectedRoleCred !== '';
+    
+    // Check if there are any uploaded files
+    if (uploadFileData.length > 0) {
+      // For files, check if all documents have titles
+      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+        documentTitle[index] && documentTitle[index].trim() !== ''
+      );
+      
+      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidDate && allFilesHaveTitles);
+    } else {
+      // If no files are uploaded, only check for valid comments
+      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidDate);
+    }
+  };
+
   const onClose = () => {
     getActiveApplicationView(false);
     getIsOpen(false);
@@ -250,7 +281,7 @@ useEffect(() => {
   const onClickApproveMoveFunction = () => {
     handleApplicationApprove(true);
     getApplicationMoveToNext(true);
-    handleApplicationApproveDate(true);
+    // handleApplicationApproveDate(true);
   }
 
   const handleApplicationApproveDate = async () => {
@@ -277,6 +308,11 @@ useEffect(() => {
 
   const handleApplicationApprove = async () => {
             let title;
+            const files = (uploadFileData || []).map((file, index) => ({
+              ...file,              
+              description: documentDesc[index] || "",
+              title: documentTitle[index] || "", 
+            }));
             if (selectedTab === 'level-2') {
             if (userRole?.includes("Department Head")) {
               title = "Dept. Head / Chief Review";
@@ -317,7 +353,8 @@ useEffect(() => {
               },
               role: "Credentialing Committee"
             },
-          files: uploadFileData || []
+          files: files || [],
+          upcomingCredCommitteeMeetingDate: selectedDateForDept || ''
         };
         
       await PUT(
@@ -336,6 +373,11 @@ useEffect(() => {
   const getApplicationMoveToNext = async () => {
 
    let title;
+   const files = (uploadFileData || []).map((file, index) => ({
+    ...file,              
+    description: documentDesc[index] || "",
+    title: documentTitle[index] || "", 
+  }));
        if (selectedTab === 'level-2') {
         if (userRole?.includes("Department Head")) {
           title = "Dept. Head / Chief Review";
@@ -373,7 +415,8 @@ useEffect(() => {
         },
         role: "Credentialing Committee"
       },
-       files: uploadFileData || []
+       files: files,
+       upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
 
     await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=false`, payload)
@@ -421,13 +464,17 @@ const handleCheckboxChange = (checkboxName) => (event) => {
 
   return (
     <>
+    {isLoadingImageDocs && (
+         <div
+           className={`${style.loadingOverlay}`}
+         >
+           <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+         </div>
+       )}
     {isLoadingImage && (
-        //  <div
-        //    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-        //  >
-        //    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-        //  </div>
-        <LoadingScreen />
+        <div  className={style.loadingOverlay}>
+          <LoadingScreen/>
+        </div>
        )}
    
     {!isLoadingImage && (
@@ -475,6 +522,22 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 }}
                 config={{
                   placeholder: "Enter comments / notes",
+                  toolbar: {
+                    shouldNotGroupWhenFull: true,
+                    sticky: true,
+                    items: [
+                      'undo', 'redo',
+                      '|',
+                      'heading',
+                      '|',
+                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                      '|',
+                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                      '|',
+                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                  ],
+                  },
+                  autoGrow: false,
                 }}
                 onReady={(editor) => {
                   editor.editing.view.change((writer) => {
@@ -511,7 +574,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                                   Upload any supporting documents
                                 </div>
                                 <div className={`${style.marginLeftRight20}`}>
-                                  click to upload
+                                  Click To Upload
                                 </div>
                                 </div>
                               </div>
@@ -522,18 +585,46 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     </>
 
                   </div>
-                  {files.length > 0 && (
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10} ${style.marginBottom20}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                    )}
-                  </div>
-                   )}
+                  {uploadFileData.length > 0 && (
+                <div>
+                  {uploadFileData.map((file, index) => (
+                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                      <div className={`${style.threeColumnGrid}`}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                      </div>
+                      <div>
+                      <CommonInputField
+                        value={documentTitle[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentTitle = [...documentTitle];
+                          newDocumentTitle[index] = e.target.value;
+                          setDocumentTitle(newDocumentTitle);
+                        }}
+                        type="text"
+                        placeholder="Title*"
+                        className={style.referenceCardStyleDescription}
+                      />
+                      </div>
+                      <div>
+                      <CommonInputField
+                        value={documentDesc[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentDesc = [...documentDesc];
+                          newDocumentDesc[index] = e.target.value;
+                          setDocumentDesc(newDocumentDesc);
+                        }}
+                        type="text"
+                        placeholder="Description (Optional)"
+                        className={style.referenceCardStyleDescription}
+                      />
+                      </div>
+                    </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
               <div>
               <CommonDateField

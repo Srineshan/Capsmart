@@ -19,6 +19,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
+import { dataLoadingGIF } from '../../../utils/formatting';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -38,6 +39,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const { applicationId, section, step } = useParams();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -50,6 +52,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [basicForm, formIndex])
 
     useEffect(() => {
+        if (sessionStorage.getItem('fromSummary') === true || sessionStorage.getItem('fromSummary') === 'true') {
+            setShowJourneyDialog(true);
+        }
         sessionStorage.setItem('fromSummary', false);
     }, [])
 
@@ -62,9 +67,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }, [formSchema])
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form)
         }
@@ -114,6 +119,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             try {
                 const response = await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}/addFileToForm`, uploadedFile);
                 console.log(response?.data);
+                setIsLoading(false)
                 return response?.data;
             } catch (error) {
                 console.error(error);
@@ -160,6 +166,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }
 
     const handleSubmitApplicationReq = async () => {
+        setIsLoading(true)
         if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
@@ -182,11 +189,13 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     // }
                 })
                 .catch((error) => {
+                    setIsLoading(false)
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
         }
         else {
+            setIsLoading(false)
             // if (sessionStorage.getItem('fromSummary') === 'true') {
             //     navigate(-1);
             // } else {
@@ -196,6 +205,13 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     }
     return (
         <div>
+            {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
             <div className={`${style.applicationScreenGrid}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />

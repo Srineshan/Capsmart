@@ -50,7 +50,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -210,9 +210,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         // const { data: basicForm } = await GET(
         //     `application-management-service/application/basicForm`
         // );
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: formSchema } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             // let temp = formSchema?.schema;
             // if (temp.properties.applicant.properties !== null) {
@@ -536,26 +536,6 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
                                         </div>
                                         <CommonDivider />
-                                        <div className={` ${style.marginTop}`}>
-                                            {/* {showDemographicInfo && ( */}
-                                            <ApplicationFieldCard
-                                                object={formSchema?.properties?.contactAddress2}
-                                                gridStyle={style.mailingAddressGrid}
-                                                baseKey={"contactAddress2"}
-                                                basicForm={basicForm}
-                                                setBasicForm={setBasicForm}
-                                                stepPath={`forms[${formIndex}].data`}
-                                                isEdited={isContactInfoEdited}
-                                                setIsEdited={setIsContactInfoEdited}
-                                                getAllPath={getAllPath}
-                                                getAllLabels={getAllLabelsContactAddress}
-                                                getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
-                                                formSchema={formSchemaWholeObject}
-                                            />
-
-                                        </div>
-                                        <CommonDivider />
                                         {/* </div>
                                         <div className={`${style.applicationCardStyle} ${style.marginTop} `}> */}
                                         <div className={` ${style.marginTop}`}>
@@ -577,6 +557,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             />
                                         </div>
                                         {/* </div> */}
+                                        <CommonDivider />
+                                        <div className={` ${style.marginTop}`}>
+                                            {/* {showDemographicInfo && ( */}
+                                            <ApplicationFieldCard
+                                                object={formSchema?.properties?.contactAddress2}
+                                                gridStyle={style.mailingAddressGrid}
+                                                baseKey={"contactAddress2"}
+                                                basicForm={basicForm}
+                                                setBasicForm={setBasicForm}
+                                                stepPath={`forms[${formIndex}].data`}
+                                                isEdited={isContactInfoEdited}
+                                                setIsEdited={setIsContactInfoEdited}
+                                                getAllPath={getAllPath}
+                                                getAllLabels={getAllLabelsContactAddress}
+                                                getIsSubmitClicked={getIsSubmitClickedForContact}
+                                                warningFields={warningFields}
+                                                formSchema={formSchemaWholeObject}
+                                            />
+
+                                        </div>
                                     </div>
                                 )}
                                 {!viewContactInfo ? (
@@ -584,16 +584,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${style.displayInRowRev} ${style.marginTop}`}
                                     >
                                         <div className={style.marginLeft}>
-                                            <div
+                                            <button
                                                 className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
                                                 onClick={isContactInfoEdited ? () => {
                                                     // setShowContactInfo(false);
                                                     getMissingFields()
                                                     setUpdateFrom('contact')
                                                 } : () => { }}
+                                                disabled={!isContactInfoEdited}
                                             >
                                                 UPDATE
-                                            </div>
+                                            </button>
                                         </div>
                                         <div>
                                             <div
@@ -625,7 +626,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             </div>
                         ) : (
                             <>
-                                <div className={`${style.viewMyInfoText} ${style.cursorPointer} ${style.marginTop}`} onClick={() => { setShowContactInfo(true); setViewContactInfo(true) }}>View my information on file</div>
+                                {/* <div className={`${style.viewMyInfoText} ${style.cursorPointer} ${style.marginTop}`} onClick={() => { setShowContactInfo(true); setViewContactInfo(true) }}>View my information on file</div> */}
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
@@ -645,12 +646,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             </>
                         )}
                     </div>
-                    <div className={style.threeColForButton}>
+                    {/* <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
-                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
-                    </div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                    </div> */}
                 </div>
                 <div>
                     <ApplicationAssistanceCard
@@ -667,8 +668,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             SKIP FOR NOW
                         </div> */}
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
                         <div
-                            className={`${style.saveInProgress} ${style.marginTop}`}
+                            className={`${style.saveInProgress} ${style.marginTop10}`}
                             onClick={() => getIsSaveInProgressOpen(true)}
                         >
                             SAVE IN PROGRESS

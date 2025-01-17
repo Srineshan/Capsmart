@@ -1,0 +1,157 @@
+@import "../../index.scss";
+
+.heading {
+  text-align: left;
+  font: normal normal bold 24px Proxima Nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginLeft {
+  margin-left: 20px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.marginLeft30 {
+  margin-left: 30px;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.padding20 {
+  padding: 20px;
+}
+
+.padding10 {
+  padding: 0px 10px;
+}
+
+.HeaderGrid {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 90% 5%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 85% !important;
+}
+
+.dialogBody {
+  height: 80vh;
+  width: 100%;
+  overflow-y: scroll;
+  padding: 10px;
+}
+
+.fullWidth {
+  width: 100% !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+//   padding: 20px 40px 0px 40px;
+  padding: 20px;
+  border-radius: 20px !important;
+}
+
+.Headertext {
+  color: var(--unnamed-color-06617a);
+  text-align: left;
+  font: normal normal bold 24px Proxima Nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.alignCenter{
+    align-items: center;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.cardTitle {
+  text-align: left;
+  font: normal normal bold 20px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+}
+
+.advanceBoxStyle {
+  background: var(--unnamed-color-e8e9e9) 0% 0% no-repeat padding-box;
+  background: #E8E9E9 0% 0% no-repeat padding-box;
+  border-radius: 2px;
+  opacity: 0.8;
+  padding: 5px;
+}
+
+.paidTextStyle {
+  text-align: left;
+  font: italic normal bold 20px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.unpaidTextStyle {
+  text-align: left;
+  font: italic normal bold 20px/26px Proxima Nova;
+  letter-spacing: 0px;
+  color: $statusred;
+  opacity: 1;
+}
+
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.alignStart {
+  text-align: start;
+}
+
+.borderStyleTiles {
+  background: $tableheadhover 0% 0% no-repeat padding-box;
+  height: 2px;
+
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}

@@ -20,17 +20,31 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
 }
 
 .stickyContainer {
     position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
 }
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 0px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+ }
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -51,6 +65,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -64,6 +87,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -87,18 +118,36 @@
 }
 
 .disabled {
-    cursor: not-allowed;
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
+}
+
+.disabled :hover {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
 }
 
 .disabledButton {
-    cursor: not-allowed;
-    opacity: 0.4;
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
+}
+
+.disabledButton :hover {
+    opacity: 0.5 !important; 
+    cursor: not-allowed !important;
 }
 
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .twoColForButton {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
 }
 
 .displayInRow {
@@ -302,7 +351,7 @@
 }
 
 .uploadButton {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 5px 10px;
@@ -471,10 +520,18 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButton:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .reappointmentButtonOutlined {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
+    background: #14358F1A 0% 0% no-repeat padding-box;
     border-radius: 8px;
     border: 1px solid $primarycolor;
     padding: 10px 15px;
@@ -482,12 +539,29 @@
     min-width: 120px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonOutlined:hover {
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029;
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .privilegeConfirmationGrid {
     display: grid;
     grid-template-columns: 3% 89% 5%;
     gap: 1%;
+}
+
+.privilegeConfirmationGrid:hover {
+    background: #06617A14 0% 0% no-repeat padding-box;
+    border: 0.5px solid #9AAFB5;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .iconBackgroundColor {
@@ -543,6 +617,15 @@
     min-width: 200px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonEdit:hover {
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029;
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .noText {

@@ -14,8 +14,10 @@ import Dropzone from "react-dropzone";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
+import axios from "axios";
+// import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
-const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -35,10 +37,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
-  const [uploadFileData, setUploadFileData]= useState('');
-   const [documentDesc, setDocumentDesc] = useState("");
+  const [uploadFileData, setUploadFileData]= useState([]);
+  const [documentDesc, setDocumentDesc] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -47,6 +51,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -57,7 +62,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [userNotes]);
+  }, [userNotes, documentTitle, uploadFileData]);
 
   // useEffect(() => {
   //   getActiveApplicationView();
@@ -68,10 +73,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
+  
 
    const changeHandler = async (event) => {
           console.log("Event received:", event);
-          setIsLoading(true);
           const filesArray = Array.from(event);
           console.log("Converted files array:", filesArray);
           setFiles(filesArray);
@@ -99,13 +104,16 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
           formData.append('files', blob);
         
           try {
+            setIsLoadingImageDocs(true);
             const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
             console.log("API Response:", response);
             SuccessToaster('File Uploaded Successfully');
             console.log("Response data:", response?.data);
-            setUploadFileData(response?.data)
-        
-            setIsLoading(false);
+            setUploadFileData(prevData => {
+              // Merge previous data with new data
+              return [...(prevData || []), ...(response?.data || [])];
+            });
+            setIsLoadingImageDocs(false);
             return response?.data;
           } catch (error) {
             ErrorToaster('File Upload Failed');
@@ -146,10 +154,22 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         setIsLoadingImage(false)
       };
 
-  const checkApproveEnabled = () => {
-    const hasValidComments = userNotes.trim() !== '';
-      setIsApproveEnabled(hasValidComments);
-  };
+      const checkApproveEnabled = () => {
+        const hasValidComments = userNotes.trim() !== '';
+        
+        // Check if there are any uploaded files
+        if (uploadFileData.length > 0) {
+          // For files, check if all documents have titles
+          const allFilesHaveTitles = uploadFileData.every((_, index) => 
+            documentTitle[index] && documentTitle[index].trim() !== ''
+          );
+          
+          setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
+        } else {
+          // If no files are uploaded, only check for valid comments
+          setIsApproveEnabled(hasValidComments);
+        }
+      };
 
   const onClose = () => {
     // getActiveApplicationView(false);
@@ -158,9 +178,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   const getApplicationNotes = async () => {
 
-    const files = (uploadFileData || []).map(file => ({
+    const files = (uploadFileData || []).map((file, index) => ({
       ...file,              
-      description: documentDesc || "", 
+      description: documentDesc[index] || "",
+      title: documentTitle[index] || "", 
     }));
    
     let temp = {
@@ -179,6 +200,26 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       });
 };
 
+const handleTextChange = async (editor) => {
+  const data = editor.getData();
+  setUserNotes(data);
+
+  // Call LanguageTool API
+  try {
+    const response = await axios.post(
+      "https://api.languagetool.org/v2/check",
+      new URLSearchParams({
+        text: data.replace(/<[^>]+>/g, ""), // Remove HTML tags
+        language: "en-US",
+      }),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    setErrors(response.data.matches); // Extract errors from API response
+  } catch (error) {
+    console.error("Error with LanguageTool API:", error);
+  }
+};
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
@@ -187,13 +228,17 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   return (
 <>
-{isLoadingImage && (
-      // <div
-      //   className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      // >
-      //   <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      // </div>
-      <LoadingScreen />
+{isLoadingImageDocs && (
+      <div
+        className={`${style.loadingOverlay}`}
+      >
+        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+      </div>
+    )}
+   {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
     )}
 {!isLoadingImage && (
     <Dialog
@@ -304,13 +349,31 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   const data = editor.getData();
                   setUserNotes(data);
                 }}
+                // onChange={(event, editor) => handleTextChange(editor)}
                 config={{
                   placeholder: "Enter comments / notes",
                   toolbar: {
                     shouldNotGroupWhenFull: true,
-                    sticky: true
+                    sticky: true,
+                    items: [
+                      'undo', 'redo',
+                      '|',
+                      'heading',
+                      '|',
+                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                      '|',
+                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                      '|',
+                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                  ],
                   },
                   autoGrow: false,
+                  // disableNativeSpellChecker: false,        
+                  // extraPlugins: [WProofreader],
+                  // wproofreader: {
+                  //   // serviceId: 'your-service-id', // Replace with your service ID
+                  //   srcUrl: 'https://svc.webspellchecker.net/spellcheck31/wscbundle/wscbundle.js',
+                  // },
                 }}
                 onReady={(editor) => {
                   const editorElement = editor.editing.view.document.getRoot();
@@ -322,6 +385,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                       );
                     });
                 }}
+                
               />
             </div>
             <div className={`${style.marginTop} ${style.cursorPointer}`}>
@@ -345,10 +409,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                         <div className={style.uploadBorderStyle}>
                         <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
                           <div className={style.uploadTextStyle}>
-                            Upload any supporting documents
+                            Upload any Supporting Documents
                           </div>
                           <div className={`${style.marginLeftRight20}`}>
-                            click to upload
+                            Click To Upload
                           </div>
                           </div>
                         </div>
@@ -359,28 +423,45 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
               </>
 
               </div>
-              {files.length > 0 && (
-                <div className={style.twoColumnGrid}>
-              <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem} ${style.marginTop10}`}>
-                <DescriptionIcon className={`${style.docsIcon}`} />
-                {files.length > 0 ? (
-                  files.map((file, index) => (
-                    <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                  ))
-                ) : (
-                  <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                )}
-              </div>
-              <div className={style.marginTop10}>
-              <CommonInputField
-                    value={documentDesc}
-                    onChange={(e) => setDocumentDesc(e.target.value)}
-                    type="text"
-                    placeholder="Description (Optional)"
-                    className={`${style.referenceCardStyleDescription}`}
-              />
-              </div>
-              </div>
+              {uploadFileData.length > 0 && (
+                <div>
+                  {uploadFileData.map((file, index) => (
+                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                      <div className={`${style.threeColumnGrid}`}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                      </div>
+                      <div>
+                      <CommonInputField
+                        value={documentTitle[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentTitle = [...documentTitle];
+                          newDocumentTitle[index] = e.target.value;
+                          setDocumentTitle(newDocumentTitle);
+                        }}
+                        type="text"
+                        placeholder="Title*"
+                        className={style.referenceCardStyleDescription}
+                      />
+                      </div>
+                      <div>
+                      <CommonInputField
+                        value={documentDesc[index] || ""}
+                        onChange={(e) => {
+                          const newDocumentDesc = [...documentDesc];
+                          newDocumentDesc[index] = e.target.value;
+                          setDocumentDesc(newDocumentDesc);
+                        }}
+                        type="text"
+                        placeholder="Description (Optional)"
+                        className={style.referenceCardStyleDescription}
+                      />
+                      </div>
+                    </div>
+                    </div>
+                  ))}
+                </div>
               )}
         </div>
         <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
@@ -405,4 +486,4 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default NotesDialog;

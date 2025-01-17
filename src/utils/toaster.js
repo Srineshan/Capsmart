@@ -11,18 +11,18 @@ export const CommonToasterInstance = () =>
     className: 'toast-container',
   });
 
-export const SuccessToaster = (message) =>
-  CommonToaster.show({
-    message,
-    intent: Intent.PRIMARY,
-    icon: 'tick',
-    timeout: 2000,
-  });
+export const SuccessToaster = (message) => { }
+// CommonToaster.show({
+//   message,
+//   intent: Intent.PRIMARY,
+//   icon: 'tick',
+//   timeout: 2000,
+// });
 
-export const ErrorToaster = (message) =>
-  CommonToaster.show({
-    message,
-    intent: Intent.DANGER,
-    icon: 'error',
-    timeout: 2000,
-  });
+export const ErrorToaster = (message) => { }
+// CommonToaster.show({
+//   message,
+//   intent: Intent.DANGER,
+//   icon: 'error',
+//   timeout: 2000,
+// });

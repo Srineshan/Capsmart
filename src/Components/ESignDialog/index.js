@@ -55,7 +55,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     }, [applicationId])
 
     useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
     }, [basicForm, step])
 
 
@@ -108,7 +108,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 SuccessToaster('File Uploaded Successfully');
                 console.log(response?.data);
                 let temp = tempValue;
-                temp[baseKey].file = response?.data;
+                temp[baseKey].file = response?.data?.file;
                 handleSubmitApplicationReq(temp)
             } catch (error) {
                 ErrorToaster('File Upload Failed');

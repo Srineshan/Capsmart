@@ -76,3 +76,134 @@
 .fullWidth {
   width: 100%;
 }
+
+.receiptContainer {
+  width: 100%;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.receiptHeader {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.receiptLogo {
+  width: 100px;
+  margin-bottom: 10px;
+}
+
+.receiptHeader h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.8em;
+}
+
+.receiptHeader p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Details Section */
+.receiptDetails h3 {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.2em;
+}
+
+.receiptDetails p {
+  margin: 5px 0;
+  font-size: 0.95em;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+
+/* QR Code */
+.receiptQr {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.receiptQr h4 {
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 1.1em;
+}
+
+/* Footer */
+.receiptFooter {
+  text-align: center;
+  margin-top: 20px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  color: #666;
+}
+
+.receiptFooter a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.receiptFooter a:hover {
+  text-decoration: underline;
+}
+
+/* Print Button */
+.printButton {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.printButton:hover {
+  background: linear-gradient(45deg, #0056b3, #004080);
+}
+
+.printButton:active {
+  transform: scale(0.98);
+}
+
+.hiddenForScreen {
+  display: none;
+}
+
+@media print {
+  .hiddenForScreen {
+    display: block;
+  }
+}

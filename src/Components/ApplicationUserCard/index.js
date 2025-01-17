@@ -59,7 +59,7 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             // </div>
           )}
           <div
-          // className={style.verticalSpaceBetween}
+          // className={style.contentText}
           >
             <div
               className={`${style.nameStyle}`}

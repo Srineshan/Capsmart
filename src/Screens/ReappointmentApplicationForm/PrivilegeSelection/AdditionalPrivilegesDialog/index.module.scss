@@ -72,7 +72,7 @@
 }
 
 .uploadButton {
-    background: #F5F5F8 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border: 0.4000000059604645px solid $secondarycolor;
     border-radius: 4px;
     padding: 5px 10px;
@@ -113,20 +113,6 @@
     border-radius: 20px !important;
 }
 
-.continue {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 6px #00000029;
-    border-radius: 8px;
-    text-align: center;
-    font: normal normal bold 17px/30px proxima-nova;
-    letter-spacing: 0px;
-    color: #FFFFFF;
-    text-transform: uppercase;
-    padding: 5px;
-    cursor: pointer;
-    width: 240px;
-}
-
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -139,7 +125,36 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
-    width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover { 
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052; 
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box; 
+    box-shadow: 0px 3px 12px #00000052; 
+    border-radius: 8px; 
+    opacity: 1;
 }
 
 .displayInRow {

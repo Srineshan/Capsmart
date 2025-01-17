@@ -23,6 +23,9 @@ import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 import LoadingScreen from '../../Components/LoadingScreen';
+import { dataLoadingGIF } from '../../utils/formatting';
+import ScheduleA from './ScheduleA';
+import ScheduleB from './ScheduleB';
 import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentApplicationForm = () => {
@@ -88,7 +91,7 @@ const ReappointmentApplicationForm = () => {
             case 'DemographicData':
                 return <DemographicData basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'PrivilegeSelection':
-                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
+                return <PrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} />;
             case 'AdditionalPrivilegeSelection':
                 return <AdditionalPrivilegeSelection basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />;
             case 'ProfessionalConduct':
@@ -119,6 +122,10 @@ const ReappointmentApplicationForm = () => {
                 return <MiscellaneousQuestions basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
             case 'ApplicantAcknowledgement':
                 return <ApplicantAcknowledgement dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ScheduleA':
+                return <ScheduleA dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
+            case 'ScheduleB':
+                return <ScheduleB dateFormat={canadaData?.dateFormat || 'dd/MM/yyyy'} name={`${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `} basicForm={basicForm} getPreApplication={getPreApplication} applicationId={applicationId} />;
             default:
                 // return <LMSModules basicForm={basicForm} setBasicForm={setBasicForm} applicationId={applicationId} getPreApplication={getPreApplication} />
                 return <div>Step not found</div>;
@@ -127,15 +134,24 @@ const ReappointmentApplicationForm = () => {
 
     console.log(section, step, atob(step))
 
-    if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
-        return <LoadingScreen />;
-    }
+    // if (isLoading && atob(step) !== "ApplicantAcknowledgement") {
+    //     return <LoadingScreen />;
+    // }
 
     return (
-        <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => handleLogout()} />
-            <div className={style.screenPadding}>
-                {StepDisplay()}
+        <div>
+            {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
+            <div className={style.screenBackground}>
+                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+                <div className={style.screenPadding}>
+                    {StepDisplay()}
+                </div>
             </div>
         </div>
     )
