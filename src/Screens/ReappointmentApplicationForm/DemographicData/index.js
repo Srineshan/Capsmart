@@ -210,9 +210,9 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         // const { data: basicForm } = await GET(
         //     `application-management-service/application/basicForm`
         // );
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: formSchema } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             // let temp = formSchema?.schema;
             // if (temp.properties.applicant.properties !== null) {
