@@ -145,7 +145,7 @@ const logError = async (error, info) => {
 const root = createRoot(document.getElementById('root'));
 if (window.self === window.top) {
   root.render(
-    <AuthProvider projectId={process.env.REACT_APP_DESCOPE_PROJECT_ID}>
+    <AuthProvider projectId={'P2fnkZZjj6Q0BlMlbeONkXVIukl3'}>
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
         <App />
       </ErrorBoundary>
