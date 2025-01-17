@@ -734,7 +734,18 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                       placeholder: "Enter comments / notes",
                       toolbar: {
                         shouldNotGroupWhenFull: true,
-                        sticky: true
+                        sticky: true,
+                        items: [
+                          'undo', 'redo',
+                          '|',
+                          'heading',
+                          '|',
+                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                          '|',
+                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                          '|',
+                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                      ],
                       },
                       autoGrow: false,
                     }}

@@ -4961,6 +4961,10 @@ input[type="number"] {
   padding: 30px;
 }
 
+.paddingTopBottom10 {
+  padding: 10px 0px;
+}
+
 .commentsNotesHeadingFontStyle {
 
   text-align: left;
@@ -5375,4 +5379,25 @@ input[type="number"] {
 
 .medicalHistoryGrid> :nth-child(3) {
   grid-column: 1 / -1;
+}
+
+.backgroundColorStyle{
+  border: 0.4px solid var(--unnamed-color-9aafb5);
+  background: #F5F8F8 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #9AAFB5;
+  border-radius: 2px;
+  opacity: 1;
+}
+
+.fileBackgroundStyle{
+  background: #9AAFB5 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid #2F20BE;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+
+.threeColGrid{
+  display: grid;
+  grid-template-columns: 8% 76% 9%;
+  grid-gap: 10px;
 }

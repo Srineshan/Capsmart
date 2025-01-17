@@ -1770,6 +1770,22 @@ useEffect(() => {
                                           config={{
                                             placeholder:
                                               "Insert any privilege competency and qualification information...",
+                                              toolbar: {
+                                                shouldNotGroupWhenFull: true,
+                                                sticky: true,
+                                                items: [
+                                                  'undo', 'redo',
+                                                  '|',
+                                                  'heading',
+                                                  '|',
+                                                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                  '|',
+                                                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                  '|',
+                                                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                              ],
+                                              },
+                                              autoGrow: false,
                                           }}
                                         />
                                       </div>
@@ -2031,6 +2047,22 @@ useEffect(() => {
                                     }}
                                     config={{
                                       placeholder: 'Insert any privilege competency and qualification information...',
+                                      toolbar: {
+                                        shouldNotGroupWhenFull: true,
+                                        sticky: true,
+                                        items: [
+                                          'undo', 'redo',
+                                          '|',
+                                          'heading',
+                                          '|',
+                                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                          '|',
+                                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                          '|',
+                                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                      ],
+                                      },
+                                      autoGrow: false,
                                     }}
                                   />
                                 </div>

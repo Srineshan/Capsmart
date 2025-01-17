@@ -6,6 +6,7 @@ import WritingFile from "./../../images/writingFile.png";
 import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded';
 import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
@@ -65,6 +66,7 @@ import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
 import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
@@ -1561,7 +1563,8 @@ const NewActiveApplication = ({
         temp.push({
           "type": "icon",
           "icon": array?.map(innerData =>
-            <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />),
+            // <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />),
+            <CheckCircleRoundedIcon style={{ fontSize: 20,color: `#25BF6A` }}  onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData?.file) }} />),
           'isShowHoverText': false
         });
       } else {
@@ -2062,6 +2065,22 @@ const NewActiveApplication = ({
                                           config={{
                                             placeholder:
                                               "Insert any privilege competency and qualification information...",
+                                              toolbar: {
+                                                shouldNotGroupWhenFull: true,
+                                                sticky: true,
+                                                items: [
+                                                  'undo', 'redo',
+                                                  '|',
+                                                  'heading',
+                                                  '|',
+                                                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                  '|',
+                                                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                  '|',
+                                                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                              ],
+                                              },
+                                              autoGrow: false,
                                           }}
                                         />
                                       </div>
@@ -2323,6 +2342,22 @@ const NewActiveApplication = ({
                                     }}
                                     config={{
                                       placeholder: 'Insert any privilege competency and qualification information...',
+                                      toolbar: {
+                                        shouldNotGroupWhenFull: true,
+                                        sticky: true,
+                                        items: [
+                                          'undo', 'redo',
+                                          '|',
+                                          'heading',
+                                          '|',
+                                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                          '|',
+                                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                          '|',
+                                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                      ],
+                                      },
+                                      autoGrow: false,
                                     }}
                                   />
                                 </div>
@@ -3351,7 +3386,7 @@ const NewActiveApplication = ({
                     </div>
                     <div className={style.cmeHourCard}>
                         <div className={style.totalText}>Required</div>
-                        <div className={style.hourText}>40</div>
+                        <div className={style.hourText}>25</div>
                         <div className={style.totalText}>Credits / Hours</div>
                     </div>
                   </div>
@@ -4824,8 +4859,9 @@ const NewActiveApplication = ({
                                     className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointmentForStaff : expand?.index === index + 1
                                       ? style.tableHeaderGridStyleForm
                                       : style.tableHeaderGridStyle
-                                      } ${style.marginTop10}`}
+                                      } ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
                                   >
+                                    {/* <div  className={`${style.backgroundColorStyle}`}> */}
                                     <div
                                       className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                     >
@@ -4849,6 +4885,7 @@ const NewActiveApplication = ({
                                         {data?.title}
                                       </div> */}
                                     </div>
+                                    {/* </div> */}
                                     {/* {((expand?.status && expand?.index === index + 1) || applicationType !== "NEW") ? (
                                       <>
                                         {credApproval?.some((newData) => {
@@ -5969,7 +6006,7 @@ const NewActiveApplication = ({
                                     <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
                                       {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
                                       <div>
-                                        <div className={`${style.tableHeaderGridStyleCred1}`} >
+                                        <div className={`${style.tableHeaderGridStyleCred1} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`} >
                                           <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
                                           {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} > */}
                                           {applicationType === "NEW" ? (
@@ -10749,7 +10786,7 @@ const NewActiveApplication = ({
                                           // let innerData = log?.files[0];
                                           return (
                                             <div key={fileIndex}>
-                                              <div className={style.displayInRow}>
+                                              <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
                                                 {/* Display Material UI PDF icon and link */}
                                                 <div
                                                   className={style.cursorPointer}
@@ -10758,7 +10795,7 @@ const NewActiveApplication = ({
                                                     setselectedFile(file);
                                                   }}
                                                 >
-                                                  <DescriptionRoundedIcon
+                                                  <PictureAsPdfIcon
                                                     className={style.docsIcon}
                                                     style={{ marginRight: '8px' }}
                                                   />
@@ -10772,6 +10809,12 @@ const NewActiveApplication = ({
                                                 >
                                                   {file?.fileName}
                                                 </div>
+                                                <div>
+                                                <DescriptionOutlinedIcon
+                                                    // className={style.docsIcon}
+                                                    style={{ marginRight: '8px' }}
+                                                  />
+                                                  </div>
                                               </div>
                                               {file?.title && (
                                                 <div
