@@ -49,48 +49,47 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
   };
 
   useEffect(() => {
-    // const navigate = useNavigate();
-    const fetchData = () => {
-      console.log('login route', Auth())
-      if (Auth()) {
-        console.log('login route')
-        let roles = jwt(Auth())?.roles?.split(",");
-        let isAppUser =
-          roles?.includes("Approver") ||
-          roles?.includes("Reviewer") ||
-          roles?.includes("Activity Logger");
-        let isEntityLevelAdmin =
-          roles?.includes("Super Sys Admin") ||
-          roles?.includes("Entity Sys Admin") ||
-          roles?.includes("Entity Sys User") ||
-          roles?.includes("Distributor Admin");
-        let isStaffManager = roles?.includes("Staff Manager");
-        let isApplicant = roles?.includes("Applicant");
-        console.log('login route', roles)
-        if (isAppUser) {
-          window.location.href = "/";
-        } else if (isEntityLevelAdmin) {
-          window.location.pathname = "/entitySitePortal";
-        } else if (isStaffManager) {
-          console.log('login route', roles, isStaffManager)
-          window.location.pathname = "/applications";
-        } else if (isApplicant) {
-          window.location.pathname = "/applicant";
-        } else {
-          window.location.pathname = "/entitySitePortal";
-        }
-      }
-    }
-    if (!Auth()) {
-      console.log('login route', Auth())
-      setTimeout(() => {
-        fetchData();
-      }, 2000);
-    } else {
-      console.log('login route', Auth())
-      fetchData();
-    }
-  })
+    // const fetchData = () => {
+    //   console.log('login route', Auth())
+    //   if (Auth()) {
+    //     console.log('login route')
+    //     let roles = jwt(Auth())?.roles?.split(",");
+    //     let isAppUser =
+    //       roles?.includes("Approver") ||
+    //       roles?.includes("Reviewer") ||
+    //       roles?.includes("Activity Logger");
+    //     let isEntityLevelAdmin =
+    //       roles?.includes("Super Sys Admin") ||
+    //       roles?.includes("Entity Sys Admin") ||
+    //       roles?.includes("Entity Sys User") ||
+    //       roles?.includes("Distributor Admin");
+    //     let isStaffManager = roles?.includes("Staff Manager");
+    //     let isApplicant = roles?.includes("Applicant");
+    //     console.log('login route', roles)
+    //     if (isAppUser) {
+    //       window.location.href = "/";
+    //     } else if (isEntityLevelAdmin) {
+    //       window.location.pathname = "/entitySitePortal";
+    //     } else if (isStaffManager) {
+    //       console.log('login route', roles, isStaffManager)
+    //       window.location.pathname = "/applications";
+    //     } else if (isApplicant) {
+    //       window.location.pathname = "/applicant";
+    //     } else {
+    //       window.location.pathname = "/entitySitePortal";
+    //     }
+    //   }
+    // }
+    // if (!Auth()) {
+    //   console.log('login route', Auth())
+    //   setTimeout(() => {
+    //     fetchData();
+    //   }, 2000);
+    // } else {
+    //   console.log('login route', Auth())
+    //   fetchData();
+    // }
+  }, [])
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
@@ -168,9 +167,9 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
     if (sessionToken) {
       cookie.set('authorization', sessionToken, {
         path: '/',
-        domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
-        secure: true,
-        sameSite: 'none',
+        // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+        // secure: true,
+        // sameSite: 'none',
       });
       navigate('/')
     }

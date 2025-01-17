@@ -719,9 +719,9 @@ const App = ({ props }) => {
         if (response?.data?.id) {
           cookie.set("entityId", response?.data?.id, {
             path: "/",
-            domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
-            secure: true,
-            sameSite: 'none',
+            // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+            // secure: true,
+            // sameSite: 'none',
           });
           setEntityId(response?.data?.id);
           // if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
@@ -758,9 +758,9 @@ const App = ({ props }) => {
       .then((data) => {
         cookie.set("user", data?.accessToken, {
           path: "/",
-          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
-          secure: true,
-          sameSite: 'none',
+          // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+          // secure: true,
+          // sameSite: 'none',
         });
       });
     console.log('entered')
@@ -892,6 +892,10 @@ const App = ({ props }) => {
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
+  const IsLoggedIn = ({ children }) => {
+    return !isAuthenticated ? children : <Navigate to="/" />;
+  };
+
   if (isSessionLoading) {
     return <Loader />;
   }
@@ -910,7 +914,7 @@ const App = ({ props }) => {
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LoginRoute />} />
-              <Route path="/loginPage" element={<DescopeLoginDialog />} />
+              <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
 
               {/* Private Routes */}
               <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
