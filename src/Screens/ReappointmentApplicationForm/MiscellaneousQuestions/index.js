@@ -536,7 +536,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           // />
                           <div className={style.fieldWrapper}>
                             <div className={`${style.lableStyle}`}>
-                              {'Name the Provider Group to cover you*'}
+                              {'Name the Provider Groups to cover you*'}
                             </div>
                             <DatalistInput
                               items={getItems(groupOptions) || []}
@@ -610,7 +610,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               disabledList={[]}
                               disabledSelect={false}
                               error={!covererName}
-                              label={"Select named Covering Provider"}
+                              label={"Select Named Covering Providers"}
                               required={true}
                               warning={warningFields
                                 ?.map((data) => data?.label)
@@ -642,7 +642,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           /> */}
                             <div>
                               <div className={`${style.lableStyle}`}>
-                                {'Name the Provider Group to cover you*'}
+                                {'Name the Provider Groups to cover you*'}
                               </div>
                               <DatalistInput
                                 items={getItems(groupOptions) || []}
@@ -660,7 +660,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                 // onChange={(e) => {
                                 //   setCovererName(e.target.value);
                                 // }}
-                                placeholder={'Enter the Provider Group to cover you'}
+                                placeholder={'Enter the Provider Group to select'}
                                 value={covererName}
                                 required={true}
                               />
