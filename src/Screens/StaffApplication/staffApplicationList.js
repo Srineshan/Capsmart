@@ -3051,7 +3051,23 @@ const StaffApplicationList = ({
                           ? "Trigger Reappointment"
                           : "Create New Application"}
                       </div>
-                    </div>
+                    </div>    
+                  </div>
+                ) : null}
+                {!(applicationType === "REAPPOINTMENT" && (userRole?.includes("Department Head") || userRole?.includes("Credentialing Committee") || userRole?.includes("Advisory Committee") || userRole?.includes("Board"))) ? (
+                  <div
+                    className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                  >
+                    {(applicationType === "NEW" || applicationType === "REAPPOINTMENT") && (
+  <div className={`${style.displayInRow} ${style.alignCenter}`}>
+    <div
+      className={`${style.displayInRow} ${style.alignCenter}`}
+      onClick={() => navigate("/historicalData")}
+    >
+      Fill Historical Data
+    </div>
+  </div>
+)}  
                   </div>
                 ) : null}
                 {/* <div className={`${style.searchContainer}`}>
@@ -3064,7 +3080,7 @@ const StaffApplicationList = ({
                   <CommonInputField
                     type="text"
                     placeholder="Search By Staff Name"
-                    className={`${style.searchInput}`}
+                    className=`${style.searchInput}`}
                   />
                 </div> */}
 

@@ -60,33 +60,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         sessionStorage.getItem('applicationCreationType') || 'NEW'
     );
 
-    //working - 1
-    // const initialCheckboxState = tableData.reduce((acc, item) => ({
-    //     ...acc,
-    //     [item.id]: false
-    //   }), {})
-    // const [checked, setChecked] = useState(initialCheckboxState);
-    // const [checkedIds, setCheckedIds] = useState( tableData?.map(item => item.id)?.filter(id => id !== null && id !== undefined));
-
-    // working - 2 
-
-    // const initialCheckboxState = tableData.reduce((acc, item) => ({
-    //     ...acc,
-    //     [item.id]: false
-    //   }), {});
-
-    //   // State for individual checkbox checked status
-    //   const [checked, setChecked] = useState(initialCheckboxState);
-
-    //   // State for list of checked IDs
-    //   const [checkedIds, setCheckedIds] = useState(() => {
-    //     // Try to retrieve checked IDs from sessionStorage on initial load
-    //     const storedCheckedIds = sessionStorage.getItem('checkedIds');
-    //     return storedCheckedIds 
-    //       ? JSON.parse(storedCheckedIds)
-    //       : tableData?.map(item => item.id)?.filter(id => id != null);
-    //   });
-    // const [checkedIds, setCheckedIds] = useState([]);
+    
     const menuRef = useRef(null);
     const countHoverRef = useRef(null);
     const textHoverRef = useRef(null);
@@ -122,61 +96,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Reappointment': 'REAPPOINTMENT_STATUS'
     }
 
-    // useEffect(() => {
-    //     const storedIds = sessionStorage.getItem('checkedIds');
-    //     const initialCheckedIds = storedIds ? JSON.parse(storedIds) : [];
-
-    //     // Only update if the initial checked ids are different from current state
-    //     if (JSON.stringify(initialCheckedIds) !== JSON.stringify(checkedIds)) {
-    //         setCheckedIds(initialCheckedIds);
-    //     }
-    // }, []); 
-
-
-    // working - 1
-
-    // useEffect(() => {
-    //     updateCheckedIds();
-    //     handleCheckboxClick();
-    //     // handleCheckIds();
-    //   }, []);
-
-
-
-    // useEffect(() => {
-    //     const validIds = checkedIds.filter(id => id !== null && id !== undefined);
-    //     if (validIds.length > 0) {
-    //       sessionStorage.setItem('checkedIds', JSON.stringify(validIds));
-    //     }
-    //   }, []);
-
-
-    // console.log("checkedIdsssss" + checkedIds)
-
-    // working - 2
-
-    // Effect to sync checked state with sessionStorage on component mount
-    //   useEffect(() => {
-    //     // Retrieve stored checked IDs from sessionStorage
-    //     const storedCheckedIds = sessionStorage.getItem('checkedIds');
-
-    //     if (storedCheckedIds) {
-    //       // Parse the stored IDs
-    //       const parsedCheckedIds = JSON.parse(storedCheckedIds);
-
-    //       // Update the checked state based on stored IDs
-    //       const newCheckedState = { ...initialCheckboxState };
-    //       parsedCheckedIds.forEach(id => {
-    //         if (newCheckedState.hasOwnProperty(id)) {
-    //           newCheckedState[id] = true;
-    //         }
-    //       });
-
-    //       // Update both checked state and checkedIds
-    //       setChecked(newCheckedState);
-    //       setCheckedIds(parsedCheckedIds);
-    //     }
-    //   }, [tableData]);
+    
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -190,36 +110,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorEl(null);
     };
 
-    // const getCheckedIdsFromSession = useCallback(() => {
-    //     const storedIds = sessionStorage.getItem('checkedIds');
-    //     return storedIds ? JSON.parse(storedIds) : [];
-    // }, []);
-
-    // useEffect(() => {
-    //     // Fetch checked IDs from session storage on component mount
-    //     setCheckedIds(getCheckedIdsFromSession());
-    // }, [sessionStorage.getItem('checkedIds')]);
-
-    // useEffect(() => {
-    //     // Retrieve the string from session storage
-    //     const storedCheckedIds = sessionStorage.getItem('checkedIds');
-    //     console.log('pass', storedCheckedIds);
-
-    //     // Parse only if the stored value exists and is a valid string
-    //     if (storedCheckedIds) {
-    //         try {
-
-    //             const parsedCheckedIds = JSON.parse(storedCheckedIds);
-    //             console.log('pass parsing stored checked IDs:', parsedCheckedIds);
-    //             setCheckedIds(parsedCheckedIds);
-    //         } catch (error) {
-    //             console.error('Error parsing stored checked IDs:', error);
-    //             // Fallback to an empty array if parsing fails
-    //             setCheckedIds([]);
-    //         }
-    //     }
-    // }, [checkedIds]); // Remove checkedIds from dependency array to prevent infinite loop
-
+    
 
     const handleClickIcon = (event, index, tableDataIndex) => {
         setAnchorElIcon(event.currentTarget);
@@ -282,142 +173,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorElSite(null);
     };
 
-    // working initial
-    // const handleCheckboxClick = (id) => {
-    //     setChecked(prevState => ({
-    //       ...prevState,
-    //       [id]: !prevState[id] // Toggle the state for the specific id
-    //     }));
-    //     console.log("checkedddddd", id);
-    //   };
-
-    // working - 0
-
-    // const handleCheckboxClick = (id) => {
-    //     setChecked(prev => {
-    //       const newChecked = {
-    //         ...prev,
-    //         [id]: !prev[id]
-    //       };
-    //       updateCheckedIds(id, !prev[id]);
-    //       return newChecked;
-    //     });
-    //   };
-
-    //working - 1
-
-    // const handleCheckboxClick = (id) => {
-    //     if (id === null || id === undefined) return; // Skip null/undefined IDs
-
-    //     setChecked(prev => {
-    //       const newChecked = {
-    //         ...prev,
-    //         [id]: !prev[id]
-    //       };
-    //       updateCheckedIds(id, !prev[id]);
-    //       return newChecked;
-    //     });
-    //   };
-
-    // working initial
-
-    // const handleCheckboxClick = (id) => {
-    //     setChecked(prev => {
-    //       const newState = {
-    //         ...prev,
-    //         [id]: !prev[id]
-    //       };
-    //       updateCheckedIds(id, newState[id]);
-    //       return newState;
-    //     });
-    //     console.log("checkedIds" + checkedIds);
-
-    //   };
-
-    //working
-
-    //   const updateCheckedIds = (id, isChecked) => {
-    //     sessionStorage.setItem('checkedIds', JSON.stringify(checkedIds));
-    //     setCheckedIds(prev => {
-    //       if (isChecked) {
-    //         return [...prev, id];
-    //       } 
-    //       else {
-    //         return prev?.filter(checkedId => checkedId !== id);
-    //       }
-    //     }
-    // );
-    //   };
-
-    // working - 1
-
-    // const updateCheckedIds = (id, isChecked) => {
-    //     if (id === null || id === undefined) return; // Skip null/undefined IDs
-
-    //     setCheckedIds(prev => {
-    //       let newCheckedIds;
-    //       if (isChecked) {
-    //         // Add ID when checking
-    //         newCheckedIds = [...prev, id];
-    //       } else {
-    //         // Remove ID when unchecking
-    //         newCheckedIds = prev.filter(checkedId => checkedId !== id);
-    //       }
-
-    //       // Filter out null values and update session storage
-    //       const validIds = newCheckedIds.filter(id => id !== null && id !== undefined);
-
-    //       if (validIds.length > 0) {
-    //         sessionStorage.setItem('checkedIds', JSON.stringify(validIds));
-    //       } else {
-    //         sessionStorage.removeItem('checkedIds');
-    //       }
-
-    //       return newCheckedIds;
-    //     });
-    //   };
-
-    // working - 2
-    // const handleCheckboxClick = (id) => {
-    //     if (id == null) return; // Skip null/undefined IDs
-
-    //     setChecked(prev => {
-    //       const newChecked = {
-    //         ...prev,
-    //         [id]: !prev[id]
-    //       };
-    //       updateCheckedIds(id, !prev[id]);
-    //       return newChecked;
-    //     });
-    //   };
-
-    // Update checked IDs in state and sessionStorage
-    //   const updateCheckedIds = (id, isChecked) => {
-    //     if (id == null) return; // Skip null/undefined IDs
-
-    //     setCheckedIds(prev => {
-    //       let newCheckedIds;
-    //       if (isChecked) {
-    //         // Add ID when checking
-    //         newCheckedIds = [...new Set([...prev, id])]; // Prevent duplicates
-    //       } else {
-    //         // Remove ID when unchecking
-    //         newCheckedIds = prev.filter(checkedId => checkedId !== id);
-    //       }
-
-    //       // Filter out null values and update session storage
-    //       const validIds = newCheckedIds.filter(checkedId => checkedId != null);
-
-    //       if (validIds.length > 0) {
-    //         sessionStorage.setItem('checkedIds', JSON.stringify(validIds));
-    //       } else {
-    //         sessionStorage.removeItem('checkedIds');
-    //       }
-
-    //       return newCheckedIds;
-    //     });
-    //   };
-
+    
 
     const handleClickDept = (event, index, tableDataIndex) => {
         setAnchorElDept(event.currentTarget);
@@ -906,21 +662,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     )}
                                                 </div>
                                             )
-                                                //  : tableData?.type === "delete" ? (
-                                                //     <div className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.alignCenter}`} onClick={(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) ? () => { setShowOptions(true); setSelectedMenuIndex(index) } : () => { } : () => { setShowOptions(true); setSelectedMenuIndex(index) }}>
-                                                //         {(actions[0]?.conditionToShow !== undefined && actions?.length === 1) ? eval(actions[0]?.conditionToShow) && (<MoreHorizIcon className={style.cursorPointer} onClick={() => { actionsData?.onClick(data); handleClose() }} aria-describedby={id} />)
-                                                //             : (<MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />)}
-                                                //         {/* {showOptions && index === selectedMenuIndex && (
-                                                //             <div className={style.actionsCard} ref={menuRef}>
-                                                //                 {actions?.map((actionsData, actionsIndex) => actionsData?.conditionToShow !== undefined ? eval(actionsData?.conditionToShow) &&
-                                                //                     (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                //                     :
-                                                //                     (<div className={`${style.specificActionCard} ${style.cursorPointer}`} onClick={() => { actionsData?.onClick(data); handleClose() }} key={actionsIndex}>{actionsData?.data}</div>)
-                                                //                 )}
-                                                //             </div>
-                                                //         )} */}
-                                                //     </div>
-                                                // ) 
+                                                
                                                 : (
                                                     visibleActions?.length === 1 ? (
                                                         <div

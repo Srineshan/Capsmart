@@ -37,6 +37,8 @@ const ReportTypeOverview = React.lazy(() =>
 );
 const Home = React.lazy(() => import("./Screens/CustomerSystemAdmin"));
 
+const HistoricalData = React.lazy(() => import("./Screens/StaffApplication/fillHistoricalData"));
+
 const FunctionalTitleForCustomer = React.lazy(() =>
   import("./Screens/ReferenceList/functionalTitleForCustomer")
 );
@@ -719,6 +721,9 @@ const App = ({ props }) => {
                 path="/applicationForm/applicationSummary"
                 element={<ApplicationSummary />}
               />
+              <Route path="/historicalData"
+              element={<HistoricalData/>
+              }/>
               <Route
                 path="/applicationForm/applicationAcknowledgement"
                 element={<ApplicationAcknowledgement />}
