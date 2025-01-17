@@ -717,7 +717,12 @@ const App = ({ props }) => {
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
         if (response?.data?.id) {
-          cookie.set("entityId", response?.data?.id, { path: "/" });
+          cookie.set("entityId", response?.data?.id, {
+            path: "/",
+            domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+            secure: true,
+            sameSite: 'none',
+          });
           setEntityId(response?.data?.id);
           // if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
           login(response?.data?.id);
@@ -751,7 +756,12 @@ const App = ({ props }) => {
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken, { path: "/" });
+        cookie.set("user", data?.accessToken, {
+          path: "/",
+          domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+          secure: true,
+          sameSite: 'none',
+        });
       });
     console.log('entered')
     scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))

@@ -3,7 +3,7 @@ import { GET } from '../dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from './index.module.scss';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationHeader from '../../Components/ApplicationHeader';
 import DemographicData from './DemographicData';
 import PrivilegeSelection from './PrivilegeSelection';
@@ -27,6 +27,7 @@ import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
+    const navigate = useNavigate()
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId, section, step } = useParams();
@@ -70,6 +71,15 @@ const ReappointmentApplicationForm = () => {
         );
         setBasicForm(basicForm)
         setIsLoading(false);
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
     }
 
     const StepDisplay = () => {
@@ -123,7 +133,7 @@ const ReappointmentApplicationForm = () => {
 
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => logout()} />
+            <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={() => handleLogout()} />
             <div className={style.screenPadding}>
                 {StepDisplay()}
             </div>

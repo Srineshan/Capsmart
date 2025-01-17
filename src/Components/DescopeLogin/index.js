@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
 import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
@@ -14,8 +14,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import Cookie from "universal-cookie";
+import jwt from "jwt-decode";
 import "./login.css";
 import { format } from "date-fns";
+import { Auth } from "../../utils/auth";
 
 const DescopeLoginDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
@@ -45,6 +47,50 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
+  useEffect(() => {
+    // const navigate = useNavigate();
+    const fetchData = () => {
+      console.log('login route', Auth())
+      if (Auth()) {
+        console.log('login route')
+        let roles = jwt(Auth())?.roles?.split(",");
+        let isAppUser =
+          roles?.includes("Approver") ||
+          roles?.includes("Reviewer") ||
+          roles?.includes("Activity Logger");
+        let isEntityLevelAdmin =
+          roles?.includes("Super Sys Admin") ||
+          roles?.includes("Entity Sys Admin") ||
+          roles?.includes("Entity Sys User") ||
+          roles?.includes("Distributor Admin");
+        let isStaffManager = roles?.includes("Staff Manager");
+        let isApplicant = roles?.includes("Applicant");
+        console.log('login route', roles)
+        if (isAppUser) {
+          window.location.href = "/";
+        } else if (isEntityLevelAdmin) {
+          window.location.pathname = "/entitySitePortal";
+        } else if (isStaffManager) {
+          console.log('login route', roles, isStaffManager)
+          window.location.pathname = "/applications";
+        } else if (isApplicant) {
+          window.location.pathname = "/applicant";
+        } else {
+          window.location.pathname = "/entitySitePortal";
+        }
+      }
+    }
+    if (!Auth()) {
+      console.log('login route', Auth())
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
+    } else {
+      console.log('login route', Auth())
+      fetchData();
+    }
+  })
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
