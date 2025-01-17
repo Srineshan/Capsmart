@@ -762,7 +762,23 @@ $(519-740-4934)`;
             config={{
               removePlugins: ['Title'],
               allowedContent: true,
-              extraAllowedContent: 'pre; div; span; p;'
+              extraAllowedContent: 'pre; div; span; p;',
+              toolbar: {
+                shouldNotGroupWhenFull: true,
+                sticky: true,
+                items: [
+                  'undo', 'redo',
+                  '|',
+                  'heading',
+                  '|',
+                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                  '|',
+                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                  '|',
+                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+              ],
+              },
+              autoGrow: false,
             }}
             onChange={handleEditorChange(setEmailContentTop)}
           />

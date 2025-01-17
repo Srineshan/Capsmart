@@ -515,7 +515,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     if (isDataLoaded) {
       // Once data is loaded, set all IDs as checked
-      const allIds = tableData.map(data => data.id);
+      const allIds = tableData.map(data => data?.id);
       setCheckedIds(allIds);
     }
   }, [isDataLoaded, tableData]);
@@ -800,12 +800,12 @@ const StaffApplicationList = ({
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}`
         );
-        console.log("Application data", response?.data.applications);
+        console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
         setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
-        return response?.data.applications || [];
+        return response?.data?.applications || [];
       }
     } catch (error) {
       console.error("Error fetching applications:", error);
@@ -1051,8 +1051,8 @@ const StaffApplicationList = ({
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -1070,7 +1070,7 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc.documentType) : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -1115,7 +1115,7 @@ const StaffApplicationList = ({
         taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#FEC106` }} />);
       }
 
-      taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
+      taskListStatus.push(data?.tasks?.completedCount + "/" + data?.tasks?.totalCount);
       lastUpdated.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
       );
@@ -1277,7 +1277,7 @@ const StaffApplicationList = ({
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map(note => {
-          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
@@ -1395,13 +1395,13 @@ const StaffApplicationList = ({
 
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Department Head"));
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -1447,7 +1447,7 @@ const StaffApplicationList = ({
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map(note => {
-          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
@@ -1547,13 +1547,13 @@ const StaffApplicationList = ({
 
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -1696,13 +1696,13 @@ const StaffApplicationList = ({
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
       // const workflowDeptRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -1748,7 +1748,7 @@ const StaffApplicationList = ({
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map(note => {
-          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
@@ -1962,13 +1962,13 @@ const StaffApplicationList = ({
       // );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Advisory Committee"));
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -2012,7 +2012,7 @@ const StaffApplicationList = ({
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map(note => {
-          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
@@ -2188,13 +2188,13 @@ const StaffApplicationList = ({
       // );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Board"));
       if (workflow) {
-        const color = workflow.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow.currentLevelStatus === "COMPLETED" ? "green"
+        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
             : "grey";
         dot.push(color);
         console.log("Matching workflow found:", {
-          role: workflow.role,
-          status: workflow.currentLevelStatus,
+          role: workflow?.role,
+          status: workflow?.currentLevelStatus,
           assignedColor: color
         });
       }
@@ -2246,7 +2246,7 @@ const StaffApplicationList = ({
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map(note => {
-          const text = note?.notes?.notes ? note.notes.notes.replace(/<[^>]*>/g, '') : '-';
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy") || '';
           return `${firstName} on ${createdDate}: ${text}`;
@@ -2422,7 +2422,7 @@ const StaffApplicationList = ({
         " "
       );
       applicantId.push(data?.applicant?.id);
-      applicantType.push(data?.providerType.serviceProviderType);
+      applicantType.push(data?.providerType?.serviceProviderType);
       // department.push(
       //   data?.basicDetails?.departmentSpecialty?.department || "-"
       // );
@@ -2544,7 +2544,7 @@ const StaffApplicationList = ({
         `${data?.applicant?.name?.lastName},  ${data?.applicant?.name?.firstName}` ||
         ""
       );
-      applicantType.push(data?.providerType.serviceProviderType);
+      applicantType.push(data?.providerType?.serviceProviderType);
       approvedNotes.push(data?.approvedNotes);
       lastUpdatedOn.push(
         format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")

@@ -130,6 +130,25 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
                     const data = editor.getData();
                     setExplanationText(data); // Update the CKEditor content
                   }}
+                  config={{
+                    placeholder: "Enter Prior Data",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                    },
+                    autoGrow: false,
+                  }}
                 />
               </div>
             </div>
