@@ -764,7 +764,9 @@ const App = ({ props }) => {
         });
       });
     console.log('entered')
-    scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+    if (sessionToken) {
+      scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+    }
     return true;
   };
 
@@ -915,6 +917,7 @@ const App = ({ props }) => {
               {/* Public Routes */}
               <Route path="/" element={<LoginRoute />} />
               <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
+              {/* <Route path="/loginPage" element={<DescopeLoginDialog />} /> */}
 
               {/* Private Routes */}
               <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
