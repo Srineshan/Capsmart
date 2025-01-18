@@ -43,16 +43,23 @@
         bottom: 0;
         left: auto;
         right: auto;
-        width: auto; 
-        padding: 0px 20px 20px 20px; 
-        margin: 0 auto; 
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
         box-sizing: border-box;
     }
 }
 
-    @media (max-width: 768px) {
+    @media (max-width: 820px) {
         .stickyContainer {
-           display: none;
+            position: sticky;
+            bottom: 0;
+            left: auto;
+            right: auto;
+            width: auto; 
+            padding: 20px 20px 20px 20px; 
+            margin: 0 auto; 
+            box-sizing: border-box;
         }
  }
 
@@ -133,17 +140,17 @@
 }
 
 .disabled :hover {
-    opacity: 0.5 !important; 
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
 
 .disabledButton {
-    opacity: 0.5 !important; 
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
 
 .disabledButton :hover {
-    opacity: 0.5 !important; 
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
 
@@ -749,7 +756,7 @@
     color: #FFFFFF;
     font: normal normal normal 14px/18px proxima-nova;
     cursor: pointer;
-  }
+}
 
 .privilegeConfirmationGrid {
     display: grid;

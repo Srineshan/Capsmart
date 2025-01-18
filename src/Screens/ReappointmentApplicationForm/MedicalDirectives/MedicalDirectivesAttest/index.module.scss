@@ -44,7 +44,7 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 8px;
     border: 0.4000000059604645px solid #e5e6e6;
-    padding: 10px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
     overflow: scroll;
 }
 
@@ -62,7 +62,7 @@
     left: calc(75% - 77px);
     bottom: 0;
     z-index: 10;
-    padding: 0px 20px 20px 20px;
+    padding: 20px 20px 20px 20px;
     background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
@@ -72,12 +72,12 @@
         bottom: 0;
         left: auto;
         right: auto;
-        width: auto; 
-        padding: 20px 20px 20px 20px; 
-        margin: 0 auto; 
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
         box-sizing: border-box;
     }
- }
+}
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -123,6 +123,7 @@
     letter-spacing: 0px;
     color: #2C2C2C;
 }
+
 .mdIDStyle {
     text-align: left;
     font: normal normal normal 16px/23px proxima-nova;

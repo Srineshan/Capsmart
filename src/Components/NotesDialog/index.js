@@ -14,6 +14,7 @@ import Dropzone from "react-dropzone";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
+import axios from "axios";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
@@ -50,6 +51,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
     borderStyle: "dashed",
     borderRadius: 5,
   };
+  const [errors, setErrors] = useState([]);
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -71,6 +73,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
+  
 
    const changeHandler = async (event) => {
           console.log("Event received:", event);
@@ -197,6 +200,26 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
       });
 };
 
+const handleTextChange = async (editor) => {
+  const data = editor.getData();
+  setUserNotes(data);
+
+  // Call LanguageTool API
+  try {
+    const response = await axios.post(
+      "https://api.languagetool.org/v2/check",
+      new URLSearchParams({
+        text: data.replace(/<[^>]+>/g, ""), // Remove HTML tags
+        language: "en-US",
+      }),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    setErrors(response.data.matches); // Extract errors from API response
+  } catch (error) {
+    console.error("Error with LanguageTool API:", error);
+  }
+};
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
@@ -326,13 +349,26 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                   const data = editor.getData();
                   setUserNotes(data);
                 }}
+                // onChange={(event, editor) => handleTextChange(editor)}
                 config={{
                   placeholder: "Enter comments / notes",
                   toolbar: {
                     shouldNotGroupWhenFull: true,
-                    sticky: true
+                    sticky: true,
+                    items: [
+                      'undo', 'redo',
+                      '|',
+                      'heading',
+                      '|',
+                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                      '|',
+                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                      '|',
+                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                  ],
                   },
                   autoGrow: false,
+                  // disableNativeSpellChecker: false,        
                   // extraPlugins: [WProofreader],
                   // wproofreader: {
                   //   // serviceId: 'your-service-id', // Replace with your service ID
@@ -349,6 +385,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                       );
                     });
                 }}
+                
               />
             </div>
             <div className={`${style.marginTop} ${style.cursorPointer}`}>

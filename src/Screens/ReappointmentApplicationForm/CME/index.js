@@ -74,7 +74,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
             if (basicForm?.forms[formIndex]?.data !== null) {
                 setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : basicForm?.forms?.[formIndex]?.data?.cmeCertificates !== undefined ? 'Yes' : 'No');
             }
@@ -159,9 +159,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -444,13 +444,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                     <div className={style.totalText}>Your Total</div>
                                                     <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
                                                     <div className={style.totalText}>Credits / Hours</div>
-                                                    {(40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
-                                                        <div className={style.hourRemainingText}>{40 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                                                    {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                        <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                                                     )}
                                                 </div>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Required</div>
-                                                    <div className={style.hourText}>40</div>
+                                                    <div className={style.hourText}>25</div>
                                                     <div className={style.totalText}>Credits / Hours</div>
                                                 </div>
                                             </div>

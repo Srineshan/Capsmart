@@ -85,7 +85,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -131,10 +131,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getIsOpen = (value) => {
@@ -664,25 +666,25 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         </div>
                         {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                             <div className={style.tableContainer}>
-                            <TableTwo
-                                tableHeaderValues={[
-                                    "",
-                                    "File Uploaded",
-                                    "Document Type",
-                                    "",
-                                    "Verified",
-                                    "Valid",
-                                    "",
-                                ]}
-                                tableDataValues={getApplicantValues(tempValue?.table)}
-                                tableData={tempValue?.table || []}
-                                gridStyle={style.gridStyle}
-                                actions={actions}
-                                // scrollStyle={style.contractScrollStyle}
-                                tableSortValues={[]}
-                                heading={"You have not yet uploaded any documents."}
-                                onClickFunction={() => { }}
-                            />
+                                <TableTwo
+                                    tableHeaderValues={[
+                                        "",
+                                        "File Uploaded",
+                                        "Document Type",
+                                        "",
+                                        "Verified",
+                                        "Valid",
+                                        "",
+                                    ]}
+                                    tableDataValues={getApplicantValues(tempValue?.table)}
+                                    tableData={tempValue?.table || []}
+                                    gridStyle={style.gridStyle}
+                                    actions={actions}
+                                    // scrollStyle={style.contractScrollStyle}
+                                    tableSortValues={[]}
+                                    heading={"You have not yet uploaded any documents."}
+                                    onClickFunction={() => { }}
+                                />
                             </div>
                         )}
                         <input
@@ -691,7 +693,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             onChange={handleFileChange}
                             style={{ display: "none" }} // Hide the actual file input
                         />
-                         {((basicForm?.forms?.[formIndex]?.data !== null &&
+                        {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <>
                                 {/* <div

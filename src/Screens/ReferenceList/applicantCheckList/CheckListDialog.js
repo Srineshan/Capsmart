@@ -1327,6 +1327,25 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   editor={ClassicEditor}
                   data={editorCompleteContent}
                   onChange={handleEditorChange(setEditorContent)}
+                  config={{
+                    placeholder: " ",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                    },
+                    autoGrow: false,
+                  }}
                 />
               </div>
               <div className={`${style.marginTop20} ${style.validation}`}>
@@ -1866,6 +1885,25 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   editor={ClassicEditor}
                   data={editorDocumentContent} // Set initial value from state
                   onChange={handleEditorChange(setEditorDocumentContent)}
+                  config={{
+                    placeholder: " ",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                    },
+                    autoGrow: false,
+                  }}
                 />
               </div>
               <div className={`${style.marginTop20} ${style.validation}`}>
@@ -2035,6 +2073,25 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   editor={ClassicEditor}
                   data={editorCompleteContent} // Set initial value from state
                   onChange={handleEditorChange(setEditorCompleteContent)}
+                  config={{
+                    placeholder: " ",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                    },
+                    autoGrow: false,
+                  }}
                 />
               </div>
               <div className={`${style.validation} ${style.marginTop20}`}>
@@ -2315,6 +2372,25 @@ const CheckListDialog = ({ open, handleClose, isEdit, selectedApplicant }) => {
                   editor={ClassicEditor}
                   data={editorFormDetailsContent}
                   onChange={handleEditorChange(setEditorFormDetailsContent)}
+                  config={{
+                    placeholder: " ",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                    },
+                    autoGrow: false,
+                  }}
                 />
               </div>
               <div className={style.marginTop20}>
