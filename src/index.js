@@ -146,10 +146,10 @@ const root = createRoot(document.getElementById('root'));
 if (window.self === window.top) {
   root.render(
     <AuthProvider projectId={'P2fnkZZjj6Q0BlMlbeONkXVIukl3'}
-    // persistJwt="cookie"
-    // cookieDomain={window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname} // Set the domain to parent domain
-    // cookieSecure={false}
-    // cookieSameSite="None"
+      persistJwt="cookie"
+      cookieDomain={window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname} // Set the domain to parent domain
+      cookieSecure={false}
+      cookieSameSite="None"
     >
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
         <App />
