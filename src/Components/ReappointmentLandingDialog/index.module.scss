@@ -3,6 +3,9 @@
 .welcomeDialog {
     height: 75%;
     width: 80% !important;
+    @media (max-width: 806px) {
+        width: 100% !important;
+    }
 }
 
 .loginDialog {
@@ -18,6 +21,11 @@
     background: $primarycolor 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
+    @media (max-width: 806px) {
+        background: #fff 0% 0% no-repeat padding-box !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
 }
 
 .whiteBackground {
@@ -26,6 +34,10 @@
     border-radius: 12px;
     padding: 20px;
     margin: -20px -40px 0 -40px;
+    @media (max-width: 806px) {
+        border-radius: 0;
+        box-shadow: none;
+    }
 }
 
 .spaceBetween {
@@ -94,11 +106,51 @@
     margin: 0 20px;
 }
 
+.daysToComplete {
+    display: none; 
+  
+    @media (max-width: 806px) {
+        width: 98%;
+        background-color: #06617A;
+        color: white;
+        padding: 10px;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 8px;
+        margin-left: 1%;
+        box-shadow: 0px 5px 20px #040B204D;
+    }
+}
+
 .welcomeText {
     text-align: left;
     font: normal normal bold 38px/45px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
+    display: block;
+    @media (max-width: 806px) {
+        display: none;
+    }
+}
+
+.headerData {
+    display: none; 
+  
+    @media (max-width: 806px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
 }
 
 .descriptionStyle {
@@ -147,6 +199,13 @@
     color: #FFFFFF;
     text-transform: uppercase;
     margin: 0 30px;
+    @media (max-width: 806px) {
+       font: normal normal normal 14px proxima-nova;
+       letter-spacing: 0px;
+       margin: 0 10px;
+       opacity: 1;
+       text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+    }
 }
 
 .textStyle {
@@ -156,6 +215,12 @@
     color: #FFFFFF;
     text-transform: uppercase;
     opacity: 0.7;
+    z-index: 1;
+    @media (max-width: 806px) {
+        font: normal normal normal 14px proxima-nova;
+        opacity: 1;
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+     }
 }
 
 .linkStyle {
@@ -179,6 +244,9 @@
     cursor: pointer;
     width: 240px;
     transition: background-color 0.3s ease;
+     @media (max-width: 806px) {
+       width: 100%;
+    }
 }
 
 .continue:hover {
@@ -221,6 +289,15 @@
     display: flex;
     align-items: center;
     height: 100%;
+}
+
+.verticalAlignCenter1 {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    @media (min-width: 806px) {
+        display: none;
+    }
 }
 
 .loginGrid {
@@ -372,6 +449,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 5px;
+    margin-top: 0 !important;
+    @media (max-width: 806px) {
+        margin-top: 10px !important;
+    }
 }
 
 .imageCard {
@@ -408,10 +489,12 @@
     }
 }
 
-@media (max-width: 805px) {
-
+@media (max-width: 806px) {
     .descriptionStyle {
         font: normal normal normal 16px proxima-nova;
+    }
+    .logoStyle {
+        display:none;
     }
 }
 
@@ -420,6 +503,9 @@
     border-radius: 8px;
     padding: 20px;
     margin-right: 60px;
+    @media (max-width: 806px) {
+        margin-right: 0;
+    }
 }
 
 .disable {
@@ -432,20 +518,3 @@
     cursor: not-allowed !important;
 }
 
-// @media (min-width: 768px) {
-//     .reappointmentGrid {
-//         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-//         // grid-template-columns: repeat(2, 1fr);
-//         gap: 5px;
-//     }
-
-//     .reappointmentLandingImage {
-//         width: auto;
-//         height: auto;
-//         object-fit: cover;
-//     }
-
-//     .descriptionStyle {
-//         font: normal normal normal 18px proxima-nova;
-//     }
-// }

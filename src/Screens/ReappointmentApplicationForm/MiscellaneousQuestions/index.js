@@ -19,6 +19,8 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
 import CommonTextField from "../../../Components/CommonFields/CommonTextField";
 import { TextArea } from "@blueprintjs/core";
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -50,6 +52,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   );
   const [covererName, setCovererName] = useState("");
   const [obstetricsCovererName, setObstetricsCovererName] = useState("");
+   const [showInfo, setShowInfo] = useState(false);
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -305,7 +308,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   }
   return (
     <div>
-      <div className={`${style.applicationScreenGrid}`}>
+      {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+      <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
         <div>
           <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
@@ -574,11 +578,39 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 )}
             </div>
           </div>
+          <div className={style.threeColForButton}>
+              <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+              <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+              <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') 
+                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                   && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') : 
+                   (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+          </div>
         </div>
         <div>
+        {!showInfo && (
+                        <div>
+                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                                <div className={`${style.headerData}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Miscellaneous Questions</span>
+                                </div>
+                        </div>        
+                    )}
+          <div>
+          <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+          <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
           <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
           <div className={style.marginTop}>
             <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+          </div>
+          <div className={style.marginTop}>
+            <ApplicationReferenceDocuments />
+          </div>
+          </div>
           </div>
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
@@ -594,9 +626,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
             </div>
           </div>
-          <div className={style.marginTop}>
-            <ApplicationReferenceDocuments />
-          </div>
+          
         </div>
       </div>
       {

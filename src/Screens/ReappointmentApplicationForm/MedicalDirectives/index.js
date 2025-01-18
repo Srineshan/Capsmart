@@ -26,6 +26,8 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import { Tooltip } from '@mui/material';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -56,6 +58,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
     const [selectedIds, setSelectedIds] = useState([]);
     const [attestClicked, setAttestClicked] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -153,6 +156,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
             setMedicalDirectives(temp)
             console.log(medicalDirectives, 'medicalDirectives')
+        }else {
+            console.warn("Get Medical Directives Error");
         }
     }
 
@@ -399,7 +404,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
     return (
         <div>
-            <div className={`${style.applicationScreenGrid}`}>
+            {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
@@ -541,11 +547,35 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                             </>
                         )}
                     </div>
+                    <div className={style.threeColForButton}>
+                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { } : () => handleContinue()}>CONTINUE</div>
+                    </div>
                 </div>
                 <div>
+                {!showInfo && (
+                        <div>
+                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                                <div className={`${style.headerData}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Medical Directives</span>
+                                </div>
+                        </div>        
+                    )}
+                    <div>
+                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
                     <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
                     <div className={style.marginTop}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    </div>
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div>
+                    </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
@@ -555,9 +585,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                             <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { } : () => handleContinue()}>CONTINUE</div>
                         </div>
                     </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
+                   
                 </div>
             </div>
             {

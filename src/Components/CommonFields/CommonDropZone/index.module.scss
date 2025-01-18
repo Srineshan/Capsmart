@@ -5,6 +5,12 @@
     font: normal normal 600 20px/28px proxima-nova;
     color: $primarycolor;
     text-transform: capitalize;
+    @media (max-width: 940px) {
+        font: normal normal 600 18px/26px proxima-nova;
+    }
+    @media (max-width: 768px) {
+        font: normal normal 600 16px/24px proxima-nova;
+    }
 }
 
 .uploadImgStyle {
@@ -29,6 +35,14 @@
     font: normal normal normal 14px/18px proxima-nova;
     color: $textgrey;
     padding: 0 80px;
+    @media (max-width: 940px) {
+        font: normal normal normal 13px/17px proxima-nova;
+        padding: 0 60px;
+    }
+    @media (max-width: 768px) {
+        font: normal normal normal 12px/16px proxima-nova;
+        padding: 0 50px;
+    }
 }
 
 .cursorPointer {

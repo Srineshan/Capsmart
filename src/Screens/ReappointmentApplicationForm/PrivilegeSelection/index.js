@@ -51,6 +51,8 @@ import LoadingScreen from "../../../Components/LoadingScreen";
 import ESignConfirmationDialog from "../../../Components/ESignConfirmation";
 import ESignDialog from "../../../Components/ESignDialog";
 import { Tooltip } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFormat }) => {
   const [isSigned, setIsSigned] = useState(false);
@@ -79,6 +81,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [selectedprivilegeList, setSelectedPrivilegeList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+
   let name = `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} `;
   const publicKey =
     "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -2239,7 +2243,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
-      <div className={`${style.applicationScreenGrid}`}>
+      {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+      <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
         <div>
           <ReappointmentProgressCard
             step={"STEP 6"}
@@ -3385,20 +3390,42 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               </>
             )}
           </div>
+          <div className={style.threeColForButton}>
+              <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+              <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+          </div>
         </div>
         <div>
-          <ApplicationUserCard
-            user={"First Mi Last"}
-            applyingFor={"{Doctor} Applying As {Associate}"}
-          />
-          <div className={style.marginTop}>
-            <ApplicationAssistanceCard
+          
+          <div>
+              {!showInfo && (
+                        <div>
+                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                                <div className={`${style.headerData}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Privilege Category</span>
+                                </div>
+                        </div>        
+                    )}
+         
+            <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+              <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
+              <ApplicationUserCard
+                user={"First Mi Last"}
+                 applyingFor={"{Doctor} Applying As {Associate}"}
+              />
+              <div className={style.marginTop}>
+              <ApplicationAssistanceCard
               user={"Neena Greenly"}
               designation={"{Designation}"}
               contactNumber={"{Contact Number}"}
               email={"{Email}"}
-            />
+              />
+              </div>
+            </div>
           </div>
+
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog
             ? style.hiddenStickyContainer : ""}`}>
             <div

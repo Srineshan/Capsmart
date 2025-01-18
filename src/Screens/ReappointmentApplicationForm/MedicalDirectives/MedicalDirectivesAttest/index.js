@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import style from './index.module.scss';
-import ApplicationHeader from '../../../../Components/ApplicationHeader';
+import ApplicationHeader from '../../../../Components/ApplicationHeaders';
 import { GET, POST } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import PdfViewer from '../../pdfViewer';

@@ -40,6 +40,8 @@ import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { loadStripe } from "@stripe/stripe-js";
 import ESignature from '../../../Components/ESignature';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -77,6 +79,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(eSignTypeContent + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -530,7 +533,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            <div className={`${style.applicationScreenGrid}`}>
+             {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard
                         step={""}
@@ -769,18 +773,33 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
+                {!showInfo && (
+                        <div>
+                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                                <div className={`${style.headerData}`}>
+                                <span style={{ marginLeft: '20px' }}>Upload Your Required Documents</span>
+                                </div>
+                        </div>        
+                    )}
                 <div>
+
+                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
                     <ApplicationAssistanceCard
                         user={"Neena Greenly"}
                         designation={"{Designation}"}
                         contactNumber={"{Contact Number}"}
                         email={"{Email}"}
                     />
+                    </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
