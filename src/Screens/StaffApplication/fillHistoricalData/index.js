@@ -5,7 +5,7 @@
   import CommonDateField from "../../../Components/CommonFields/CommonDateField";
   import { format, parse } from "date-fns";
   import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
-  import { GET } from "../../dataSaver";
+  import { GET,PUT,POST } from "../../dataSaver";
   import CommonTextField from "../../../Components/CommonFields/CommonTextField";
   import { Button, TextField } from "@mui/material";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
@@ -16,12 +16,16 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 import TableTwo from "../../../Components/TableDesignTwo";
 import EditIcon from '@mui/icons-material/Edit';
+import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
+
 
 
   const HistoricalData = () => {
 
   const [firstName,setFirstName] = useState("");
   const [lastName,setLastName] = useState("");
+  const [saveData, setSaveData] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
   const [middleName,setMiddleName] = useState("");
   const [email,setEmail] = useState("");
   const [dob,setDob] = useState("");
@@ -36,7 +40,7 @@ import EditIcon from '@mui/icons-material/Edit';
   const [contactNo, setContactNo] = useState("");
   const [preferredPhone, setPreferredPhone] = useState("");
 
-  const [privilegeCategoryMasterList, setPrivilegeCategoryMasterList] = useState([])
+  const [privilegeOtherList, setPrivilegeOtherList] = useState([]);
     const [privilegeCategoryList, setPrivilegeCategoryList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [hospitalList, setHospitalList] = useState([]);
@@ -48,6 +52,8 @@ import EditIcon from '@mui/icons-material/Edit';
     const [applicantType,setApplicantType]= useState("");
     const [billingNo,setBillingNo] = useState(0);
     const [cmpaNo,setCmpaNo] = useState(0);
+    const [subSpeciality,setSubSpeciality] = useState("")
+    const [serviceAreas, setServiceAreas] = useState([]);
     const [uploadedFiles, setUploadedFiles] = useState({
       ACLS: [],
       ACES: [],
@@ -75,11 +81,12 @@ import EditIcon from '@mui/icons-material/Edit';
       file: null, 
     });
 
-    const [privilegesOther, setPrivilegesOther] = useState({
-      radioValue: "", 
-      Hospital:"" ,
-      privilegeCategory:""
-    });
+    const [hospitalPrivileges, setHospitalPrivileges] = useState([]);
+const [privilegesOther, setPrivilegesOther] = useState({
+  Hospital: "",
+  privilegeCategory: "",
+  radioValue: "", 
+});
 
     const [physicalHealth, setPhysicalHealth] = useState({
       radioValue: "", 
@@ -219,13 +226,10 @@ import EditIcon from '@mui/icons-material/Edit';
     setApplicantTypeList(types);
   };
   
-  const getPrivilegeCategoriesMaster = async () => {
-    const { data: types } = await GET("entity-service/privilegeCategoriesMaster");
-    setPrivilegeCategoryMasterList(types);
-  };
+
 
     const getPrivilegeCategories = async () => {
-        const { data: types } = await GET("entity-service/privilege");
+        const { data: types } = await GET(`entity-service/privilege?applicantTypeId=${applicantType}`);
         setPrivilegeCategoryList(types);
       };
 
@@ -250,15 +254,48 @@ import EditIcon from '@mui/icons-material/Edit';
         setApplicationOldData(application);
       };
     useEffect(() => {
-        getPrivilegeCategories();
         getDepartments();
         getApplicantTypes();
-        getPrivilegeCategoriesMaster();
         getHospitals();
         getGrouplist();
         getApplicationOldData();
       }, []);
 
+
+      useEffect(() => {
+        getPrivilegeCategories();
+      },[applicantType]);
+
+      useEffect(() => {
+        if (program) {
+          const selectedDepartment = departmentList.find(
+            (dept) => dept.id === program
+          );
+          if (selectedDepartment) {
+            setServiceAreas(selectedDepartment.serviceAreas || []);
+            console.log(serviceAreas)
+          } else {
+            setServiceAreas([]); 
+          }
+        } else {
+          setServiceAreas([]); 
+        }
+      }, [program, departmentList]);
+
+      useEffect(() => {
+        if (privilege) {
+          const selectedPrivilegeCategory = privilegeCategoryList.find(
+            (data) => data.id === privilege
+          );
+          if (selectedPrivilegeCategory) {
+            setPrivilegeOtherList(selectedPrivilegeCategory.otherHospitalPrivilegeCategories || []);
+          } else {
+            setPrivilegeOtherList([]); 
+          }
+        } else {
+          setPrivilegeOtherList([]); 
+        }
+      }, [privilege, privilegeCategoryList]);
 
       const formatPhoneNumber = (phone) => {
         // Remove all non-numeric characters except for the initial +1
@@ -314,16 +351,52 @@ import EditIcon from '@mui/icons-material/Edit';
       };
 
       const handleRadioPrivilegeChange = (event) => {
-        setPrivilegesOther({
-          ...privilegesOther,
-          radioValue: event.target.value,
-          // Reset dropdowns if "No" is selected
-          ...(event.target.value === "no" && {
+        const value = event.target.value;
+        setPrivilegesOther((prev) => ({
+          ...prev,
+          radioValue: value,
+          ...(value === "no" && { Hospital: "", privilegeCategory: "" }), // Reset fields
+        }));
+      
+        if (value === "no") {
+          setHospitalPrivileges([]); // Clear hospitalPrivileges array
+        }
+      };
+      
+      useEffect(() => {
+        if (privilegesOther.Hospital && privilegesOther.privilegeCategory) {
+          // Find hospital and privilege category details
+          const selectedHospital = hospitalList.find(
+            (item) => item.id === privilegesOther.Hospital
+          );
+          const selectedPrivilegeCategory = privilegeOtherList.find(
+            (item) => item.id === privilegesOther.privilegeCategory
+          );
+      
+          // Add the new pair to hospitalPrivileges
+          setHospitalPrivileges((prev) => [
+            ...prev,
+            {
+              id: privilegesOther.Hospital,
+              hospitalName: selectedHospital?.name || "",
+              privileges: "",
+              privilegeCategory: {
+                id: privilegesOther.privilegeCategory,
+                name: selectedPrivilegeCategory?.category || "",
+                type: selectedPrivilegeCategory?.type || "",
+              },
+            },
+          ]);
+      
+          // Reset the fields for the next selection
+          setPrivilegesOther((prev) => ({
+            ...prev,
             Hospital: "",
             privilegeCategory: "",
-          }),
-        });
-      };
+          }));
+        }
+      }, [privilegesOther.Hospital, privilegesOther.privilegeCategory]);
+      
 
       const handleSelectChange = (field, value) => {
         setPrivilegesOther({
@@ -334,33 +407,12 @@ import EditIcon from '@mui/icons-material/Edit';
       
       // Generalized File Upload Handler
       const handleFileUpload = (event, setState) => {
-        const file = event.target.files[0]; // Get the first file selected
-      
-        if (file) {
-          // Creating a temporary fileURL
-          const fileURL = URL.createObjectURL(file);
-      
-          // Assume you uploaded the file and got a file path back from the backend
-          const uploadedFilePath = '/server/uploads/filename.pdf'; // Example file path returned from server
-      
-          // Creating the attachment object
-          const attachment = {
-            filePath: uploadedFilePath,  
-            fileName: file.name,
-            fileURL: fileURL,  
-            fileType: file.type,
-          };
-      
-          // Updating the state with the new attachment
-          setState((prev) => ({
-            ...prev,
-            attachment: attachment,
-            file: file,
-          }));
-      
-          // For debugging purposes
-          console.log(attachment);
-        }
+        const file = event.target.files[0];
+        setState((prev) => ({
+          ...prev,
+          file: file,
+        }));
+        console.log(file);
       };
       
       
@@ -437,8 +489,8 @@ import EditIcon from '@mui/icons-material/Edit';
        applicationOldData.map(data => {
           name.push(data?.demographics.name.firstName);
           applicantType.push(data?.applicantType.category);
-          privilege.push(data?.privilegeCategory.status);
-         editIcon.push(<EditIcon className={style.docTypeImgStyle} onClick={() => handleEditClick(data)} />)
+          privilege.push(data?.privilegeCategory.status.category);
+        //  editIcon.push(<EditIcon className={style.editColor} onClick={() => handleEditClick(data)} />)
         })
         return [
           { type: "text", value: name},
@@ -450,7 +502,62 @@ import EditIcon from '@mui/icons-material/Edit';
             isShowHoverText: false,
           }]
       }
+const SaveSubmitHandler = async (isSaveAndExit) => {
+    var application = {
+      ...saveData,
+      demographics: {
+        name:{
+          firstName:firstName,
+          lastName:lastName,
+          middleName: middleName
+        },
+        dateOfBirth: dob,
+        office:{
+          streetName:officeAddress,
+          city:city,
+          province:province,
+          pincode:zipcode
+        },
+        residence: {
+        streetName: homeAddress,
+        city: homeCity,
+        province: homeProvince,
+        pinCode: homeZipcode
+      },
+      homephoneno: contactNo,
+      cmh_admin_phoneno:preferredPhone,
+      email:email
+      },
+      privilegeCategory:{
 
+      }
+      
+    };
+
+    if (!isEdit) {
+      await POST("/application-management-service/application/createStaffFromOldData", JSON.stringify(application))
+        .then((response) => {
+          SuccessToaster("Historical Data Added Successfully");
+          // resetDialogFields();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
+    } else {
+      // // var id = selectedApplication.id;
+      // await PUT(
+      //   `/application-management-service/${importedDataId}/updateApplicationOldData`,
+      //   JSON.stringify(application)
+      // )
+      //   .then((response) => {
+      //     SuccessToaster("Historical Data Updated Successfully");
+      //     // resetDialogFields();
+      //   })
+      //   .catch((error) => {
+      //     ErrorToaster(error);
+      //   });
+    }
+  };
     return (
       <>
         <Navbar />
@@ -675,6 +782,20 @@ import EditIcon from '@mui/icons-material/Edit';
       <h2 className={style.heading}>Privilege Category</h2>
       <div className={style.gridContainer}>
       <div className={style.inputGroup}>
+  <CommonSelectField
+     className={style.fullWidth}
+     value={applicantType}
+     label="Applicant Type"
+     onChange={(e) => setApplicantType(e.target.value)}
+     valueList={applicantTypeList.map((item) => item.id)}
+     labelList={applicantTypeList.map((item) => item.applicantType)}
+     firstOptionLabel="Select Applicant Type"
+     firstOptionValue=""
+     required
+     disabledList={[]}
+     menuColor={[]}/>
+      </div>
+      <div className={style.inputGroup}>
       <CommonSelectField
         className={style.fullWidth}
         value={privilege}
@@ -704,6 +825,22 @@ import EditIcon from '@mui/icons-material/Edit';
         menuColor={[]}
       />
       </div>
+
+      <div className={style.inputGroup}>
+      <CommonSelectField
+        className={style.fullWidth}
+        value={subSpeciality}
+        label="Sub Speciality"
+        onChange={(e) => setSubSpeciality(e.target.value)}
+        valueList={serviceAreas.map((item) => item.id)}
+        labelList={serviceAreas.map((item) => item.name)}
+        firstOptionLabel="Select Sub Speciality"
+        firstOptionValue=""
+        required
+        disabledList={[]}
+        menuColor={[]}
+      />
+      </div>
       </div>
       </div>
 
@@ -711,24 +848,10 @@ import EditIcon from '@mui/icons-material/Edit';
       <h2 className={style.heading}>Professional Information</h2>
       <div className={style.gridContainer1}>
       <div className={style.inputGroup}>
-  <CommonSelectField
-     className={style.fullWidth}
-     value={applicantType}
-     label="Applicant Type"
-     onChange={(e) => setApplicantType(e.target.value)}
-     valueList={applicantTypeList.map((item) => item.id)}
-     labelList={applicantTypeList.map((item) => item.applicantType)}
-     firstOptionLabel="Select Applicant Type"
-     firstOptionValue=""
-     required
-     disabledList={[]}
-     menuColor={[]}/>
-      </div>
-      <div className={style.inputGroup}>
   <CommonTextField
   label="OHIP Billing"
   value={billingNo}
-  onChange={(e)=>setBillingNo(e.target.value)}
+  onChange={(e)=>setBillingNo(Number(e.target.value))}
   placeholder="Enter OHIP No"
   required
   className={style.fullwidth}/>
@@ -738,7 +861,7 @@ import EditIcon from '@mui/icons-material/Edit';
     <CommonTextField
       label="CMPA No"
       value={cmpaNo}
-      onChange={(e) => setCmpaNo(e.target.value)}
+      onChange={(e) => setCmpaNo(Number(e.target.value))}
       placeholder="Enter CMPA No"
       required
       className={style.fullwidth}
@@ -944,7 +1067,7 @@ import EditIcon from '@mui/icons-material/Edit';
 
 <div className={style.inputGroup1}>
 <div className={style.headerContainer}>
-    <p>proof of BloodyEasy Lite training*</p>
+    <p>Proof of BloodyEasy Lite training*</p>
   </div>
 <CommonDropZone
       title="Upload BloodyEasy Lite training"
@@ -1293,9 +1416,7 @@ import EditIcon from '@mui/icons-material/Edit';
      className={style.fullWidth}
      value={privilegesOther.Hospital}
      label="Select Hospital"
-     onChange={(e) =>
-      handleSelectChange("Hospital", e.target.value)
-    }
+     onChange={(e) => handleSelectChange("Hospital", e.target.value)}
     valueList={hospitalList.map((item) => item.id)}
     labelList={hospitalList.map((item) => item.name)}
      firstOptionLabel="Select Hospital"
@@ -1310,18 +1431,37 @@ import EditIcon from '@mui/icons-material/Edit';
       <CommonSelectField
      className={style.fullWidth}
      value={privilegesOther.privilegeCategory}
-     label="Select Privilege Category"
-    onChange={(e) =>
-                handleSelectChange("privilegeCategory", e.target.value)
-              }
-    valueList={privilegeCategoryMasterList.map((item) => item.id)}
-    labelList={privilegeCategoryMasterList.map((item) => item.category)}
-    firstOptionLabel="Select Privilege Category"
+     label="Select Other Privilege Category"
+     onChange={(e) => handleSelectChange("privilegeCategory", e.target.value)}
+    valueList={privilegeOtherList.map((item) => item.id)}
+    labelList={privilegeOtherList.map((item) => item.category)}
+    firstOptionLabel="Select Other Privilege Category"
     firstOptionValue=""
      required
      disabledList={[]}
      menuColor={[]}/>
       </div>
+    </div>
+  )}
+  {hospitalPrivileges.length > 0 && (
+    <div className={style.hospitalPrivilegesList}>
+      {hospitalPrivileges.map((item, index) => (
+        <div key={index} className={style.valueBox}>
+          <span>
+            {`${item.hospitalName} - ${item.privilegeCategory.name}`}
+          </span>
+          <span
+            className={style.crossMark}
+            onClick={() =>
+              setHospitalPrivileges((prev) =>
+                prev.filter((_, i) => i !== index)
+              )
+            }
+          >
+            &times;
+          </span>
+        </div>
+      ))}
     </div>
   )}
 </div>
@@ -1710,7 +1850,7 @@ import EditIcon from '@mui/icons-material/Edit';
         firstOptionValue=""
         valueList={groupList.map((item) => item.id)}
         labelList={groupList.map((item) => item.name)}
-        className={style.fullWidth}
+        className={`${style.fullWidth} ${style.marginTop20}`}
         disabledList={[]}
       />
 
@@ -1786,7 +1926,7 @@ import EditIcon from '@mui/icons-material/Edit';
         firstOptionValue=""
         valueList={groupList.map((item) => item.id)}
         labelList={groupList.map((item) => item.name)}
-        className={style.fullWidth}
+        className={`${style.fullWidth} ${style.marginTop20}`}
         disabledList={[]}
         
       />
@@ -1817,7 +1957,21 @@ import EditIcon from '@mui/icons-material/Edit';
       </div>
 
       </div> 
-      
+      <div className={`${style.padding20} ${style.marginRight40} ${style.marginBottom20}`}>
+          <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
+            <button
+              className={style.buttonStyle}
+              onClick={() => SaveSubmitHandler(true)}
+            >
+              SAVE 
+            </button>
+            <button
+              className={`${style.outlinedButton} ${style.marginLeft20}`}
+            >
+              CANCEL
+            </button>
+          </div>
+        </div>
       </>
     );
   };

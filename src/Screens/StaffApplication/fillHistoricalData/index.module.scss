@@ -292,3 +292,92 @@ padding:10px;
   padding: 10px;
   height: 100vh;
 }
+
+.floatRight {
+  float: right;
+}
+
+.marginTop20 {
+  margin-top: 20px;
+}
+
+.outlinedButton {
+  background-color: white;
+  font: normal normal normal 14px/20px proxima-nova;
+  color: $primarycolor;
+  border: 1px solid $primarycolor;
+  padding: 8px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.buttonStyle {
+  font: normal normal normal 14px/20px proxima-nova;
+  background-color: $primarycolor;
+  color: white;
+  padding: 8px 30px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.applicantGrid {
+  display: grid;
+  grid-template-columns: 30% 30% 30% 3%;
+  grid-gap: 1%;
+}
+
+.padding20{
+  padding: 20px;
+}
+.marginRight40{
+  margin-right: 40px;
+}
+
+.hospitalPrivilegesList {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.valueBox {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem; 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem; 
+  color: #333;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
+  min-width: 120px;  
+
+  span {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+  }
+
+  .crossMark {
+    color: #ff4d4f;
+    font-size: 0.875rem; 
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 0.25rem;
+    &:hover {
+      color: #d11a2a; 
+    }
+  }
+}
+
+
+.marginBottom20{
+  margin-bottom: 20px;
+}
