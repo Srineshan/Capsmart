@@ -107,6 +107,12 @@
     padding: 10px 20px 20px 20px;
 }
 
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+  }
+
 .toggleButton {
     display: none;
   }

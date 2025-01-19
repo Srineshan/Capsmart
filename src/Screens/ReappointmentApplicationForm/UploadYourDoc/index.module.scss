@@ -184,6 +184,10 @@
     display: grid;
     grid-template-columns: 80% 18%;
     gap: 1%;
+
+    @media (max-width: 1130px) {
+        overflow: scroll;
+     }
 }
 
 
@@ -326,9 +330,9 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
 
-    // @media (max-width: 768px) {
-    //     grid-template-columns: 1fr; 
-    // }
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr; 
+    }
 }
 
 .twoColForButton {
@@ -392,7 +396,7 @@
 
 // .tableContainer {
 //     overflow-x: auto;
-//     min-width: 820px;
+//     max-width: 820px;
 // }
 
   .gridStyle {
@@ -400,24 +404,12 @@
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
 
-    //  @media (max-width: 1130px) {
-    //     max-height: 100vh;
+    // @media (max-width: 1130px) {
+    //     max-width: 820px;
     //     overflow-x: auto !important;
-    //  }
+    //     overflow-y: hidden;
+    // }
   }
-  
-//   @media (max-width: 1130px) {
-//     .tableContainer {
-//         overflow-x: scroll !important;  
-//         overflow: hidden !important; 
-//     }
-
-//     .gridStyle { 
-//         overflow-x: scroll !important;  
-//         overflow: hidden !important; 
-//     }
-//   }
-
 
 .contractScrollStyle {
     overflow-x: auto !important;
@@ -662,24 +654,3 @@
         grid-template-columns: 1fr; 
     }
 }
-
-/* Responsive adjustments */
-
-// @media (max-width: 768px) {
-//     .applicationScreenGrid {
-//         grid-template-columns: 1fr;
-//         padding: 0;
-//     }
-
-//     .stickyContainer {
-//         grid-column: 1 / 2;
-//     }
-
-//     .twoCol, .twoColForButton, .threeColForButton, .setupCompleteGrid, .eSignGrid, .gridContainer {
-//         grid-template-columns: 1fr;
-//     }
-
-//     .twoColForButton {
-//         gap: 15px;
-//     }
-// }

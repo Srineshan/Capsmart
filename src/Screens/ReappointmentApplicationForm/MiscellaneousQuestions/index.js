@@ -57,6 +57,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [covererNameList, setCovererNameList] = useState([]);
   const [covererId, setCovererId] = useState("");
   const [obstetricsCovererName, setObstetricsCovererName] = useState("");
+  const [obstetricsCovererNameList, setObstetricsCovererNameList] = useState([]);
+  const [obstetricsCovererId, setObstetricsCovererId] = useState("");
+  const [showInfo, setShowInfo] = useState(false);
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()

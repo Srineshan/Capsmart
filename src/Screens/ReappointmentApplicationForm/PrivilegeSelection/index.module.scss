@@ -50,18 +50,11 @@
     }
 }
 
-    @media (max-width: 820px) {
-        .stickyContainer {
-            position: sticky;
-            bottom: 0;
-            left: auto;
-            right: auto;
-            width: auto; 
-            padding: 20px 20px 20px 20px; 
-            margin: 0 auto; 
-            box-sizing: border-box;
-        }
- }
+@media (max-width: 768px) {
+    .stickyContainer {
+       display: none;
+    }
+}
 
 .hiddenStickyContainer {
     opacity: 0;
