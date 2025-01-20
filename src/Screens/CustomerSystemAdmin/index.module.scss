@@ -46,7 +46,15 @@
 }
 
 .marginTop20 {
-    margin-top: 22px;
+    margin-top: 20px;
+}
+
+.marginTop25 {
+    margin-top: 25px;
+}
+
+.marginTop30 {
+    margin-top: 30px;
 }
 
 .marginLeft20 {
@@ -170,14 +178,16 @@
 }
 
 .addManagerDialogBackground {
-    background-color: white !important;
+    background-color: #044354 !important;
     padding: 10px 30px;
     border-radius: 20px !important;
+    margin-top: -10px;
+    margin-bottom: -10px;
 }
 
 .addProofDialog {
-    height: 75%;
-    width: 55% !important;
+    height: 100vh !important;
+    width: 100% !important;
 }
 
 .extensionStyle {
@@ -236,6 +246,18 @@
     grid-gap: 20px;
 }
 
+.threeCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.fourCol {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
 .fullWidth {
     width: 100%;
 }
@@ -247,7 +269,21 @@
     height: 40px;
     width: 140px;
     border-radius: 10px;
-    margin-bottom: -10px;
+    font-weight: bold;
+    cursor: pointer;
+    // margin-bottom: -10px;
+}
+
+.outlinedButton {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    height: 40px;
+    width: 140px;
+    font-weight: bold;
+    color: $primarycolor;
+    cursor: pointer;
 }
 
 .floatRight {
@@ -296,4 +332,77 @@
 .iconSize {
     height: 30px;
     width: 30px;
+}
+
+.bodyContainer {
+    background: #044354;
+    padding: 20px;
+    margin: -10px -30px;
+}
+
+.formContainer {
+    background: $secondarycolor !important;
+    border-radius: 20px;
+    padding: 40px;
+    height: calc(100vh - 200px);
+}
+
+.stepImg {
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
+}
+
+.stepperDivider {
+    height: 1px;
+    background-color: #FFFFFF;
+}
+
+.stepperDividerDisabled {
+    height: 1px;
+    background-color: #FFFFFF;
+    opacity: 0.5;
+}
+
+.stepperGrid {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 17% 6% 23% 6% 23% 6% 17%;
+    gap: 1%;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.verticalSpaceBetween {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.chipsContainer {
+    width: 100%;
+    padding: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 10px;
+}
+
+
+.chips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: normal normal normal 16px/18px proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
 }

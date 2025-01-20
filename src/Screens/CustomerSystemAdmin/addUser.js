@@ -11,16 +11,29 @@ import { FormatPhoneNumber } from '../../utils/formatting';
 import CommonLabel from '../../Components/CommonFields/CommonLabel';
 import SuffixList from './../../Components/SuffixList';
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
-
+import AddUserStep2 from '../../images/addUserStep2.png';
+import AddUserStep3 from '../../images/addUserStep3.png';
+import AddUserStep1Selected from '../../images/addUserStep1Selected.png';
+import AddUserStep2Selected from '../../images/addUserStep2Selected.png';
+import AddUserStep3Selected from '../../images/addUserStep3Selected.png';
+import AddUserStep1Completed from '../../images/addUserStep1Completed.png';
+import AddUserStep2Completed from '../../images/addUserStep2Completed.png';
+import CancelIcon from '@mui/icons-material/Cancel';
 import style from './index.module.scss';
+import CommonTextField from '../../Components/CommonFields/CommonTextField';
+import CommonPhoneField from '../../Components/CommonFields/CommonPhoneField';
+import UserCreatedSuccessfullyDialog from '../../Components/UserCreatedSuccessfullyDialog';
 
 const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [selectedDepartments, setSelectedDepartments] = useState([])
+    const [selectedSpecialtys, setSelectedSpecialtys] = useState([])
     const [selectedSites, setSelectedSites] = useState([])
     const [addUser, setAddUser] = useState({ firstName: "", lastName: "", email: "", phone: "", roles: [], sites: [], title: { title: "", id: "" }, ssoId: { id: '' } });
     const [userDataById, setUserDataById] = useState([]);
     const [roles, setRoles] = useState([]);
     const [selectedRolesToShow, setSelectedRolesToShow] = useState([]);
+    const [selectedApplicantsToShow, setSelectedApplicantsToShow] = useState([]);
+    const [selectedDepartmentsToShow, setSelectedDepartmentsToShow] = useState([]);
     const [selectedAccessLevelToShow, setSelectedAccessLevelToShow] = useState("USER");
     const [sites, setSites] = useState([]);
     const [siteTitle, setSiteTitle] = useState();
@@ -28,14 +41,22 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const [suffix, setSuffix] = useState();
     const [functionalTitle, setFunctionalTitle] = useState([]);
     const [accessLevelNeeded, setAccessLevelNeeded] = useState(false);
+    const [manageRecordTypeByApplicantType, setManageRecordTypeByApplicantType] = useState(false);
+    const [specificDeptRecordsToAccess, setSpecificDeptRecordsToAccess] = useState(false);
+    const [showUserCreatedDialog, setShowUserCreatedDialog] = useState(false);
+    const [departmentList, setDepartmentList] = useState([]);
+    const [applicantTypeList, setApplicantTypeList] = useState([]);
     const [workFlowUser, setWorkFlowUser] = useState([]);
     const accessLevel = [{ label: 'User Level', value: 'USER' }, { label: 'Entity Level', value: 'ENTITY' }, { label: 'Site Level', value: 'SITE' }, { label: 'Department Level', value: 'DEPARTMENT' }]
     const defaultProviderId = "6335e77dbb13e2088b208bb0";
     const selectedProvider = defaultProviderId;
-
+    const [currentPage, setCurrentPage] = useState('step1');
+    const [createdUserDetails, setCreatedUserDetails] = useState();
     useEffect(() => {
         // getUserById();
         getSites();
+        getDepartmentList()
+        getApplicantTypeList()
         getFunctionalTitle();
         getRoles();
         getContractWorkFlowUser();
@@ -66,6 +87,10 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setAddUser({ ...addUser, sites: { sites: temp } });
         }
     }, [selectedSites]);
+
+    useEffect(() => {
+        setSelectedSpecialtys([])
+    }, [selectedDepartments])
 
 
     useEffect(() => {
@@ -131,10 +156,24 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         setSelectedDepartments(typeof value === 'string' ? value.split(',') : value,)
     }
 
+    const handleSpecialtyChange = (value) => {
+        setSelectedSpecialtys(typeof value === 'string' ? value.split(',') : value,)
+    }
+
     const getSites = async () => {
         const { data: sites } = await GET('entity-service/sites');
         setSites(sites);
     };
+
+    const getDepartmentList = async () => {
+        const { data: department } = await GET(`entity-service/department`);
+        setDepartmentList(department);
+    };
+
+    const getApplicantTypeList = async () => {
+        const { data: applicantType } = await GET(`entity-service/applicantType`);
+        setApplicantTypeList(applicantType);
+    }
 
     const getRoles = async () => {
         const { data: roles } = await GET('user-management-service/roles?roleType=APP_SYSTEM&roleType=SYSTEM');
@@ -179,7 +218,14 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         }
     }
 
-    console.log('site title', siteTitle, deptTitle, addUser);
+    const getUserCreatedDialog = async (value, sendInvite) => {
+        setShowUserCreatedDialog(value)
+        if (sendInvite === 'OKAY' && createdUserDetails !== undefined) {
+            if (createdUserDetails !== undefined) {
+                await POST(`user-management-service/user/${createdUserDetails?.id}/sendInviteEmail`)
+            }
+        }
+    }
 
     const handleAccessLevelChange = (value) => {
         setSelectedAccessLevelToShow(value)
@@ -189,37 +235,36 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         setSelectedRolesToShow(typeof value === 'string' ? value.split(',') : value,)
     }
 
+    const handleApplicantChange = (value) => {
+        setSelectedApplicantsToShow(typeof value === 'string' ? value.split(',') : value,)
+    }
+
+    const handleDepartmentChange = (value) => {
+        setSelectedDepartmentsToShow(typeof value === 'string' ? value.split(',') : value,)
+    }
+
+
     const getFinalSiteValueWithDepartments = () => {
         console.log('edit inside function', addUser, addUser);
         console.log('selectedSites', selectedSites);
         console.log('selectedDepartments', selectedDepartments);
         let siteData = [];
-        sites?.filter(site => selectedSites?.includes(site?.id))?.map(site => {
+        sites?.map(site => {
             let deptData = [];
-            site?.departmentList?.departments?.filter(dept => selectedDepartments?.map(dept => dept?.split('-')[0])?.includes(dept?.id))?.map(dept => {
+            site?.departmentList?.departments?.filter(dept => selectedDepartments?.includes(dept?.id))?.map(dept => {
                 dept.departmentResponsibility = deptTitle;
+                dept.serviceAreas = selectedSpecialtys?.includes(dept?.serviceAreas?.id)
                 deptData.push(dept);
             });
             site.departmentList.departments = deptData;
             site.siteResponsibility = siteTitle;
             siteData.push(site);
         })
-        // let siteValue = { sites: siteData }
-        // setAddUser({ ...addUser, sites: siteValue })
-        // addUser?.sites?.sites?.map(data => {
-        //     let departments = [];
-        //     data.siteResponsibility = siteTitle;
-        //     data?.departmentList?.departments?.map(deptData => {
-        //         deptData.departmentResponsibility = deptTitle;
-        //         if (selectedDepartments?.includes(`${deptData?.id}-${data?.id}`)) {
-        //             departments.push(deptData);
-        //         }
-        //     })
-        //     data.departmentList.departments = departments;
-        // })
         console.log(siteData)
         return siteData;
     }
+
+    console.log('site title', siteTitle, deptTitle, addUser, sites, selectedDepartments, selectedSpecialtys, getFinalSiteValueWithDepartments());
 
     console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
@@ -250,7 +295,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             },
             "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
-            "title": addUser?.title,
+            "title": siteTitle,
             "ssoId": addUser?.ssoId,
             "email": {
                 "officialEmail": addUser?.email
@@ -276,6 +321,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "sites": {
                 "sites": getFinalSiteValueWithDepartments()
             },
+            "secondaryTitle": deptTitle,
+            "recordAccessDepartments": departmentList?.filter(data => selectedDepartmentsToShow?.includes(data?.id)),
+            "recordAccessApplicantTypes": applicantTypeList?.filter(data => selectedApplicantsToShow?.includes(data.id)),
+            "departmentSpecificRecordAccess": specificDeptRecordsToAccess,
+            "applicantTypeSpecificRecordAccess": manageRecordTypeByApplicantType,
             ...(isEdit && { "activated": userDataById?.activated }),
             ...(isEdit && { "blocked": userDataById?.blocked }),
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
@@ -292,6 +342,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
+                    setCreatedUserDetails(response?.data)
                     SuccessToaster('User Added Successfully');
                 })
                 .catch(error => {
@@ -329,188 +380,485 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         getManageUserDialog(false);
     };
 
+    const handleAddStep1 = () => {
+        setCurrentPage('step2')
+    }
+
+    const handleAddStep2 = () => {
+        setCurrentPage('step3')
+    }
+
+    const handleAddStep3 = () => {
+        setShowUserCreatedDialog(true);
+    }
+
 
     return (
-        <Dialog isOpen={getManageUserDialog} onClose={() => getManageUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
-            <div className={`${Classes.DIALOG_BODY} `}>
-                <div className={style.spaceBetween}>
-                    <p className={style.extensionStyle}>{!isEdit ? 'ADD' : 'MODIFY'} USER</p>
-                    <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getManageUserDialog(false)} />
-                </div>
-                <div className={style.extensionBorder}></div>
-                <div className={style.proofBorder}>
-                    <div className={`${style.twoCol}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>FIRST NAME*</div>
-                            <TextField size="small" className={style.fullWidth} value={addUser?.firstName} onChange={(e) => setAddUser({ ...addUser, firstName: e.target.value })} />
+        <>
+            <Dialog isOpen={getManageUserDialog} onClose={() => getManageUserDialog(false)} className={`${style.addManagerDialogBackground} ${style.addProofDialog}`}>
+                <div className={style.bodyContainer}>
+                    <div className={`${style.stepperGrid}`}>
+                        <div></div>
+                        <div className={style.verticalAlignCenter}>
+                            <img src={currentPage === 'step1' ? AddUserStep1Selected : AddUserStep1Completed} className={style.stepImg} alt="" />
                         </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>LAST NAME*</div>
-                            <TextField size="small" className={style.fullWidth} value={addUser?.lastName} onChange={(e) => setAddUser({ ...addUser, lastName: e.target.value })} />
+                        <div className={style.marginTop30}>
+                            <div className={`${currentPage === 'step1' ? style.stepperDividerDisabled : style.stepperDivider}`}></div>
                         </div>
+                        <div className={style.verticalAlignCenter}>
+                            <img src={currentPage === 'step2' ? AddUserStep2Selected : currentPage === 'step1' ? AddUserStep2 : AddUserStep2Completed} className={style.stepImg} alt="" />
+                        </div>
+                        <div className={style.marginTop30}>
+                            <div className={`${currentPage === 'step3' ? style.stepperDivider : style.stepperDividerDisabled}`}></div>
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                            <img src={currentPage === 'step3' ? AddUserStep3Selected : AddUserStep3} className={style.stepImg} alt="" />
+                        </div>
+                        <div></div>
                     </div>
+                    <div className={`${Classes.DIALOG_BODY} ${style.formContainer}`}>
+                        {currentPage === 'step1' ? (
+                            <div className={style.verticalSpaceBetween} >
+                                <div>
+                                    <div className={style.spaceBetween}>
+                                        <p className={style.extensionStyle}>User Access Credentials</p>
+                                        {/* <Icon icon="cross" size={20} intent={Intent.DANGER} className={style.crossStyle} onClick={() => getManageUserDialog(false)} /> */}
+                                    </div>
+                                    {/* <div className={style.extensionBorder}></div> */}
+                                    <div>
+                                        <div className={`${style.threeCol}`}>
+                                            <div>
+                                                <CommonTextField size="small" placeholder='First Name' label={'First Name*'} className={style.fullWidth} value={addUser?.firstName} onChange={(e) => setAddUser({ ...addUser, firstName: e.target.value })} />
+                                            </div>
+                                            <div>
+                                                {/* <div className={`${style.extentionLableStyle} ${style.marginTop20}`}></div> */}
+                                                <CommonTextField size="small" placeholder='Last Name' label={'Last Name'} className={style.fullWidth} value={addUser?.lastName} onChange={(e) => setAddUser({ ...addUser, lastName: e.target.value })} />
+                                            </div>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Suffix</div>
+                                                <div className={style.marginTop10}>
+                                                    <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className={`${style.threeCol} ${style.marginTop10}`}>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Primary Functional Title</div>
+                                                <div className={style.marginTop10}>
+                                                    <FormControl className={`${style.fullWidth}`} size="small">
+                                                        <Select
+                                                            labelId="demo-select-small"
+                                                            id="demo-select-small"
+                                                            value={siteTitle?.id || ''}
+                                                            className={style.selectFontStyle}
+                                                            onChange={(e) => handleSiteTitle(e.target.value)}
+                                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                        >
+                                                            {functionalTitle?.map((data, index) =>
+                                                                <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                                            )}
+                                                        </Select>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Secondary Title</div>
+                                                <div className={style.marginTop10}>
+                                                    <FormControl className={`${style.fullWidth}`} size="small">
+                                                        <Select
+                                                            labelId="demo-select-small"
+                                                            id="demo-select-small"
+                                                            value={deptTitle?.id || ''}
+                                                            className={style.selectFontStyle}
+                                                            onChange={(e) => handleDeptTitle(e.target.value)}
+                                                            selected={deptTitle?.id}
+                                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                        >
+                                                            {functionalTitle?.map((data, index) =>
+                                                                <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                                            )}
+                                                        </Select>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>EMAIL (USERNAME)*</div>
-                            <TextField size="small" className={style.fullWidth} value={addUser?.email} onChange={(e) => setAddUser({ ...addUser, email: e.target.value })} />
-                        </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>MOBILE PHONE / CELL</div>
-                            <TextField
-                                size="small"
-                                className={style.fullWidth}
-                                value={addUser?.phone}
-                                onChange={(e) => setAddUser({ ...addUser, phone: FormatPhoneNumber(e.target.value) })}
-                                InputProps={{
-                                    startAdornment: <InputAdornment position="start" sx={{ fontSize: 10 }}>+1</InputAdornment>,
-                                    style: { fontSize: 15 }
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>IS EXECUTIVE ACCESS LEVEL NEEDED*</div>
-                            <CommonSwitch label={accessLevelNeeded ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={accessLevelNeeded}
-                                onChange={(e) => setAccessLevelNeeded(e.target.checked)} />
-                        </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>TYPE OF ACCESS*</div>
-                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    value={selectedAccessLevelToShow}
-                                    disabled={!accessLevelNeeded}
-                                    onChange={(e) => handleAccessLevelChange(e.target.value)}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {accessLevel?.map((data, index) =>
-                                        <MenuItem value={data?.value} key={index}>{data?.label}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </div>
-
-
-
-                    <div className={`${style.twoCol} ${style.marginTop20}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>ROLE*</div>
-                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    multiple
-                                    value={selectedRolesToShow}
-                                    onChange={(e) => handleRolesChange(e.target.value)}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {roles?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                        <div >
-                            <CommonLabel value='SUFFIX*' />
-                            <div className={style.grid3}>
-                                <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                                        <div className={`${style.marginTop10} ${style.threeCol}`}>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Email Address*</div>
+                                                <CommonTextField className={style.fullWidth} value={addUser?.email} onChange={(e) => setAddUser({ ...addUser, email: e.target.value })} />
+                                            </div>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Cell Phone (For 2FA)</div>
+                                                <CommonPhoneField
+                                                    className={style.fullWidth}
+                                                    value={addUser?.phone}
+                                                    onChange={(e) => setAddUser({ ...addUser, phone: FormatPhoneNumber(e.target.value) })}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className={`${style.marginTop10} ${style.threeCol}`}>
+                                            <div>
+                                                <div className={style.extentionLableStyle}>Role*</div>
+                                                <div className={style.marginTop10}>
+                                                    <FormControl sx={{ maxWidth: '29vw' }} className={style.fullWidth} size="small">
+                                                        <Select
+                                                            labelId="demo-multiple-checkbox-label"
+                                                            id="demo-multiple-checkbox"
+                                                            multiple
+                                                            value={selectedRolesToShow}
+                                                            onChange={(e) => handleRolesChange(e.target.value)}
+                                                            SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                        >
+                                                            {roles?.map((data, index) =>
+                                                                <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
+                                                            )}
+                                                        </Select>
+                                                    </FormControl>
+                                                </div>
+                                            </div>
+                                            {selectedRolesToShow?.includes(roles?.filter(data => data?.roleName === "Department Head")?.[0]?.id) && (
+                                                <>
+                                                    <div>
+                                                        <div className={style.extentionLableStyle}>Specify Department*</div>
+                                                        <div className={style.marginTop10}>
+                                                            <FormControl sx={{ maxWidth: '29vw' }} className={style.fullWidth} size="small">
+                                                                <Select
+                                                                    labelId="demo-multiple-checkbox-label"
+                                                                    id="demo-multiple-checkbox"
+                                                                    multiple
+                                                                    value={selectedDepartments}
+                                                                    onChange={(e) => handleDepartmentsChange(e.target.value)}
+                                                                    className={style.selectFontStyle}
+                                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                                >
+                                                                    {departmentList?.map((deptData, deptIndex) => (
+                                                                        <MenuItem value={deptData?.id} key={deptIndex}>{deptData?.departmentName?.name}</MenuItem>
+                                                                    ))}
+                                                                </Select>
+                                                            </FormControl>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={style.extentionLableStyle}>Specify Division or Speciality</div>
+                                                        <div className={style.marginTop10}>
+                                                            <FormControl sx={{ maxWidth: '29vw' }} className={style.fullWidth} size="small">
+                                                                <Select
+                                                                    labelId="demo-multiple-checkbox-label"
+                                                                    id="demo-multiple-checkbox"
+                                                                    multiple
+                                                                    value={selectedSpecialtys}
+                                                                    onChange={(e) => handleSpecialtyChange(e.target.value)}
+                                                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                                >
+                                                                    {departmentList?.filter(data => selectedDepartments?.includes(data?.id))?.map((deptData, deptIndex) =>
+                                                                        deptData?.serviceAreas?.map((data, index) => (
+                                                                            <MenuItem value={data?.id} key={index}>{data?.name}</MenuItem>
+                                                                        )))}
+                                                                </Select>
+                                                            </FormControl>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                {/* <div className={`${style.marginTop20} ${style.twoCol}`}>
+                            <div>
+                                <div className={style.extentionLableStyle}>IS EXECUTIVE ACCESS LEVEL NEEDED*</div>
+                                <CommonSwitch label={accessLevelNeeded ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={accessLevelNeeded}
+                                    onChange={(e) => setAccessLevelNeeded(e.target.checked)} />
+                            </div>
+                            <div>
+                                <div className={style.extentionLableStyle}>TYPE OF ACCESS*</div>
+                                <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        value={selectedAccessLevelToShow}
+                                        disabled={!accessLevelNeeded}
+                                        onChange={(e) => handleAccessLevelChange(e.target.value)}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {accessLevel?.map((data, index) =>
+                                            <MenuItem value={data?.value} key={index}>{data?.label}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
                             </div>
                         </div>
 
-                    </div>
-                    <div className={`${style.twoCol} ${style.marginTop20}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>SITES</div>
-                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    multiple
-                                    value={selectedSites}
-                                    onChange={(e) => handleSitesChange(e.target.value)}
-                                    className={style.selectFontStyle}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {sites?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
+
+
+                        <div className={`${style.twoCol} ${style.marginTop20}`}>
+                            <div>
+                                <div className={style.extentionLableStyle}>ROLE*</div>
+                                <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={selectedRolesToShow}
+                                        onChange={(e) => handleRolesChange(e.target.value)}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {roles?.map((data, index) =>
+                                            <MenuItem value={data?.id} key={index}>{data?.roleName}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                            <div >
+                                <CommonLabel value='SUFFIX*' />
+                                <div className={style.grid3}>
+                                    <SuffixList value={suffix?.id || ''} onChangeFunc={(id, value) => { setSuffix({ id: id, suffix: value }) }} className={[style.fullWidth]} />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div className={`${style.twoCol} ${style.marginTop20}`}>
+                            <div>
+                                <div className={style.extentionLableStyle}>SITES</div>
+                                <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={selectedSites}
+                                        onChange={(e) => handleSitesChange(e.target.value)}
+                                        className={style.selectFontStyle}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {sites?.map((data, index) =>
+                                            <MenuItem value={data?.id} key={index}>{data?.siteName?.siteName}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                            <div>
+                                <div className={style.extentionLableStyle}>SITE LEVEL TITLE</div>
+                                <FormControl className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-select-small"
+                                        id="demo-select-small"
+                                        value={siteTitle?.id || ''}
+                                        className={style.selectFontStyle}
+                                        onChange={(e) => handleSiteTitle(e.target.value)}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {selectedSites?.length !== 0 && functionalTitle?.map((data, index) =>
+                                            <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                        <div className={`${style.twoCol} ${style.marginTop20}`}>
+                            <div>
+                                <div className={style.extentionLableStyle}>DEPARTMENT</div>
+                                <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-multiple-checkbox-label"
+                                        id="demo-multiple-checkbox"
+                                        multiple
+                                        value={selectedDepartments}
+                                        onChange={(e) => handleDepartmentsChange(e.target.value)}
+                                        className={style.selectFontStyle}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index) =>
+                                            data?.departmentList?.departments?.map((deptData, deptIndex) => (
+                                                <MenuItem value={`${deptData?.id}-${data?.id}`} key={`${index}${deptIndex}`}>{`${deptData?.departmentName?.name} - ${data?.siteName?.siteName}`}</MenuItem>
+                                            )))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                            <div>
+                                <div className={style.extentionLableStyle}>DEPARTMENT LEVEL TITLE</div>
+                                <FormControl className={style.fullWidth} size="small">
+                                    <Select
+                                        labelId="demo-select-small"
+                                        id="demo-select-small"
+                                        value={deptTitle?.id || ''}
+                                        className={style.selectFontStyle}
+                                        onChange={(e) => handleDeptTitle(e.target.value)}
+                                        selected={deptTitle?.id}
+                                        SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                    >
+                                        {selectedDepartments?.length !== 0 && functionalTitle?.map((data, index) =>
+                                            <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                        )}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                        </div>
+                        <div className={`${style.marginTop20} ${style.twoCol}`}>
+                            <div>
+                                <div className={style.extentionLableStyle}>SSO ID*</div>
+                                <TextField size="small" className={style.fullWidth} value={addUser?.ssoId?.id} onChange={(e) => setAddUser({ ...addUser, ssoId: { id: e.target.value } })} />
+                            </div>
+                        </div> */}
+                                <div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                                        <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep1()} >ADD</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : currentPage === 'step2' ? (
+                            <div className={style.verticalSpaceBetween}>
+                                <div>
+                                    <p className={style.extensionStyle}>Select Department(s) For Records That This Registered User Can Access</p>
+                                    <div className={style.fourCol}>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Name</div>
+                                            <div className={style.extentionLableStyle}>{`${addUser?.firstName}, ${addUser?.lastName}`}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Functional Title</div>
+                                            <div className={style.extentionLableStyle}>{siteTitle?.title}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Staff Manager Role Access</div>
+                                            <div className={style.extentionLableStyle}>{selectedRolesToShow?.includes(roles?.filter(data => data?.roleName === "Staff Manager")?.[0]?.id) ? 'Yes' : 'No'}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>System Admin Role Access</div>
+                                            <div className={style.extentionLableStyle}>{selectedRolesToShow?.includes(roles?.filter(data => data?.roleName === "Entity Sys Admin")?.[0]?.id) ? 'Yes' : 'No'}</div>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.displayInRow} ${style.marginTop30}`}>
+                                        <div className={style.extentionLableStyle}>Specific Departments Records To Access*</div>
+                                        <CommonSwitch label={specificDeptRecordsToAccess ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={specificDeptRecordsToAccess}
+                                            onChange={(e) => setSpecificDeptRecordsToAccess(e.target.checked)} />
+                                    </div>
+                                    {specificDeptRecordsToAccess && (
+                                        <>
+                                            <div className={`${style.threeCol} ${style.marginTop20}`}>
+                                                <div>
+                                                    <div className={style.extentionLableStyle}>Departments</div>
+                                                    <div className={style.marginTop10}>
+                                                        <FormControl sx={{ maxWidth: '90vw' }} className={`${style.fullWidth}`} size="small">
+                                                            <Select
+                                                                labelId="demo-multiple-checkbox-label"
+                                                                id="demo-multiple-checkbox"
+                                                                multiple
+                                                                value={selectedDepartmentsToShow}
+                                                                onChange={(e) => handleDepartmentChange(e.target.value)}
+                                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                            >
+                                                                {departmentList?.map((data, index) =>
+                                                                    <MenuItem value={data?.id} key={index}>{data?.departmentName?.name}</MenuItem>
+                                                                )}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                                    {selectedDepartmentsToShow?.map(data => {
+                                                        return (
+                                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                                <div>{departmentList?.filter(optionData => optionData?.id === data)?.[0]?.departmentName?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                                                                    onClick={() => setSelectedDepartmentsToShow(selectedDepartmentsToShow?.filter(innerData => innerData !== data))}
+                                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </>
                                     )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>SITE LEVEL TITLE</div>
-                            <FormControl className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-select-small"
-                                    id="demo-select-small"
-                                    value={siteTitle?.id || ''}
-                                    className={style.selectFontStyle}
-                                    onChange={(e) => handleSiteTitle(e.target.value)}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {selectedSites?.length !== 0 && functionalTitle?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
+                                </div>
+                                <div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                                        <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep2()} >ADD</button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className={style.verticalSpaceBetween}>
+                                <div>
+                                    <p className={style.extensionStyle}>Specific Staff Record Type To Mange By Applicant Type</p>
+                                    <div className={style.fourCol}>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Name</div>
+                                            <div className={style.extentionLableStyle}>{`${addUser?.firstName}, ${addUser?.lastName}`}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Functional Title</div>
+                                            <div className={style.extentionLableStyle}>{siteTitle?.title}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>Staff Manager Role Access</div>
+                                            <div className={style.extentionLableStyle}>{selectedRolesToShow?.includes(roles?.filter(data => data?.roleName === "Staff Manager")?.[0]?.id) ? 'Yes' : 'No'}</div>
+                                        </div>
+                                        <div>
+                                            <div className={style.extentionLableStyle}>System Admin Role Access</div>
+                                            <div className={style.extentionLableStyle}>{selectedRolesToShow?.includes(roles?.filter(data => data?.roleName === "Entity Sys Admin")?.[0]?.id) ? 'Yes' : 'No'}</div>
+                                        </div>
+                                    </div>
+                                    <div className={`${style.displayInRow} ${style.marginTop30}`}>
+                                        <div className={style.extentionLableStyle}>Manage Record Types By Applicant Type*</div>
+                                        <CommonSwitch label={manageRecordTypeByApplicantType ? 'YES' : 'NO'} className={`${style.switchFontStyle} ${style.flexLeft} ${style.textAlignLeft}`} checked={manageRecordTypeByApplicantType}
+                                            onChange={(e) => setManageRecordTypeByApplicantType(e.target.checked)} />
+                                    </div>
+                                    {manageRecordTypeByApplicantType && (
+                                        <>
+                                            <div className={`${style.threeCol} ${style.marginTop20}`}>
+                                                <div>
+                                                    <div className={style.extentionLableStyle}>Applicant Types</div>
+                                                    <div className={style.marginTop10}>
+                                                        <FormControl sx={{ maxWidth: '90vw' }} className={`${style.fullWidth}`} size="small">
+                                                            <Select
+                                                                labelId="demo-multiple-checkbox-label"
+                                                                id="demo-multiple-checkbox"
+                                                                multiple
+                                                                value={selectedApplicantsToShow}
+                                                                onChange={(e) => handleApplicantChange(e.target.value)}
+                                                                SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
+                                                            >
+                                                                {applicantTypeList?.map((data, index) =>
+                                                                    <MenuItem value={data?.id} key={index}>{data?.applicantType}</MenuItem>
+                                                                )}
+                                                            </Select>
+                                                        </FormControl>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                                                    {selectedApplicantsToShow?.map(data => {
+                                                        return (
+                                                            <div className={`${style.chips} ${style.displayInRow}`}>
+                                                                <div>{applicantTypeList?.filter(optionData => optionData?.id === data)?.[0]?.applicantType}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                                                                    onClick={() => setSelectedApplicantsToShow(selectedApplicantsToShow?.filter(innerData => innerData !== data))}
+                                                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </>
                                     )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </div>
-                    <div className={`${style.twoCol} ${style.marginTop20}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>DEPARTMENT</div>
-                            <FormControl sx={{ maxWidth: '300px' }} className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-multiple-checkbox-label"
-                                    id="demo-multiple-checkbox"
-                                    multiple
-                                    value={selectedDepartments}
-                                    onChange={(e) => handleDepartmentsChange(e.target.value)}
-                                    className={style.selectFontStyle}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {sites?.filter(data => selectedSites?.includes(data?.id))?.map((data, index) =>
-                                        data?.departmentList?.departments?.map((deptData, deptIndex) => (
-                                            <MenuItem value={`${deptData?.id}-${data?.id}`} key={`${index}${deptIndex}`}>{`${deptData?.departmentName?.name} - ${data?.siteName?.siteName}`}</MenuItem>
-                                        )))}
-                                </Select>
-                            </FormControl>
-                        </div>
-                        <div>
-                            <div className={style.extentionLableStyle}>DEPARTMENT LEVEL TITLE</div>
-                            <FormControl className={style.fullWidth} size="small">
-                                <Select
-                                    labelId="demo-select-small"
-                                    id="demo-select-small"
-                                    value={deptTitle?.id || ''}
-                                    className={style.selectFontStyle}
-                                    onChange={(e) => handleDeptTitle(e.target.value)}
-                                    selected={deptTitle?.id}
-                                    SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
-                                >
-                                    {selectedDepartments?.length !== 0 && functionalTitle?.map((data, index) =>
-                                        <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
-                                    )}
-                                </Select>
-                            </FormControl>
-                        </div>
-                    </div>
-                    <div className={`${style.marginTop20} ${style.twoCol}`}>
-                        <div>
-                            <div className={style.extentionLableStyle}>SSO ID*</div>
-                            <TextField size="small" className={style.fullWidth} value={addUser?.ssoId?.id} onChange={(e) => setAddUser({ ...addUser, ssoId: { id: e.target.value } })} />
-                        </div>
+                                </div>
+                                <div>
+                                    <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                                        <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep3()} >SAVE</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className={`${style.floatRight} ${style.marginTop10}`}>
-                    <button className={`${style.buttonStyle} ${style.marginLeft10}`} onClick={() => submitUserDetails()} >SAVE & EXIT</button>
-                </div>
-            </div>
-        </Dialog >
+            </Dialog >
+            {showUserCreatedDialog && (
+                <UserCreatedSuccessfullyDialog getIsOpen={getUserCreatedDialog} isOpen={showUserCreatedDialog} user={createdUserDetails} />
+            )
+            }
+        </>
     )
 }
 
