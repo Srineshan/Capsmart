@@ -6,7 +6,7 @@ import Papa from "papaparse";
 import Dropzone from "react-dropzone";
 
 import style from './index.module.scss'
-const CommonDropZone = ({ title, description, changeHandler, files, accept }) => {
+const CommonDropZone = ({ title, description, changeHandler }) => {
 
     const dropzoneStyle = {
         width: "100%",

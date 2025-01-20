@@ -5,7 +5,7 @@
   import CommonDateField from "../../../Components/CommonFields/CommonDateField";
   import { format, parse } from "date-fns";
   import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
-  import { GET,PUT,POST } from "../../dataSaver";
+  import { GET,PUT,POST, TenantID } from "../../dataSaver";
   import CommonTextField from "../../../Components/CommonFields/CommonTextField";
   import { Button, TextField } from "@mui/material";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
@@ -17,6 +17,7 @@ import CommonMultiSelectField from "../../../Components/CommonFields/CommonMulti
 import TableTwo from "../../../Components/TableDesignTwo";
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
+import { baseUrl } from "../../../utils/auth";
 
 
 
@@ -50,21 +51,53 @@ import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
     const [privilege,setPrivilege] = useState("");
     const [program,setProgram]= useState("");
     const [applicantType,setApplicantType]= useState("");
-    const [billingNo,setBillingNo] = useState(0);
-    const [cmpaNo,setCmpaNo] = useState(0);
+    const [billingNo,setBillingNo] = useState("");
+    const [cmpaNo,setCmpaNo] = useState("");
+    const [cPSONo,setCPSONo] = useState("");
     const [subSpeciality,setSubSpeciality] = useState("")
     const [serviceAreas, setServiceAreas] = useState([]);
+    const [individualList, setIndividualList] = useState([]);
+    const [selectedApplication,setSelectedApplication] = useState();
     const [uploadedFiles, setUploadedFiles] = useState({
-      ACLS: [],
-      ACES: [],
-      CMPA: [],
-      Malpractice: [],
-      CPSO: [],
-      N95: [],
-      PALS: [],
-      NRP: [],
-      CPR: [],
-      BloodyEasy:[]
+      ACLS: {
+        file:[],
+        responseFile:{}
+      },
+      ACES: {
+        file:[],
+        responseFile:{}
+      },
+      CMPA: {
+        file:[],
+        responseFile:{}
+      },
+      Malpractice: {
+        file:[],
+        responseFile:{}
+      },
+      CPSO: {
+        file:[],responseFile:{}
+      },
+      N95: {
+        file:[],
+        responseFile:{}
+      },
+      PALS: {
+        file:[],
+        responseFile:{}
+      },
+      NRP: {file:[],
+        responseFile:{}
+      },
+      CPR: {
+        file:[],
+        responseFile:{}
+      },
+      BloodyEasy:{
+        file:[],
+        responseFile:{}
+      },
+      Other:{file:[],responseFile:{}}
     });
     const [prescribeSuboxone, setPrescribeSuboxone] = useState("");
     const [mrpForPatients, setMrpForPatients] = useState("");
@@ -73,12 +106,14 @@ import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
       radioValue: "", 
       content: "", 
       file: null, 
+      responseFile:{}
     });
 
     const [investigatedByCPSO, setInvestigatedByCPSO] = useState({
       radioValue: "", 
       content: "", 
       file: null, 
+      responseFile:{}
     });
 
     const [hospitalPrivileges, setHospitalPrivileges] = useState([]);
@@ -91,45 +126,53 @@ const [privilegesOther, setPrivilegesOther] = useState({
     const [physicalHealth, setPhysicalHealth] = useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
     const [defendantCivilCase, setDefentantCivilCase] = useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
     const [pendingCivilCase, setPendingCivilCase] = useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
     const [terminatedReason, setTerminatedReason]=useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
 
     const [voluntary, setVoluntary]=useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
 
     
     const [mACPastYear, setMACPastYear]=useState({
       radioValue: "", 
       content: "", 
-      file: null, 
+      file: null,
+      responseFile:{} 
     });
 
     const [CMETranscript ,setCMETranscript]=useState({
       radioValue: "", 
       file: [], 
+      responseFile:{}
     });
 
     const [CMECertificate, setCMECertificate]=useState({
       radioValue: "", 
       file: [], 
+      responseFile:{}
     });
 
     const [coverage, setCoverage] = useState({
@@ -191,6 +234,30 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setDob("");
       }
     };
+    const buildCoveragePayload = (coverage, individualList, groupList) => {
+      const payload = {};
+    
+      // Handle Coverage (coverage state)
+      if (coverage.type === "Individual") {
+        const individual = individualList.find((item) => item.id === coverage.individual);
+        payload.providerType = "Individual";
+        if (individual) {
+          payload.providerDetails_id = individual.id;
+          payload.providerDetails_name = `${individual.applicant?.name?.firstName} ${individual.applicant?.name?.lastName}`;
+        }
+      } else if (coverage.type === "Group") {
+        payload.providerType = "Group";
+        coverage.group.forEach((groupId, index) => {
+          const group = groupList.find((item) => item.id === groupId);
+          payload[`providerDetails_id_${index + 1}`] = group?.id || groupId;
+          payload[`providerDetails_name_${index + 1}`] = group?.name || "";
+        });
+      }
+    
+      return payload;
+    };
+    
+    
 
     const handleDoeChange = (newDate) => {
       if (newDate) {
@@ -208,11 +275,64 @@ const [privilegesOther, setPrivilegesOther] = useState({
     "application/pdf": []
   };
 
-  const handleFileDrop = (category, acceptedFiles) => {
+  const handleFileDrop = async (category, acceptedFiles) => {
+    if (acceptedFiles.length === 0) return;
+  
+    const file = acceptedFiles[0]; // Assuming single file upload
+  
     setUploadedFiles((prevFiles) => ({
       ...prevFiles,
-      [category]: acceptedFiles,
+      [category]: {
+        ...prevFiles[category],
+        file: acceptedFiles, // Update the file list for the category
+      },
     }));
+  
+    const formData = new FormData();
+    formData.append("documents", file);
+  
+    const fileMetadata = {
+      filePath: "",
+      fileName: file.name,
+      fileURL: "",
+      fileType: "",
+      classification: "",
+      verified: true,
+      valid: true,
+      title: "",
+      description: "",
+    };
+  
+    const filesBlob = new Blob([JSON.stringify(fileMetadata)], {
+      type: "application/json",
+    });
+    formData.append("files", filesBlob);
+  
+    try {
+      const response = await axios.post(
+        `${baseUrl()}/application-management-service/application/historicFileUpload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            "X-tenantID": TenantID,
+          },
+        }
+      );
+  
+      console.log(`File upload response for ${category}:`, response.data);
+  
+      // Update the responseFile in the state
+      setUploadedFiles((prevFiles) => ({
+        ...prevFiles,
+        [category]: {
+          ...prevFiles[category],
+          responseFile: response.data.file, 
+        },
+      }));
+    } catch (error) {
+      console.error(`Error uploading file for ${category}:`, error);
+    }
 
     acceptedFiles.forEach((file) => {
       console.log(`Uploaded file for ${category}:`, file.name);
@@ -297,34 +417,40 @@ const [privilegesOther, setPrivilegesOther] = useState({
         }
       }, [privilege, privilegeCategoryList]);
 
-      const formatPhoneNumber = (phone) => {
-        // Remove all non-numeric characters except for the initial +1
-        let cleaned = phone.replace(/[^0-9]/g, '');
-        
-        // Ensure the phone number starts with +1
-        if (cleaned.length > 1) {
-          const areaCode = cleaned.slice(0, 3);
-          const firstPart = cleaned.slice(3, 6);
-          const secondPart = cleaned.slice(6, 10);
-          
-          // Format as +1 (XXX) XXX-XXXX
-          if (areaCode.length === 3 && firstPart.length === 3 && secondPart.length === 4) {
-            return `+1 (${areaCode}) ${firstPart}-${secondPart}`;
-          }
+      const formatPhoneNumber = (digits) => {
+        if (!digits) return "+1"; // Return default country code if no digits are provided
+      
+        // Format the number dynamically
+        if (digits.length <= 3) {
+          return `+1 (${digits}`;
+        } else if (digits.length <= 6) {
+          return `+1 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
+        } else {
+          return `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
         }
-    
-        // In case the input is incomplete, return the cleaned string starting with +1
-        return cleaned ? `+1 ${cleaned}` : '';
       };
+      
+    
     
       // Reusable phone change handler
       const handlePhoneChange = (e, setPhoneState) => {
-        const value = e.target.value;
-        // Ensure the value starts with +1 and only allows valid characters
-        if (/^[\d\s\(\)\-]*$/.test(value)) {
-          setPhoneState(formatPhoneNumber(value));
+        const rawValue = e.target.value;
+      
+        // Strip all non-numeric characters except + and limit to 10 digits after +1
+        const numericValue = rawValue.replace(/[^\d]/g, "");
+      
+        // Ensure it starts with +1
+        let formattedValue = "+1";
+        if (numericValue.startsWith("1")) {
+          const digits = numericValue.slice(1, 11); // Get up to 10 digits after the country code
+          formattedValue = formatPhoneNumber(digits);
         }
+      
+        // Update state with the formatted value
+        setPhoneState(formattedValue);
       };
+      
+      
 
       const handleChange = (event) => {
         setPrescribeSuboxone(event.target.value);
@@ -334,21 +460,74 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setMrpForPatients(event.target.value);
       };
 
-      const handleRadioChange = (event, setState) => {
-        const value = event.target.value;
+      const handleEditClick = (application) => {
+        setIsEdit(true);
+        setSelectedApplication(application);
+      };
+
+      const handleAddClick = () => {
+        setIsEdit(true);
+        setSelectedApplication(null);
+        resetDialogFields();
+      };
+
+
+      const handleFileUpload = async (event, setState) => {
+        const file = event.target.files[0];
+        if (!file) return;
+      
         setState((prev) => ({
           ...prev,
-          radioValue: value,
+          file: file,
         }));
       
-        if (value === "no") {
+        const formData = new FormData();
+      
+        // Append the raw file to 'documents'
+        formData.append("documents", file);
+      
+        // Prepare the metadata object for 'files'
+        const fileMetadata = {
+          filePath: "",
+          fileName: file.name,
+          fileURL: "",
+          fileType: "",
+          classification: "",
+          verified: true,
+          valid: true,
+          title: "",
+          description: "",
+        };
+      
+        // Append file metadata as JSON with specific content type
+        const filesBlob = new Blob([JSON.stringify(fileMetadata)], {
+          type: "application/json",
+        });
+        formData.append("files", filesBlob);
+      
+        try {
+          const response = await axios.post(
+            `${baseUrl()}/application-management-service/application/historicFileUpload`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                "X-tenantID": TenantID,
+              },
+            }
+          );
+      
+          console.log("File upload response:", response.data.file);
+      
           setState((prev) => ({
             ...prev,
-            content: "",
-            file: null,
+            responseFile: response.data.file, // Update with the server response
           }));
+        } catch (error) {
+          console.error("Error uploading file:", error);
         }
       };
+      
 
       const handleRadioPrivilegeChange = (event) => {
         const value = event.target.value;
@@ -405,15 +584,6 @@ const [privilegesOther, setPrivilegesOther] = useState({
         });
       };
       
-      // Generalized File Upload Handler
-      const handleFileUpload = (event, setState) => {
-        const file = event.target.files[0];
-        setState((prev) => ({
-          ...prev,
-          file: file,
-        }));
-        console.log(file);
-      };
       
       
       const handleEditorChange = (event, editor, setState) => {
@@ -429,24 +599,118 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setRestrictionText(data); 
       };
 
+      const getIndividuallist = async () => {
+        try {
+          // Fetch the data from the API
+          const { data: staffs } = await GET(
+            `application-management-service/staff?status=ACTIVE&departmentId=${program}&applicantTypeId=${applicantType}`
+          );
+      
+          // Filter the remaining staff (those that do not match firstName and lastName)
+          const remainingStaffs = staffs.staffs.filter(
+            (staff) =>
+              staff.applicant?.name?.firstName !== firstName ||
+              staff.applicant?.name?.lastName !== lastName
+          );
+      
+          // Set the remaining staff in individualList
+          setIndividualList(remainingStaffs);
+        } catch (error) {
+          console.error("Error fetching individual list:", error);
+        }
+      };
+
+
+      useEffect(() => {
+        if (program || applicantType || firstName || lastName) {
+          getIndividuallist();
+        }
+      }, [program, applicantType, firstName, lastName]);
+
+      const handleRadioChange = (event, setState) => {
+        const value = event.target.value;
+        setState((prev) => ({
+          ...prev,
+          radioValue: value,
+        }));
+      
+        if (value === "no") {
+          setState((prev) => ({
+            ...prev,
+            content: "",
+            file: null,
+            responseFile:{}
+          }));
+        }
+      };
 
       const handleRadioCMEChange = (setStateFunction, value) => {
         setStateFunction((prev) => ({
           ...prev,
           radioValue: value,
-          file: value === "no" ? [] : prev.file, 
+          file: value === "false" ? [] : prev.file,
+          responseFile:value=== "false" ? {} : prev.responseFile
         }));
       };
 
-      const handleFileDropCME = (setStateFunction, acceptedFiles) => {
+      const handleFileDropCME = async (setStateFunction, acceptedFiles) => {
+        if (acceptedFiles.length === 0) return;
+      
+        const file = acceptedFiles[0]; // Handle single file upload
+      
         setStateFunction((prev) => ({
           ...prev,
           file: acceptedFiles,
         }));
-        acceptedFiles.forEach((file) => {
-          console.log("Uploaded file:", file.name);
+      
+        const formData = new FormData();
+      
+        // Append the raw file to 'documents'
+        formData.append("documents", file);
+      
+        // Prepare the metadata object for 'files'
+        const fileMetadata = {
+          filePath: "",
+          fileName: file.name,
+          fileURL: "",
+          fileType: "",
+          classification: "",
+          verified: true,
+          valid: true,
+          title: "",
+          description: "",
+        };
+      
+        // Manually set 'files' as JSON with specific content type
+        const filesBlob = new Blob([JSON.stringify(fileMetadata)], {
+          type: "application/json",
         });
+        formData.append("files", filesBlob);
+      
+        try {
+          const response = await axios.post(
+            `${baseUrl()}/application-management-service/application/historicFileUpload`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                "X-tenantID": TenantID,
+              },
+            }
+          );
+      
+          console.log("File upload response:", response.data.file);
+      
+          setStateFunction((prev) => ({
+            ...prev,
+            responseFile: response.data.file,
+          }));
+        } catch (error) {
+          console.error("Error uploading file:", error);
+        }
       };
+      
+      
 
 
 
@@ -490,7 +754,7 @@ const [privilegesOther, setPrivilegesOther] = useState({
           name.push(data?.demographics.name.firstName);
           applicantType.push(data?.applicantType.category);
           privilege.push(data?.privilegeCategory.status.category);
-        //  editIcon.push(<EditIcon className={style.editColor} onClick={() => handleEditClick(data)} />)
+         editIcon.push(<EditIcon className={style.editColor} onClick={() => handleEditClick(data)} />)
         })
         return [
           { type: "text", value: name},
@@ -502,7 +766,239 @@ const [privilegesOther, setPrivilegesOther] = useState({
             isShowHoverText: false,
           }]
       }
+
+      useEffect(() => {
+        if (selectedApplication && isEdit) {
+          setSaveData({ ...selectedApplication });
+          setFirstName(selectedApplication.demographics.name.firstName);
+          setLastName(selectedApplication.demographics.name.lastName);
+          setMiddleName(selectedApplication.demographics.name.middleName);
+          setDob(selectedApplication.demographics.dateOfBirth);
+          setEmail(selectedApplication.demographics.email);
+          setHomeAddress(selectedApplication.demographics.residence.streetName);
+          setHomeCity(selectedApplication.demographics.residence.city);
+          setHomeProvince(selectedApplication.demographics.residence.province);
+          setHomeZipcode(selectedApplication.demographics.residence.pinCode);
+          setOfficeAddress(selectedApplication.demographics.office.streetName);
+          setCity(selectedApplication.demographics.office.city);
+          setProvince(selectedApplication.demographics.office.province);
+          setZipcode(selectedApplication.demographics.office.pinCode);
+          setContactNo(selectedApplication.demographics.homephoneno);
+          setPreferredPhone(selectedApplication.demographics.cmh_admin_phoneno);
+          setPrivilege(selectedApplication.privilegeCategory.status.id);
+          setProgram(selectedApplication.privilegeCategory.program.id);
+          setSubSpeciality(selectedApplication.privilegeCategory.subSpecialty.id);
+          setBillingNo(selectedApplication.professionalInformation.ohipbillingNumber);
+          setCmpaNo(selectedApplication.professionalInformation.cmpaNumber);
+          setPrescribeSuboxone(selectedApplication.professionalInformation.prescribeSuboxone);
+          setMrpForPatients(selectedApplication.professionalInformation.mrpForNursery)
+          setUploadedFiles({CMPA:{responseFile:selectedApplication.professionalInformation.cmpaattachment},
+            Malpractice:{responseFile:selectedApplication.professionalInformation.otherMalpracticeProtectionAttachement},
+            CPSO:{responseFile:selectedApplication.professionalInformation.cpsoattachment},
+            Other:{responseFile:selectedApplication.professionalInformation.otherProfessionalRegistrationAttachment},
+            N95:{responseFile:selectedApplication.professionalInformation.n95FitTestAttachment},
+            PALS:{responseFile:selectedApplication.professionalInformation.palsattachment},
+            NRP:{responseFile:selectedApplication.professionalInformation.nrpattachment},
+            CPR:{responseFile:selectedApplication.professionalInformation.cprattachment},
+            ACLS:{responseFile:selectedApplication.professionalInformation.aclsattachment},
+            ACES:{responseFile:selectedApplication.professionalInformation.acesattachment},
+            BloodyEasy:{responseFile:selectedApplication.professionalIssues.bloodyEasyLiteTraining}
+          });
+          setLicensingBody({radioValue:selectedApplication.professionalIssues.formalComplaint.response,
+    content:selectedApplication.professionalIssues.formalComplaint.remarks,
+    responseFile:selectedApplication.professionalIssues.formalComplaint.attachment
+        });
+        setInvestigatedByCPSO({radioValue:selectedApplication.professionalIssues.underInvestigation.response,
+          content:selectedApplication.professionalIssues.underInvestigation.remarks,
+          responseFile:selectedApplication.professionalIssues.underInvestigation.attachment
+              });
+              setPhysicalHealth({radioValue:selectedApplication.professionalIssues.healthProblems.response,
+                content:selectedApplication.professionalIssues.healthProblems.remarks,
+                responseFile:selectedApplication.professionalIssues.healthProblems.attachment});
+          setDefentantCivilCase({radioValue:selectedApplication.professionalIssues.civilOrCriminalLawsuits.response,
+            content:selectedApplication.professionalIssues.civilOrCriminalLawsuits.remarks,
+            responseFile:selectedApplication.professionalIssues.civilOrCriminalLawsuits.attachment});
+            setPendingCivilCase({radioValue:selectedApplication.professionalIssues.pendingActions.response,
+              content:selectedApplication.professionalIssues.pendingActions.remarks,
+              responseFile:selectedApplication.professionalIssues.pendingActions.attachment});
+           setPrivilegesOther({radioValue:selectedApplication.professionalIssues.otherHospitalPrivilegesExist});
+           setHospitalPrivileges(selectedApplication.professionalIssues.hospitalPrivileges);
+           setTerminatedReason({
+            radioValue:selectedApplication.professionalIssues.privilegesReduced.response,
+              content:selectedApplication.professionalIssues.privilegesReduced.remarks,
+              responseFile:selectedApplication.professionalIssues.privilegesReduced.attachment
+           });
+           setVoluntary({
+            radioValue:selectedApplication.professionalIssues.voluntarilyRelinquished.response,
+              content:selectedApplication.professionalIssues.voluntarilyRelinquished.remarks,
+              responseFile:selectedApplication.professionalIssues.voluntarilyRelinquished.attachment
+           });
+           setMACPastYear({
+            radioValue:selectedApplication.professionalIssues.subjectToPatientConcerns.response,
+              content:selectedApplication.professionalIssues.subjectToPatientConcerns.remarks,
+              responseFile:selectedApplication.professionalIssues.subjectToPatientConcerns.attachment
+           });
+           setDoe(selectedApplication.restrictedLicensing.expiryDate);
+           setRestrictionText(selectedApplication.restrictedLicensing.restrictions);
+           setCMETranscript({
+            radioValue:selectedApplication.continuingEducation.requirementsMet,
+            responseFile:selectedApplication.continuingEducation.transcripts
+           })
+          setApplicantType(selectedApplication.applicantType.id);
+        }
+      }, [selectedApplication]);
+
+
+      useEffect(() => {
+        if (selectedApplication?.coverageDetails) {
+          // Set coverage state
+          const providerDetails = selectedApplication.coverageDetails.providerDetails || [];
+          const providerType = selectedApplication.coverageDetails.providerType;
+      
+          // Find individual and group items
+          const individual = providerDetails.length > 0 ? providerDetails[0]?.id : "";
+          const groupIds = providerDetails.map(item => item.id);
+      
+          // Ensure individual is in the individualList and group is in the groupList
+          const validIndividual = individualList.some(individualItem => individualItem.id === individual) ? individual : "";
+          const validGroupIds = groupIds.filter(groupId => groupList.some(groupItem => groupItem.id === groupId));
+      
+          // Set coverage state
+          setCoverage({
+            type: providerType, // "Individual" or "Group"
+            individual: validIndividual, // Only set individual if it exists in individualList
+            group: validGroupIds, // Only set group if it exists in groupList
+          });
+      
+          // Set whoCoverage state for obstetrics provider
+          const obstetricsProviderDetails = selectedApplication.coverageDetails.obstetricsProviderDetails || [];
+          const obstetricsProviderType = selectedApplication.coverageDetails.obstetricsProviderType;
+      
+          const obstetricsIndividual = obstetricsProviderDetails.length > 0 ? obstetricsProviderDetails[0]?.id : "";
+          const obstetricsGroupIds = obstetricsProviderDetails.map(item => item.id);
+      
+          const validObstetricsIndividual = individualList.some(individualItem => individualItem.id === obstetricsIndividual) ? obstetricsIndividual : "";
+          const validObstetricsGroupIds = obstetricsGroupIds.filter(groupId => groupList.some(groupItem => groupItem.id === groupId));
+      
+          // Set whoCoverage state
+          setWhoCoverage({
+            type: obstetricsProviderType, // "Individual" or "Group"
+            individual: validObstetricsIndividual, // Only set individual if it exists in individualList
+            group: validObstetricsGroupIds, // Only set group if it exists in groupList
+          });
+        }
+      }, [selectedApplication, individualList, groupList]); // Dependency on selectedApplication, individualList, and groupList
+      
+
+
+      const resetDialogFields = () => {
+        setSaveData({  });
+        setFirstName("");
+        setLastName("");
+        setMiddleName("");
+        setDob("");
+        setEmail("");
+        setHomeAddress("");
+        setHomeCity("");
+        setHomeProvince("");
+        setHomeZipcode("");
+        setOfficeAddress("");
+        setCity("");
+        setProvince("");
+        setZipcode("");
+        setContactNo("");
+        setPreferredPhone("");
+        setPrivilege("");
+        setProgram("");
+        setSubSpeciality("");
+        setBillingNo("");
+        setCmpaNo("");
+        setCPSONo("");
+        setPrescribeSuboxone("");
+        setMrpForPatients("");
+        setUploadedFiles({CMPA:{responseFile:{}},
+          Malpractice:{responseFile:{}},
+          CPSO:{responseFile:{}},
+          Other:{responseFile:{}},
+          N95:{responseFile:{}},
+          PALS:{responseFile:{}},
+          NRP:{responseFile:{}},
+          CPR:{responseFile:{}},
+          ACLS:{responseFile:{}},
+          ACES:{responseFile:{}},
+          BloodyEasy:{responseFile:{}}
+        });
+        setLicensingBody({radioValue:"",
+  content:"",
+  responseFile:{}
+      });
+      setInvestigatedByCPSO({radioValue:"",
+        content:"",
+        responseFile:{}
+            });
+            setPhysicalHealth({radioValue:"",
+              content:"",
+              responseFile:{}});
+        setDefentantCivilCase({radioValue:"",
+          content:"",
+          responseFile:{}});
+          setPendingCivilCase({radioValue:"",
+            content:"",
+            responseFile:{}});
+         setPrivilegesOther({radioValue:""});
+         setHospitalPrivileges([]);
+         setTerminatedReason({
+          radioValue:"",
+            content:"",
+            responseFile:{}
+         });
+         setVoluntary({
+          radioValue:"",
+            content:"",
+            responseFile:{}
+         });
+         setMACPastYear({
+          radioValue:"",
+            content:"",
+            responseFile:{}
+         });
+         setDoe("");
+         setRestrictionText("");
+         setCMETranscript({
+          radioValue:"",
+          responseFile:{}
+         });
+        setApplicantType("");
+      };
+
+      const buildWhoCoveragePayload = (whoCoverage, individualList, groupList) => {
+        const payload = {};
+      
+        // Handle Who Coverage (whoCoverage state)
+        if (whoCoverage.type === "Individual") {
+          const individual = individualList.find((item) => item.id === whoCoverage.individual);
+          payload.obstetricsProviderType = "Individual";
+          if (individual) {
+            payload.obstetricsProviderDetails_id = individual.id;
+            payload.obstetricsProviderDetails_name = `${individual.applicant?.name?.firstName} ${individual.applicant?.name?.lastName}`;
+          }
+        } else if (whoCoverage.type === "Group") {
+          payload.obstetricsProviderType = "Group";
+          whoCoverage.group.forEach((groupId, index) => {
+            const group = groupList.find((item) => item.id === groupId);
+            payload[`obstetricsProviderDetails_id_${index + 1}`] = group?.id || groupId;
+            payload[`obstetricsProviderDetails_name_${index + 1}`] = group?.name || "";
+          });
+        }
+      
+        return payload;
+      };
+      
 const SaveSubmitHandler = async (isSaveAndExit) => {
+
+  const coveragePayload = buildCoveragePayload(coverage, individualList, groupList);
+
+  const whoCoveragePayload = buildWhoCoveragePayload(whoCoverage, individualList, groupList);
     var application = {
       ...saveData,
       demographics: {
@@ -529,39 +1025,147 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       email:email
       },
       privilegeCategory:{
+          staus:{
+            id:privilege,
+            category:privilegeCategoryList.find((data) => data.id === privilege)?.category,
+            type:privilegeCategoryList.find((data) => data.id === privilege)?.type
+          },
+          program:{
+            id:program,
+            name:departmentList.find((data) => data.id === program)?.departmentName.name
+          },
+          subSpecialty:{
+            id:subSpeciality,
+            name:serviceAreas.find((data) => data.id === subSpeciality)?.name
+          },
+          changePrivilegesFromPreviousYear:true,
+      },
+      professionalInformation:{
+        ohipbillingNumber:billingNo,
+        cmpaNumber:cmpaNo,
+        cmpaattachment:uploadedFiles.CMPA.responseFile,
+        otherMalpracticeProtectionAttachement:uploadedFiles.Malpractice.responseFile,
+        cpsoRegistrationNumber:cPSONo,
+        cpsoattachment:uploadedFiles.CPSO.responseFile,
+        otherProfessionalRegistrationAttachment:uploadedFiles.Other.responseFile,
+        n95FitTestAttachment:uploadedFiles.N95.responseFile,
+        palsattachment:uploadedFiles.PALS.responseFile,
+        nrpattachment:uploadedFiles.NRP.responseFile,
+        cprattachment:uploadedFiles.CPR.responseFile,
+        aclsattachment:uploadedFiles.ACLS.responseFile,
+        acesattachment:uploadedFiles.ACES.responseFile,
+        prescribeSuboxone:prescribeSuboxone,
+        mrpForNursery:mrpForPatients
+      },
+      professionalIssues:{
+        formalComplaint:{
+          response:licensingBody.radioValue,
+          remarks:licensingBody.content,
+          attachment:licensingBody.responseFile
+        },
+        underInvestigation:{
+          response:investigatedByCPSO.radioValue,
+          remarks:investigatedByCPSO.content,
+          attachment:investigatedByCPSO.responseFile
+        },
+        subjectToPatientConcerns:{
+          response:mACPastYear.radioValue,
+          remarks:mACPastYear.content,
+          attachment:mACPastYear.responseFile
+        },
+        civilOrCriminalLawsuits:{
+          response:defendantCivilCase.radioValue,
+          remarks:defendantCivilCase.content,
+          attachment:defendantCivilCase.responseFile
+        },
+        pendingActions:{
+          response:pendingCivilCase.radioValue,
+          remarks:pendingCivilCase.content,
+          attachment:pendingCivilCase.responseFile
+        },
+        healthProblems:{
+          response:physicalHealth.radioValue,
+          remarks:physicalHealth.content,
+          attachment:physicalHealth.responseFile
+        },
+        privilegesReduced:{
+          response:terminatedReason.radioValue,
+          remarks:terminatedReason.content,
+          attachment:terminatedReason.responseFile
+        },
+        voluntarilyRelinquished:{
+          response:voluntary.radioValue,
+          remarks:voluntary.content,
+          attachment:voluntary.responseFile
+        },
+        otherHospitalPrivilegesExist:privilegesOther.radioValue,
+        hospitalPrivileges:hospitalPrivileges,
+        bloodyEasyLiteTraining:uploadedFiles.BloodyEasy.responseFile,
 
+      },
+      restrictedLicensing:{
+        expiryDate:doe,
+        restrictions:restrictiontext
+      },
+      continuingEducation:{
+        requirementsMet:CMETranscript.radioValue,
+        transcripts:[
+          CMETranscript.responseFile]
+      },
+      coverageDetails:{
+        providerType:coveragePayload.providerType,
+        providerDetails:[{
+          id:coveragePayload.providerDetails_id,
+          name:coveragePayload.providerDetails_name
+        }],
+
+        obstetricsProviderType:whoCoveragePayload.obstetricsProviderType,
+        obstetricsProviderDetails: [
+          {
+            id: whoCoveragePayload.obstetricsProviderDetails_id,
+            name: whoCoveragePayload.obstetricsProviderDetails_name
+          }
+        ]
+        
       }
       
     };
 
     if (!isEdit) {
-      await POST("/application-management-service/application/createStaffFromOldData", JSON.stringify(application))
+      await POST("application-management-service/application/createStaffFromOldData", JSON.stringify(application))
         .then((response) => {
           SuccessToaster("Historical Data Added Successfully");
-          // resetDialogFields();
+           resetDialogFields();
         })
         .catch((error) => {
           ErrorToaster(error);
         });
     } else {
-      // // var id = selectedApplication.id;
-      // await PUT(
-      //   `/application-management-service/${importedDataId}/updateApplicationOldData`,
-      //   JSON.stringify(application)
-      // )
-      //   .then((response) => {
-      //     SuccessToaster("Historical Data Updated Successfully");
-      //     // resetDialogFields();
-      //   })
-      //   .catch((error) => {
-      //     ErrorToaster(error);
-      //   });
+       var importedDataId = selectedApplication.id;
+      await PUT(
+        `application-management-service/${importedDataId}/updateApplicationOldData`,
+        JSON.stringify(application)
+      )
+        .then((response) => {
+          SuccessToaster("Historical Data Updated Successfully");
+           resetDialogFields();
+        })
+        .catch((error) => {
+          ErrorToaster(error);
+        });
     }
   };
     return (
       <>
         <Navbar />
         <div className={style.applicantList}>
+        <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
+            <button
+              className={style.buttonStyle}
+              onClick={() => handleAddClick()}
+            >
+              ADD NEW
+            </button></div>
         <TableTwo
                 tableHeaderValues={tableHeader}
                 tableDataValues={getTableDataValues()}
@@ -678,6 +1282,16 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             </div>
             <div className={style.inputGroup}>
               <CommonTextField
+                label="Postal Code"
+                value={zipcode}
+                onChange={(e) => setZipcode(e.target.value)}
+                placeholder="Enter Postal Code"
+                required
+                className={style.fullwidth}
+              />
+            </div>
+            <div className={style.inputGroup}>
+              <CommonTextField
                 label="City"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
@@ -696,16 +1310,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
                 className={style.fullwidth}
               />
             </div>
-            <div className={style.inputGroup}>
-              <CommonTextField
-                label="Zip Code"
-                value={zipcode}
-                onChange={(e) => setZipcode(e.target.value)}
-                placeholder="Enter Zip Code"
-                required
-                className={style.fullwidth}
-              />
-            </div>
+           
           </div>
         </div>
 
@@ -719,6 +1324,16 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
                 value={homeAddress}
                 onChange={(e) => setHomeAddress(e.target.value)}
                 placeholder="Enter Home Address"
+                required
+                className={style.fullwidth}
+              />
+            </div>
+            <div className={style.inputGroup}>
+              <CommonTextField
+                label="Postal Code"
+                value={homeZipcode}
+                onChange={(e) => setHomeZipcode(e.target.value)}
+                placeholder="Enter Postal Code"
                 required
                 className={style.fullwidth}
               />
@@ -745,17 +1360,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             </div>
             <div className={style.inputGroup}>
               <CommonTextField
-                label="Zip Code"
-                value={homeZipcode}
-                onChange={(e) => setHomeZipcode(e.target.value)}
-                placeholder="Enter Zip Code"
-                required
-                className={style.fullwidth}
-              />
-            </div>
-            <div className={style.inputGroup}>
-              <CommonTextField
-                label="Contact Number"
+                label="Phone No"
                 value={contactNo}
                 onChange={(e) => handlePhoneChange(e, setContactNo)}
                 placeholder="Enter Contact No"
@@ -766,10 +1371,10 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             </div>
             <div className={style.inputGroup}>
               <CommonTextField
-                label="Preferred Phone"
+                label="CMH Phone"
                 value={preferredPhone}
                 onChange={(e) => handlePhoneChange(e, setPreferredPhone)}
-                placeholder="Enter Preferred Phone"
+                placeholder="Enter CMH Phone"
                 required
                 className={style.fullwidth}
                 type="tel"
@@ -851,7 +1456,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
   <CommonTextField
   label="OHIP Billing"
   value={billingNo}
-  onChange={(e)=>setBillingNo(Number(e.target.value))}
+  onChange={(e)=>setBillingNo(e.target.value)}
   placeholder="Enter OHIP No"
   required
   className={style.fullwidth}/>
@@ -861,7 +1466,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonTextField
       label="CMPA No"
       value={cmpaNo}
-      onChange={(e) => setCmpaNo(Number(e.target.value))}
+      onChange={(e) => setCmpaNo(e.target.value)}
       placeholder="Enter CMPA No"
       required
       className={style.fullwidth}
@@ -872,16 +1477,12 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload CMPA File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("CMPA", acceptedFiles)}
-      files={uploadedFiles.CMPA}
-      accept={acceptTypes}
     />
-    {uploadedFiles.CMPA.length > 0 && (
+    {uploadedFiles.CMPA.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.CMPA.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.CMPA.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -895,42 +1496,63 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload Malpractice File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("Malpractice", acceptedFiles)}
-      files={uploadedFiles.Malpractice}
-      accept={acceptTypes}
     />
-    {uploadedFiles.Malpractice.length > 0 && (
+  {uploadedFiles.Malpractice.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.Malpractice.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.Malpractice.responseFile.fileName}</li>
         </ul>
       </div>
     )}
 </div>
-<div className={style.inputGroup1}>
-<div className={style.headerContainer}>
-    <p>CPSO Active Registration file*</p>
+<div className={style.inputRow}>
+  <div className={style.inputField}>
+    <CommonTextField
+      label="CPSO Registration No"
+      value={cPSONo}
+      onChange={(e) => setCPSONo(e.target.value)}
+      placeholder="Enter CPSO No"
+      required
+      className={style.fullwidth}
+    />
   </div>
-<CommonDropZone
+  <div className={style.fileUpload}>
+    <CommonDropZone
       title="Upload CPSO File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("CPSO", acceptedFiles)}
-      files={uploadedFiles.CPSO}
-      accept={acceptTypes}
     />
-    {uploadedFiles.CPSO.length > 0 && (
+   {uploadedFiles.CPSO.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.CPSO.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.CPSO.responseFile.fileName}</li>
+        </ul>
+      </div>
+    )}
+  </div>
+</div>
+
+<div className={style.inputGroup1}>
+<div className={style.headerContainer}>
+    <p>Other Professional Attachment*</p>
+  </div>
+<CommonDropZone
+      title="Upload Other Professional Attachment File"
+      description="Drag & drop a file here, or click to select"
+      changeHandler={(acceptedFiles) => handleFileDrop("Other", acceptedFiles)}
+    />
+    {uploadedFiles.Other.responseFile&& (
+      <div className={style.uploadedFiles}>
+        <h4>Uploaded File:</h4>
+        <ul>
+            <li>{uploadedFiles.Other.responseFile.fileName}</li>
         </ul>
       </div>
     )}
 </div>
+
 <div className={style.inputGroup1}>
 <div className={style.headerContainer}>
     <p>Proof of your N95 Fit Test*</p>
@@ -939,16 +1561,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload N95 Fit test File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("N95", acceptedFiles)}
-      files={uploadedFiles.N95}
-      accept={acceptTypes}
+     
     />
-    {uploadedFiles.N95.length > 0 && (
+   {uploadedFiles.N95.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.N95.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.N95.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -962,16 +1581,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload PALS File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("PALS", acceptedFiles)}
-      files={uploadedFiles.PALS}
-      accept={acceptTypes}
+      
     />
-    {uploadedFiles.PALS.length > 0 && (
+  {uploadedFiles.PALS.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.PALS.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.PALS.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -984,16 +1600,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload NRP File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("NRP", acceptedFiles)}
-      files={uploadedFiles.NRP}
-      accept={acceptTypes}
+ 
     />
-    {uploadedFiles.NRP.length > 0 && (
+    {uploadedFiles.NRP.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.NRP.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.NRP.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1006,16 +1619,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload CPR File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("CPR", acceptedFiles)}
-      files={uploadedFiles.CPR}
-      accept={acceptTypes}
+     
     />
-    {uploadedFiles.CPR.length > 0 && (
+    {uploadedFiles.CPR.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.CPR.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.CPR.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1028,16 +1638,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload ACLS File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("ACLS", acceptedFiles)}
-      files={uploadedFiles.ACLS}
-      accept={acceptTypes}
+      
     />
-    {uploadedFiles.ACLS.length > 0 && (
+    {uploadedFiles.ACLS.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.ACLS.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.ACLS.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1050,16 +1657,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload ACES File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("ACES", acceptedFiles)}
-      files={uploadedFiles.ACES}
-      accept={acceptTypes}
+     
     />
-    {uploadedFiles.ACES.length > 0 && (
+    {uploadedFiles.ACES.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.ACES.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.ACES.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1073,16 +1677,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       title="Upload BloodyEasy Lite training"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("BloodyEasy", acceptedFiles)}
-      files={uploadedFiles.BloodyEasy}
-      accept={acceptTypes}
+      
     />
-    {uploadedFiles.BloodyEasy.length > 0 && (
+   {uploadedFiles.BloodyEasy.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {uploadedFiles.BloodyEasy.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+            <li>{uploadedFiles.BloodyEasy.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1093,7 +1694,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
   <CommonRadio
     onChange={handleChange}
     value={prescribeSuboxone}
-    radioValue={["yes", "no"]}
+    radioValue={["true", "false"]}
     label={["Yes", "No"]}
     required={true}
     className={style.commonRadio}
@@ -1104,7 +1705,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
   <CommonRadio
     onChange={handleMRPChange}
     value={mrpForPatients}
-    radioValue={["yes", "no"]}
+    radioValue={["true", "false"]}
     label={["Yes", "No"]}
     required={true}
     className={style.commonRadio}
@@ -1166,7 +1767,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {licensingBody.file && <p className={style.fileName}>Uploaded file: {licensingBody.file.name}</p>}
+        {licensingBody.responseFile && <p className={style.fileName}>Uploaded file: {licensingBody.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1223,7 +1824,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {investigatedByCPSO.file && <p className={style.fileName}>Uploaded file: {investigatedByCPSO.file.name}</p>}
+        {investigatedByCPSO.responseFile && <p className={style.fileName}>Uploaded file: {investigatedByCPSO.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1278,7 +1879,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {physicalHealth.file && <p className={style.fileName}>Uploaded file: {physicalHealth.file.name}</p>}
+        {physicalHealth.responseFile && <p className={style.fileName}>Uploaded file: {physicalHealth.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1333,7 +1934,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {defendantCivilCase.file && <p className={style.fileName}>Uploaded file: {defendantCivilCase.file.name}</p>}
+        {defendantCivilCase.responseFile&& <p className={style.fileName}>Uploaded file: {defendantCivilCase.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1389,7 +1990,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {pendingCivilCase.file && <p className={style.fileName}>Uploaded file: {pendingCivilCase.file.name}</p>}
+        {pendingCivilCase.responseFile && <p className={style.fileName}>Uploaded file: {pendingCivilCase.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1516,7 +2117,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {terminatedReason.file && <p className={style.fileName}>Uploaded file: {terminatedReason.file.name}</p>}
+        {terminatedReason.responseFile&& <p className={style.fileName}>Uploaded file: {terminatedReason.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1571,7 +2172,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {voluntary.file && <p className={style.fileName}>Uploaded file: {voluntary.file.name}</p>}
+        {voluntary.responseFile && <p className={style.fileName}>Uploaded file: {voluntary.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1626,7 +2227,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
             Upload File
           </Button>
         </label>
-        {mACPastYear.file && <p className={style.fileName}>Uploaded file: {mACPastYear.file.name}</p>}
+        {mACPastYear.responseFile && <p className={style.fileName}>Uploaded file: {mACPastYear.responseFile.fileName}</p>}
       </div>
     </div>
   )}
@@ -1721,30 +2322,26 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
               handleRadioCMEChange(setCMETranscript, event.target.value)
             }
       value={CMETranscript.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["true", "false"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {CMETranscript.radioValue === "yes" && (
+  {CMETranscript.radioValue === "true" && (
     <div className={style.secondRow2}>
 
 <CommonDropZone
       title="Upload CME Transcript"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDropCME(setCMETranscript, acceptedFiles)}
-      files={CMETranscript.file}
-      accept={acceptTypes}
     />
-    {CMETranscript.file.length > 0 && (
+    {CMETranscript.responseFile && (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {CMETranscript.file.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+          <li>{CMETranscript.responseFile.fileName}</li>
         </ul>
       </div>
     )}
@@ -1762,30 +2359,28 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
               handleRadioCMEChange(setCMECertificate, event.target.value)
             }
       value={CMECertificate.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["true", "false"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {CMECertificate.radioValue === "yes" && (
+  {CMECertificate.radioValue === "true" && (
     <div className={style.secondRow2}>
 
 <CommonDropZone
       title="Upload CME Certificate"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDropCME(setCMECertificate, acceptedFiles)}
-      files={CMECertificate.file}
-      accept={acceptTypes}
     />
-    {CMECertificate.file.length > 0 && (
+    {CMECertificate.responseFile&& (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-          {CMECertificate.file.map((file, index) => (
-            <li key={index}>{file.name}</li>
-          ))}
+          
+            <li>{CMECertificate.responseFile.fileName}</li>
+          
         </ul>
       </div>
     )}
@@ -1828,8 +2423,8 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       }
       firstOptionLabel="Select an Individual"
       firstOptionValue=""
-      valueList={["Doctor A", "Doctor B", "Doctor C"]}
-      labelList={["Doctor A", "Doctor B", "Doctor C"]}
+      valueList={individualList.map((data)=>data.id)}
+      labelList={individualList.map((data) =>`${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName}`)}
       className={style.fullWidth}
       required={true}
       label="Select Individual"
@@ -1904,8 +2499,8 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       }
       firstOptionLabel="Select an Individual"
       firstOptionValue=""
-      valueList={["Doctor A", "Doctor B", "Doctor C"]}
-      labelList={["Doctor A", "Doctor B", "Doctor C"]}
+      valueList={individualList.map((data)=>data.id)}
+      labelList={individualList.map((data) => `${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName}`)}
       className={style.fullWidth}
       required={true}
       label="Select Individual"
