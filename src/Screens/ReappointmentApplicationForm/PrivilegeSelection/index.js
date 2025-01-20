@@ -490,6 +490,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const handleDeptSubmit = async () => {
     let data = basicForm;
+    // if (data?.basicDetails?.priorDepartmentSpecialty === null) {
+    data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+    // }
     data.basicDetails.departmentSpecialty.department = departmentList?.filter(
       (data) => data?.id === selectedDepartment
     )?.[0]?.departmentName?.name;
@@ -2469,7 +2472,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   >
                     <div className={style.privilegeHeadingCurrent}>Current</div>
                     <div className={style.privilegeHeading}>
-                      {(basicForm?.basicDetails?.departmentSpecialty !== null && basicForm?.basicDetails?.departmentSpecialty?.department !== null) ? basicForm?.basicDetails?.departmentSpecialty?.department : 'None'}
+                      {(basicForm?.basicDetails?.priorDepartmentSpecialty !== null && basicForm?.basicDetails?.priorDepartmentSpecialty?.department !== null) ? basicForm?.basicDetails?.priorDepartmentSpecialty?.department : (basicForm?.basicDetails?.departmentSpecialty !== null && basicForm?.basicDetails?.departmentSpecialty?.department !== null) ? basicForm?.basicDetails?.departmentSpecialty?.department : 'None'}
                     </div>
                   </div>
                   {departmentChangeYesOrNo !== '' && (
