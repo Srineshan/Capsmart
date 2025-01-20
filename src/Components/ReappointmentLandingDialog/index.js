@@ -264,7 +264,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </div>
             <br />
             <div
-            className={`${style.daysToComplete} ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
+            className={`${style.daysToComplete} ${style.marginTop30} ${style.displayInRow} ${style.alignCenter}`}
             >
               <div className={`${style.verticalAlignCenter1} ${style.alignCenter}`}>
               <div className={style.textStyle}>{"YOU HAVE"}</div>

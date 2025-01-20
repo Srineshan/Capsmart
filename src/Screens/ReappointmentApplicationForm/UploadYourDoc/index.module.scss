@@ -14,12 +14,11 @@
 
 .applicationScreenGrid {
     display: grid;
-    // grid-template-columns: repeat(auto-fit, minmax(3fr, 1fr));
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
 
-    @media (max-width: 1120px) {
+    @media (max-width: 768px) {
         grid-template-columns: 1fr; 
     }
 }
@@ -34,14 +33,14 @@
     width: calc(25% - 50px);
 }
 
-@media (max-width: 1280px) {
+@media (max-width: 948px) {
     .stickyContainer {
-        position: sticky;
+        position: fixed;
         bottom: 0;
         left: auto;
         right: auto;
         width: auto; 
-        padding: 20px 20px 20px 20px; 
+        padding: 0px 20px 20px 20px; 
         margin: 0 auto; 
         box-sizing: border-box;
     }
@@ -110,6 +109,9 @@
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
     padding: 20px;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 20px;
 }
 
 .progressStyle {
@@ -185,10 +187,6 @@
     display: grid;
     grid-template-columns: 80% 18%;
     gap: 1%;
-
-    @media (max-width: 1130px) {
-        overflow: scroll;
-     }
 }
 
 
@@ -346,10 +344,6 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-
-    @media (max-width: 1280px) {
-        grid-template-columns: 1fr; 
-    }
 }
 
 .threeColForButton {
@@ -410,12 +404,6 @@
     display: grid;
     grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
     gap: 1%;
-
-    // @media (max-width: 1120px) and (min-width: 320px) {
-    //     max-width: 100%;
-    //     overflow-x: auto !important;
-    //     overflow-y: hidden;
-    // }
   }
 
 .contractScrollStyle {
@@ -565,7 +553,7 @@
     height: 18px;
     width: 18px;
 
-    @media (max-width: 1130px) {
+    @media (max-width: 1000px) {
         height: 16px;
         width: 16px;
     }    
