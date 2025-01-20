@@ -550,10 +550,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 <div>
                 {!showInfo && (
                         <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
+                                <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Continuing Medical Education</span>
                                 </div>
                         </div>        

@@ -3865,10 +3865,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <div>
               {!showInfo && (
                         <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
+                                  || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
+                                  showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
+                                <div className={`${style.headerData} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
+                                      || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
+                                      showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Privilege Category</span>
                                 </div>
                         </div>        

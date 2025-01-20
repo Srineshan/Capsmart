@@ -664,8 +664,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 accept="image/*"
                             />
                         </div>
-                        {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
-                            <div className={style.tableContainer}>
+                        <div className={style.tableContainer}>
+                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (     
                                 <TableTwo
                                     tableHeaderValues={[
                                         "",
@@ -684,9 +684,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     tableSortValues={[]}
                                     heading={"You have not yet uploaded any documents."}
                                     onClickFunction={() => { }}
-                                />
-                            </div>
-                        )}
+                                />  
+                            )} 
+                        </div>
                         <input
                             type="file"
                             ref={fileInputRef}
@@ -785,11 +785,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <div>
                 {!showInfo && (
                         <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
-                                <span style={{ marginLeft: '20px' }}>Confirm Your Demographic Data</span>
+                                <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Required Documents</span>
                                 </div>
                         </div>        
                     )}

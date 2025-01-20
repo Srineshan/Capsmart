@@ -12,6 +12,7 @@ import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import CloseIcon from '@mui/icons-material/Close';
 
 const MedicalDirectivesAttest = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
@@ -170,7 +171,15 @@ const MedicalDirectivesAttest = () => {
     }
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+            <div className={style.welcomeText}>
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+            </div>
+            <div className={style.headerData}>
+                  <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
+                  <span className={style.verticalAlignCenter}>
+                        <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                  </span>
+            </div>
             <div className={style.screenPadding}>
                 <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>

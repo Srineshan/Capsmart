@@ -663,10 +663,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                   
                     {!showInfo && (
                         <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
+                                <div className={`${style.headerData}${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Demographic Data</span>
                                 </div>
                         </div>        

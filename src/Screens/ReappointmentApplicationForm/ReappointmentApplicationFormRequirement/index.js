@@ -182,10 +182,10 @@ const ReappointmentApplicationFormRequirement = () => {
                                 {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
                             {!showInfo && (
                             <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isDoItLaterOpen ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
+                                <div className={`${style.headerData} ${isDoItLaterOpen ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Application Form Requirement</span>
                                 </div>
                             </div>        

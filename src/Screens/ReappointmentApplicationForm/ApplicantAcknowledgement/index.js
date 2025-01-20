@@ -276,10 +276,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                 <div>
                 {!showInfo && (
                         <div>
-                            <div className={style.toggleButton} onClick={() => setShowInfo(!showInfo)}>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData}`}>
+                                <div className={`${style.headerData} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Acknowledgement And Agreement</span>
                                 </div>
                         </div>        

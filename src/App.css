@@ -98,9 +98,9 @@ h1 {
 	background: #06617A !important;
 	border-radius: 5px;
 	opacity: 0.9 !important;
-	@media (max-width: 806px) {
-        background: #ffffff !important;
-    }
+	/* @media (max-width: 806px) {
+        background: #06617A !important;
+    } */
 }
 
 .bp4-input {
