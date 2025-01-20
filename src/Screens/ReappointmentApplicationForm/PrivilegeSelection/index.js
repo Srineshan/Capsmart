@@ -116,6 +116,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedSpeciality, setSelectedSpeciality] = useState("");
   const [selectedAdditionalDepartment, setSelectedAdditionalDepartment] = useState("");
+  const [selectedAdditionalSpeciality, setSelectedAdditionalSpeciality] = useState("");
   const navigate = useNavigate();
   const [formIndex, setFormIndex] = useState();
   const [navigateURL, setNavigateURL] = useState();
@@ -198,7 +199,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   useEffect(() => {
     getAdditionalStaffPrivilege();
-  }, [applicationData, selectedAdditionalDepartment]);
+  }, [applicationData, selectedAdditionalDepartment, selectedAdditionalSpeciality]);
 
   useEffect(() => {
     setSelectedDepartment(
@@ -231,14 +232,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       );
       setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
       setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-      setNavigateURL(
-        basicForm?.forms?.filter((data) => data?.formCategory === "Form")
-          ?.length ===
-          formIndex + 1
-          ? `/reappointmentApplicationForm/${applicationId}/Form/PODCheck`
-          : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
-          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
-      );
+      setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       if (basicForm?.forms[formIndex]?.data !== null) {
         setPrivilegeChangeYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
         setDepartmentChangeYesOrNo(basicForm?.forms[formIndex]?.data?.departmentChangeYesOrNo);
@@ -280,9 +274,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   console.log(selectedAdditionalPrivilegeForDisplay);
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema);
       setFormSchemaWholeObject(form);
@@ -323,11 +317,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const getAdditionalStaffPrivilege = async () => {
-    if (applicationData && selectedAdditionalDepartment !== "" && selectedAdditionalDepartment !== undefined) {
-      const { data: privilege } = await GET(
-        `entity-service/staffPrivilege?department=${selectedAdditionalDepartment}`
-      );
-      setAdditionalStaffPrivilege(privilege);
+    if (selectedAdditionalDepartment !== "" && selectedAdditionalDepartment !== undefined) {
+      if (selectedAdditionalSpeciality !== undefined && selectedAdditionalSpeciality !== "") {
+        const { data: privilege } = await GET(
+          `entity-service/staffPrivilege?department=${selectedAdditionalDepartment}&serviceArea=${selectedAdditionalSpeciality}`
+        );
+        setAdditionalStaffPrivilege(privilege);
+      } else {
+        const { data: privilege } = await GET(
+          `entity-service/staffPrivilege?department=${selectedAdditionalDepartment}`
+        );
+        setAdditionalStaffPrivilege(privilege);
+      }
       const { data: allPrivilege } = await GET(
         `entity-service/staffPrivilege`
       );
@@ -489,6 +490,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const handleDeptSubmit = async () => {
     let data = basicForm;
+    // if (data?.basicDetails?.priorDepartmentSpecialty === null) {
+    data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+    // }
     data.basicDetails.departmentSpecialty.department = departmentList?.filter(
       (data) => data?.id === selectedDepartment
     )?.[0]?.departmentName?.name;
@@ -1186,7 +1190,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const getIsRestrictedValuesFilled = (set) => {
     console.log(set, 'enteredCheck')
-    return true;
+    const allHaveResponse = set?.every(
+      item => typeof item?.response === 'string' && item?.response?.trim() !== '' && item?.response !== null
+    );
+    return (set?.length === 0 || set === undefined) ? true : allHaveResponse;
   }
 
   const getFields = () => {
@@ -1374,22 +1381,22 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                           config={{
                                             placeholder:
                                               "Please provide details of your qualification and competence for this privilege (Mandatory)",
-                                              toolbar: {
-                                                shouldNotGroupWhenFull: true,
-                                                sticky: true,
-                                                items: [
-                                                  'undo', 'redo',
-                                                  '|',
-                                                  'heading',
-                                                  '|',
-                                                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                                  '|',
-                                                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                                  '|',
-                                                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                            toolbar: {
+                                              shouldNotGroupWhenFull: true,
+                                              sticky: true,
+                                              items: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                '|',
+                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
                                               ],
-                                              },
-                                              autoGrow: false,
+                                            },
+                                            autoGrow: false,
                                           }}
                                         />
                                       </div>
@@ -1762,22 +1769,22 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                           config={{
                                             placeholder:
                                               "Please provide details of your qualification and competence for this privilege (Mandatory)",
-                                              toolbar: {
-                                                shouldNotGroupWhenFull: true,
-                                                sticky: true,
-                                                items: [
-                                                  'undo', 'redo',
-                                                  '|',
-                                                  'heading',
-                                                  '|',
-                                                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                                  '|',
-                                                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                                  '|',
-                                                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                            toolbar: {
+                                              shouldNotGroupWhenFull: true,
+                                              sticky: true,
+                                              items: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                '|',
+                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
                                               ],
-                                              },
-                                              autoGrow: false,
+                                            },
+                                            autoGrow: false,
                                           }}
                                         />
                                       </div>
@@ -2141,22 +2148,22 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                         config={{
                                           placeholder:
                                             "Please provide details of your qualification and competence for this privilege (Mandatory)",
-                                            toolbar: {
-                                              shouldNotGroupWhenFull: true,
-                                              sticky: true,
-                                              items: [
-                                                'undo', 'redo',
-                                                '|',
-                                                'heading',
-                                                '|',
-                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                                '|',
-                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                                '|',
-                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                          toolbar: {
+                                            shouldNotGroupWhenFull: true,
+                                            sticky: true,
+                                            items: [
+                                              'undo', 'redo',
+                                              '|',
+                                              'heading',
+                                              '|',
+                                              'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                              '|',
+                                              'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                              '|',
+                                              'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
                                             ],
-                                            },
-                                            autoGrow: false,
+                                          },
+                                          autoGrow: false,
                                         }}
                                       />
                                     </div>
@@ -2465,7 +2472,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   >
                     <div className={style.privilegeHeadingCurrent}>Current</div>
                     <div className={style.privilegeHeading}>
-                      {(basicForm?.basicDetails?.departmentSpecialty !== null && basicForm?.basicDetails?.departmentSpecialty?.department !== null) ? basicForm?.basicDetails?.departmentSpecialty?.department : 'None'}
+                      {(basicForm?.basicDetails?.priorDepartmentSpecialty !== null && basicForm?.basicDetails?.priorDepartmentSpecialty?.department !== null) ? basicForm?.basicDetails?.priorDepartmentSpecialty?.department : (basicForm?.basicDetails?.departmentSpecialty !== null && basicForm?.basicDetails?.departmentSpecialty?.department !== null) ? basicForm?.basicDetails?.departmentSpecialty?.department : 'None'}
                     </div>
                   </div>
                   {departmentChangeYesOrNo !== '' && (
@@ -2489,7 +2496,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                   )}
                 </div>
-                {basicForm?.privileges?.priorObligatedPrivileges?.length !== 0 && basicForm?.privileges?.obligatedPrivileges?.length !== 0 && (
+                {(basicForm?.privileges?.priorObligatedPrivileges?.length !== 0 || basicForm?.privileges?.obligatedPrivileges?.length !== 0) && (
                   <>
                     <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
                       <strong>Privilege Sets</strong>
@@ -2588,7 +2595,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                   </>
                 )}
-                {(basicForm?.privileges?.priorAdditionalPrivileges?.length !== 0 && basicForm?.privileges?.additionalPrivileges?.length !== 0) && (
+                {(basicForm?.privileges?.priorAdditionalPrivileges?.length !== 0 || basicForm?.privileges?.additionalPrivileges?.length !== 0) && (
                   <div>
                     <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
                     <div className={style.twoCol}>
@@ -3566,7 +3573,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               <div className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}>
                 <>
                   <div>
-                    <CommonSelectField
+                    {/* <CommonSelectField
                       // value={selectedDepartment}
                       onChange={(e) => setSelectedAdditionalDepartment(e.target.value)}
                       className={style.fullWidth}
@@ -3577,7 +3584,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       disabledList={departmentList?.filter(data => data?.id !== applicationData?.basicDetailReferences?.department?.id)?.map((data) => false)}
                       label={'Department / Division or Specialty'}
                       required={false}
-                    />
+                    /> */}
+                    <div>
+                      <div className={`${style.lableStyle}`}>
+                        {'Department / Division or Specialty'}
+                      </div>
+                      <DatalistInput
+                        items={getDeptItems(departmentList) || []}
+                        onSelect={(item) => {
+                          setSelectedAdditionalDepartment(item.id)
+                          setSelectedAdditionalSpeciality(item.specialityId)
+                        }}
+                        className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                        maxLength={50}
+                        onChange={(e) => {
+                          setSelectedAdditionalDepartment(e.target.value);
+                        }}
+                        placeholder={'Enter Department Name'}
+                        value={getDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedAdditionalDepartment : data?.id === selectedAdditionalDepartment)?.[0]?.data?.value}
+                        required={true}
+                      />
+                    </div>
                   </div>
                   {selectedAdditionalDepartment !== '' && (
                     <>
@@ -3922,7 +3949,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   : style.disabledButton
                   }`}
                 onClick={
-                  ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                  (((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.esign !== undefined) ||
@@ -3946,7 +3973,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ?.length === 0 &&
                         selectedPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined))
+                          ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges))
                     ? () => {
                       setShowPrivileges(false);
                       handleSelectedPrivilegesForDisplayMultiple(
@@ -3956,7 +3985,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     : () => { }
                 }
                 disabled={
-                  !(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
+                  !((((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ||
                     selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 ||
                     (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
@@ -3965,7 +3994,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ||
                       selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 ||
                       (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
-                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)))
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined))) &&
+                    getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges))
                 }
               >
                 CONTINUE

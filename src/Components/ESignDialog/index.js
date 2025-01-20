@@ -29,7 +29,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     const [signatureData, setSignatureData] = useState(null);
 
 
-    console.log(eSignTypeContent, eSignType)
+    console.log(eSignTypeContent, eSignType, eSignImg, 'eSignImg')
     const clearSignature = () => {
         if (isShowDrawCanvas) {
             sigCanvas.current.clear();
@@ -185,9 +185,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     </div>
                     {selectedESignFormat === 'DRAW' ? (
                         <div className={`${style.eSignBox} ${style.marginTop} ${style.cursorPointer}`} onClick={!isShowDrawCanvas ? () => setIsShowDrawCanvas(true) : () => { }}>
-                            {(eSignImgState !== undefined && !isShowDrawCanvas && basicForm?.forms?.[formIndex]?.data !== null) ? (
+                            {(eSignImgState !== undefined && !isShowDrawCanvas && basicForm?.forms?.[formIndex]?.data !== null && eSignImgState !== '') ? (
                                 <div>
-                                    <img src={eSignImgState?.fileURL} alt="ESign" className={style.eSignImg} />
+                                    <img src={eSignImgState?.fileURL} alt="" className={style.eSignImg} />
                                 </div>
                             ) : !isShowDrawCanvas ? (
                                 <div className={style.verticalAlignCenter}>

@@ -21,7 +21,7 @@ import ApplicationReferenceDocuments from '../../../Components/ApplicationRefere
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../utils/formatting';
 
-const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
+const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const targetRef = useRef();
@@ -40,6 +40,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [navigateURL, setNavigateURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -49,6 +50,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -181,12 +183,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     SuccessToaster("Application Updated Successfully");
                     handleDownload();
                     getFormSchema();
-                    // if (sessionStorage.getItem('fromSummary') === 'true') {
-                    //     navigate(-1);
-                    // }
-                    // else {
-                    //     navigate('/applicationForm/section1/acknowledgementStep2')
-                    // }
+                    if (sessionStorage.getItem('fromSummary') === 'true') {
+                        navigate(-1);
+                    }
+                    else {
+                        navigate(navigateURL)
+                    }
                 })
                 .catch((error) => {
                     setIsLoading(false)
@@ -232,7 +234,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         {formSchema?.disclaimer?.title !== null && (
                             <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
                         )}
-                        {/* <div className={`${style.checkGrid} ${style.marginTop}`}>
+                        <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                             )}
@@ -240,11 +242,11 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                                 className={`${style.leftAlign} ${style.marginTop10}`}
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
-                        </div> */}
+                        </div>
                         {formSchema?.esignatureRequired && (
                             <div className={style.twoCol}>
-                                <div onClick={() => { setIsSigned(!isSigned); setIsEdited(true) }}
-                                // className={!isChecked ? style.disabled : ''}
+                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                    className={!isChecked ? style.disabled : ''}
                                 >
                                     <ESignature
                                         userName={isSigned ? name : ""}
@@ -278,16 +280,13 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); }} >CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>
                         <ApplicationReferenceDocuments />
                     </div>
                 </div>
-                {showJourneyDialog && (
-                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
-                )}
                 {isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )}
@@ -296,4 +295,4 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     )
 }
 
-export default ApplicantAcknowledgement;
+export default ScheduleA;

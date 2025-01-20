@@ -94,7 +94,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       );
       setObstetricsCovererNameList(basicForm?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.id))
       setCovererNameList(basicForm?.coverageDetails?.providerDetails?.map(data => data?.id))
-      setNavigateURL((basicForm?.forms?.filter(data => data?.formCategory === 'Form' || 'Disclosure')?.length === (formIndex + 1)) ? `/reappointmentApplicationForm/${applicationId}/Form/${btoa(`PODCheck`)}` : `/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       console.log(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName, obstetricsCovererName, covererName, 'coverername', basicForm?.forms?.[formIndex]?.data?.coverageDetails)
     }
   }, [basicForm, formIndex])
@@ -238,9 +238,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   }
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema)
       setFormSchemaWholeObject(form)
