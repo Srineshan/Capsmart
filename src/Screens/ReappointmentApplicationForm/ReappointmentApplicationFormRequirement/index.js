@@ -129,7 +129,7 @@ const ReappointmentApplicationFormRequirement = () => {
             <ReappointmentLandingDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
         ) : (
             <>
-                {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+                {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
                 <div className={`${style.screenBackground} ${showInfo ? "blurredBackground" : ""}`}>
                     <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
                     <div className={style.screenPadding}>

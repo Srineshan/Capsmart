@@ -2411,7 +2411,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
         </div>
       )}
-      {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+      {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
       <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
         <div>
           <ReappointmentProgressCard

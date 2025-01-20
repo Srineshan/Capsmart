@@ -166,7 +166,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     }
     return (
         <div>
-            {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />

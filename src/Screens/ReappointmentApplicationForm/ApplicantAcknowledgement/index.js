@@ -215,7 +215,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />

@@ -192,13 +192,13 @@
     pointer-events: none; 
 }
 
-.backdrop {
+.bgdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: $primarycolor !important;
+    background-color:rgba(255, 255, 255, 0.5) !important;
     z-index: 999; 
 }
 

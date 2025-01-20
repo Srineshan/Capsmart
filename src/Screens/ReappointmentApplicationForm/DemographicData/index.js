@@ -463,7 +463,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     console.log('Metadata', metadata);
     return (
         <div>
-            {showInfo && <div className={style.backdrop} onClick={() => setShowInfo(false)}></div>}
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard
