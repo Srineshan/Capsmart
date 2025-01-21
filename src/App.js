@@ -895,7 +895,7 @@ const App = ({ props }) => {
   };
 
   const IsLoggedIn = ({ children }) => {
-    return !isAuthenticated ? children : <Navigate to="/" />;
+    return (isAuthenticated && cookie.get("authorization") !== undefined) ? <Navigate to="/" /> : children;
   };
 
   if (isSessionLoading) {
