@@ -55,7 +55,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
 
     const paymentData = {
-      amount: paymentListData?.[0]?.fee?.toFixed(2), // Replace with the amount you want to charge
+      amount: paymentListData?.fee?.toFixed(2), // Replace with the amount you want to charge
       payment_method: "card",
       card: {
         name: state.name,
@@ -107,7 +107,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
-      "currency": paymentListData?.[0]?.currencyType,
+      "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
       "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
@@ -221,7 +221,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
-      "currency": paymentListData?.[0]?.currencyType,
+      "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
       "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
@@ -318,7 +318,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
               type="text"
               name="amount"
               placeholder="Amount"
-              value={`${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}`}
+              value={`${paymentListData?.currencyType}${paymentListData?.fee}`}
               // onChange={handleInputChange}
               disabled={true}
               onFocus={handleInputFocus}

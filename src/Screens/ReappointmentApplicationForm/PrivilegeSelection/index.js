@@ -164,7 +164,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [privilegeAtOtherHospitalYesOrNo, setPrivilegeAtOtherHospitalYesOrNo] = useState("");
   const [isAdditionalPrivilegeCategoryChanging, setIsAdditionalPrivilegeCategoryChanging] = useState(false)
   const [indexForSign, setIndexForSign] = useState(0);
-  const [paymentListData, setPaymentListData] = useState([]);
+  const [paymentListData, setPaymentListData] = useState();
   const [isContinueEnabled, setIsContinueEnabled] = useState(false);
   const [isPrivilegeAtOtherHospitalEdited, setIsPrivilegeAtOtherHospitalEdited] = useState(false);
   const [privilegeAtOtherHospitalIndex, setPrivilegeAtOtherHospitalIndex] = useState();
@@ -399,7 +399,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const getPrivilegeCategory = async () => {
     const { data: privilege } = await GET(`entity-service/privilege/${(basicForm?.basicDetails?.priorPrivilegeCategory?.id !== null && basicForm?.basicDetails?.priorPrivilegeCategory?.id !== undefined) ? basicForm?.basicDetails?.priorPrivilegeCategory?.id : basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}?applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}`);
     setPrivilegeCategories(privilege?.allowedPrivilegeCategories);
-    setPrivilegeCategoriesAtOtherHospitals(privilege?.otherHospitalPrivilegeCategories)
+    const { data: privilegeAtOtherHospital } = await GET(`entity-service/privilege/${(basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id !== null && basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id !== undefined) ? basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id : basicForm?.basicDetailReferences?.priorPrivilegeCategory?.id}?applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}`);
+    setPrivilegeCategoriesAtOtherHospitals(privilegeAtOtherHospital?.otherHospitalPrivilegeCategories)
   };
 
   const getDepartmentList = async () => {
@@ -763,7 +764,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         console.log(response);
         setBasicForm(response?.data);
         SuccessToaster("Application Updated Successfully");
-        if (paymentListData?.length === 0 || basicForm?.payment?.paymentCompleted) {
+        if (paymentListData?.fee === 0 || basicForm?.payment?.paymentCompleted) {
           handleContinue(isNavigate);
         }
       })
@@ -787,7 +788,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinueClick = () => {
-    if (paymentListData?.length !== 0 && !basicForm?.payment?.paymentCompleted) {
+    if (paymentListData?.fee !== 0 && !basicForm?.payment?.paymentCompleted) {
       setShowPaymentDialog(true);
     }
     handleSubmitAcknowledgement(true);
@@ -3194,24 +3195,24 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         required={true}
                       />
                       {departmentList?.some(department => department.id === selectedDepartment) && (
-                          departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
-                            (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
-                          ) ? (
-                            <div className={`${style.alignLeft} ${style.marginTop}`}>
-                              <div className={`${style.lableStyle}`}>
-                                {formData?.properties?.regionalCallResponsibilities?.description}
-                              </div>
-                              <div className={`${style.marginTop10}`}>
-                                <CommonRadio
-                                  value={selectedValue}
-                                  onChange={(e) => setSelectedValue(e.target.value)}
-                                  radioValue={['YES', 'NO']}
-                                  label={['Yes', 'No']}
-                                />
-                              </div>
+                        departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
+                          (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
+                        ) ? (
+                          <div className={`${style.alignLeft} ${style.marginTop}`}>
+                            <div className={`${style.lableStyle}`}>
+                              {formData?.properties?.regionalCallResponsibilities?.description}
                             </div>
-                          ) : null
-                        )}
+                            <div className={`${style.marginTop10}`}>
+                              <CommonRadio
+                                value={selectedValue}
+                                onChange={(e) => setSelectedValue(e.target.value)}
+                                radioValue={['YES', 'NO']}
+                                label={['Yes', 'No']}
+                              />
+                            </div>
+                          </div>
+                        ) : null
+                      )}
                     </div>
                     {/* <div
                       className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
