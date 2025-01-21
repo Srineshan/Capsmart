@@ -549,14 +549,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       });
     if (isPrivilegeCategoryChanging) {
       let data = basicForm;
-      console.log(data.basicDetails.priorPrivilegeCategory.name, data.basicDetails.priorPrivilegeCategory, 'privilegeCheck', privilegeCategories, privilegeCategories?.filter(
-        (data) =>
-          data?.privilegeCategory?.category ===
-          basicForm?.basicDetails?.credentialingPrivilegeCategory
-            ?.credentialingCategory
-      )?.[0]?.privilegeCategory?.id, basicForm?.basicDetails?.credentialingPrivilegeCategory
-        ?.credentialingCategory)
-      if (data.basicDetails.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) {
+      // console.log(data.basicDetails.priorPrivilegeCategory.name, data.basicDetails.priorPrivilegeCategory, 'privilegeCheck', privilegeCategories, privilegeCategories?.filter(
+      //   (data) =>
+      //     data?.privilegeCategory?.category ===
+      //     basicForm?.basicDetails?.credentialingPrivilegeCategory
+      //       ?.credentialingCategory
+      // )?.[0]?.privilegeCategory?.id, basicForm?.basicDetails?.credentialingPrivilegeCategory
+      //   ?.credentialingCategory)
+      if (data?.basicDetails?.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) {
         data.basicDetails.priorPrivilegeCategory = {
           id: privilegeCategories?.filter(
             (data) =>
@@ -2780,7 +2780,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         className={`${style.marginTop10} ${style.privilegeWarningText}`}
                       >
                         You will need to request the set of privileges you would
-                        like to have for the category you are changing to
+                        like to have for the category you are changing to.
                       </div>
                     </div>
                   )}
@@ -2850,15 +2850,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   </Tooltip>
                                 ) : (
                                   <Tooltip title="Click To Request">
-                                    {/* <img
-                                      src={BlueSign}
-                                      alt=""
-                                      className={`${style.docTypeImgStyle} ${style.marginLeft}`}
-                                      onClick={() => {
-                                        setShowPrivileges(true);
-                                        handleChange(data?.id);
-                                      }}
-                                    /> */}
                                     <button
                                       className={`${style.addButton} ${style.marginLeft}`}
                                       onClick={() => {
@@ -3207,7 +3198,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 >
                   <div className={style.displayInRow}>
                     <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
-                    <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '/' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
+                    <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
                   </div>
                   <>
                     {staffPrivilege?.map((data, index) => (
