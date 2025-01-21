@@ -381,3 +381,33 @@ padding:10px;
 .marginBottom20{
   margin-bottom: 20px;
 }
+.gridStyle {
+  display: grid;
+  grid-template-columns: 1fr;  
+  grid-template-rows: auto auto;  
+  gap: 0;  
+  
+  .firstRowStyle {
+    display: grid;
+    grid-template-columns: 1fr;  
+    gap: 0; 
+    margin-bottom: 20px; 
+    
+    .checkbox {
+      margin-right: 10px;  
+    }
+  }
+
+  .secondRowStyle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  
+    gap: 15px;  
+
+    .inputField {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;  
+    }
+  }
+}
+

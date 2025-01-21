@@ -18,6 +18,7 @@ import TableTwo from "../../../Components/TableDesignTwo";
 import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import { baseUrl } from "../../../utils/auth";
+import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
 
 
 
@@ -40,6 +41,9 @@ import { baseUrl } from "../../../utils/auth";
   const [homeZipcode, setHomeZipcode] = useState("");
   const [contactNo, setContactNo] = useState("");
   const [preferredPhone, setPreferredPhone] = useState("");
+  const [physicianName, setPhysicianName] = useState("");
+  const [doA, setDoA] = useState("");
+  const [agreement, setAgreement] = useState(false);
 
   const [privilegeOtherList, setPrivilegeOtherList] = useState([]);
     const [privilegeCategoryList, setPrivilegeCategoryList] = useState([]);
@@ -177,12 +181,12 @@ const [privilegesOther, setPrivilegesOther] = useState({
 
     const [coverage, setCoverage] = useState({
       type: "",
-      individual: "",
+      individual: [],
       group: [],
     });
     const [whoCoverage, setWhoCoverage] = useState({
       type: "",
-      individual: "",
+      individual: [],
       group: [],
     });
 
@@ -216,7 +220,11 @@ const [privilegesOther, setPrivilegesOther] = useState({
         }
       }
     };
-  
+
+
+    useEffect(() => {
+      setPhysicianName(`${firstName} ${lastName}`);
+    }, [firstName, lastName]);
    
     useEffect(() => {
       fetchCityByZipcode(zipcode, setCity,setProvince);
@@ -234,29 +242,84 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setDob("");
       }
     };
-    const buildCoveragePayload = (coverage, individualList, groupList) => {
-      const payload = {};
+    const buildPayload = (coverage, individualList, groupList) => {
+      const { type, individual, group } = coverage;
     
-      // Handle Coverage (coverage state)
-      if (coverage.type === "Individual") {
-        const individual = individualList.find((item) => item.id === coverage.individual);
-        payload.providerType = "Individual";
-        if (individual) {
-          payload.providerDetails_id = individual.id;
-          payload.providerDetails_name = `${individual.applicant?.name?.firstName} ${individual.applicant?.name?.lastName}`;
+      // Construct providerDetails based on type
+      let providerDetails = [];
+    
+      if (type === "Individual" && individual) {
+        const individualData = individualList.find((data) => data.id === individual);
+        if (individualData) {
+          providerDetails.push({
+            id: individualData.id,
+            name: `${individualData.applicant?.name?.firstName} ${individualData.applicant?.name?.lastName}`,
+          });
         }
-      } else if (coverage.type === "Group") {
-        payload.providerType = "Group";
-        coverage.group.forEach((groupId, index) => {
-          const group = groupList.find((item) => item.id === groupId);
-          payload[`providerDetails_id_${index + 1}`] = group?.id || groupId;
-          payload[`providerDetails_name_${index + 1}`] = group?.name || "";
+      } else if (type === "Group" && group.length > 0) {
+        providerDetails = group.map((groupId) => {
+          const groupData = groupList.find((data) => data.id === groupId);
+          return {
+            id: groupId,
+            name: groupData?.name || "",
+          };
         });
       }
     
-      return payload;
+      // Return payload directly without coverageDetails wrapper
+      return {
+        providerType: type,
+        providerDetails,
+      };
     };
     
+    const buildObstetricsPayload = (whoCoverage, individualList, groupList) => {
+      const { type, individual, group } = whoCoverage;
+    
+      // Construct obstetricsProviderDetails based on type
+      let obstetricsProviderDetails = [];
+    
+      if (type === "Individual" && individual.length > 0) {
+        obstetricsProviderDetails = individual.map((individualId) => {
+          const individualData = individualList.find((data) => data.id === individualId);
+          return individualData
+            ? {
+                id: individualData.id,
+                name: `${individualData.applicant?.name?.firstName} ${individualData.applicant?.name?.lastName}`,
+              }
+            : null;
+        }).filter(Boolean); // Remove any null values
+      } else if (type === "Group" && group.length > 0) {
+        obstetricsProviderDetails = group.map((groupId) => {
+          const groupData = groupList.find((data) => data.id === groupId);
+          return groupData
+            ? {
+                id: groupId,
+                name: groupData.name,
+              }
+            : null;
+        }).filter(Boolean); // Remove any null values
+      }
+    
+      // Construct application payload
+      return {
+        obstetricsProviderType: type,
+        obstetricsProviderDetails,
+      };
+    };
+
+    const handleAgreementChange = (e) => {
+      setAgreement(e.target.checked);
+    };
+    
+    const handleDoAChange = (newDate) => {
+      if (newDate) {
+        const formattedDate = format(new Date(newDate), "MM-dd-yyyy");
+        setDoA(formattedDate);
+      } else {
+        setDoA("");
+      }
+    };
     
 
     const handleDoeChange = (newDate) => {
@@ -268,12 +331,6 @@ const [privilegesOther, setPrivilegesOther] = useState({
       }
     };
 
-  const acceptTypes = {
-    "image/jpeg": [],
-    "image/png": [],
-    "image/jpg": [],
-    "application/pdf": []
-  };
 
   const handleFileDrop = async (category, acceptedFiles) => {
     if (acceptedFiles.length === 0) return;
@@ -466,7 +523,7 @@ const [privilegesOther, setPrivilegesOther] = useState({
       };
 
       const handleAddClick = () => {
-        setIsEdit(true);
+        setIsEdit(false);
         setSelectedApplication(null);
         resetDialogFields();
       };
@@ -711,15 +768,15 @@ const [privilegesOther, setPrivilegesOther] = useState({
       };
       
       
-
+    const isPhysician = applicantTypeList.some(data => data.id === applicantType && data.applicantType === "Physician / Doctor");
 
 
       const handleCoverageTypeChange = (currentState, setState, value) => {
         setState({
           ...currentState,
           type: value,
-          individual: value === "Individual" ? "" : currentState.individual,
-          group: value === "Group" ? [] : currentState.group,
+          individual: value === "Individual" ? currentState.individual : [],
+          group: value === "Group" ? currentState.group : [],
         });
       };
       
@@ -727,15 +784,18 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setState({
           ...currentState,
           individual: value,
+          group: [],
         });
       };
       
       const handleGroupChange = (currentState, setState, value) => {
         setState({
           ...currentState,
-          group: value,
+          group: value, 
+          individual: [],
         });
       };
+      
       
       const removeGroupValue = (currentState, setState, valueToRemove) => {
         setState({
@@ -843,51 +903,56 @@ const [privilegesOther, setPrivilegesOther] = useState({
            setCMETranscript({
             radioValue:selectedApplication.continuingEducation.requirementsMet,
             responseFile:selectedApplication.continuingEducation.transcripts
-           })
+           });
+           setPhysicianName(selectedApplication.confirmation.physicianName);
+           setDoA(selectedApplication.confirmation.submissiondate);
+           setAgreement(selectedApplication.confirmation.agreementToTerms);
           setApplicantType(selectedApplication.applicantType.id);
         }
       }, [selectedApplication]);
 
 
       useEffect(() => {
-        if (selectedApplication?.coverageDetails) {
-          // Set coverage state
-          const providerDetails = selectedApplication.coverageDetails.providerDetails || [];
-          const providerType = selectedApplication.coverageDetails.providerType;
+        if (selectedApplication?.coverageDetails || selectedApplication?.obstetricsProviderDetails) {
+          // Extract data from selectedApplication
+          const {
+            coverageDetails = {},
+            obstetricsProviderDetails = []
+          } = selectedApplication;
       
-          // Find individual and group items
-          const individual = providerDetails.length > 0 ? providerDetails[0]?.id : "";
+          // Process coverageDetails
+          const providerDetails = coverageDetails.providerDetails || [];
+          const providerType = coverageDetails.providerType || "";
+      
+          const individualId = providerDetails.length > 0 ? providerDetails[0]?.id : "";
           const groupIds = providerDetails.map(item => item.id);
       
-          // Ensure individual is in the individualList and group is in the groupList
-          const validIndividual = individualList.some(individualItem => individualItem.id === individual) ? individual : "";
-          const validGroupIds = groupIds.filter(groupId => groupList.some(groupItem => groupItem.id === groupId));
+          const validIndividual = individualList.some(item => item.id === individualId) ? individualId : "";
+          const validGroupIds = groupIds.filter(id => groupList.some(item => item.id === id));
       
-          // Set coverage state
           setCoverage({
             type: providerType, // "Individual" or "Group"
-            individual: validIndividual, // Only set individual if it exists in individualList
-            group: validGroupIds, // Only set group if it exists in groupList
+            individual: providerType === "Individual" ? [validIndividual] : [],
+            group: providerType === "Group" ? validGroupIds : [],
           });
       
-          // Set whoCoverage state for obstetrics provider
-          const obstetricsProviderDetails = selectedApplication.coverageDetails.obstetricsProviderDetails || [];
-          const obstetricsProviderType = selectedApplication.coverageDetails.obstetricsProviderType;
-      
-          const obstetricsIndividual = obstetricsProviderDetails.length > 0 ? obstetricsProviderDetails[0]?.id : "";
+          // Process obstetricsProviderDetails
+          const obstetricsType = selectedApplication.obstetricsProviderType || "";
+          const obstetricsIndividualId = obstetricsProviderDetails.length > 0 ? obstetricsProviderDetails[0]?.id : "";
           const obstetricsGroupIds = obstetricsProviderDetails.map(item => item.id);
       
-          const validObstetricsIndividual = individualList.some(individualItem => individualItem.id === obstetricsIndividual) ? obstetricsIndividual : "";
-          const validObstetricsGroupIds = obstetricsGroupIds.filter(groupId => groupList.some(groupItem => groupItem.id === groupId));
+          const validObstetricsIndividual = individualList.some(item => item.id === obstetricsIndividualId)
+            ? obstetricsIndividualId
+            : "";
+          const validObstetricsGroupIds = obstetricsGroupIds.filter(id => groupList.some(item => item.id === id));
       
-          // Set whoCoverage state
           setWhoCoverage({
-            type: obstetricsProviderType, // "Individual" or "Group"
-            individual: validObstetricsIndividual, // Only set individual if it exists in individualList
-            group: validObstetricsGroupIds, // Only set group if it exists in groupList
+            type: obstetricsType, // "Individual" or "Group"
+            individual: obstetricsType === "Individual" ? [validObstetricsIndividual] : [],
+            group: obstetricsType === "Group" ? validObstetricsGroupIds : [],
           });
         }
-      }, [selectedApplication, individualList, groupList]); // Dependency on selectedApplication, individualList, and groupList
+      }, [selectedApplication, individualList, groupList]);
       
 
 
@@ -914,6 +979,9 @@ const [privilegesOther, setPrivilegesOther] = useState({
         setBillingNo("");
         setCmpaNo("");
         setCPSONo("");
+        setPhysicianName("");
+        setDoA("");
+        setAgreement(false);
         setPrescribeSuboxone("");
         setMrpForPatients("");
         setUploadedFiles({CMPA:{responseFile:{}},
@@ -968,37 +1036,17 @@ const [privilegesOther, setPrivilegesOther] = useState({
           radioValue:"",
           responseFile:{}
          });
+         setCoverage({type:"",individual:[],group:[]});
+         setWhoCoverage({type:"",individual:[],group:[]})
         setApplicantType("");
       };
 
-      const buildWhoCoveragePayload = (whoCoverage, individualList, groupList) => {
-        const payload = {};
-      
-        // Handle Who Coverage (whoCoverage state)
-        if (whoCoverage.type === "Individual") {
-          const individual = individualList.find((item) => item.id === whoCoverage.individual);
-          payload.obstetricsProviderType = "Individual";
-          if (individual) {
-            payload.obstetricsProviderDetails_id = individual.id;
-            payload.obstetricsProviderDetails_name = `${individual.applicant?.name?.firstName} ${individual.applicant?.name?.lastName}`;
-          }
-        } else if (whoCoverage.type === "Group") {
-          payload.obstetricsProviderType = "Group";
-          whoCoverage.group.forEach((groupId, index) => {
-            const group = groupList.find((item) => item.id === groupId);
-            payload[`obstetricsProviderDetails_id_${index + 1}`] = group?.id || groupId;
-            payload[`obstetricsProviderDetails_name_${index + 1}`] = group?.name || "";
-          });
-        }
-      
-        return payload;
-      };
       
 const SaveSubmitHandler = async (isSaveAndExit) => {
 
-  const coveragePayload = buildCoveragePayload(coverage, individualList, groupList);
+  const payload = buildPayload(coverage, individualList, groupList);
 
-  const whoCoveragePayload = buildWhoCoveragePayload(whoCoverage, individualList, groupList);
+  const obsetetricsPayload = buildObstetricsPayload(whoCoverage,individualList,groupList);
     var application = {
       ...saveData,
       demographics: {
@@ -1025,7 +1073,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       email:email
       },
       privilegeCategory:{
-          staus:{
+          status:{
             id:privilege,
             category:privilegeCategoryList.find((data) => data.id === privilege)?.category,
             type:privilegeCategoryList.find((data) => data.id === privilege)?.type
@@ -1113,20 +1161,20 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
           CMETranscript.responseFile]
       },
       coverageDetails:{
-        providerType:coveragePayload.providerType,
-        providerDetails:[{
-          id:coveragePayload.providerDetails_id,
-          name:coveragePayload.providerDetails_name
-        }],
-
-        obstetricsProviderType:whoCoveragePayload.obstetricsProviderType,
-        obstetricsProviderDetails: [
-          {
-            id: whoCoveragePayload.obstetricsProviderDetails_id,
-            name: whoCoveragePayload.obstetricsProviderDetails_name
-          }
-        ]
-        
+        providerType:payload.providerType,
+        providerDetails:payload.providerDetails,
+        obstetricsProviderType:obsetetricsPayload.obstetricsProviderType,
+        obstetricsProviderDetails: obsetetricsPayload.obstetricsProviderDetails 
+      },
+      confirmation:{
+        physicianName:physicianName,
+        submissiondate:doA,
+        agreementToTerms:agreement
+      },
+      applicantType:{
+        id:applicantType,
+        serviceProviderType:applicantTypeList.find((data) => data.id === applicantType)?.applicantType,
+        category:applicantTypeList.find((data) => data.id === applicantType)?.category.category
       }
       
     };
@@ -1136,6 +1184,7 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
         .then((response) => {
           SuccessToaster("Historical Data Added Successfully");
            resetDialogFields();
+           getApplicationOldData();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -1143,12 +1192,13 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     } else {
        var importedDataId = selectedApplication.id;
       await PUT(
-        `application-management-service/${importedDataId}/updateApplicationOldData`,
+        `application-management-service/application/${importedDataId}/updateApplicationOldData`,
         JSON.stringify(application)
       )
         .then((response) => {
           SuccessToaster("Historical Data Updated Successfully");
            resetDialogFields();
+           getApplicationOldData();
         })
         .catch((error) => {
           ErrorToaster(error);
@@ -1506,53 +1556,59 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       </div>
     )}
 </div>
-<div className={style.inputRow}>
-  <div className={style.inputField}>
-    <CommonTextField
-      label="CPSO Registration No"
-      value={cPSONo}
-      onChange={(e) => setCPSONo(e.target.value)}
-      placeholder="Enter CPSO No"
-      required
-      className={style.fullwidth}
-    />
-  </div>
-  <div className={style.fileUpload}>
-    <CommonDropZone
-      title="Upload CPSO File"
-      description="Drag & drop a file here, or click to select"
-      changeHandler={(acceptedFiles) => handleFileDrop("CPSO", acceptedFiles)}
-    />
-   {uploadedFiles.CPSO.responseFile&& (
-      <div className={style.uploadedFiles}>
-        <h4>Uploaded File:</h4>
-        <ul>
+{isPhysician ? (
+  <div className={style.inputRow}>
+    <div className={style.inputField}>
+      <CommonTextField
+        label="CPSO Registration No"
+        value={cPSONo}  
+        onChange={(e) => setCPSONo(e.target.value)}
+        placeholder="Enter CPSO No"
+        required
+        className={style.fullwidth}
+      />
+    </div>
+    <div className={style.fileUpload}>
+      <CommonDropZone
+        title="Upload CPSO File"
+        description="Drag & drop a file here, or click to select"
+        changeHandler={(acceptedFiles) => handleFileDrop("CPSO", acceptedFiles)}
+      />
+      {uploadedFiles.CPSO.responseFile && (
+        <div className={style.uploadedFiles}>
+          <h4>Uploaded File:</h4>
+          <ul>
             <li>{uploadedFiles.CPSO.responseFile.fileName}</li>
-        </ul>
-      </div>
-    )}
+          </ul>
+        </div>
+      )}
+    </div>
   </div>
-</div>
 
-<div className={style.inputGroup1}>
-<div className={style.headerContainer}>
-    <p>Other Professional Attachment*</p>
-  </div>
-<CommonDropZone
+    ):(
+
+
+  <div className={style.inputGroup1}>
+    <div className={style.headerContainer}>
+      <p>Other Professional Attachment*</p>
+    </div>
+    <CommonDropZone
       title="Upload Other Professional Attachment File"
       description="Drag & drop a file here, or click to select"
       changeHandler={(acceptedFiles) => handleFileDrop("Other", acceptedFiles)}
     />
-    {uploadedFiles.Other.responseFile&& (
+    {uploadedFiles.Other.responseFile && (
       <div className={style.uploadedFiles}>
         <h4>Uploaded File:</h4>
         <ul>
-            <li>{uploadedFiles.Other.responseFile.fileName}</li>
+          <li>{uploadedFiles.Other.responseFile.fileName}</li>
         </ul>
       </div>
     )}
-</div>
+  </div>
 
+  )
+  }
 <div className={style.inputGroup1}>
 <div className={style.headerContainer}>
     <p>Proof of your N95 Fit Test*</p>
@@ -1725,14 +1781,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setLicensingBody)}
       value={licensingBody.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {licensingBody.radioValue === "yes" && (
+  {licensingBody.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -1782,14 +1838,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setInvestigatedByCPSO)}
       value={investigatedByCPSO.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {investigatedByCPSO.radioValue === "yes" && (
+  {investigatedByCPSO.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -1837,14 +1893,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setPhysicalHealth)}
       value={physicalHealth.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {physicalHealth.radioValue === "yes" && (
+  {physicalHealth.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -1892,14 +1948,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setDefentantCivilCase)}
       value={defendantCivilCase.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {defendantCivilCase.radioValue === "yes" && (
+  {defendantCivilCase.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -1948,14 +2004,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setPendingCivilCase)}
       value={pendingCivilCase.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {pendingCivilCase.radioValue === "yes" && (
+  {pendingCivilCase.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -2003,14 +2059,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={handleRadioPrivilegeChange}
       value={privilegesOther.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {privilegesOther.radioValue === "yes" && (
+  {privilegesOther.radioValue === "Yes" && (
     <div className={style.secondRow1}>
       <div className={style.ckEditorWrapper}>
       <CommonSelectField
@@ -2075,14 +2131,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setTerminatedReason)}
       value={terminatedReason.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {terminatedReason.radioValue === "yes" && (
+  {terminatedReason.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -2130,14 +2186,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setVoluntary)}
       value={voluntary.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {voluntary.radioValue === "yes" && (
+  {voluntary.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -2185,14 +2241,14 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
     <CommonRadio
       onChange={(event) => handleRadioChange(event, setMACPastYear)}
       value={mACPastYear.radioValue}
-      radioValue={["yes", "no"]}
+      radioValue={["Yes", "No"]}
       label={["Yes", "No"]}
       required={true}
       className={style.commonRadio}
     />
   </div>
 
-  {mACPastYear.radioValue === "yes" && (
+  {mACPastYear.radioValue === "Yes" && (
     <div className={style.secondRow}>
       <div className={style.ckEditorWrapper}>
         <CKEditor
@@ -2549,6 +2605,61 @@ const SaveSubmitHandler = async (isSaveAndExit) => {
       </div>
       </div>
       
+      </div>
+      <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
+      <h2 className={style.heading}>Acknowledgement</h2>
+      <div className={style.gridStyle}>
+      <div className={style.firstRowStyle}>
+        <CommonCheckBox
+          label="By submitting this reappointment application, I certify that the information provided is correct and true to the best of my knowledge and I agree to submit all supporting documentation within 48 hours if my application is selected for a random audit by the Chief of Staff Office."
+          checked={agreement}
+          onChange={handleAgreementChange}
+          className={style.checkbox}
+        />
+      </div>
+
+      <div className={style.secondRowStyle}>
+        <div className={style.inputField}>
+          <CommonTextField
+            label="Medical/Professional Staff Name"
+            value={physicianName}
+            onChange={(e) => setPhysicianName(e.target.value)}
+            placeholder="Enter Physician/Staff Name"
+            required
+            className={style.fullwidth}
+          />
+        </div>
+
+        <div className={style.inputField}>
+          <CommonDateField
+            label="Submission Date"
+            value={doA ? parse(doA, "MM-dd-yyyy", new Date()) : null}
+            onChange={handleDoAChange}
+            InputProps={{
+              style: {
+                fontSize: 14,
+                height: 30,
+              },
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                inputProps={{
+                  ...params.inputProps,
+                  placeholder: "MM-DD-YYYY",
+                  readOnly: true,
+                }}
+                color={doA === null || doA === "" ? "error" : ""}
+                fullWidth
+                focused={doA === null || doA === ""}
+              />
+            )}
+            required
+            className={style.fullwidth}
+          />
+        </div>
+      </div>
+    </div>
       </div>
 
       </div> 
