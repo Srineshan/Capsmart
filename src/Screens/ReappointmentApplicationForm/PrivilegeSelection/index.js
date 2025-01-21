@@ -202,7 +202,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
 
   useEffect(() => {
-    handleSubmitAcknowledgement();
+    if (departmentChangeYesOrNo !== '') {
+      handleSubmitAcknowledgement();
+    }
   }, [departmentChangeYesOrNo])
 
   useEffect(() => {
@@ -574,7 +576,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       .catch((error) => {
         console.log(error);
       });
-    handleSubmitAcknowledgement();
+    // handleSubmitAcknowledgement();
     fetchPaymentListData()
   };
 
@@ -795,16 +797,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinue = async (isNavigate) => {
-    if (isNavigate) {
-      if (sessionStorage.getItem("fromSummary") === "true") {
-        navigate(-1);
-      } else {
-        getPreApplication();
-        if (isContinueEnabled) {
-          navigate(navigateURL);
-        }
+    // if (isNavigate) {
+    if (sessionStorage.getItem("fromSummary") === "true") {
+      navigate(-1);
+    } else {
+      getPreApplication();
+      if (isContinueEnabled) {
+        navigate(navigateURL);
       }
     }
+    // }
   };
 
   const handleContinueClick = () => {
@@ -2758,7 +2760,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         <div className={style.privilegeHeadingCurrent}>Current</div>
                         <div className={style.privilegeHeading}>
-                          {(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
+                          {(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.length !== 0)
                             ? basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
                               <div>{data?.privileges}</div>
                             )) : (basicForm?.basicDetails?.existingCredentialingPrivilegeCategory !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null && basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0)
@@ -3264,8 +3266,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
                         onClick={() => {
-                          setIsDepartmentChanging(false);
                           setDepartmentChangeYesOrNo(selectedDepartment === prevDepartment ? 'Yes' : 'No');
+                          setIsDepartmentChanging(false);
                           handleDeptSubmit();
                         }}
                       >
@@ -3466,6 +3468,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             handleSubmit();
                             setIsEditPrivilege(false);
                             setIsUpdateClicked(true);
+                            setPrivilegeSetChangeYesOrNo('No');
                           }}
                         >
                           SAVE

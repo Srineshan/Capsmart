@@ -119,6 +119,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     };
     try {
       await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+      handleDownload(data)
     } catch (error) {
       console.log(error);
     }
@@ -153,7 +154,6 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       );
       setPaymentInfo(response.data)
       savePaymentInfo(response.data)
-      handleDownload(response.data)
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
@@ -164,13 +164,15 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   };
 
   const addNewDocument = async (file, data) => {
+    console.log('payment')
     console.log(file, file?.name, 'Test')
     let fileName = {
-      "fileName": 'acknowledgement.pdf'
+      "fileName": 'payment.pdf'
     };
     const formData = new FormData();
 
     if (file !== null) {
+      console.log('payment')
       const blob = new Blob([file], { type: `application/pdf` });
       formData.append('files', new Blob([JSON.stringify(fileName)], {
         type: "application/json"
@@ -181,6 +183,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
+        console.log('payment')
         handleSavePDF(response?.data, data)
         uploadedFile = response?.data;
       } catch (error) {
@@ -200,6 +203,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   }
 
   const handleSavePDF = async (file, data) => {
+    console.log('payment')
     let temp = {
       "payee": {
         "name": {
@@ -242,6 +246,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   }
 
   const handleDownload = (data) => {
+    console.log('payment')
     const element = targetRef.current;
     const opt = {
       margin: 0.5,

@@ -509,7 +509,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </div>
             ) : (
               <>
-                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone), "MMM dd, yyyy")}</div>
+                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoSuboxone === 'Yes' ? style.yesText : style.noText}>{yesOrNoSuboxone}</span></strong> on {format(new Date(updatedDateSuboxone || new Date()), "MMM dd, yyyy")}</div>
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
