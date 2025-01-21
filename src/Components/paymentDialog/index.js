@@ -74,7 +74,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
                                 />
                             </div>
                         </div>
-                        <p className={`${style.description} ${style.marginTop}`}>{`For the Privilege category you have selected for your reappointment there is an application processing fee of ${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}.`}</p>
+                        <p className={`${style.description} ${style.marginTop}`}>{`For the Privilege category you have selected for your reappointment there is an application processing fee of ${paymentListData?.currencyType}${paymentListData?.fee}.`}</p>
                         <p className={`${style.description} ${style.marginTop}`}>Payment is required before you can complete the rest of your application.</p>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop}`}>Your Purchase</div>
@@ -82,7 +82,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
                         </div>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop10}`}>Amount</div>
-                            <div className={`${style.description} ${style.marginTop10}`}><strong>{`${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}`}</strong></div>
+                            <div className={`${style.description} ${style.marginTop10}`}><strong>{`${paymentListData?.currencyType}${paymentListData?.fee}`}</strong></div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
