@@ -323,7 +323,7 @@ const App = ({ props }) => {
 
   useEffect(() => {
     console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
-    if ((cookie.get("authorization") !== undefined && isAuthenticated) || (authorization !== undefined && isAuthenticated && (errorInfo === 'Invalid token specified'))) {
+    if (((cookie.get("authorization") !== undefined && isAuthenticated) || (authorization !== undefined && isAuthenticated && (errorInfo === 'Invalid token specified'))) && (cookie.get('entityId') === undefined || cookie.get('entityId') === 'undefined' || cookie.get('entityId') === '' || cookie.get('entityId') === null)) {
       console.log('entered')
       getEntityId();
     }
