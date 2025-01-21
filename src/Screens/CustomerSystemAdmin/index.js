@@ -18,7 +18,7 @@ const Home = () => {
   const [feedBackTileData, setFeedBackTileData] = useState([]);
   const [userMetadata, setUserMetadata] = useState([]);
   const [viewAlerts, setViewAlerts] = useState(true);
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState("REGISTERED USERS");
   const [isExpanded, setIsExpanded] = useState(true);
   let selectedOptionValue = sessionStorage.getItem("selectedOption");
   const [entityId, setEntityId] = useState("");
@@ -28,7 +28,10 @@ const Home = () => {
 
 
   useEffect(() => {
-    setSelectedOption(selectedOptionValue);
+    console.log(selectedOption, 'option')
+    if (selectedOptionValue !== undefined && selectedOptionValue !== null) {
+      setSelectedOption(selectedOptionValue);
+    }
   }, [selectedOptionValue]);
 
   useEffect(() => {

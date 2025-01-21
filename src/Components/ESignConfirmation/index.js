@@ -56,7 +56,7 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                     <p className={`${style.description} ${style.marginTop}`}>CAPManager uses Electronic Signatures for you to sign off on the required forms and documents.</p>
                     <div className={style.eSignConfirmationCard}>
                         <div className={style.confimationHeading}>Your e-Signature on file</div>
-                        <div><img src={eSignImg?.fileURL} alt="" /></div>
+                        <div><img src={eSignImg?.fileURL} alt="" className={style.eSignImg} /></div>
                         <div className={style.confimationHeading}>Title</div>
                         <div><strong>{eSignTitle}</strong></div>
                         <div className={style.twoCol}>

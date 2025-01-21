@@ -1565,6 +1565,22 @@ const ApplicationFieldCard = ({
                     }}
                     config={{
                       placeholder: "Type your content here...",
+                      toolbar: {
+                        shouldNotGroupWhenFull: true,
+                        sticky: true,
+                        items: [
+                          'undo', 'redo',
+                          '|',
+                          'heading',
+                          '|',
+                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                          '|',
+                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                          '|',
+                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                      ],
+                      },
+                      autoGrow: false,
                     }}
                   />
                 </div>
