@@ -23,6 +23,8 @@ import { differenceInDays, format } from 'date-fns';
 // import { logout } from '../../../utils/auth';
 import ReappointmentLandingDialog from '../../../Components/ReappointmentLandingDialog';
 import DoItLaterDialog from '../../../Components/DoItLaterDialog';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const ReappointmentApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -36,6 +38,7 @@ const ReappointmentApplicationFormRequirement = () => {
     const [basicForm, setBasicForm] = useState({})
     const [applicantTypeForm, setApplicantTypeForm] = useState()
     const [isDoItLaterOpen, setIsDoItLaterOpen] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     // const applicationId = '66d1cae19354e9022ad82027';
     sessionStorage.setItem('applicationId', applicationId)
 
@@ -135,7 +138,8 @@ const ReappointmentApplicationFormRequirement = () => {
             <ReappointmentLandingDialog getIsOpen={getIsOpen} days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
         ) : (
             <>
-                <div className={style.screenBackground}>
+                {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+                <div className={`${style.screenBackground} ${showInfo ? "blurredBackground" : ""}`}>
                     <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                     <div className={style.screenPadding}>
                         <div className={`${style.applicationScreenGrid}`}>
@@ -178,14 +182,33 @@ const ReappointmentApplicationFormRequirement = () => {
                                 )}
                             </WelcomeCard>
                         </div> */}
+                                <div className={style.threeColForButton}>
+                                    <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                    <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
+                                </div>
                             </div>
                             <div>
                                 {/* <ApplicationUserCard user={'Guest User'} applyingFor={'Contact'} /> */}
+                                {!showInfo && (
+                                    <div>
+                                        <div className={`${style.toggleButton} ${isDoItLaterOpen ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                            <MenuIcon className={style.toggleIcon} />
+                                        </div>
+                                        <div className={`${style.headerData} ${isDoItLaterOpen ? style.hidden : ""}`}>
+                                            <span style={{ marginLeft: '20px' }}>Confirm Your Application Form Requirement</span>
+                                        </div>
+                                    </div>
+                                )}
                                 <div>
-                                    <DaysToComplete days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
-                                </div>
-                                <div className={style.marginTop10}>
-                                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                                        <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                                        <div>
+                                            <DaysToComplete days={differenceInDays(new Date(basicForm?.expiryDate), new Date(format(new Date(), 'yyyy-MM-dd')))} />
+                                        </div>
+                                        <div className={style.marginTop10}>
+                                            <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
                                     <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>

@@ -6,6 +6,10 @@
     box-shadow: 0px 5px 20px #52575D4D;
     border-radius: 12px;
     border: 0.4000000059604645px solid #e5e6e6;
+    @media (max-width: 768px) {
+        background: $primarycolor;
+        border: $primarycolor;
+    }
 } 
 
 .forAssistance {
@@ -15,6 +19,9 @@
     color: $textgrey;
     text-transform: capitalize;
     opacity: 1;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .nameStyle {
@@ -22,12 +29,18 @@
     font: normal normal bold 17px/22px proxima-nova;
     color: $textgrey;
     text-transform: capitalize;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .contactStyle {
     text-align: left;
     font: normal normal normal 14px/19px proxima-nova;
     color: $textgrey;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .designationStyle {
@@ -36,6 +49,9 @@
     color: $textgrey;
     text-transform: capitalize;
     opacity: 0.6;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .displayInRow {
@@ -59,6 +75,9 @@
     height: 19px;
     width: 16px;
     object-fit: contain;
+    @media (max-width: 768px) {
+        background: #FFF;
+    }
 }
 
 .divider {
@@ -73,6 +92,9 @@
     letter-spacing: 1.92px;
     color: $primarycolor;
     text-transform: uppercase;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .chatWithStyle {
@@ -81,6 +103,9 @@
     letter-spacing: 0px;
     color: $textgrey;
     text-transform: capitalize;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .spaceBetween {
@@ -95,6 +120,9 @@
     width: 48px;
     border-radius: 50%;
     text-align: center;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .verticalAlignCenter {
@@ -123,6 +151,9 @@
     color: $textgrey;
     text-transform: capitalize;
     opacity: 0.8;
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
 }
 
 .fullWidth {
@@ -135,4 +166,7 @@
 
 .purpleText {
     color: $primarycolor !important;
+    @media (max-width: 768px) {
+        color: #FFF !important;
+    }
 }

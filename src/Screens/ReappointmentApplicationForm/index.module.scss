@@ -26,6 +26,10 @@
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
     position: relative;
+
+    @media (max-width: 768px){
+        grid-template-columns: 1fr;
+    }
 }
 
 .stickyContainer {
@@ -50,6 +54,19 @@
         box-sizing: border-box;
     }
  }
+
+ @media (max-width: 768px) {
+    .stickyContainer {
+        position: sticky;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto; 
+        padding: 20px 20px 20px 20px; 
+        margin: 0 auto; 
+        box-sizing: border-box;
+    }
+}
 
 .saveInProgress {
     background: #FFFFFF 0% 0% no-repeat padding-box;

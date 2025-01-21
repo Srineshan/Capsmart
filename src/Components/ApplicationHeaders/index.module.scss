@@ -5,23 +5,6 @@
     background-color: white;
     box-shadow: 0px 6px 20px #22292929;
     padding: 0px 60px;
-    @media (max-width: 768px) {
-        height: clamp(45px, 8vh, 100px);
-        background: $secondarycolor 0% 0% no-repeat padding-box;
-    }
-}
-
-@media (max-width: 768px) {
-    .headerGrid, 
-    .logo, 
-    .titleText, 
-    .marginLeft20, 
-    .crossStyle, 
-    .cursorPointer, 
-    .verticalAlignCenter, 
-    .spaceBetween {
-        display: none !important;
-    }
 }
 
 .headerGrid {
@@ -50,6 +33,10 @@
     .titleText {
         text-align: center;
         font-size: 18px; 
+    }
+
+    .headerCard{
+        height: auto;
     }
 }
 

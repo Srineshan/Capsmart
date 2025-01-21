@@ -13,6 +13,9 @@
     height: 80px;
     width: 80px; 
     object-fit: cover; 
+    @media (max-width: 768px) {
+        background: $primarycolor;
+    }
 }
 
 .profileGrid {
@@ -78,6 +81,22 @@
 
 @media (max-width: 768px) {
     .applicationUserCard {
-        height: auto;
+        background: $primarycolor 0% 0% no-repeat padding-box;
+        border: $primarycolor;
+    }
+    
+    .nameStyle {
+        font: normal normal bold 15px proxima-nova;
+        color: #FFFFFF;
+    }
+    
+    .applyingFor {
+        font: normal normal normal 10px proxima-nova;
+        color: #FFFFFF;
+    }
+    
+    .connectToLinkedIn {
+        font: normal normal medium 16px proxima-nova;
+        color: #FFFFFF;
     }
 }

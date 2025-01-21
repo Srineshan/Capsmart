@@ -258,17 +258,29 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               <span className={style.bold}>CAP</span>Smart
             </p>
           </div> */}
-            <div className={style.spaceBetween}>
+            <div className={`${style.logoStyle} ${style.spaceBetween}`}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
             <br />
+            <div
+            className={`${style.daysToComplete} ${style.marginTop30} ${style.displayInRow} ${style.alignCenter}`}
+            >
+              <div className={`${style.verticalAlignCenter1} ${style.alignCenter}`}>
+              <div className={style.textStyle}>{"YOU HAVE"}</div>
+              <div className={style.daysCountStyle}>{days}</div>
+              <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
+            </div>
+          </div>
             <div className={style.reappointmentGrid}>
               <div className={style.imageCard}>
                 <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
               </div>
               <div className={style.contentCard}>
                 <div className={style.welcomeText}>Your Reappointment Application</div>
+                <div className={style.headerData}>
+                  <span style={{ marginLeft: '20px' }}>Your Reappointment Application</span>
+                  </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
                   {title} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
                 </div>
@@ -328,26 +340,15 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   </ThemeProvider>
                 </div>
                 <div >
-                  {/* <div
+                  <div
                     className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
                     onClick={processReappointment !== '' ? () => {
                       handleContinue();
                     } : () => { }}
                   >
                     CONTINUE
-                  </div> */}
-                  <button
-                    className={`${style.continue} ${style.marginTop}
-                     ${processReappointment !== '' ? '' : style.disable}`
-                    }
-                    onClick={processReappointment !== '' ? () => {
-                      handleContinue();
-                    } : () => { }}
-                    disabled={processReappointment === ''}
-                  >
-                    CONTINUE
-                  </button>
-                </div>
+                  </div> 
+                  </div>
               </div>
             </div>
 
