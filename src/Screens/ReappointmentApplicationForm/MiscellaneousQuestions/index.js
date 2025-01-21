@@ -5,7 +5,7 @@ import ApplicationAssistanceCard from '../../../Components/ApplicationAssistance
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
-import { GET, PUT } from '../../dataSaver';
+import { GET, PUT, POST } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
@@ -46,6 +46,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [providerOptions, setProviderOptions] = useState([]);
   const [obstetricsProviderType, setObstetricsProviderType] = useState("");
   const [applicantOptions, setApplicantOptions] = useState([]);
+  const [selectApplicant, setSelectApplicant] = useState([]);
+  const [selectApplicantObstetrics, setSelectApplicantObstetrics] = useState([]);
   const [groupOptions, setGroupOptions] = useState([]);
   const [providerLabels, setProviderLabels] = useState("");
   const [obstetricsapplicantOptions, setObstetricsApplicantOptions] = useState(
@@ -57,6 +59,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [obstetricsCovererName, setObstetricsCovererName] = useState("");
   const [obstetricsCovererNameList, setObstetricsCovererNameList] = useState([]);
   const [obstetricsCovererId, setObstetricsCovererId] = useState("");
+  const [showAddButton, setShowAddButton] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -109,8 +113,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         const filteredStaffs = response.data.staffs.filter(
           (staff) => staff.applicant.id !== currentApplicantId
         );
-
+        setSelectApplicant(filteredStaffs)
+        console.log("appselect", selectApplicant)
         const options = filteredStaffs.map((staff) => ({
+          id: `${staff.id}`,
           value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
           label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
         }));
@@ -127,20 +133,29 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   useEffect(() => {
     if (
       basicForm?.basicDetails?.departmentSpecialty?.department ===
-      "Women & Children" &&
+      "Women & Children" 
+      &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
       "Obstetrics & Gynecology"
     ) {
       const fetchObstetricsStaffs = async () => {
         try {
+          const currentApplicantId = basicForm?.applicant?.id;
           const response = await GET(
             `application-management-service/staff?status=ACTIVE&departmentId=66dc4b370e34d3372e43f023&sortByField=STAFF_NAME`
           );
-          const staffOptions = response.data.map((obstetricsstaff) => ({
+
+          const filteredStaffs = response.data.staffs.filter(
+            (staff) => staff.applicant.id !== currentApplicantId
+          );
+          setSelectApplicantObstetrics(filteredStaffs);
+          const staffOptions = filteredStaffs?.map((obstetricsstaff) => ({
+            id:    `${obstetricsstaff.id}`,
             value: `${obstetricsstaff.applicant.name.firstName} ${obstetricsstaff.applicant.name.middleName} ${obstetricsstaff.applicant.name.lastName}`,
             label: `${obstetricsstaff.applicant.name.firstName} ${obstetricsstaff.applicant.name.middleName} ${obstetricsstaff.applicant.name.lastName}`,
           }));
           setObstetricsApplicantOptions(staffOptions);
+          console.log(obstetricsCovererNameList)
         } catch (error) {
           console.error("Error fetching obstetrics department staffs:", error);
         }
@@ -192,11 +207,34 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     setIsSaveInProgressOpen(value);
   }
 
+  useEffect(() => {
+    getCoverageGroups()
+  }, [refresh])
+  
+
   const getCoverageGroups = async () => {
     const { data: data } = await GET(
       `entity-service/callCoverageGroups`
     );
     setGroupOptions(data)
+  }
+
+  const getaddCoverageGroups = async () => {
+    const payload = [{ name: covererName || 'N/A' }];
+    const { data: data } = await POST(
+      `entity-service/callCoverageGroups`, payload
+    );
+    getCoverageGroups(data)
+    setRefresh(prev => !prev);
+  }
+
+  const getaddCoverageGroupsobstetrics = async () => {
+    const payload = [{ name: obstetricsCovererName || 'N/A' }];
+    const { data: data } = await POST(
+      `entity-service/callCoverageGroups`, payload
+    );
+    getCoverageGroups(data)
+    setRefresh(prev => !prev);
   }
 
   const getFormSchema = async () => {
@@ -230,12 +268,32 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     }
   }
 
+  const handleRemoveChip = (index) => {
+    const updatedList = covererNameList.filter((_, i) => i !== index);
+    setCovererNameList(updatedList); 
+  };
+
+  const handleRemoveChipObstetrics = (index) => {
+    const updatedList = obstetricsCovererNameList.filter((_, i) => i !== index);
+    setObstetricsCovererNameList(updatedList);
+  };
+
   const getItems = (data) => {
     let temp = [];
     data?.map((data) => {
       temp.push({ id: data?.id, value: data?.name });
     });
     return temp;
+  };
+
+  const getItemsSingle = (data) => {
+    let temp = [];
+    data?.map((data) => {
+      temp.push({ id: data?.id, label:data?.label, value: data?.value });
+    });
+    console.log("getItems" ,temp )
+    return temp;
+    
   };
 
   console.log(covererName, providerType, basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName)
@@ -257,7 +315,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       });
     }
     if (
-      (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" &&
+      (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" 
+      &&
       basicForm?.basicDetails?.departmentSpecialty?.department ===
       "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty ===
@@ -272,19 +331,52 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       setShowValidationDialog(true)
     } else {
       handleSubmit()
-      handleSubmitApplicationReq()
+        .then(() => {
+          return getPreApplication();
+        })
+        .then(() => {
+          return handleSubmitApplicationReq();
+        })
+        .catch((error) => {
+          console.error("Error during API calls:", error);
+        });
     }
+  
     setWarningFields(missingKeys)
     console.log('Metadata', missingKeys)
   }
 
   const handleSubmit = async () => {
+    // let temp = {
+    //   providerType: providerType,
+    //   providerDetails: groupOptions.filter(obj => covererNameList.includes(obj.id)),
+    //   obstetricsProviderType: obstetricsProviderType,
+    //   obstetricsProviderDetails: groupOptions.filter(obj => obstetricsCovererNameList.includes(obj.id))
+    // }
     let temp = {
       providerType: providerType,
-      providerDetails: groupOptions.filter(obj => covererNameList.includes(obj.id)),
+      providerDetails: providerType === 'Group'
+        ? groupOptions.filter(obj => covererNameList.includes(obj.id))
+        : selectApplicant
+        .filter(obj => covererNameList.includes(obj.id))
+        .map(obj => ({
+          id: obj.id,
+          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          .filter(Boolean) // Remove any empty or falsy values
+          .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
+        })),
       obstetricsProviderType: obstetricsProviderType,
-      obstetricsProviderDetails: groupOptions.filter(obj => obstetricsCovererNameList.includes(obj.id))
-    }
+      obstetricsProviderDetails: obstetricsProviderType === 'Group'
+        ? groupOptions.filter(obj => obstetricsCovererNameList.includes(obj.id))
+        : selectApplicantObstetrics
+        .filter(obj => obstetricsCovererNameList.includes(obj.id))
+        .map(obj => ({
+          id: obj.id,
+          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          .filter(Boolean) // Remove any empty or falsy values
+          .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
+        })),
+    };
     await PUT(`application-management-service/application/${applicationId}/coverageDetails`, temp)
       .then(response => {
         console.log(response)
@@ -490,7 +582,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     <div className={style.fieldWrapper}>
                       <CommonSelectField
                         value={obstetricsProviderType}
-                        onChange={(e) => { setObstetricsProviderType(e.target.value); setObstetricsCovererName(""); }}
+                        onChange={(e) => { setObstetricsProviderType(e.target.value); setObstetricsCovererName(""); setObstetricsCovererNameList("") }}
                         className={style.fullWidth}
                         firstOptionLabel={providerLabels}
                         firstOptionValue=""
@@ -508,7 +600,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                       <>
                         {obstetricsProviderType === "Individual" && (
                           <div className={style.fieldWrapper}>
-                            <CommonSelectField
+                            <div className={`${style.lableStyle}`}>
+                                {'Select Who covers in Specific Provider*'}
+                              </div>
+                            {/* <CommonSelectField
                               value={obstetricsCovererName}
                               onChange={(e) => setObstetricsCovererName(e.target.value)}
                               firstOptionLabel="Select who covers in Specific Provider"
@@ -522,6 +617,29 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               label={"Select Who covers in Specific Provider"}
                               required={true}
                               warning={!obstetricsCovererName}
+                            /> */}
+                            <DatalistInput
+                            items={getItemsSingle(obstetricsapplicantOptions) || []}
+                              onSelect={(item) => {
+                                console.log('Selected Item:', item); // Debugging selection
+                                setObstetricsCovererName(item.label);
+                                setObstetricsCovererId(item.id);
+                                setObstetricsCovererNameList((prevCheckedIds) => {
+                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                                  return [...filteredIds, item.id];
+                                });
+                              }}
+                              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                              maxLength={50}
+                              placeholder={'Select who covers in Specific Provider'}
+                              value={obstetricsCovererName}
+                              required={true}
+                              error={!obstetricsCovererName}
+                              warning={warningFields
+                                ?.map((data) => data?.label)
+                                ?.includes(
+                                  `Who covers your hospital patients when you are not available?`
+                                )}
                             />
                           </div>
                         )}
@@ -538,16 +656,25 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             <div className={`${style.lableStyle}`}>
                               {'Name the Provider Groups to cover you*'}
                             </div>
+                            <div className={`${style.displayInRow}`}>
                             <DatalistInput
                               items={getItems(groupOptions) || []}
                               onSelect={(item) => {
                                 setObstetricsCovererName('');
                                 setObstetricsCovererId(item.id);
-                                setObstetricsCovererNameList(prevCheckedIds => {
-                                  return prevCheckedIds?.includes(item.id)
-                                    ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
-                                    : [...prevCheckedIds, item.id];
+                                setObstetricsCovererNameList((prevCheckedIds) => {
+                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                                  return [...filteredIds, item.id];
                                 });
+                              }}
+                              onInput={(e) => {
+                                const value = e.target.value.trim();
+                                setObstetricsCovererName(value);
+                                const filteredItems = (getItems(groupOptions))
+                                .filter(
+                                  (item) => item?.value?.toLowerCase().includes(value.toLowerCase())
+                                );
+                                setShowAddButton(filteredItems.length === 0 && value !== '');
                               }}
                               className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                               maxLength={50}
@@ -557,21 +684,79 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               placeholder={'Enter the Provider Group to cover you'}
                               value={obstetricsCovererName}
                               required={true}
+                              error={!obstetricsCovererName}
+                              warning={warningFields
+                                ?.map((data) => data?.label)
+                                ?.includes(
+                                  `Who covers your hospital patients when you are not available?`
+                                )}
                             />
+                            {showAddButton && (
+                                <button
+                                  type="button"
+                                  className={`${style.continue} ${style.addButton}`}
+                                  onClick={() => {
+                                    getaddCoverageGroupsobstetrics();
+                                  }}
+                                >
+                                  Add
+                                </button>
+                              )}
+                              </div>
                           </div>
                         )}
                       </>
                     )}
                   </div>
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                    {obstetricsCovererNameList?.map(data => {
+                  {/* {obstetricsCovererNameList?.map ? (
+                    obstetricsCovererNameList?.map(data => {
                       return (
                         <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
                           <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                            onClick={() => obstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => innerData !== data))}
+                          ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                      )
+                    })
+                  ) : null } */}
+                   {obstetricsProviderType === "Group" && (
+                  <div className={`${style.chipsContainer}`}>
+                  {obstetricsCovererNameList?.map ? (
+                    obstetricsCovererNameList?.map(data => {
+                      console.log("grouplevel" , obstetricsCovererNameList)
+                      return (
+                        <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
+                          <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div>
+                          <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
                             onClick={() => setObstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => innerData !== data))}
                           ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                       )
-                    })}
+                    })
+                  ) : null}
+                  </div>
+                  )}
+                  {obstetricsProviderType === "Individual" && (
+                    <div className={`${style.chipsContainer}`}>
+                      {obstetricsCovererNameList?.map ? (
+                      obstetricsCovererNameList.map((data, index) => (
+                        <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
+                          {/* <div>{name}</div>   */}
+                          <div>
+                            {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
+                            {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
+                            {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
+                          </div>
+                          <div 
+                            className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                            onClick={() => handleRemoveChipObstetrics(index)} // Optional: Add a remove handler
+                          >
+                            <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
+                          </div>
+                        </div>
+                      ))
+                    ) : null }
+                    </div>
+                  )}
                   </div>
                 </div>
               ) : (
@@ -583,7 +768,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     <div className={style.fieldWrapper}>
                       <CommonSelectField
                         value={providerType}
-                        onChange={(e) => { setProviderType(e.target.value); setCovererName(""); }}
+                        onChange={(e) => { setProviderType(e.target.value); setCovererName(""); setCovererNameList(""); }}
                         className={style.fullWidth}
                         firstOptionLabel={providerLabels}
                         firstOptionValue=""
@@ -600,8 +785,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     {providerType !== "Not Applicable" && (
                       <>
                         {providerType === "Individual" && (
-                          <div className={`${style.fieldWrapper} ${style.alignTop}`}>
-                            <CommonSelectField
+                          <div className={`${style.fieldWrapper}`}>
+                            <div className={`${style.lableStyle}`}>
+                                {'Select Named Covering Providers*'}
+                              </div>
+                            {/* <CommonSelectField
                               value={covererName}
                               onChange={(e) => setCovererName(e.target.value)}
                               className={style.fullWidth}
@@ -612,6 +800,31 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               error={!covererName}
                               label={"Select Named Covering Providers"}
                               required={true}
+                              warning={warningFields
+                                ?.map((data) => data?.label)
+                                ?.includes(
+                                  `Who covers your hospital patients when you are not available?`
+                                )}
+                            /> */}
+                           <DatalistInput
+                            items={getItemsSingle(applicantOptions) || []}
+                              onSelect={(item) => {
+                                setCovererName(item.label);
+                                setCovererId(item.id);
+                                setCovererNameList(prevCheckedIds => {
+                                  // return prevCheckedIds?.includes(item.id)
+                                  //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
+                                  //   : [...prevCheckedIds, item.id];
+                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                                  return [...filteredIds, item.id];
+                                });
+                              }}
+                              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                              maxLength={50}
+                              placeholder={'Enter the Provider Group to select'}
+                              value={covererName}
+                              required={true}
+                              error={!covererName}
                               warning={warningFields
                                 ?.map((data) => data?.label)
                                 ?.includes(
@@ -644,42 +857,97 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               <div className={`${style.lableStyle}`}>
                                 {'Name the Provider Groups to cover you*'}
                               </div>
+                              <div className={`${style.displayInRow}`}>
                               <DatalistInput
                                 items={getItems(groupOptions) || []}
                                 onSelect={(item) => {
                                   setCovererName('');
                                   setCovererId(item.id);
                                   setCovererNameList(prevCheckedIds => {
-                                    return prevCheckedIds?.includes(item.id)
-                                      ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
-                                      : [...prevCheckedIds, item.id];
+                                    const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
+                                    return [...filteredIds, item.id];
                                   });
+                                }}
+                                onInput={(e) => {
+                                  const value = e.target.value.trim();
+                                  setCovererName(value);
+                                  const filteredItems = (getItems(groupOptions))
+                                  .filter(
+                                    (item) => item?.value?.toLowerCase().includes(value.toLowerCase())
+                                  );
+                                  setShowAddButton(filteredItems.length === 0 && value !== '');
                                 }}
                                 className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                                 maxLength={50}
-                                // onChange={(e) => {
-                                //   setCovererName(e.target.value);
-                                // }}
                                 placeholder={'Enter the Provider Group to select'}
                                 value={covererName}
                                 required={true}
+                                error={!covererName}
+                                warning={warningFields
+                                  ?.map((data) => data?.label)
+                                  ?.includes(
+                                    `Who covers your hospital patients when you are not available?`
+                                  )}
                               />
+                              {showAddButton && (
+                                <button
+                                  type="button"
+                                  className={`${style.continue} ${style.addButton}`}
+                                  onClick={() => {
+                                    getaddCoverageGroups();
+                                  }}
+                                >
+                                  Add
+                                </button>
+                              )}
+                              </div>
                             </div>
                           </div>
                         )}
                       </>
                     )}
                   </div>
+
+                  {providerType === "Group" && (
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                    {covererNameList?.map(data => {
+                  {covererNameList?.map ? (
+                    covererNameList?.map(data => {
+                      console.log("grouplevel" , covererNameList)
                       return (
                         <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                          <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                          <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div>
+                          <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
                             onClick={() => setCovererNameList(covererNameList?.filter(innerData => innerData !== data))}
                           ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                       )
-                    })}
+                    })
+                  ) : null}
                   </div>
+                  )}
+                  {providerType === "Individual" && (
+                    <div className={`${style.chipsContainer} ${style.marginTop10}`}>
+                      {covererNameList?.map ? (
+                      covererNameList.map((data, index) => (
+                        <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
+                          {/* <div>{name}</div> */}
+                          {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
+                          <div>
+                            {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
+                            {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
+                            {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
+                          </div>
+
+                          <div 
+                            className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
+                            onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
+                          >
+                            <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
+                          </div>
+                        </div>
+                      ))
+                    ) : null }
+                    </div>
+                  )}
                 </div>
               )}
             </div>
