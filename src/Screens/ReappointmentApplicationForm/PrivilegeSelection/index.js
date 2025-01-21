@@ -169,7 +169,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [isPrivilegeAtOtherHospitalEdited, setIsPrivilegeAtOtherHospitalEdited] = useState(false);
   const [privilegeAtOtherHospitalIndex, setPrivilegeAtOtherHospitalIndex] = useState();
   const [isHistoricalSign, setIsHistoricalSign] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("NA");
   const [dontUpdatePrivilegeState, setDontUpdatePrivilegeState] = useState(false);
   const theme = createTheme({
     palette: {
@@ -260,6 +260,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
       }
       setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+      setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities)
       setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       if (basicForm?.forms[formIndex]?.data !== null) {
         setPrivilegeChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
@@ -540,7 +541,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const fetchPaymentListData = async () => {
     try {
       const regionalCallResponsibility = selectedValue || 'NA';
-      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}`);
+      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetail?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}`);
       setPaymentListData(response.data);
     } catch (error) {
       console.error("Error fetching payment list data:", error);
