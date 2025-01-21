@@ -523,7 +523,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const fetchPaymentListData = async () => {
     try {
       const regionalCallResponsibility = selectedValue || 'NA';
-      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}`);
+      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetail?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}`);
       setPaymentListData(response.data);
     } catch (error) {
       console.error("Error fetching payment list data:", error);
