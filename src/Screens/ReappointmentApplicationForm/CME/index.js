@@ -317,7 +317,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     };
 
     const handleContinue = async () => {
-        let tempData = basicForm?.forms?.[formIndex]?.data;
+        let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
         let temp = {
@@ -541,34 +541,34 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div> 
+                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
-                {!showInfo && (
+                    {!showInfo && (
                         <div>
                             <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`}>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Continuing Medical Education</span>
-                                </div>
-                        </div>        
+                            </div>
+                        </div>
                     )}
                     <div>
-                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                    <div className={style.marginTop}>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
-                    </div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
@@ -578,7 +578,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
             {

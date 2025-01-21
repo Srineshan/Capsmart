@@ -413,7 +413,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                             description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-                        {!showMedicalDirectives ? (
+                        {!showMedicalDirectives ? allMedicalDirectives?.completed?.length !== undefined && (
                             <>
                                 <div className={`${style.cardTitle} ${style.marginTop}`}>Medical Directives Review</div>
                                 <CommonDivider />
