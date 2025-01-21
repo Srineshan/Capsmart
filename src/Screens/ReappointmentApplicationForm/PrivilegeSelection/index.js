@@ -193,6 +193,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     } else {
       setIsContinueEnabled(false);
     }
+    handleSubmitAcknowledgement();
   }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
 
   useEffect(() => {
@@ -240,11 +241,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
       setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       if (basicForm?.forms[formIndex]?.data !== null) {
-        setPrivilegeChangeYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
-        // setDepartmentChangeYesOrNo(basicForm?.forms[formIndex]?.data?.departmentChangeYesOrNo);
-        setPrivilegeSetChangeYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
-        setAdditionalPrivilegeChangeYesOrNo(basicForm?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-        setPrivilegeAtOtherHospitalYesOrNo(basicForm?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+        setPrivilegeChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+        // setDepartmentChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
+        setPrivilegeSetChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+        setAdditionalPrivilegeChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+        setPrivilegeAtOtherHospitalYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
       }
     } else {
       setIsLoadingPage(true);
@@ -309,7 +310,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       }
       setFormData(form?.schema);
       // setFormSchemaWholeObject(form);
-      console.log("formData",formData)
+      console.log("formData", formData)
 
     }
   };
@@ -325,7 +326,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     if (applicationData && selectedDepartment !== undefined) {
       if (selectedSpeciality !== undefined) {
         const { data: privilege } = await GET(
-          `entity-service/staffPrivilege/departmentAndServiceArea?department=${selectedDepartment !== ""
+          `entity-service/staffPrivilege?department=${selectedDepartment !== ""
             ? selectedDepartment
             : applicationData?.basicDetailReferences?.department?.id
           }&serviceArea=${selectedSpeciality !== "" ? selectedSpeciality : applicationData?.basicDetailReferences?.specialty?.id}`
@@ -333,7 +334,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         setStaffPrivilege(privilege);
       } else {
         const { data: privilege } = await GET(
-          `entity-service/staffPrivilege/departmentAndServiceArea?department=${selectedDepartment !== ""
+          `entity-service/staffPrivilege?department=${selectedDepartment !== ""
             ? selectedDepartment
             : applicationData?.basicDetailReferences?.department?.id
           }`
@@ -522,7 +523,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const handleDeptSubmit = async () => {
     let data = basicForm;
     if (data?.basicDetails?.priorDepartmentSpecialty === null) {
-    data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+      data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
     }
     data.basicDetails.departmentSpecialty.department = departmentList?.filter(
       (data) => data?.id === selectedDepartment
@@ -733,7 +734,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     handleSubmitAcknowledgement()
   };
 
-  const handleSubmitAcknowledgement = async () => {
+  const handleSubmitAcknowledgement = async (isNavigate) => {
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
       data: {
@@ -755,7 +756,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         setBasicForm(response?.data);
         SuccessToaster("Application Updated Successfully");
         if (paymentListData?.length === 0 || basicForm?.payment?.paymentCompleted) {
-          handleContinue();
+          handleContinue(isNavigate);
         }
       })
       .catch((error) => {
@@ -764,13 +765,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       });
   };
 
-  const handleContinue = async () => {
-    if (sessionStorage.getItem("fromSummary") === "true") {
-      navigate(-1);
-    } else {
-      getPreApplication();
-      if (isContinueEnabled) {
-        navigate(navigateURL);
+  const handleContinue = async (isNavigate) => {
+    if (isNavigate) {
+      if (sessionStorage.getItem("fromSummary") === "true") {
+        navigate(-1);
+      } else {
+        getPreApplication();
+        if (isContinueEnabled) {
+          navigate(navigateURL);
+        }
       }
     }
   };
@@ -779,7 +782,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     if (paymentListData?.length !== 0 && !basicForm?.payment?.paymentCompleted) {
       setShowPaymentDialog(true);
     }
-    handleSubmitAcknowledgement();
+    handleSubmitAcknowledgement(true);
   }
 
   const handleDeleteFile = async (files) => {
@@ -822,6 +825,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       allStaffPrivilege?.filter((data) => data?.id === privilegeId)
     );
   };
+
+  const handlePrivilegeSetChangeYes = () => {
+    setIsEdit(false);
+    setPrivilegeChangeYesOrNo('Yes');
+    setIsPrivilegeCategoryChanging(false)
+  }
 
   const handleRestrictedFileSelection = async (
     index,
@@ -2471,7 +2480,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           ?.credentialingCategory}
                     </div>
                   </div>
-                  {privilegeChangeYesOrNo !== '' && (
+                  {basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== undefined && (
                     <div
                       className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                     >
@@ -2508,7 +2517,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       {(basicForm?.basicDetails?.priorDepartmentSpecialty !== null && basicForm?.basicDetails?.priorDepartmentSpecialty?.department !== null) ? basicForm?.basicDetails?.priorDepartmentSpecialty?.department : (basicForm?.basicDetails?.departmentSpecialty !== null && basicForm?.basicDetails?.departmentSpecialty?.department !== null) ? basicForm?.basicDetails?.departmentSpecialty?.department : 'None'}
                     </div>
                   </div>
-                  {departmentChangeYesOrNo !== '' && (
+                  {basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined && (
                     <div
                       className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                     >
@@ -2578,7 +2587,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             </>
                           )}
                       </div>
-                      {privilegeSetChangeYesOrNo !== '' && (
+                      {basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined && (
                         <div
                           className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                         >
@@ -2660,7 +2669,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           </>
                         )}
                       </div>
-                      {additionalPrivilegeChangeYesOrNo !== '' && (
+                      {basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
                         <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
                           <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
                           {additionalPrivilegeChangeYesOrNo === 'No' ? (
@@ -2703,7 +2712,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               : 'None'}
                         </div>
                       </div>
-                      {privilegeAtOtherHospitalYesOrNo !== '' && (
+                      {basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined && (
                         <div
                           className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                         >
@@ -2819,7 +2828,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   )}
                   {selectedPrivilegeCategory !== "" && (
                     <>
-                      <div className={style.marginTop}>
+                      {/* <div className={style.marginTop}>
                         <CommonSelectField
                           value={selectedDepartment}
                           onChange={(e) => setSelectedDepartment(e.target.value)}
@@ -2832,12 +2841,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           label={"Department / Division or Specialty"}
                           required={false}
                         />
-                      </div>
+                      </div> */}
                       {privilegeCategories?.filter(
                         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
                       )[0]?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" ? (
                         <>
-                          {staffPrivilege?.map((data, index) => (
+                          {/* {staffPrivilege?.map((data, index) => (
                             <>
                               <div
                                 className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
@@ -2898,7 +2907,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                 <CommonDivider />
                               )}
                             </>
-                          ))}
+                          ))} */}
                         </>
                       ) : (
                         <div className={style.marginTop}>
@@ -3116,7 +3125,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               <div className={`${style.cardTitle} ${style.marginTop}`}>
                 Confirm your Department / Division or Specialty for this Reappointment?
               </div>
-              {( departmentChangeYesOrNo === ''  || departmentChangeYesOrNo === undefined ) ? (
+              {(departmentChangeYesOrNo === '' || departmentChangeYesOrNo === undefined) ? (
                 // <div
                 //   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 // >
@@ -3134,70 +3143,70 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 //   </div>
                 // </div>
                 <>
-                <div
-                  className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
-                >
-                  <div>
-                    <div className={`${style.lableStyle}`}>
-                      {'Department / Division or Specialty'}
-                    </div>
-                    <DatalistInput
-                      items={getDeptItems(departmentList) || []}
-                      onSelect={(item) => {
-                        setSelectedDepartment(item.id)
-                        setSelectedSpeciality(item.specialityId)
-                      }}
-                      className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                      maxLength={50}
-                      onChange={(e) => {
-                        setSelectedDepartment(e.target.value);
-                      }}
-                      placeholder={'Enter Department Name'}
-                      // value={getDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedDepartment : data?.id === selectedDepartment)?.[0]?.data?.value}
-                      value={
-                        getDeptItems(departmentList)?.find(
-                          (data) => data?.id === selectedDepartment || data?.departmentId === selectedDepartment
-                        )?.value || ''
-                      }
-                      required={true}
-                    />
-                        {departmentList?.some(department => department.id === selectedDepartment && department.regionalCallResponsibilitiesApplicable) && (
-                          <div className={`${style.alignLeft} ${style.marginTop}`}>
-                            <div className={`${style.lableStyle}`}>{formData?.properties?.regionalCallResponsibilities?.description}</div>
-                              <div className={`${style.marginTop10}`}>
-                              <CommonRadio
-                                value={selectedValue}
-                                onChange={(e) => setSelectedValue(e.target.value)}
-                                radioValue={['YES', 'NO']}
-                                // label={formData?.properties?.regionalCallResponsibilities?.properties?.regionalCallResponsibilities?.enum}
-                                label={['Yes', 'No']}
-                              />
-                              </div>
-                              </div>
-                            )}
-                  </div>
                   <div
-                    className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
+                    className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                   >
-                    <div
-                      className={`${style.reappointmentButton} ${style.marginLeft}`}
-                      onClick={() => {
-                        setIsDepartmentChanging(false);
-                        setDepartmentChangeYesOrNo('Yes');
-                        handleDeptSubmit();
-                      }}
-                    >
-                      UPDATE
+                    <div>
+                      <div className={`${style.lableStyle}`}>
+                        {'Department / Division or Specialty'}
+                      </div>
+                      <DatalistInput
+                        items={getDeptItems(departmentList) || []}
+                        onSelect={(item) => {
+                          setSelectedDepartment(item.id)
+                          setSelectedSpeciality(item.specialityId)
+                        }}
+                        className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                        maxLength={50}
+                        onChange={(e) => {
+                          setSelectedDepartment(e.target.value);
+                        }}
+                        placeholder={'Enter Department Name'}
+                        // value={getDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedDepartment : data?.id === selectedDepartment)?.[0]?.data?.value}
+                        value={
+                          getDeptItems(departmentList)?.find(
+                            (data) => data?.id === selectedDepartment || data?.departmentId === selectedDepartment
+                          )?.value || ''
+                        }
+                        required={true}
+                      />
+                      {departmentList?.some(department => department.id === selectedDepartment && department.regionalCallResponsibilitiesApplicable) && (
+                        <div className={`${style.alignLeft} ${style.marginTop}`}>
+                          <div className={`${style.lableStyle}`}>{formData?.properties?.regionalCallResponsibilities?.description}</div>
+                          <div className={`${style.marginTop10}`}>
+                            <CommonRadio
+                              value={selectedValue}
+                              onChange={(e) => setSelectedValue(e.target.value)}
+                              radioValue={['YES', 'NO']}
+                              // label={formData?.properties?.regionalCallResponsibilities?.properties?.regionalCallResponsibilities?.enum}
+                              label={['Yes', 'No']}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div
-                      className={`${style.reappointmentButtonOutlined}`}
-                      onClick={() => { setIsDepartmentChanging(false); setDepartmentChangeYesOrNo('No') }}
+                      className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
-                      CANCEL
+                      <div
+                        className={`${style.reappointmentButton} ${style.marginLeft}`}
+                        onClick={() => {
+                          setIsDepartmentChanging(false);
+                          setDepartmentChangeYesOrNo('Yes');
+                          handleDeptSubmit();
+                        }}
+                      >
+                        UPDATE
+                      </div>
+                      <div
+                        className={`${style.reappointmentButtonOutlined}`}
+                        onClick={() => { setIsDepartmentChanging(false); setDepartmentChangeYesOrNo('No') }}
+                      >
+                        CANCEL
+                      </div>
                     </div>
                   </div>
-                </div>
-              </>
+                </>
               ) : (
                 <>
                   {!isDepartmentChanging ? (
@@ -3264,19 +3273,19 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             }
                             required={true}
                           />
-                            {departmentList?.some(department => department.id === selectedDepartment && department.regionalCallResponsibilitiesApplicable) && (
-                              <div className={`${style.alignLeft} ${style.marginTop10}`}>
-                                 <div className={`${style.lableStyle}`}>{formData?.properties?.regionalCallResponsibilities?.label}</div>
-                              <div className={`${style.marginTop10}`}>            
-                              <CommonRadio
-                                value={selectedValue}
-                                onChange={(e) => setSelectedValue(e.target.value)}
-                                radioValue={['NO', 'YES']}
-                                label={formData?.properties?.regionalCallResponsibilities?.properties?.regionalCallResponsibilities?.enum}
-                              />
+                          {departmentList?.some(department => department.id === selectedDepartment && department.regionalCallResponsibilitiesApplicable) && (
+                            <div className={`${style.alignLeft} ${style.marginTop10}`}>
+                              <div className={`${style.lableStyle}`}>{formData?.properties?.regionalCallResponsibilities?.label}</div>
+                              <div className={`${style.marginTop10}`}>
+                                <CommonRadio
+                                  value={selectedValue}
+                                  onChange={(e) => setSelectedValue(e.target.value)}
+                                  radioValue={['NO', 'YES']}
+                                  label={formData?.properties?.regionalCallResponsibilities?.properties?.regionalCallResponsibilities?.enum}
+                                />
                               </div>
-                              </div>
-                            )}
+                            </div>
+                          )}
                         </div>
                         <div
                           className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
@@ -3317,7 +3326,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
                   </div>
                   <>
-                    {staffPrivilege?.map((data, index) => (
+                    {staffPrivilege !== undefined && staffPrivilege?.map((data, index) => (
                       <>
                         <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
                           <div
@@ -3958,41 +3967,41 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             )}
           </div>
           <div className={style.threeColForButton}>
-              <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-              <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
           </div>
         </div>
         <div>
-          
+
           <div>
-              {!showInfo && (
-                        <div>
-                            <div className={`${style.toggleButton} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
-                                  || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
-                                  showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
-                                <MenuIcon className={style.toggleIcon} />
-                            </div>
-                                <div className={`${style.headerData} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
-                                      || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
-                                      showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`}>
-                                <span style={{ marginLeft: '20px' }}>Confirm Your Privilege Category</span>
-                                </div>
-                        </div>        
-                    )}
-         
+            {!showInfo && (
+              <div>
+                <div className={`${style.toggleButton} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
+                  || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
+                  showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                  <MenuIcon className={style.toggleIcon} />
+                </div>
+                <div className={`${style.headerData} ${isShowESignDialog || isShowESignConfirmationDialog || isOpen || isAlertOpen || isSaveInProgressOpen || showJourneyDialog
+                  || showPaymentDialog || showAdditionalPrivilegesForSign || showPrivilegesForSign || showCurrentPrivileges ||
+                  showAdditionalPrivileges || showPrivileges ? style.hidden : ""}`}>
+                  <span style={{ marginLeft: '20px' }}>Confirm Your Privilege Category</span>
+                </div>
+              </div>
+            )}
+
             <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-              <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
+              <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
               <ApplicationUserCard
                 user={"First Mi Last"}
-                 applyingFor={"{Doctor} Applying As {Associate}"}
+                applyingFor={"{Doctor} Applying As {Associate}"}
               />
               <div className={style.marginTop}>
-              <ApplicationAssistanceCard
-              user={"Neena Greenly"}
-              designation={"{Designation}"}
-              contactNumber={"{Contact Number}"}
-              email={"{Email}"}
-              />
+                <ApplicationAssistanceCard
+                  user={"Neena Greenly"}
+                  designation={"{Designation}"}
+                  contactNumber={"{Contact Number}"}
+                  email={"{Email}"}
+                />
               </div>
             </div>
           </div>
