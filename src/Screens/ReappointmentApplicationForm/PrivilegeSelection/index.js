@@ -513,7 +513,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const fetchPaymentListData = async () => {
     try {
-      const response = await GET(`entity-service/paymentAndFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}`);
+      const hasRegionalCallValue = selectedValue === 'Yes' ? true : false;
+      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&hasRegionalCallResponsibilites=${hasRegionalCallValue}`);
       setPaymentListData(response.data);
     } catch (error) {
       console.error("Error fetching payment list data:", error);
@@ -531,6 +532,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     data.basicDetails.departmentSpecialty.specialty = departmentList?.filter(
       (data) => data?.id === selectedDepartment
     )?.[0]?.serviceAreas?.filter(data => data?.id === selectedSpeciality)?.[0]?.name;
+    if (!data?.basicDetails?.regionalCallResponsibilities) {
+      data.basicDetails.regionalCallResponsibilities = {};
+    }
+    data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || 'NA';
     console.log(data);
     await PUT(
       `application-management-service/application/${applicationId}`,
@@ -547,6 +552,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         ErrorToaster("Unexpected Error Updating Staff Member Application");
       });
     handleSubmitAcknowledgement()
+    // fetchPaymentListData()
   };
 
   const handleSubmit = async () => {
@@ -3198,12 +3204,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         UPDATE
                       </div>
-                      <div
+                      {/* <div
                         className={`${style.reappointmentButtonOutlined}`}
                         onClick={() => { setIsDepartmentChanging(false); setDepartmentChangeYesOrNo('No') }}
                       >
                         CANCEL
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </>
@@ -3254,7 +3260,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             {'Department / Division or Specialty'}
                           </div>
                           <DatalistInput
-                            items={getDeptItems(departmentList) || []}
+                             items={getDeptItems(departmentList) || []}
                             onSelect={(item) => {
                               setSelectedDepartment(item.id)
                               setSelectedSpeciality(item.specialityId)
