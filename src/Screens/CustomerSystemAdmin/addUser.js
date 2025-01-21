@@ -847,7 +847,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails()} >SAVE</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => getManageUserDialog(false)} >SAVE</button>
                                     </div>
                                 </div>
                             </div>
