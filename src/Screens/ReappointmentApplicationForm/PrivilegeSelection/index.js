@@ -181,6 +181,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       },
     },
   });
+  const prevDepartment = applicationData?.basicDetailReferences?.department?.id;
   useEffect(() => {
     getApplication();
     getDepartmentList();
@@ -519,8 +520,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const fetchPaymentListData = async () => {
     try {
-      const hasRegionalCallValue = selectedValue === 'Yes' ? true : false;
-      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&hasRegionalCallResponsibilites=${hasRegionalCallValue}`);
+      const regionalCallResponsibility = selectedValue || 'NA';
+      const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetails?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}`);
       setPaymentListData(response.data);
     } catch (error) {
       console.error("Error fetching payment list data:", error);
@@ -3192,22 +3193,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         }
                         required={true}
                       />
-                      {departmentList?.some(department => department.id === selectedDepartment && department.regionalCallResponsibilitiesApplicable) && (
-                        <div className={`${style.alignLeft} ${style.marginTop}`}>
-                          <div className={`${style.lableStyle}`}>{formData?.properties?.regionalCallResponsibilities?.description}</div>
-                          <div className={`${style.marginTop10}`}>
-                            <CommonRadio
-                              value={selectedValue}
-                              onChange={(e) => setSelectedValue(e.target.value)}
-                              radioValue={['YES', 'NO']}
-                              // label={formData?.properties?.regionalCallResponsibilities?.properties?.regionalCallResponsibilities?.enum}
-                              label={['Yes', 'No']}
-                            />
-                          </div>
-                        </div>
-                      )}
+                      {departmentList?.some(department => department.id === selectedDepartment) && (
+                          departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
+                            (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
+                          ) ? (
+                            <div className={`${style.alignLeft} ${style.marginTop}`}>
+                              <div className={`${style.lableStyle}`}>
+                                {formData?.properties?.regionalCallResponsibilities?.description}
+                              </div>
+                              <div className={`${style.marginTop10}`}>
+                                <CommonRadio
+                                  value={selectedValue}
+                                  onChange={(e) => setSelectedValue(e.target.value)}
+                                  radioValue={['YES', 'NO']}
+                                  label={['Yes', 'No']}
+                                />
+                              </div>
+                            </div>
+                          ) : null
+                        )}
                     </div>
-                    <div
+                    {/* <div
                       className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
                       <div
@@ -3220,12 +3226,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         UPDATE
                       </div>
-                      {/* <div
-                        className={`${style.reappointmentButtonOutlined}`}
-                        onClick={() => { setIsDepartmentChanging(false); setDepartmentChangeYesOrNo('No') }}
+                    </div> */}
+                    <div className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}>
+                      <div
+                        className={`${style.reappointmentButton} ${style.marginLeft}`}
+                        onClick={() => {
+                          setIsDepartmentChanging(false);
+                          setDepartmentChangeYesOrNo(selectedDepartment === prevDepartment ? 'Yes' : 'Np');
+                          handleDeptSubmit();
+                        }}
                       >
-                        CANCEL
-                      </div> */}
+                        {selectedDepartment === prevDepartment ? 'CONFIRM' : 'UPDATE'}
+                      </div>
                     </div>
                   </div>
                 </>
@@ -3238,7 +3250,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         <strong>
                           Marked as{" "}
-                          <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo}</span>
+                          <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo === 'Yes' ? 'Same as Before' : 'Changed'}</span>
                         </strong>{" "}
                       </div>
                       <div
