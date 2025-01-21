@@ -170,6 +170,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [privilegeAtOtherHospitalIndex, setPrivilegeAtOtherHospitalIndex] = useState();
   const [isHistoricalSign, setIsHistoricalSign] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
+  const [dontUpdatePrivilegeState, setDontUpdatePrivilegeState] = useState(false);
   const theme = createTheme({
     palette: {
       error: {
@@ -234,15 +235,17 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       // setSelectedPrivilegesForDisplayMultiple(
       //   basicForm?.privileges?.obligatedPrivileges
       // );
-      setSelectedAdditionalPrivilegesForDisplayMultiple(
-        basicForm?.privileges?.additionalPrivileges
-      );
-      setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
+      if (!dontUpdatePrivilegeState) {
+        setSelectedAdditionalPrivilegesForDisplayMultiple(
+          basicForm?.privileges?.additionalPrivileges
+        );
+        setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
+      }
       setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
       setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       if (basicForm?.forms[formIndex]?.data !== null) {
         setPrivilegeChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-        // setDepartmentChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
+        setDepartmentChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
         setPrivilegeSetChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
         setAdditionalPrivilegeChangeYesOrNo(basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
         setPrivilegeAtOtherHospitalYesOrNo(basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
@@ -538,15 +541,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     )
       .then((response) => {
         console.log(response);
-        setBasicForm(response?.data);
-        handleSubmitAcknowledgement();
-        SuccessToaster("Staff Member Application Updated Successfully");
       })
       .catch((error) => {
         console.log(error);
-        ErrorToaster("Unexpected Error Updating Staff Member Application");
       });
-    handleSubmitAcknowledgement()
   };
 
   const handleSubmit = async () => {
@@ -652,7 +650,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       )
         .then((response) => {
           console.log(response);
-          setBasicForm(response?.data);
+          // setBasicForm(response?.data);
           SuccessToaster("Staff Member Application Updated Successfully");
         })
         .catch((error) => {

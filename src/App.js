@@ -710,7 +710,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -895,7 +895,7 @@ const App = ({ props }) => {
   };
 
   const IsLoggedIn = ({ children }) => {
-    return (isAuthenticated && cookie.get("authorization") !== undefined) ? <Navigate to="/" /> : children;
+    return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
   };
 
   if (isSessionLoading) {
