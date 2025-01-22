@@ -564,35 +564,27 @@ const StaffApplicationTopTiles = () => {
   }, [userDetails])
 
   const calculateVisibleCounts = (countsObj) => {
-    if (!countsObj || !userFlow?.workflow) return 0;
-
-    const UserFlowType = userFlow.workflow;
-    const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
-
-    let visibleLevels = [];
+    if (!countsObj) return 0;
+  
+    // Add clarifications
+    const clarifications = parseInt(countsObj.clarificationsRequired) || 0;
+    
+    // For Department Head, show only level-2 count
     if (userRole?.includes("Department Head")) {
-      visibleLevels = ['level-2'];
-    } else if (userRole?.includes("Credentialing Committee")) {
-      visibleLevels = ['level-3'];
-    } else if (isManagerOrChief) {
-      visibleLevels = Object.keys(UserFlowType).map(key => `level-${key}`);
-    } else {
-      const currentIndex = Object.entries(UserFlowType).findIndex(([key, value]) => {
-        const details = value?.flowDetails;
-        return details?.some(detail =>
-          detail?.role && userRole?.includes(detail?.role?.roleName)
-        );
-      });
-
-      if (currentIndex !== -1) {
-        visibleLevels = Object.keys(UserFlowType)
-          .slice(currentIndex)
-          .map(key => `level-${key}`);
-      }
+      return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
-
-    return visibleLevels.reduce((sum, level) => sum + (countsObj[level] || 0), 0) +
-      (countsObj.clarificationsRequired || 0);
+    
+    // For Credentialing Committee, show only level-3 count
+    if (userRole?.includes("Credentialing Committee")) {
+      return (parseInt(countsObj['level-3']) || 0) + clarifications;
+    }
+    
+    // For all other roles, show total count
+    const levelSum = Object.entries(countsObj)
+      .filter(([key]) => key.startsWith('level-'))
+      .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0);
+    
+    return levelSum + clarifications;
   };
 
   const getSelectedTab = (tab) => {
@@ -656,6 +648,3 @@ const StaffApplicationTopTiles = () => {
 };
 
 export default StaffApplicationTopTiles;
-
-
-
