@@ -4194,16 +4194,16 @@ const NewActiveApplication = ({
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
-        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined
-          ? form?.basicDetails?.applicant?.name?.firstName
-          : "{First Name}"
-          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
-            ? form?.basicDetails?.applicant?.name?.lastName
-            : "{Last Name}"
-          }, ${form?.basicDetails?.applicant?.applicantType !== undefined
-            ? form?.basicDetails?.applicant?.applicantType
-            : "{Applicant Type}"
-          }`}
+       title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+        ?  form?.basicDetails?.applicant?.name?.lastName.toUpperCase()
+          : "{Last Name}"
+        }, ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+          ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase()+form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+        : "{First Name}"
+        }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+          ? form?.basicDetails?.applicant?.applicantType
+          : "{Applicant Type}"
+        }`}
         close={true}
         closeClick={onClose}
       />
@@ -4227,7 +4227,7 @@ const NewActiveApplication = ({
                   {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
                     <div className={style.grid5and2}>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                        <div className={style.spaceBetween}>
+                        <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
                           <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
 
@@ -4242,11 +4242,11 @@ const NewActiveApplication = ({
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
                                 {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{" "}
-                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                                  : ""}{", "}
                                 {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
@@ -4361,12 +4361,11 @@ const NewActiveApplication = ({
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
                                 {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
+                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{" "}
-                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                                  : ""}{", "}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
                                 {/* {form?.displayId || ""} */}

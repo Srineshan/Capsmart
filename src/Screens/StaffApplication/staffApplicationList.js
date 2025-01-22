@@ -34,6 +34,7 @@ import CheckListDialog from "./checkListDialog";
 import CircleIcon from '@mui/icons-material/Circle';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import LoadingScreen from "../../Components/LoadingScreen";
 // import Checkbox from '@mui/material/Checkbox';
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -3019,15 +3020,13 @@ const StaffApplicationList = ({
 
   return (
     <>
-      {/* {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+      <LoadingScreen/>
+    </div>
     )}
 
- {!isLoadingImage && ( */}
+ {/* {!isLoadingImage && ( */}
 
       <div className={style.margin20}>
         <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
@@ -3419,7 +3418,7 @@ const StaffApplicationList = ({
           )
         }
       </div >
-      {/* //  )}  */}
+     {/* )} */}
     </>
   );
 };

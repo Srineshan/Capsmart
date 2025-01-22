@@ -635,6 +635,7 @@ import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import LoadingScreen from "../../Components/LoadingScreen";
 
 const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData }) => {
   const cookie = new Cookie();
@@ -656,6 +657,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const applicationId = "66dc44ec788741fedc982b01";
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   // Listen for session storage changes
   useEffect(() => {
@@ -674,9 +676,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       if (!user?.id) return;
 
       try {
+        setIsLoadingImage(true);
         const { data: userData } = await GET(`user-management-service/user/${user.id}`);
         sessionStorage.setItem('user', JSON.stringify(userData));
         setUserRole(userData?.roles?.map(data => data?.roleName) || []);
+        setIsLoadingImage(false);
       } catch (error) {
         console.error('Error fetching user details:', error);
       }
@@ -834,6 +838,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   return (
     <div className={style.tabs}>
+       {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+      <LoadingScreen/>
+    </div>
+    )}
       {applicationType !== "LOCUM" && (
         <>
           {getFilteredTiles().map(tile => (
