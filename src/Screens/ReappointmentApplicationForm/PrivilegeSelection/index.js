@@ -249,6 +249,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
         setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
       }
+      if (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
+        basicForm?.privileges?.obligatedPrivileges?.length === 0) {
+        setIsPrivilegeSetChanging(true);
+        setPrivilegeSetChangeYesOrNo('No');
+      }
       setSelectedAdditionalPrivilegeForDisplay(
         basicForm?.privileges?.additionalPrivileges
       );
@@ -452,9 +457,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       .catch((error) => {
         console.log(error)
       });
-    if (!isHistoricalSign) {
-      setShowPrivilegesForSign(true);
-    }
+    // if (!isHistoricalSign) {
+    //   setShowPrivilegesForSign(true);
+    // }
   }
 
   const getIsShowReappointmentJourneyDialog = (value) => {
@@ -582,16 +587,22 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleSubmit = async () => {
-    let mergedArray = [...basicForm?.privileges?.obligatedPrivileges, ...selectedPrivilegesForDisplayMultiple].reduce((unique, current) => {
-      if (!unique.some(obj => JSON.stringify(obj) === JSON.stringify(current))) {
+    let mergedArray = [
+      ...basicForm?.privileges?.obligatedPrivileges,
+      ...selectedPrivilegesForDisplayMultiple,
+    ].reduce((unique, current) => {
+      console.log(unique, current, 'unique')
+      // Check if the current ID is already in the unique array
+      if (!unique.some((obj) => obj.id === current.id)) {
         unique.push(current);
       }
+      console.log(unique, 'unique')
       return unique;
     }, []);
 
     let temp = {
-      obligatedPrivileges: showPrivilegeResetError ? selectedPrivilegesForDisplayMultiple : mergedArray,
-      additionalPrivileges: selectedAdditionalPrivilegeForDisplay,
+      obligatedPrivileges: isPrivilegeSetChanging ? (showPrivilegeResetError || privilegeSetChangeYesOrNo === 'No') ? selectedPrivilegesForDisplayMultiple : mergedArray : basicForm?.privileges?.obligatedPrivileges,
+      additionalPrivileges: isAdditionalPrivilegeCategoryChanging ? selectedAdditionalPrivilegeForDisplay : basicForm?.privileges?.additionalPrivileges,
       priorAdditionalPrivileges:
         basicForm?.privileges?.priorAdditionalPrivileges?.length === 0
           ? basicForm?.privileges?.additionalPrivileges !== null ? basicForm?.privileges?.additionalPrivileges : []
@@ -602,6 +613,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           : basicForm?.privileges?.priorObligatedPrivileges !== null ? basicForm?.privileges?.priorObligatedPrivileges : [],
     };
     console.log("data", temp);
+    setIsPrivilegeSetChanging(false);
+    setIsAdditionalPrivilegeCategoryChanging(false);
     await POST(
       `application-management-service/application/${applicationId}/privileges`,
       temp
@@ -614,13 +627,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       });
     if (isPrivilegeCategoryChanging) {
       let data = basicForm;
-      // console.log(data.basicDetails.priorPrivilegeCategory.name, data.basicDetails.priorPrivilegeCategory, 'privilegeCheck', privilegeCategories, privilegeCategories?.filter(
-      //   (data) =>
-      //     data?.privilegeCategory?.category ===
-      //     basicForm?.basicDetails?.credentialingPrivilegeCategory
-      //       ?.credentialingCategory
-      // )?.[0]?.privilegeCategory?.id, basicForm?.basicDetails?.credentialingPrivilegeCategory
-      //   ?.credentialingCategory)
       if (data?.basicDetails?.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) {
         data.basicDetails.priorPrivilegeCategory = {
           id: privilegeCategories?.filter(
@@ -629,12 +635,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               basicForm?.basicDetails?.credentialingPrivilegeCategory
                 ?.credentialingCategory
           )?.[0]?.privilegeCategory?.id,
-          // name: privilegeCategories?.filter(
-          //   (data) =>
-          //     data?.privilegeCategory?.category ===
-          //     basicForm?.basicDetails?.credentialingPrivilegeCategory
-          //       ?.credentialingCategory
-          // )?.[0]?.privilegeCategory?.category,
           name: basicForm?.basicDetails?.credentialingPrivilegeCategory
             ?.credentialingCategory,
           type: privilegeCategories?.filter(
@@ -704,6 +704,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       setHospitalPrivilege('');
       setHospitalPrivilegeCategory('')
       setIsPrivilegeAtOtherHospitalEdited(false);
+      setSelectedPrivilegesForDisplayMultiple([]);
       setPrivilegeAtOtherHospitalIndex();
       let data = basicForm;
 
@@ -798,16 +799,16 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   };
 
   const handleContinue = async (isNavigate) => {
-    // if (isNavigate) {
-    if (sessionStorage.getItem("fromSummary") === "true") {
-      navigate(-1);
-    } else {
-      getPreApplication();
-      if (isContinueEnabled) {
-        navigate(navigateURL);
+    if (isNavigate) {
+      if (sessionStorage.getItem("fromSummary") === "true") {
+        navigate(-1);
+      } else {
+        getPreApplication();
+        if (isContinueEnabled) {
+          navigate(navigateURL);
+        }
       }
     }
-    // }
   };
 
   const handleContinueClick = () => {
@@ -875,10 +876,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     setIsEditPrivilege(false);
     setPrivilegeSetChangeYesOrNo('Yes');
     setIsPrivilegeSetChanging(false);
+    setShowPrivilegesForSign(true);
   }
 
   const handleKeepYourPrivilegeNo = () => {
-    if (selectedPrivilegeForDisplay?.length !== 0 && ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined))) {
+    if (((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined))) {
       setDontUpdatePrivilegeState(true)
       setIsShowESignConfirmationDialog(true)
     } else {
@@ -2471,10 +2473,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const getDeptItems = (data) => {
     let temp = [];
     data?.map((data) => {
-      if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === "")) {
+      // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === "")) {
+      temp.push({ id: data?.id, value: data?.departmentName?.name });
+      // }
+      data?.serviceAreas?.map((specialityData => {
+        // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
+        temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
+        // }
+      }))
+    });
+    return temp;
+  };
+
+  const getAdditionalDeptItems = (data) => {
+    let temp = [];
+    data?.map((data) => {
+      console.log('Dept Check', data, basicForm?.basicDetails?.departmentSpecialty?.department, data?.departmentName?.name, basicForm?.basicDetails?.departmentSpecialty?.specialty)
+      if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && (basicForm?.basicDetails?.departmentSpecialty?.specialty === "" || basicForm?.basicDetails?.departmentSpecialty?.specialty === null))) {
         temp.push({ id: data?.id, value: data?.departmentName?.name });
       }
       data?.serviceAreas?.map((specialityData => {
+        console.log('Dept Check', specialityData, basicForm?.basicDetails?.departmentSpecialty?.specialty, specialityData?.name)
         if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
           temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
         }
@@ -2590,7 +2609,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           </div>
                         ) : (
                           <div className={style.privilegeHeading}>
-                            {basicForm?.basicDetails?.departmentSpecialty?.department}
+                            {basicForm?.basicDetails?.priorDepartmentSpecialty?.department !== null ? basicForm?.basicDetails?.priorDepartmentSpecialty?.department === basicForm?.basicDetails?.departmentSpecialty?.department ? 'Same as Before' : basicForm?.basicDetails?.departmentSpecialty?.department : basicForm?.basicDetails?.departmentSpecialty?.department}
                           </div>
                         )}
                       </div>
@@ -3465,11 +3484,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         <div
                           className={`${style.reappointmentButton} ${style.marginLeft}`}
                           onClick={() => {
-                            setIsPrivilegeSetChanging(false);
-                            handleSubmit();
                             setIsEditPrivilege(false);
                             setIsUpdateClicked(true);
-                            setPrivilegeSetChangeYesOrNo('No');
+                            handleSubmit();
                           }}
                         >
                           SAVE
@@ -3569,7 +3586,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   selectedPrivilegesForCourtesy === ""
                                     ? () => { }
                                     : () => {
-                                      setIsPrivilegeSetChanging(false);
                                       handleSubmit();
                                       setIsEditPrivilege(false);
                                       setIsUpdateClicked(true);
@@ -3781,7 +3797,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             {'Department / Division or Specialty'}
                           </div>
                           <DatalistInput
-                            items={getDeptItems(departmentList) || []}
+                            items={getAdditionalDeptItems(departmentList) || []}
                             onSelect={(item) => {
                               setSelectedAdditionalDepartment(item.id)
                               setSelectedAdditionalSpeciality(item.specialityId)
@@ -3792,7 +3808,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               setSelectedAdditionalDepartment(e.target.value);
                             }}
                             placeholder={'Enter Department Name'}
-                            value={getDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedAdditionalDepartment : data?.id === selectedAdditionalDepartment)?.[0]?.data?.value}
+                            value={getAdditionalDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedAdditionalDepartment : data?.id === selectedAdditionalDepartment)?.[0]?.data?.value}
                             required={true}
                           />
                         </div>
@@ -3846,13 +3862,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     >
                       <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
-                        onClick={() => { setIsAdditionalPrivilegeCategoryChanging(false); handleSubmit() }}
+                        onClick={() => { handleSubmit() }}
                       >
                         SAVE
                       </div>
                       <div
                         className={`${style.reappointmentButtonOutlined}`}
-                        onClick={() => { setIsAdditionalPrivilegeCategoryChanging(false); setAdditionalPrivilegeChangeYesOrNo('') }}
+                        onClick={() => { setAdditionalPrivilegeChangeYesOrNo('') }}
                       >
                         CANCEL
                       </div>
@@ -4704,6 +4720,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             setBasicForm={setBasicForm}
             updateFunc={updateFunc}
             confirmFunc={confirmESign}
+            hideCross={true}
           />
         )
       }
@@ -4717,6 +4734,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             basicForm={basicForm}
             setBasicForm={setBasicForm}
             getPreApplication={getPreApplication}
+            hideCross={true}
           >
             {uploadFormSchema !== undefined &&
               "setUpYourSignature" in uploadFormSchema?.properties && (

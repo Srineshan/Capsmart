@@ -682,11 +682,11 @@ const App = ({ props }) => {
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
     console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
 
-    // Schedule the refresh 0.5 minute before expiration
+    // Schedule the refresh 1 minute before expiration
     console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
     setTimeout(() => {
       refreshToken();
-    }, (timeToExpiry - 30) * 1000);
+    }, (timeToExpiry - 60) * 1000);
   };
 
   const setUserDetails = async () => {
@@ -750,7 +750,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)

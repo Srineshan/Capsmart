@@ -242,7 +242,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     } catch (error) {
       console.log(error);
     }
-    continueClick();
+    continueClick(true);
   }
 
   const handleDownload = (data) => {

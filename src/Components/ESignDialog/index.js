@@ -10,7 +10,7 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 import { useParams } from 'react-router-dom';
 
-const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication }) => {
+const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [selectedESignFormat, setSelectedESignFormat] = useState('DRAW');
     const [isShowDrawCanvas, setIsShowDrawCanvas] = useState(false);
@@ -163,12 +163,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                         <div className={style.displayInRow}>
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
-                            <img
-                                src={CrossPink}
-                                alt="cross"
-                                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
-                                onClick={() => { getIsOpen(false) }}
-                            />
+                            {!hideCross && (
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
+                            )}
                         </div>
                     </div>
 

@@ -109,7 +109,7 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
             </Dialog >
 
             {showSubmitDialog && (
-                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished!You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of ${entityName} for final consideration.`} />
+                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished!You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
             )}
         </>
     )

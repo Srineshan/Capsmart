@@ -148,7 +148,7 @@ const ReappointmentApplicationForm = () => {
                 </div>
             )}
             <div className={style.screenBackground}>
-                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${basicForm?.basicDetails?.applicant?.name?.lastName?.toUpperCase()},` : '{Last Name}'} ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                 <div className={style.screenPadding}>
                     {StepDisplay()}
                 </div>
