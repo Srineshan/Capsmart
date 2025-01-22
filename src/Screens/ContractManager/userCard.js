@@ -62,7 +62,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
 
                         <div className={style.marginLeft20}>
                             <div className={style.userNameStyle}>
-                                Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName.toUpperCase()}` : `${currentUserDetails?.name?.lastName.toUpperCase()}, ${currentUserDetails?.name?.firstName}`}
                             </div>
                             <div className={style.loginStatus}>
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}

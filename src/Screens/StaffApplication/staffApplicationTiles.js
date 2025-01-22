@@ -668,6 +668,22 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
     return () => clearInterval(intervalId);
   }, [applicationType]);
+  // Fetch user details and role
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!user?.id) return;
+
+      try {
+        const { data: userData } = await GET(`user-management-service/user/${user.id}`);
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        setUserRole(userData?.roles?.map(data => data?.roleName) || []);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [user]);
 
   useEffect(() => {
     if (applicationType) {
@@ -696,17 +712,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
   };
 
-  const setUserDetails = async () => {
-    if (user !== undefined) {
-      try {
-        const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-        sessionStorage.setItem('user', JSON.stringify(userData));
-        setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
-      } catch (error) {
-        console.error('Error fetching user details:', error);
-      }
-    }
-  };
+  // const setUserDetails = async () => {
+  //   if (user !== undefined) {
+  //     try {
+  //       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+  //       sessionStorage.setItem('user', JSON.stringify(userData));
+  //       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+  //     } catch (error) {
+  //       console.error('Error fetching user details:', error);
+  //     }
+  //   }
+  // };
 
   const getUserRoleType = async () => {
     if (applicationType === "LOCUM") {
@@ -725,7 +741,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   // Initial data fetching
   useEffect(() => {
-    setUserDetails();
+    // setUserDetails();
     getUserRoleType();
   }, [applicationType]);
 

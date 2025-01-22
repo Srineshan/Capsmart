@@ -223,7 +223,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     <div className={`${style.twoCol} ${style.marginTop}`}>
                         {fields?.map(data => (
                             <CommonTextField
-                                value={changedData[data?.name]}
+                                value={changedData?.[data?.name]}
                                 className={style.fullWidth}
                                 onChange={(e) => setChangedData({ ...changedData, [data.name]: (data.name === "creditOrHours" || data.name === "credits") ? parseFloat(e.target.value) : e.target.value })}
                                 maxLength={50}

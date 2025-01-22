@@ -1065,7 +1065,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1236,7 +1236,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        ` ${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1417,7 +1417,7 @@ const StaffApplicationList = ({
       console.log("data?.currentLevelCompleted" + data?.currentLevelCompleted);
 
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1716,7 +1716,7 @@ const StaffApplicationList = ({
       }
 
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
@@ -1981,7 +1981,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -2207,7 +2207,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -3186,9 +3186,9 @@ const StaffApplicationList = ({
                                       }
                                     ></div>
                                     <div className={style.marginLeft10}>
+                                    {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
                                       {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
-                                      , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"}
+                                       status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
                                     </div>
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>

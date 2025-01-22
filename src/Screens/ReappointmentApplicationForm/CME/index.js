@@ -27,6 +27,7 @@ import FileWithFields from '../../../Components/FileWithFields';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import DeleteIcon from './../../../images/deleteHcRow.png';
 import MenuIcon from "@mui/icons-material/Menu";
+import Tooltip from "@mui/material/Tooltip";
 import Close from './../../../images/close.png';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
@@ -60,7 +61,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     const [showUploadDialog, setShowUploadDialog] = useState(false);
     const [showFileWithFields, setShowFileWithFields] = useState(false);
-    const [fields, setFields] = useState();
+    const [fields, setFields] = useState([]);
     const [fileMetadata, setFileMetadata] = useState();
     const [file, setFile] = useState();
     const [applicationDocumentId, setApplicationDocumentId] = useState('');
@@ -315,6 +316,20 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             return null;
         }
     };
+    
+
+    const getDocument = async (rowId) => {
+        const { data: response } = await GET(
+            `document-management-service/document/${rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setFile(response?.file);
+        setFileMetadata(response?.metaData);
+        setApplicationDocumentId(response?.id);
+        console.log("fffffff",fields)
+    }
+
 
     const handleContinue = async () => {
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
@@ -440,7 +455,21 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         <div className={style.cmeCard}>
                                             <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
                                             <div className={`${style.twoCol} ${style.marginTop}`}>
-                                                <div className={style.cmeHourCard}>
+                                            <Tooltip 
+                                                    title="Click Here to Edit" 
+                                                    arrow 
+                                                    {...(!basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file && { open: false })}
+                                                >
+                                                <div className={`${style.cmeHourCard} ${style.cursorPointer} `} onClick={() => {
+                                                        const fileData = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file;
+                                                        const rowId = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;      
+                                                        if (!fileData) {
+                                                            setShowFileWithFields(false);
+                                                        } else {
+                                                            setShowFileWithFields(true);
+                                                            getDocument(rowId);
+                                                        }
+                                                    }}>
                                                     <div className={style.totalText}>Your Total</div>
                                                     <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
                                                     <div className={style.totalText}>Credits / Hours</div>
@@ -448,6 +477,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                         <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
                                                     )}
                                                 </div>
+                                                </Tooltip>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Required</div>
                                                     <div className={style.hourText}>25</div>
@@ -459,7 +489,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
+                                                <span>
                                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                </span>
                                             )}
                                             <div
                                                 className={`${style.leftAlign} ${style.marginTop10}`}
