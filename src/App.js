@@ -710,7 +710,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')

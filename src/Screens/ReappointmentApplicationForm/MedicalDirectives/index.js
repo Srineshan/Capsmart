@@ -453,14 +453,11 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                             <>
                                 <div className={style.spaceBetween}>
                                     <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
-                                    {/* {(medicalDirectives?.length !== allMedicalDirectives?.completed?.length) && ( */}
-                                    <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
+                                    {/* <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
                                     >
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
-                                    </div>
-
-                                    {/* )} */}
+                                    </div> */}
                                 </div>
                                 <div>
                                     {medicalDirectivesStatus === 'completed' ? (
@@ -509,6 +506,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             handleCheckboxClick={handleCheckboxClick}
                                         />
                                     )}
+                                </div>
+                                <div className={style.spaceBetween}>
+                                    <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}></div>
+                                    <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
+                                         ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
+                                    >
+                                        <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
+                                    </div>
                                 </div>
                                 {(attestClicked || medicalDirectivesStatus === 'completed') && (
                                     <div className={`${style.marginTop10} `}>

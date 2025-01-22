@@ -195,7 +195,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     } else {
       setIsContinueEnabled(false);
     }
-    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') && privilegeChangeYesOrNo !== '' && departmentChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes') {
+    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && departmentChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes') {
       setIsContinueEnabled(true);
     }
     // handleSubmitAcknowledgement();
@@ -734,7 +734,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     if (
       isPrivilegeSetChanging &&
       basicForm?.basicDetails?.credentialingPrivilegeCategory
-        ?.credentialingCategory === "Courtesy Staff with Admitting Privileges"
+        ?.credentialingCategory === "Courtesy Staff With Admitting Privileges"
     ) {
       let data = basicForm;
       data.basicDetails.existingCredentialingPrivilegeCategory = {
@@ -2876,7 +2876,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   />
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                     {privilegeCategories?.map(data => {
-                      let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
+                      let conditionBasedOnRoles = basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') ? ['Active'] : basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Active') ? ['Affiliate', 'Associate', 'Extended Class Nursing'] : [];
                       // let isDisabled = (data?.privilegeCategory?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || conditionBasedOnRoles?.includes(data?.privilegeCategory?.category));
                       return (
                         <div className={`${style.privilegeCategoryChips} ${selectedPrivilegeCategory === data?.privilegeCategory?.id ? style.privilegeCategoryChipsSelected : ''} ${style.cursorPointer}
@@ -2922,7 +2922,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div> */}
                       {privilegeCategories?.filter(
                         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                      )[0]?.privilegeCategory?.category !== "Courtesy Staff with Admitting Privileges" ? (
+                      )[0]?.privilegeCategory?.category !== "Courtesy Staff With Admitting Privileges" ? (
                         <>
                           {/* {staffPrivilege?.map((data, index) => (
                             <>
@@ -3007,7 +3007,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   )}
                   {/* {privilegeCategories?.filter(
                     (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                  )[0]?.privilegeCategory?.category === "Courtesy Staff with Admitting Privileges" && (
+                  )[0]?.privilegeCategory?.category === "Courtesy Staff With Admitting Privileges" && (
                       <>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                           <div>
@@ -3105,8 +3105,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.filter(
                                     (data) =>
                                       ![
-                                        "Courtesy Staff with Admitting Privileges",
-                                        "Courtesy Staff without Admitting Privileges",
+                                        "Courtesy Staff With Admitting Privileges",
+                                        "Courtesy Staff Without Admitting Privileges",
                                       ]?.includes(data?.privilegeCategory?.category)
                                   )
                                   ?.map((data) => data?.privilegeCategory?.id)}
@@ -3114,8 +3114,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.filter(
                                     (data) =>
                                       ![
-                                        "Courtesy Staff with Admitting Privileges",
-                                        "Courtesy Staff without Admitting Privileges",
+                                        "Courtesy Staff With Admitting Privileges",
+                                        "Courtesy Staff Without Admitting Privileges",
                                       ]?.includes(data?.privilegeCategory?.category)
                                   )
                                   ?.map((data) => data?.privilegeCategory?.category)}
@@ -3123,8 +3123,8 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                                   ?.filter(
                                     (data) =>
                                       ![
-                                        "Courtesy Staff with Admitting Privileges",
-                                        "Courtesy Staff without Admitting Privileges",
+                                        "Courtesy Staff With Admitting Privileges",
+                                        "Courtesy Staff Without Admitting Privileges",
                                       ]?.includes(data?.privilegeCategory?.category)
                                   )
                                   ?.map((data) => false)}
@@ -3140,7 +3140,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     )} */}
                   {/* {privilegeCategories?.filter(
                     (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                  )[0]?.category === "Courtesy Staff with Admitting Privileges" ? (
+                  )[0]?.category === "Courtesy Staff With Admitting Privileges" ? (
                     <div
                       className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
@@ -3401,7 +3401,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 </>
               )}
             </>
-            {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff with Admitting Privileges' || 'Courtesy Staff without Admitting Privileges') && (
+            {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && (
               <>
                 {(basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
                   basicForm?.privileges?.obligatedPrivileges?.length === 0) ? (
@@ -3555,7 +3555,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           to?
                         </div>
                         {basicForm?.basicDetails?.credentialingPrivilegeCategory
-                          ?.credentialingCategory === "Courtesy Staff with Admitting Privileges" ? (
+                          ?.credentialingCategory === "Courtesy Staff With Admitting Privileges" ? (
                           <div
                             className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                           >
@@ -3930,7 +3930,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   </div>
                 </div>
                 <div>
-                  {privilegeAtOtherHospitalYesOrNo === "No" && (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy Staff with Admitting Privileges" || basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy Staff without Admitting Privileges") && (
+                  {privilegeAtOtherHospitalYesOrNo === "No" && (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy Staff With Admitting Privileges" || basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === "Courtesy Staff Without Admitting Privileges") && (
                     <div className={`${style.privilegeWarningPart}`}>
                       <div className={style.privilegeWarningText}>
                         You cannot hold courtesy privileges at {title}{" "}

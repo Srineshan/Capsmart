@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-
+import Cookie from 'universal-cookie';
 import style from './index.module.scss'
 import { POST } from '../../Screens/dataSaver';
 import Pencil from "./../../images/pencil.png";
@@ -22,6 +22,15 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory', 'PATIENT_CONCERN_DISCLOSURE', 'PRIVILEGE_STATUS_AT_HOSPITAL'])
     const getIsShowSubmitDialog = (value) => {
         setShowSubmitDialog(value);
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
     }
 
 
@@ -112,7 +121,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                         </>
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
-                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); logout() }}>LOGOUT</div>
+                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
                                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
                                         </div>
                                     )}

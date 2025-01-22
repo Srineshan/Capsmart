@@ -35,8 +35,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [warningFields, setWarningFields] = useState([]);
     const [warningFieldsContact, setWarningFieldsContact] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
-    const [showDemographicInfo, setShowDemographicInfo] = useState(false);
-    const [showContactInfo, setShowContactInfo] = useState(false);
+    const [showDemographicInfo, setShowDemographicInfo] = useState(true);
+    const [showContactInfo, setShowContactInfo] = useState(true);
     const [viewDemographicInfo, setViewDemographicInfo] = useState(false);
     const [viewContactInfo, setViewContactInfo] = useState(false);
     const [isDemographicInfoEdited, setIsDemographicInfoEdited] = useState(false);
@@ -45,8 +45,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [updateFrom, setUpdateFrom] = useState('');
-    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('');
-    const [yesOrNoAddress, setYesOrNoAddress] = useState('');
+    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('YES');
+    const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
     const [showInfo, setShowInfo] = useState(false);
 
 
@@ -61,15 +61,15 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     }, [basicForm, formIndex])
 
-    useEffect(() => {
-        if (formIndex !== undefined) {
-            if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
-                setShowContactInfo(true)
-            }
-            setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) ? 'Yes' : (basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
-            setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
-        }
-    }, [formIndex])
+    // useEffect(() => {
+    //     if (formIndex !== undefined) {
+    //         if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
+    //             setShowContactInfo(true)
+    //         }
+    //         setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) ? 'Yes' : (basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
+    //         setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
+    //     }
+    // }, [formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -337,11 +337,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
-        // if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
-        //     let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
-        //     let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
-        //     missingKeys = temp;
-        // }
+        if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         setWarningFieldsContact(missingKeys)
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
