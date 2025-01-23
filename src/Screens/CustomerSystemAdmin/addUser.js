@@ -196,14 +196,15 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 userType: user?.userType,
                 ssoId: user?.ssoId
             });
+            setDeptTitle(user?.secondaryTitle);
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
-            user?.sites?.sites?.map((data, index) => {
-                if (data?.departmentList?.departments?.length !== 0) {
-                    setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
-                }
-            })
+            // user?.sites?.sites?.map((data, index) => {
+            //     if (data?.departmentList?.departments?.length !== 0) {
+            //         setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            //     }
+            // })
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
@@ -219,12 +220,14 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }
 
     const getUserCreatedDialog = async (value, sendInvite) => {
-        setShowUserCreatedDialog(value)
+
         if (sendInvite === 'OKAY' && createdUserDetails !== undefined) {
             if (createdUserDetails !== undefined) {
-                await POST(`user-management-service/user/${createdUserDetails?.id}/sendInviteEmail`)
+                await POST(`user-management-service/user/${createdUserDetails}/sendInviteEmail`)
+                setShowUserCreatedDialog(value)
             }
         }
+
     }
 
     const handleAccessLevelChange = (value) => {
@@ -269,14 +272,14 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
         // console.log('roles', addUser?.roles);
-        // if (addUser?.firstName === '') {
-        //     ErrorToaster('First Name is Mandatory');
-        //     return;
-        // }
-        // if (!addUser?.email.includes('@') || !addUser?.email.includes('.') || addUser?.email === '') {
-        //     ErrorToaster('Enter a valid mail-id');
-        //     return;
-        // }
+        if (addUser?.firstName === '') {
+            ErrorToaster('First Name is Mandatory');
+            return;
+        }
+        if (!addUser?.email.includes('@') || !addUser?.email.includes('.') || addUser?.email === '') {
+            ErrorToaster('Enter a valid mail-id');
+            return;
+        }
         // if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0 || getFinalSiteValueWithDepartments()?.length === 0) {
         //     ErrorToaster('All Fields are Mandatory');
         //     return;
@@ -302,13 +305,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             },
             ...(!isEdit && {
                 "password": {
-                    "password": "string"
+                    "password": ""
                 }
             }),
             "communication": {
                 "personalEmail": addUser?.email,
                 "mobileNumber": addUser?.phone,
-                "landlineNumber": "string",
+                "landlineNumber": "",
                 "mobileNumberNotApplicable": true
             },
             "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
@@ -331,7 +334,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
+        console.log('is edit', isEdit);
         if (isEdit) {
+            console.log('is edit', isEdit);
+
+
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
                     SuccessToaster('User Modified Successfully');
@@ -703,7 +710,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep1()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >ADD</button>
                                     </div>
                                 </div>
                             </div>
@@ -847,7 +854,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => getManageUserDialog(false)} >SAVE</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >SAVE</button>
                                     </div>
                                 </div>
                             </div>
