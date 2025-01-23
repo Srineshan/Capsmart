@@ -79,7 +79,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(eSignTypeContent + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
-     const [showInfo, setShowInfo] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -665,7 +665,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         </div>
                         <div className={style.tableContainer}>
-                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (     
+                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                                 <TableTwo
                                     tableHeaderValues={[
                                         "",
@@ -684,8 +684,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     tableSortValues={[]}
                                     heading={"You have not yet uploaded any documents."}
                                     onClickFunction={() => { }}
-                                />  
-                            )} 
+                                />
+                            )}
                         </div>
                         <input
                             type="file"
@@ -778,35 +778,38 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> 
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
 
                 <div>
-                {!showInfo && (
+                    {!showInfo && (
                         <div>
                             <div className={`${style.toggleButton} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Required Documents</span>
-                                </div>
-                        </div>        
+                            </div>
+                        </div>
                     )}
-                <div>
-                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
-                    <ApplicationAssistanceCard
-                        user={"Neena Greenly"}
-                        designation={"{Designation}"}
-                        contactNumber={"{Contact Number}"}
-                        email={"{Email}"}
-                    />
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard
+                                    user={"Neena Greenly"}
+                                    designation={"{Designation}"}
+                                    contactNumber={"{Contact Number}"}
+                                    email={"{Email}"}
+                                />
+                            </div>
+                        </div>
+
                     </div>
-                 
-                  </div>
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>

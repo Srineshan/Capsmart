@@ -346,7 +346,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            setShowContactInfo(false);
+            // setShowContactInfo(false);
             getIsSubmitClickedForContact(true);
         }
         console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
@@ -607,7 +607,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 UPDATE
                                             </button>
                                         </div>
-                                        <div>
+                                        {/* <div>
                                             <div
                                                 className={`${style.reappointmentButtonOutlined}`}
                                                 onClick={() => {
@@ -616,7 +616,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             >
                                                 CANCEL
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 ) : (
                                     <div
@@ -680,12 +680,15 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div>
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                             <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
-                            <ApplicationAssistanceCard
-                                user={"Neena Greenly"}
-                                designation={"{Designation}"}
-                                contactNumber={"{Contact Number}"}
-                                email={"{Email}"}
-                            />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard
+                                    user={"Neena Greenly"}
+                                    designation={"{Designation}"}
+                                    contactNumber={"{Contact Number}"}
+                                    email={"{Email}"}
+                                />
+                            </div>
                             <div className={style.marginTop}>
                                 <ApplicationReferenceDocuments />
                             </div>

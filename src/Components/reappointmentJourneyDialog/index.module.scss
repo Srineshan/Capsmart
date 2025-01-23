@@ -57,9 +57,9 @@
     width: 240px;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
     opacity: 1;
@@ -80,9 +80,9 @@
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
     opacity: 1;
 }
 
@@ -109,7 +109,7 @@
 
 .verticalAlignCenter {
     display: flex;
-    width:auto;
+    width: auto;
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -123,7 +123,7 @@
     @media (max-width: 1150px) {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
-    
+
     @media (max-width: 1120px) {
         grid-template-columns: 1fr;
     }
@@ -204,7 +204,7 @@
     text-align: left;
     font: normal normal bold 20px/25px proxima-nova;
     letter-spacing: 0px;
-    color: $statusred;
+    color: $statusred !important;
     opacity: 0.7;
 }
 

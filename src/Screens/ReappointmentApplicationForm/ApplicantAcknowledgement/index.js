@@ -113,7 +113,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data;
+                uploadedFile = response?.data?.file;
             } catch (error) {
                 console.error(error);
                 return null;
@@ -274,27 +274,27 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     </div>
                 </div>
                 <div>
-                {!showInfo && (
+                    {!showInfo && (
                         <div>
                             <div className={`${style.toggleButton} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`}>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Acknowledgement And Agreement</span>
-                                </div>
-                        </div>        
+                            </div>
+                        </div>
                     )}
                     <div>
-                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                    <div className={style.marginTop}>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
-                    </div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -303,7 +303,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                         </div>
                     </div>
-                    
+
                 </div>
                 {showJourneyDialog && (
                     <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />

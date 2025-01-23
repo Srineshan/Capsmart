@@ -23,6 +23,7 @@ import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 import LoadingScreen from '../../Components/LoadingScreen';
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import { dataLoadingGIF } from '../../utils/formatting';
 import ScheduleA from './ScheduleA';
 import ScheduleB from './ScheduleB';
@@ -148,10 +149,20 @@ const ReappointmentApplicationForm = () => {
                 </div>
             )}
             <div className={style.screenBackground}>
-                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${basicForm?.basicDetails?.applicant?.name?.lastName?.toUpperCase()},` : '{Last Name}'} ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${basicForm?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}` : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                 <div className={style.screenPadding}>
                     {StepDisplay()}
                 </div>
+                {/* <div className={`${style.spaceBetween} ${style.paddingForFooter}`}>
+                    <div className={`${style.displayInRow}`}>
+                        <img
+                            src={HapiCare}
+                            alt="footer"
+                            className={`${style.footerIconStyle} ${style.marginLeft10}`}
+                        />
+                    </div>
+                    <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
+                </div> */}
             </div>
         </div>
     )

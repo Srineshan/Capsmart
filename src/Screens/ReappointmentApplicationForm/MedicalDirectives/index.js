@@ -507,15 +507,15 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         />
                                     )}
                                 </div>
-                                <div className={style.spaceBetween}>
+                                {/* <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                     <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}></div>
                                     <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
                                     >
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
                                     </div>
-                                </div>
-                                {(attestClicked || medicalDirectivesStatus === 'completed') && (
+                                </div> */}
+                                {(selectedIds.length === selectedMedicalDirectiveList.length || medicalDirectivesStatus === 'completed') && (
                                     <div className={`${style.marginTop10} `}>
                                         <div>
                                             <div className={`${style.checkGrid}`}>
