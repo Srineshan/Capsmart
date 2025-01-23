@@ -4,7 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss'
 
-const UserCreatedSuccessfullyDialog = ({ isOpen, getIsOpen }) => {
+const UserCreatedSuccessfullyDialog = ({ isOpen, getIsOpen, user }) => {
 
     return (
         <Dialog isOpen={isOpen} onClose={() => getIsOpen(false, 'CANCEL')} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
