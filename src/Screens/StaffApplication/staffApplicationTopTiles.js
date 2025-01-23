@@ -491,6 +491,7 @@ const StaffApplicationTopTiles = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
+  const workModeType = sessionStorage.getItem('workModeType')
 
   const getTitleCounts = async (type) => {
     try {

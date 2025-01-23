@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { fileLoadingURL,dataLoadingGIF } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const ApprovalWithNotesDialog = ({ getIsOpen, isLoading, getActiveApplicationView }) => {
+const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationView}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -45,6 +45,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   }, [applicationType]);
 
 
+  // const onClickViewFunction = (data) => {
+  //   getActiveApplicationView(true);
+  //   sessionStorage.setItem("applicationId", data?.id);
+  //   getIsOpen(false);
+  // };
 
   useEffect(() => {
     setUserDetails();
@@ -90,9 +95,10 @@ const headerValues = [
   const colSortValues = [false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
-      data:  "View" ,
+      data: "View",
       requiredValue: "boolean",
       onClick: onClickViewFunction,
+      // onClick: "",
     },
     // {
     //   data: "Request For Clarification",
@@ -320,4 +326,4 @@ const headerValues = [
   );
 };
 
-export default ApprovalWithNotesDialog;
+export default DepartmentTrackerDialog;

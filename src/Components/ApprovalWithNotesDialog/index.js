@@ -58,6 +58,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
+  const workModeType = sessionStorage.getItem('workModeType')
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
@@ -193,7 +194,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 // Merge previous data with new data
                 return [...(prevData || []), ...(response?.data || [])];
               });
+              console.log("...........11",uploadFileData)
               setIsLoadingImageDocs(false);
+              console.log("...........11",uploadFileData)
               return response?.data;
             } catch (error) {
               ErrorToaster('File Upload Failed');
@@ -202,7 +205,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
               return null;
             }
           };  
-
+ useEffect(() => {
+  console.log("...........11",uploadFileData)
+ }, [uploadFileData])
+ 
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -235,11 +241,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     }
   };
 
-  const checkRequirements = () => {
-    return userRole.includes('Chief Of Staff')
-      ? isChecked.isChecked1
-      : (isChecked.isChecked2);
-  };
+  // const checkRequirements = () => {
+  //   return userRole.includes('Chief Of Staff')
+  //     ? isChecked.isChecked1
+  //     : (isChecked.isChecked2);
+  // };
 
   const handleSignatureClick = () => {
     {
@@ -299,7 +305,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
         title = "Dept. Head / Chief Review"
@@ -308,11 +314,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         title = "Dept. Head / Chief Review"
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("chief of staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
         title = "Chief Of Staff Review";
@@ -418,7 +424,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
-      if (userRole?.includes("Department Head")) {
+      if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
         title = "Dept. Head / Chief Review"
@@ -427,11 +433,11 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         title = "Dept. Head / Chief Review"
       }
     } else if (selectedTab === 'level-3') {
-      if (userRole?.includes("Credentialing Committee")) {
+      if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
-      } else if (userRole?.includes("chief of staff")) {
+      } else if (workModeType === "Chief Of Staff") {
         role = "Chief Of Staff";
         isDelegate = false;
         title = "Chief Of Staff Review";
@@ -542,37 +548,41 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const formatLabel = (template, values) =>
     template.replace(/{(.*?)}/g, (_, key) => values[key] || '');
 
-  const getUserRole = (selectedTab) => {
-    switch (selectedTab) {
-      case "level-1":
-        return "Staff Manager";
-      case "level-2":
-        return "Department Head";
-      case "level-3":
-        if (userRole?.includes("Credentialing Committee")) {
-          return "Credentialing Committee";
-        }
-        if (userRole?.includes("Chief Of Staff")) {
-          return "Chief Of Staff";
-        }
-        return "Credentialing Committee";
-      case "level-4":
-        return "Advisory Committee";
-      case "level-5":
-        return "Board";
-      default:
-        return "";
-    }
-  };
+  // const getUserRole = (selectedTab) => {
+  //   switch (selectedTab) {
+  //     case "level-1":
+  //       return "Staff Manager";
+  //     case "level-2":
+  //       return "Department Head";
+  //     case "level-3":
+  //       if (userRole?.includes("Credentialing Committee")) {
+  //         return "Credentialing Committee";
+  //       }
+  //       if (userRole?.includes("Chief Of Staff")) {
+  //         return "Chief Of Staff";
+  //       }
+  //       return "Credentialing Committee";
+  //     case "level-4":
+  //       return "Advisory Committee";
+  //     case "level-5":
+  //       return "Board";
+  //     default:
+  //       return "";
+  //   }
+  // };
 
-  const userRoleTab = getUserRole(selectedTab);
+  // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
 
-  if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+  // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
+  //   return null;
+  // }
+
+  if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
     return null;
   }
 
@@ -838,14 +848,14 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 </div>
               )}
                 {/* </div> */}
-                {userRole.includes('Chief Of Staff') && (
+                {/* {userRole.includes('Chief Of Staff') && (
                   <CommonCheckBox
                     className={`${style.marginTop}`}
                     label={formatLabel("I as the chief of staff approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
                     checked={isChecked.isChecked1}
                     onChange={handleCheckboxChange('isChecked1')}
                   />
-                )}
+                )} */}
                 {/* {userRole.includes('Credentialing Committee') && ( */}
                 <>
                   {/* <CommonCheckBox
