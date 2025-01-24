@@ -62,6 +62,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
 
   useEffect(() => {
     checkApproveEnabled();
+    console.log("uploadFileData",uploadFileData)
   }, [userNotes, documentTitle, uploadFileData]);
 
   // useEffect(() => {
@@ -114,6 +115,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
               return [...(prevData || []), ...(response?.data || [])];
             });
             setIsLoadingImageDocs(false);
+            console.log("Responseupload:", uploadFileData);
             return response?.data;
           } catch (error) {
             ErrorToaster('File Upload Failed');
@@ -178,10 +180,10 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
 
   const getApplicationNotes = async () => {
 
-    const files = (uploadFileData || []).map((file, index) => ({
-      ...file,              
-      description: documentDesc[index] || "",
-      title: documentTitle[index] || "", 
+    const files = (uploadFileData || []).map((item, index) => ({
+        ...item.file,
+        description: documentDesc[index] || "",
+        title: documentTitle[index] || "",
     }));
    
     let temp = {

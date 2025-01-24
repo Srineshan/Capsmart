@@ -307,6 +307,7 @@ const App = ({ props }) => {
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
   console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
+  const [showDialog, setShowDialog] = useState(false);
 
   // useEffect(() => {
   //   const handleVisibilityChange = () => {
@@ -711,7 +712,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -837,10 +838,14 @@ const App = ({ props }) => {
         console.log('login route')
         let roles = jwt(Auth())?.roles?.split(",");
         console.log("LoginRole" , roles)
-        if (roles.length > 1) {
-          return <WorkModeDialog getIsOpen={true} />;
-        }
-        if (roles.length === 1) {
+        if (roles?.length > 1) {
+          console.log("LoginRole1111" , roles)
+          // return(
+          //   <WorkModeDialog getIsOpen={true} />
+          // ) 
+          setShowDialog(true);
+        } 
+        if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
         }
         let isAppUser =
@@ -865,24 +870,27 @@ const App = ({ props }) => {
           // navigate("/contracts");
           // window.location.reload();
           return <ActiveContracts />;
-        } else if (isEntityLevelAdmin) {
+        }
+         else if (isEntityLevelAdmin) {
           window.location.pathname = "/entitySitePortal";
           // navigate("/entitySitePortal");
           // window.location.reload();
           return <Home />;
-        } else if (isStaffManager) {
+        } 
+        else if (isStaffManager) {
           console.log('login route', roles, isStaffManager)
           window.location.pathname = "/applications";
           // navigate("/applications");
         } else if (isApplicant) {
           window.location.pathname = "/applicant";
           // navigate("/applicant");
-        } else {
-          window.location.pathname = "/entitySitePortal";
-          // navigate("/entitySitePortal");
-          // window.location.reload();
-          return <Home />;
-        }
+        } 
+        // else {
+        //   window.location.pathname = "/entitySitePortal";
+        //   // navigate("/entitySitePortal");
+        //   // window.location.reload();
+        //   return <Home />;
+        // }
       } else {
         window.location.pathname = "/loginPage";
       }
@@ -911,6 +919,7 @@ const App = ({ props }) => {
   }
 
   return (
+    <>
     <BrowserRouter basename="/">
       <Suspense fallback={<Loader />}>
         {/* {accessToken !== undefined && accessToken !== false && ( */}
@@ -1264,6 +1273,8 @@ const App = ({ props }) => {
         </div >
       </Suspense >
     </BrowserRouter >
+    {showDialog && <WorkModeDialog getIsOpen={true} />}
+    </>
   );
 };
 

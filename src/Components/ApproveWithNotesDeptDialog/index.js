@@ -29,6 +29,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [formDetails, setFormDetails] = useState([]);
   const [userSelectRole, setUserSelectRole] = useState([]);
   const [selectedRoleCred, setSelectedRoleCred] = useState('');
+  const [userSelectRoleDept, setUserSelectRoleDept] = useState([]);
+  const [selectedRoleDept, setSelectedRoleDept] = useState('');
   const [userRoleComments, setUserRoleComments] = useState('');
   const [isChecked, setIsChecked] = useState({ isChecked1: false, isChecked2: false, isChecked3: false });
   // const [isApproveEnabled, setIsApproveEnabled] = useState(false);
@@ -52,6 +54,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
+  const [firstNameDept, setFirstNameDept] = useState('');
+  const [lastNameDept, setLastNameDept] = useState('');
+  const [middleNameDept, setMiddleNameDept] = useState('');
   const [uploadFileData, setUploadFileData]= useState('');
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
@@ -87,16 +92,22 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
+    getApplicationUserRoleDept();
     console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
+    console.log("selectedRoleDept" + JSON.stringify(selectedRoleDept))
 }, [])
 
 useEffect(() => {
   console.log('userSelectRole:', userSelectRole);
+  console.log('userSelectRoleDept:', userSelectRoleDept);
   console.log('selectedRoleCred:', selectedRoleCred);
+  console.log('selectedRoleDept:', selectedRoleDept);
 
   // Find the matched role by ID
   const matchedRole = userSelectRole?.find(role => role?.id === selectedRoleCred);
+  const matchedRoleDept = userSelectRoleDept?.find(role => role?.id === selectedRoleDept);
   console.log('matchedRole:', matchedRole);
+  console.log('matchedRoleDept:', matchedRoleDept);
 
   // If a role is found, extract the name properties
   if (matchedRole) {
@@ -109,7 +120,18 @@ useEffect(() => {
     setLastName(lastName || '');
     setMiddleName(middleName || '');;
   }
-}, [userSelectRole, selectedRoleCred]);
+
+  if (matchedRoleDept) {
+    const { firstName, lastName, middleName } = matchedRoleDept?.name || {};
+    console.log('firstNameDept:', firstName);
+    console.log('lastNameDept:', lastName);
+
+    // Set the state with the extracted values
+    setFirstNameDept(firstName || '');
+    setLastNameDept(lastName || '');
+    setMiddleNameDept(middleName || '');
+  }
+}, [userSelectRole,userSelectRoleDept, selectedRoleCred,selectedRoleDept]);
 
 
   const setTodayDate = () => {
@@ -210,14 +232,108 @@ useEffect(() => {
     setName(`${userData?.name?.firstName} ${userData?.name?.lastName}`);
   }
 
+  // const getApplicationUserRole = async () => {
+  //   try {
+  //     const { data: basicFormRole } = await GET(`user/role?role=Credentialing Committee`);
+  //     setUserSelectRole(basicFormRole);
+  //   } catch (error) {
+  //     console.error('Error fetching application:', error);
+  //   }
+  // };
+
   const getApplicationUserRole = async () => {
+    const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
+    const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
+    const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
+    // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
+    const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
     try {
       const { data: basicFormRole } = await GET(`user/role?role=Credentialing Committee`);
-      setUserSelectRole(basicFormRole);
+      
+      const filteredRoles = basicFormRole.filter((user) => {
+        const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
+        console.log("departmentList1111", departmentList);
+  
+        return departmentList.every((department) => {
+          const isDepartmentMatch = department?.id !== applicantDepartmentId; 
+          console.log("matchedId", !isDepartmentMatch);
+          console.log("applicantDepartmentId", applicantDepartmentId);
+  
+          return isDepartmentMatch;
+        });
+      });
+  
+      console.log("filteredRoles", filteredRoles);
+  
+      const ccDataMember = filteredRoles.filter(
+        (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
+      );
+  
+      return setUserSelectRole(ccDataMember);
     } catch (error) {
       console.error('Error fetching application:', error);
     }
   };
+  
+
+  // const getApplicationUserRoleDept = async () => {
+  //   const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
+  //   const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
+  //   const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
+  //   // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
+  //   const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
+  //   try {
+  //     const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
+
+  //     const filteredRoles = basicFormRole.filter(
+  //       (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
+  //     );
+  //     setUserSelectRoleDept(filteredRoles);
+  //   } catch (error) {
+  //     console.error('Error fetching application:', error);
+  //   }
+  // };
+
+  const getApplicationUserRoleDept = async () => {
+    const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
+    const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
+    const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
+    // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
+    const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
+    try {
+      const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
+  
+      const filteredRoles = basicFormRole.filter((user) => {
+        const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
+        console.log("departmentList1111", departmentList);
+        
+        return departmentList.some((department) => {
+          const isDepartmentMatch = department?.id === applicantDepartmentId;
+          console.log("matchedId", isDepartmentMatch);
+          console.log("applicantDepartmentId",applicantDepartmentId)
+  
+          if (!isDepartmentMatch) return false;
+  
+          if (department?.serviceAreaSpecific) {
+            return department?.serviceAreas?.some(
+              (area) => area?.id === applicantSpecialtyId
+            );
+          }
+          return true;
+        });
+      });
+  
+      console.log("filteredRoles", filteredRoles);
+      const deptDataMember = filteredRoles.filter(
+              (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
+            );
+      return setUserSelectRoleDept(deptDataMember);
+  
+    } catch (error) {
+      console.error("Error fetching application user role:", error);
+      return [];
+    }
+  };  
 
   const getApplication = async () => {
     try {
@@ -253,12 +369,13 @@ useEffect(() => {
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [userRoleComments, documentTitle, selectedDateForDept, selectedRoleCred, uploadFileData]);
+  }, [userRoleComments, documentTitle, selectedDateForDept, selectedRoleCred, selectedRoleDept, uploadFileData]);
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
     const hasValidDate = selectedDateForDept !== null ; 
     const hasValidMember = selectedRoleCred !== '';
+    // const hasValidMemberDept = selectedRoleDept !== '';
     
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
@@ -267,10 +384,10 @@ useEffect(() => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
       
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidDate && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidComments && hasValidMember  && hasValidDate && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidDate);
+      setIsApproveEnabled(hasValidComments && hasValidMember  && hasValidDate);
     }
   };
 
@@ -279,11 +396,23 @@ useEffect(() => {
     getIsOpen(false);
   };
 
+  // const onClickApproveMoveFunction = () => {
+  //   handleApplicationApprove(true);
+  //   getApplicationMoveToNext(true);
+  //   // handleApplicationApproveDate(true);
+  // }
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true);
-    getApplicationMoveToNext(true);
-    // handleApplicationApproveDate(true);
-  }
+    handleApplicationApprove(true)
+      .then(() => {
+        return getApplicationMoveToNext(true);
+      })
+      .then(() => {
+        console.log('Application successfully moved to next step.');
+      })
+      .catch((error) => {
+        console.error('Error processing application:', error);
+      });
+  };
 
   const handleApplicationApproveDate = async () => {
     try {
@@ -309,8 +438,8 @@ useEffect(() => {
 
   const handleApplicationApprove = async () => {
             let title;
-            const files = (uploadFileData || []).map((file, index) => ({
-              ...file,              
+            const files = (uploadFileData || []).map((item, index) => ({
+              ...item.file,              
               description: documentDesc[index] || "",
               title: documentTitle[index] || "", 
             }));
@@ -345,7 +474,8 @@ useEffect(() => {
           //   id: selectedRoleCred,
           //   role: "Credentialing Committee"
           // } 
-          userDetail: {
+          userDetail: [
+            {
               id: selectedRoleCred,
               name: {
                 firstName: firstName,
@@ -354,6 +484,16 @@ useEffect(() => {
               },
               role: "Credentialing Committee"
             },
+            {
+              id: selectedRoleDept,
+              name: {
+                firstName: firstNameDept,
+                lastName: lastNameDept,
+                middleName: middleNameDept
+              },
+              role: "Department Head"
+            }
+          ],
           files: files || [],
           upcomingCredCommitteeMeetingDate: selectedDateForDept || ''
         };
@@ -374,8 +514,8 @@ useEffect(() => {
   const getApplicationMoveToNext = async () => {
 
    let title;
-   const files = (uploadFileData || []).map((file, index) => ({
-    ...file,              
+   const files = (uploadFileData || []).map((item, index) => ({
+    ...item.file,              
     description: documentDesc[index] || "",
     title: documentTitle[index] || "", 
   }));
@@ -407,7 +547,8 @@ useEffect(() => {
       },
       title: title,
       approvedDate: new Date().toISOString(),
-      userDetail: {
+      userDetail: [
+        {
         id: selectedRoleCred,
         name: {
           firstName: firstName,
@@ -416,6 +557,16 @@ useEffect(() => {
         },
         role: "Credentialing Committee"
       },
+      {
+        id: selectedRoleDept,
+        name: {
+          firstName: firstNameDept,
+          lastName: lastNameDept,
+          middleName: middleNameDept
+        },
+        role: "Department Head"
+      }
+    ],
        files: files,
        upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
@@ -505,7 +656,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Provide notes, if any, for the Department Head regarding this application (Optional)
+            Provide notes, if any, for the Department Head regarding this application*
             </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -626,11 +777,27 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                   ))}
                 </div>
               )}
-            <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
+            <div className={`${style.threeColumnGrid} ${style.marginTop10}`}>
+            <div>
+              <CommonSelectField
+                    value={selectedRoleDept}
+                    onChange={(e) => setSelectedRoleDept(e.target.value)}
+                    className={style.fullWidth1}
+                    firstOptionLabel={''}
+                    firstOptionValue={''}
+                    // valueList={["HIGH", "NO"]}
+                    // labelList={['High Priority', 'No Priority']}
+                    valueList={userSelectRoleDept?.map(data => data?.id)}
+                    labelList={userSelectRoleDept?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
+                    disabledList={false}
+                    required={false}
+                    label="Assign a Department Head to Review & Approve*"
+                  />
+              </div>
               <div>
               <CommonDateField
                 className={style.fullWidth}
-                onChange={(date) => handleDateChange(date, 'MAC')}
+                onChange={(date) => handleDateChange(date)}
                 open={calendarStart}
                 onOpen={() => setCalendarStart(true)}
                 onClose={() => setCalendarStart(false)}

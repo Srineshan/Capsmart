@@ -226,10 +226,22 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     getIsOpen(false);
   };
 
+  // const onClickApproveMoveFunction = () => {
+  //   handleApplicationApprove(true);
+  //   getApplicationMoveToNext(true);
+  // }
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true);
-    getApplicationMoveToNext(true);
-  }
+    handleApplicationApprove(true)
+      .then(() => {
+        return getApplicationMoveToNext(true);
+      })
+      .then(() => {
+        console.log('Application successfully moved to next step.');
+      })
+      .catch((error) => {
+        console.error('Error processing application:', error);
+      });
+  };
 
    const getLog = async () => {
       const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
@@ -285,8 +297,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
     let role;
     let title;
-    const files = (uploadFileData || []).map((file, index) => ({
-      ...file,              
+    const files = (uploadFileData || []).map((item, index) => ({
+      ...item.file,              
       description: documentDesc[index] || "",
       title: documentTitle[index] || "", 
     }));
@@ -394,8 +406,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
     let role;
     let title;
-    const files = (uploadFileData || []).map((file, index) => ({
-      ...file,              
+    const files = (uploadFileData || []).map((item, index) => ({
+      ...item.file,              
       description: documentDesc[index] || "",
       title: documentTitle[index] || "", 
     }));

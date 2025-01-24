@@ -257,8 +257,8 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const handleApplicationReject = async () => {
     try {
-      const files = (uploadFileData || []).map((file, index) => ({
-        ...file,              
+      const files = (uploadFileData || []).map((item, index) => ({
+        ...item.file,              
         description: documentDesc[index] || "",
         title: documentTitle[index] || "", 
       }));

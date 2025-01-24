@@ -708,7 +708,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${workModeType}`
       );
       setCounts(response?.data);
       getReFetchMetaData(false);

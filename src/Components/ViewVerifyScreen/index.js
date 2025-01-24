@@ -844,6 +844,45 @@ const NewActiveApplication = ({
         console.log(error);
       });
     getPreApplication();
+    getLog();
+  };
+
+  const handleStepsVerifyRevoke = async (formId) => {
+    let role;
+
+    switch (selectedTab) {
+      case 'level-2':
+        role = "Department Head";
+        break;
+      case 'level-3':
+        role = "Chief Of Staff";
+        break;
+      case 'level-4':
+        role = "Advisory Committee";
+        break;
+      case 'level-5':
+        role = "Board";
+        break;
+      case 'level-1':
+        role = "Staff Manager";
+        break;
+      default:
+        role = "";
+    }
+
+    const isDelegate = (workModeType === role) ? false : true;
+    const requestData = isDelegate ? { role: role } : {};
+    await PUT(
+      `application-management-service/application/${applicationId}/form/${formId}/WorkflowAction/revoke?isDelegate=${isDelegate}`, requestData
+    )
+      .then((response) => {
+        console.log("success");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    getPreApplication();
+    getLog();
   };
 
   const handleStaffEsign = async (formId) => {
@@ -1450,7 +1489,9 @@ const NewActiveApplication = ({
                 innerData?.isVerified === true
                   ? (
                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                      onClick={() => handleVerifyClickDocs(array, index)}
+                      >
                         Verified
                       </div>
                     </div>
@@ -3357,9 +3398,10 @@ const NewActiveApplication = ({
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeTranscripts} baseKey={'cmeTranscripts'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
-                  heading={'Information Requirement Alert'}
-                  subHeading={'For this application you are required to provide information on the CME transcript.'}
-                  subHeading2={'You will not be able to submit your application if this is not provided.'} />
+                  heading={'No Documents Uploaded.'}
+                  // subHeading={'For this application you are required to provide information on the CME transcript.'}
+                  // subHeading2={'You will not be able to submit your application if this is not provided.'} 
+                  />
               )}
             { form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
               <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
@@ -3433,9 +3475,10 @@ const NewActiveApplication = ({
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               'cmeCertificates' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeCertificates} baseKey={'cmeCertificates'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
-                  heading={'Information Requirement Alert'}
-                  subHeading={'For this application you are required to provide information on the CME certificates.'}
-                  subHeading2={'You will not be able to submit your application if this is not provided.'} />
+                  heading={'No Documents Uploaded.'}
+                  // subHeading={'For this application you are required to provide information on the CME certificates.'}
+                  // subHeading2={'You will not be able to submit your application if this is not provided.'} 
+                  />
               )}
           </>
         );
@@ -3555,21 +3598,6 @@ const NewActiveApplication = ({
             {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              "contactAddress2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
-                <ApplicationFieldCard
-                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress2}
-                  basicForm={form}
-                  setBasicForm={setForm}
-                  stepPath={`forms[${formIndex}].data`}
-                  gridStyle={style.mailingAddressGrid}
-                  baseKey={"contactAddress2"}
-                  isPOD={true}
-                />
-              )}
-            <CommonDivider />
-            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               "contactAddress3" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard
                   object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress3}
@@ -3578,6 +3606,21 @@ const NewActiveApplication = ({
                   stepPath={`forms[${formIndex}].data`}
                   gridStyle={style.businessMailingAddressGrid}
                   baseKey={"contactAddress3"}
+                  isPOD={true}
+                />
+              )}
+            <CommonDivider />
+            {allFormSchemas?.[index]?.formSchema?.schema !== undefined &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
+              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
+              "contactAddress2" in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
+                <ApplicationFieldCard
+                  object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.contactAddress2}
+                  basicForm={form}
+                  setBasicForm={setForm}
+                  stepPath={`forms[${formIndex}].data`}
+                  gridStyle={style.mailingAddressGrid}
+                  baseKey={"contactAddress2"}
                   isPOD={true}
                 />
               )}
@@ -4337,8 +4380,10 @@ const NewActiveApplication = ({
                         <div className={style.greyDotTextStyle}>
                           Application Payment Status
                         </div>
-                        <div className={style.cursorPointer} onClick={onClickPaymentFunction}> payment ID:{" "}
-                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}>{form?.payment?.receiptId || "-"}</span>
+                        <div className={style.cursorPointer}> Transaction ID:{" "}
+                        <Tooltip title="View Transaction Details" arrow>
+                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}  onClick={onClickPaymentFunction}>{form?.payment?.receiptId || "-"}</span>
+                        </Tooltip>
                       </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
@@ -5384,9 +5429,9 @@ const NewActiveApplication = ({
                                           {logDetails?.logs && Array.isArray(logDetails.logs) && (
                                             (() => {
                                               const isMatch = logDetails.logs.some((log) => {
-                                                if (log.form && log.form.id) {
-                                                  const match = log.form.id === form?.forms[index]?.id;
-                                                  console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                if (log?.form && log?.form?.id) {
+                                                  const match = log?.form?.id === form?.forms[index]?.id;
+                                                  console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id, match);
 
                                                   if (match) {
                                                     let Match = false;
@@ -5436,13 +5481,21 @@ const NewActiveApplication = ({
                                                   {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                     isMatch ? (
                                                       <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                         <Tooltip title="Click To Revert Verification">
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                        onClick={() => {
+                                                          handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                      }}
+                                                        >
                                                           Verified
                                                         </div>
+                                                        </Tooltip>
                                                       </div>
-                                                    ) : (
+                                                    ) :
+                                                     (
                                                       form?.forms[index]?.status !== "APPROVED" ? (
                                                         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                          <Tooltip title="Click To Verify">
                                                           <div
                                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                             onClick={() => {
@@ -5451,50 +5504,72 @@ const NewActiveApplication = ({
                                                           >
                                                             Verify
                                                           </div>
+                                                          </Tooltip>
                                                         </div>
                                                       ) : (
                                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          <Tooltip title="Click To Revert Verification">
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                          onClick={() => {
+                                                            handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                        }}
+                                                          >
                                                             Verified
                                                           </div>
+                                                          </Tooltip>
                                                         </div>
                                                       )
                                                     )
                                                   )}
-                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' && (
-                                                    isMatch ? (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Verified
-                                                        </div>
-                                                      </div>
-                                                    ) : (
+                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                    // isMatch ? (
+                                                    //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    //     <Tooltip title="Click To Revert Verification">
+                                                    //     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                    //      onClick={() => {
+                                                    //       handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                    //   }}
+                                                    //     >
+                                                    //       Verified
+                                                    //     </div>
+                                                    //     </Tooltip>
+                                                    //   </div>
+                                                    // ) : 
+                                                    (
                                                       form?.forms[index]?.status !== "APPROVED" ? (
                                                         <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
+                                                          <Tooltip title="Click To Verify">
                                                           <div
                                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                             onClick={() => {
                                                               if (
                                                                 !(isUploadYourDoc && !allVerified)
-                                                              ) {
+                                                              )
+                                                               {
                                                                 handleStepsVerify(form?.forms[index]?.id);
                                                               }
                                                             }}
                                                           >
                                                             Verify
                                                           </div>
+                                                          </Tooltip>
                                                         </div>
                                                       ) : (
                                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                          <Tooltip title="Click To Revert Verification">
+                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                           onClick={() => {
+                                                            handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                        }}
+                                                          >
                                                             Verified
                                                           </div>
+                                                          </Tooltip>
                                                         </div>
                                                       )
                                                     )
-                                                  )}
-
-                                                </div>
+                                                  ): null}
+                                             </div>
                                               );
                                             })()
                                           )}

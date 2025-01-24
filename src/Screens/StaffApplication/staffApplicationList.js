@@ -818,7 +818,7 @@ const StaffApplicationList = ({
       } else {
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${workModeType}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
@@ -855,7 +855,7 @@ const StaffApplicationList = ({
     }
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
+        `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}&role=${workModeType}`
       );
       console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
@@ -3196,9 +3196,9 @@ const StaffApplicationList = ({
                                     }
                                   ></div>
                                   <div className={style.marginLeft10}>
+                                  {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "} 
                                     {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                       status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
-                                    , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"}
                                   </div>
                                 </div>
                                 <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>

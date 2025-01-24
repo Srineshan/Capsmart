@@ -287,16 +287,29 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     getIsOpen(false);
   };
 
+  // const onClickApproveMoveFunction = () => {
+  //   handleApplicationApprove(true);
+  //   getApplicationMoveToNext(true);
+  // }
+
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true);
-    getApplicationMoveToNext(true);
-  }
+    handleApplicationApprove(true)
+      .then(() => {
+        return getApplicationMoveToNext(true);
+      })
+      .then(() => {
+        console.log('Application successfully moved to next step.');
+      })
+      .catch((error) => {
+        console.error('Error processing application:', error);
+      });
+  };
 
   const handleApplicationApprove = async () => {
     let role;
     let title;
-    const files = (uploadFileData || []).map((file, index) => ({
-      ...file,              
+    const files = (uploadFileData || []).map((item, index) => ({
+      ...item.file,              
       description: documentDesc[index] || "",
       title: documentTitle[index] || "", 
     }));
@@ -414,8 +427,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const getApplicationMoveToNext = async () => {
     let role;
     let title;
-    const files = (uploadFileData || []).map((file, index) => ({
-      ...file,              
+    const files = (uploadFileData || []).map((item, index) => ({
+      ...item.file,            
       description: documentDesc[index] || "",
       title: documentTitle[index] || "", 
     }));
