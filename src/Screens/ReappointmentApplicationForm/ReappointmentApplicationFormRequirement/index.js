@@ -26,6 +26,7 @@ import ReappointmentLandingDialog from '../../../Components/ReappointmentLanding
 import DoItLaterDialog from '../../../Components/DoItLaterDialog';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import HapiCare from "./../../../images/PoweredHapiCare.png";
 
 const ReappointmentApplicationFormRequirement = () => {
     let cookie = new Cookie();
@@ -246,6 +247,19 @@ const ReappointmentApplicationFormRequirement = () => {
                                     </div>
                                 </div>
                             </div>
+                            <div className={style.marginTop10}>
+                <div className={`${style.footerContainer}`}>
+    <img
+        src={HapiCare}
+        alt="footer"
+        className={style.footerIconStyle}
+    />
+    <p className={style.poweredBy}>
+        © {new Date().getFullYear()} HapiCare, Inc
+    </p>
+</div>
+                   
+                </div>
                         </div>
                         {isDoItLaterOpen && (
                             <DoItLaterDialog getIsOpen={getIsDoItLaterOpen} />

@@ -329,3 +329,26 @@
         color: #2C2C2C;
     }
 }
+
+
+.footerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    flex-direction: row; 
+    padding: 0 20px; 
+}
+
+.footerIconStyle {
+    height: 25px;
+    width: 80px;
+    object-fit: contain;
+    margin-right: 5px; 
+}
+
+.poweredBy {
+    text-align: center;
+    font: normal normal normal 14px/20px proxima-nova;
+    color: $primarycolor;
+    margin: 0; 
+}
