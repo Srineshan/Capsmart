@@ -98,7 +98,7 @@ const StaffApplicationList = ({
     sessionStorage.getItem('isLocum') || false
   );
   const [workModeType, setWorkModeType] = useState(() =>
-      sessionStorage.getItem("workModeType") || ''
+    sessionStorage.getItem("workModeType") || ''
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
 
@@ -564,12 +564,12 @@ const StaffApplicationList = ({
     const roles = userData?.roles?.map((data) => data?.roleName) || [];
     setUserRole(roles);
 
-  // Automatically set the work mode type if there's only one role
-  if (roles.length === 1) {
-    const singleRole = roles[0];
-    setWorkModeType(singleRole);
-    sessionStorage.setItem("workModeType", singleRole);
-  }
+    // Automatically set the work mode type if there's only one role
+    if (roles.length === 1) {
+      const singleRole = roles[0];
+      setWorkModeType(singleRole);
+      sessionStorage.setItem("workModeType", singleRole);
+    }
   }
 
   const getReFetchMetaData = (value) => {
@@ -2749,7 +2749,7 @@ const StaffApplicationList = ({
     //   onClick: onClickMoveToNextFunction,
     // },
     { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog , hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head" },
     // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
@@ -2805,7 +2805,7 @@ const StaffApplicationList = ({
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-  ]:[
+  ] : [
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
@@ -3032,47 +3032,64 @@ const StaffApplicationList = ({
   return (
     <>
       {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-      <LoadingScreen/>
-    </div>
-    )}
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
 
- {/* {!isLoadingImage && ( */}
+      {/* {!isLoadingImage && ( */}
 
- <div className={style.margin20}>
-      <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
-        <div>
-          <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
-            <>
-              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                <div
-                  className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
-                >
-                  <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                    <AddCircleOutlineIcon
-                      sx={{ fontSize: 20, color: "white" }}
-                      onClick={() =>
-                        applicationType === "NEW"
-                          ? navigate("/createStaffMemberApplication")
-                          : navigate("/createStaffReapplication")
-                      }
-                    />
-                    <div
-                      className={`${style.displayInRow} ${style.alignCenter}`}
-                      onClick={() =>
-                        applicationType === "NEW"
-                          ? navigate("/createStaffMemberApplication")
-                          : navigate("/createStaffReapplication")
-                      }
-                    >
-                      {applicationType === "REAPPOINTMENT"
-                        ? "Trigger Reappointment"
-                        : "Create New Application"}
+      <div className={style.margin20}>
+        <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
+          <div>
+            <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
+              <>
+                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                  <div
+                    className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                  >
+                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
+                      <AddCircleOutlineIcon
+                        sx={{ fontSize: 20, color: "white" }}
+                        onClick={() =>
+                          applicationType === "NEW"
+                            ? navigate("/createStaffMemberApplication")
+                            : navigate("/createStaffReapplication")
+                        }
+                      />
+                      <div
+                        className={`${style.displayInRow} ${style.alignCenter}`}
+                        onClick={() =>
+                          applicationType === "NEW"
+                            ? navigate("/createStaffMemberApplication")
+                            : navigate("/createStaffReapplication")
+                        }
+                      >
+                        {applicationType === "REAPPOINTMENT"
+                          ? "Trigger Reappointment"
+                          : "Create New Application"}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : null}
-               {/* <div className={`${style.searchContainer}`}>
+                ) : null}
+
+                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                  <div
+                    className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                  >
+                    {(applicationType === "NEW" || applicationType === "REAPPOINTMENT") && (
+                      <div className={`${style.displayInRow} ${style.alignCenter}`}>
+                        <div
+                          className={`${style.displayInRow} ${style.alignCenter}`}
+                          onClick={() => navigate("/historicalData")}
+                        >
+                          Fill Historical Data
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+                {/* <div className={`${style.searchContainer}`}>
                   <SearchOutlinedIcon className={`${style.searchIcon}`} 
                     sx={{
                       fontSize: 25,
@@ -3082,94 +3099,31 @@ const StaffApplicationList = ({
                   <CommonInputField
                     type="text"
                     placeholder="Search By Staff Name"
-                    className={`${style.searchInput}`}
+                    className=`${style.searchInput}`}
                   />
                 </div> */}
 
-                  {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
-                    <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
-                      <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
-                        <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                          Reappointments Status Tracker
-                          {/* (
+                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        Reappointments Status Tracker
+                        {/* (
                           {totalCountDept || 0}) */}
-                          {/* <span
+                        {/* <span
                             className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
                           >
                             {sentCompletion?.totalApplicationsSent || 0}
                           </span> */}
-                        </div>
-                        {/* <div className={`${style.marginLeft10}`}>
+                      </div>
+                      {/* <div className={`${style.marginLeft10}`}>
                           <RemoveIcon
                             sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                             onClick={() => setShowDepartmentCardStatus(!showDepartmentCardStatus)}
                           />
                         </div> */}
-                      </div>
-
-                      <div
-                        style={{
-                          maxHeight: "200px",
-                          overflowY: "auto",
-                          scrollbarWidth: "thin",
-                          scrollbarColor: "gray transparent",
-                        }}
-                      >
-                        <div
-                          className={`${style.displayInCol} ${style.marginTop}`}
-                          onClick={() => onClickDepttrackerDialog()}
-                        >
-                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                            <div className={style.progressbarStyle}>
-                              <div className={style.spaceBetween}>
-                                <div className={style.DepartmentHeadingTextStyle}>
-                                  All Department
-                                  {/* (
-                                  {totalCountDept || 0}) */}
-                                </div>
-                                <KeyboardArrowRightIcon
-                                  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                  ) : null}
 
-              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                <div
-                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-                >
-                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                    <div
-                      className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
-                    >
-                      Sent for Completion (
-                      {sentCompletion?.totalApplicationsSent || 0})
-                      {/* <span
-                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
-                      >
-                        {sentCompletion?.totalApplicationsSent || 0}
-                      </span> */}
-                    </div>
-                    <div className={`${style.marginLeft10} `}>
-                      {!showCardCompletion ? (
-                        <AddIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowCardCompletion(!showCardCompletion)}
-                        />
-                      ) : (
-                        <RemoveIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowCardCompletion(!showCardCompletion)}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {showCardCompletion && (
                     <div
                       style={{
                         maxHeight: "200px",
@@ -3178,153 +3132,216 @@ const StaffApplicationList = ({
                         scrollbarColor: "gray transparent",
                       }}
                     >
-                      {sentCompletion?.applicationsStatus?.map((status, index) => (
-                        <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
-                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                            <div className={style.progressbarStyle}>
-                              <div className={style.spaceBetween}>
-                                <div className={style.statisticsProgress}>
-                                  <div
-                                    className={
-                                      status?.dueStatus === "PastDue"
-                                        ? style.redDotStyle
-                                        : status?.remainingCompletionPercentage === 0
-                                          ? style.greenDotStyle
-                                          : status?.remainingCompletionPercentage === 100
-                                            ? style.greyDotStyle
-                                            : style.yellowDotStyle
-                                    }
-                                  ></div>
-                                  <div className={style.marginLeft10}>
-                                  {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "} 
-                                    {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                      status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
-                                  </div>
-                                </div>
-                                <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
-                                  {status?.createdDate
-                                    ? format(new Date(status?.createdDate), "MMM dd, yyyy")
-                                    : "-"}
-                                </div>
+                      <div
+                        className={`${style.displayInCol} ${style.marginTop}`}
+                        onClick={() => onClickDepttrackerDialog()}
+                      >
+                        <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                          <div className={style.progressbarStyle}>
+                            <div className={style.spaceBetween}>
+                              <div className={style.DepartmentHeadingTextStyle}>
+                                All Department
+                                {/* (
+                                  {totalCountDept || 0}) */}
                               </div>
-                              <ProgressBar
-                                completed={100 - status?.remainingCompletionPercentage}
-                                isLabelVisible={false}
-                                height="5px"
-                                bgColor="#06617A"
-                                baseBgColor="#E9E9F0"
-                                className={style.marginLeft20}
+                              <KeyboardArrowRightIcon
+                                sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                               />
-                              <div className={style.spaceBetween}>
-                                <span className={style.textStyleProgress}>
-                                  {status?.providerType?.serviceProviderType}{" "}
-                                </span>
-                                <p className={style.progressTopText}>
-                                  {status?.dueStatus === "Due"
-                                    ? `Due in ${status.dueDays} Days`
-                                    : `${status?.dueDays} days past due`}
-                                </p>
-                              </div>
                             </div>
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  )}
-                </div>
-              ) : null}
-              {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                <div
-                  className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-                >
-                  <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
-                    <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                      Rejected / Declined{" "}({applicationRejected?.totalRejections})
-                      {/*<span
+                  </div>
+                ) : null}
+
+                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                  <div
+                    className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                  >
+                    <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
+                      <div
+                        className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}
+                      >
+                        Sent for Completion (
+                        {sentCompletion?.totalApplicationsSent || 0})
+                        {/* <span
+                        className={`${style.numberBackground} ${style.marginLeft} ${style.yellowSmallNumberSelected}`}
+                      >
+                        {sentCompletion?.totalApplicationsSent || 0}
+                      </span> */}
+                      </div>
+                      <div className={`${style.marginLeft10} `}>
+                        {!showCardCompletion ? (
+                          <AddIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardCompletion(!showCardCompletion)}
+                          />
+                        ) : (
+                          <RemoveIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardCompletion(!showCardCompletion)}
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    {showCardCompletion && (
+                      <div
+                        style={{
+                          maxHeight: "200px",
+                          overflowY: "auto",
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "gray transparent",
+                        }}
+                      >
+                        {sentCompletion?.applicationsStatus?.map((status, index) => (
+                          <div key={index} className={`${style.displayInCol} ${style.marginTop}`}>
+                            <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                              <div className={style.progressbarStyle}>
+                                <div className={style.spaceBetween}>
+                                  <div className={style.statisticsProgress}>
+                                    <div
+                                      className={
+                                        status?.dueStatus === "PastDue"
+                                          ? style.redDotStyle
+                                          : status?.remainingCompletionPercentage === 0
+                                            ? style.greenDotStyle
+                                            : status?.remainingCompletionPercentage === 100
+                                              ? style.greyDotStyle
+                                              : style.yellowDotStyle
+                                      }
+                                    ></div>
+                                    <div className={style.marginLeft10}>
+                                      {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
+                                      {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
+                                    </div>
+                                  </div>
+                                  <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
+                                    {status?.createdDate
+                                      ? format(new Date(status?.createdDate), "MMM dd, yyyy")
+                                      : "-"}
+                                  </div>
+                                </div>
+                                <ProgressBar
+                                  completed={100 - status?.remainingCompletionPercentage}
+                                  isLabelVisible={false}
+                                  height="5px"
+                                  bgColor="#06617A"
+                                  baseBgColor="#E9E9F0"
+                                  className={style.marginLeft20}
+                                />
+                                <div className={style.spaceBetween}>
+                                  <span className={style.textStyleProgress}>
+                                    {status?.providerType?.serviceProviderType}{" "}
+                                  </span>
+                                  <p className={style.progressTopText}>
+                                    {status?.dueStatus === "Due"
+                                      ? `Due in ${status.dueDays} Days`
+                                      : `${status?.dueDays} days past due`}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                  <div
+                    className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                  >
+                    <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        Rejected / Declined{" "}({applicationRejected?.totalRejections})
+                        {/*<span
       className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
     >
       {applicationRejected?.totalRejections}
     </span> */}
+                      </div>
+                      <div className={`${style.marginLeft10} `}>
+                        {!showCardDetails ? (
+                          <AddIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardDetails(!showCardDetails)}
+                          />
+                        ) : (
+                          <RemoveIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardDetails(!showCardDetails)}
+                          />
+                        )}
+                      </div>
                     </div>
-                    <div className={`${style.marginLeft10} `}>
-                      {!showCardDetails ? (
-                        <AddIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowCardDetails(!showCardDetails)}
-                        />
-                      ) : (
-                        <RemoveIcon
-                          sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                          onClick={() => setShowCardDetails(!showCardDetails)}
-                        />
-                      )}
-                    </div>
-                  </div>
-                  {
-                    showCardDetails && (
-                      <>
-                        <div
-                          className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                          onClick={() => {
-                            handleClick();
-                          }}
-                        >
-                          {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                          Approved But Declined ({applicationRejected?.applicationsRejected})
-                        </div>
-                        <div
-                          className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                          onClick={() => {
-                            setShowApplicationApprovedDeclineDialog(true);
-                          }}
-                        >
-                          Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
-                          {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
-                        </div>
-                      </>
-                    )
-                  }
-                </div >
-              ) : null}
-            </>
-          </SideBar >
+                    {
+                      showCardDetails && (
+                        <>
+                          <div
+                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                            onClick={() => {
+                              handleClick();
+                            }}
+                          >
+                            {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                            Approved But Declined ({applicationRejected?.applicationsRejected})
+                          </div>
+                          <div
+                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                            onClick={() => {
+                              setShowApplicationApprovedDeclineDialog(true);
+                            }}
+                          >
+                            Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                            {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                          </div>
+                        </>
+                      )
+                    }
+                  </div >
+                ) : null}
+              </>
+            </SideBar >
 
-        </div >
-        <div>
-          {/* <div
+          </div >
+          <div>
+            {/* <div
             className={`${style.displayInRow} ${style.spaceBetween} ${style.headingForStaffs} ${style.bottomTextStyle}`}
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div> */}
-          <div>
-            <StaffApplicationTopTiles
-              getSelectedTab={getSelectedTab}
-              selectedTab={selectedTab}
-              applicationCreationType={applicationCreationType}
-              getApplicationCreationType={getApplicationCreationType}
-            />
-          </div>
-          <div className={`${style.borderStyleTiles}`}></div>
-          {/* <CommonDivider /> */}
-          {/* <CommonDivider /> */}
-          {/* <StaffApplicationTopTiles
+            <div>
+              <StaffApplicationTopTiles
+                getSelectedTab={getSelectedTab}
+                selectedTab={selectedTab}
+                applicationCreationType={applicationCreationType}
+                getApplicationCreationType={getApplicationCreationType}
+              />
+            </div>
+            <div className={`${style.borderStyleTiles}`}></div>
+            {/* <CommonDivider /> */}
+            {/* <CommonDivider /> */}
+            {/* <StaffApplicationTopTiles
               getSelectedTab={getSelectedTab}
               selectedTab={selectedTab}
             /> */}
-          <div
-            className={`${style.spaceBetween} ${style.marginTop10}`}
-          >
-            <StaffApplicationTiles
-              getSelectedTab={getSelectedTab}
-              selectedTab={selectedTab}
-              reFetchMetaData={reFetchMetaData}
-              getReFetchMetadata={getReFetchMetaData}
-            // applicationCreationType={applicationCreationType}
-            // getApplicationCreationType = {getApplicationCreationType}
-            />
+            <div
+              className={`${style.spaceBetween} ${style.marginTop10}`}
+            >
+              <StaffApplicationTiles
+                getSelectedTab={getSelectedTab}
+                selectedTab={selectedTab}
+                reFetchMetaData={reFetchMetaData}
+                getReFetchMetadata={getReFetchMetaData}
+              // applicationCreationType={applicationCreationType}
+              // getApplicationCreationType = {getApplicationCreationType}
+              />
 
-            <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-              {/* <div
+              <div className={`${style.spaceBetween} ${style.marginLeft} `}>
+                {/* <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight20}`}
               >
@@ -3335,102 +3352,102 @@ const StaffApplicationList = ({
                   }}
                 />
               </div> */}
-              <div
-                className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
-              >
-                <PrintOutlinedIcon
-                  sx={{
-                    fontSize: isPrintClicked ? 20 : 25,
-                    color: isPrintClicked ? "#fff" : "#06617A",
-                  }}
-                  onClick={handlePrintClick}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className={`${style.bigCardStyle}`}>
-            {isLoading ? (
-              <div
-                className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-              >
-                <CircularProgress sx={{ color: "#06617A" }} />
-              </div>
-            ) : (
-              <div ref={componentRef} className={`${style.pagebreak}`}>
                 <div
-                  className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
-                  ref={PDFRef}
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight}`}
                 >
-                  <TableTwo
-                    tableHeaderValues={tableHeaderValues}
-                    tableDataValues={tableDataValues}
-                    tableData={tableData}
-                    gridStyle={gridStyle}
-                    actions={actions}
-                    scrollStyle={style.contractScrollStyle}
-                    tableSortValues={tableSortValues}
-                    heading={"There are no Record for you to manage"}
-                    onClickFunction={() => { }}
-                    getHandleSort={getHandleSort}
-                    sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                    getSelectedPage={getSelectedPage}
-                    totalCount={totalCount}
-                    page={page}
-                    checkedIds={checkedIds}
-                    // Optional: pass the checkbox click handler if TableTwo needs it
-                    handleCheckboxClick={handleCheckboxClick}
+                  <PrintOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#06617A",
+                    }}
+                    onClick={handlePrintClick}
                   />
                 </div>
               </div>
-            )}
+            </div>
+
+            <div className={`${style.bigCardStyle}`}>
+              {isLoading ? (
+                <div
+                  className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                >
+                  <CircularProgress sx={{ color: "#06617A" }} />
+                </div>
+              ) : (
+                <div ref={componentRef} className={`${style.pagebreak}`}>
+                  <div
+                    className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                    ref={PDFRef}
+                  >
+                    <TableTwo
+                      tableHeaderValues={tableHeaderValues}
+                      tableDataValues={tableDataValues}
+                      tableData={tableData}
+                      gridStyle={gridStyle}
+                      actions={actions}
+                      scrollStyle={style.contractScrollStyle}
+                      tableSortValues={tableSortValues}
+                      heading={"There are no Record for you to manage"}
+                      onClickFunction={() => { }}
+                      getHandleSort={getHandleSort}
+                      sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                      getSelectedPage={getSelectedPage}
+                      totalCount={totalCount}
+                      page={page}
+                      checkedIds={checkedIds}
+                      // Optional: pass the checkbox click handler if TableTwo needs it
+                      handleCheckboxClick={handleCheckboxClick}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      </div >
-      <div className={style.spaceBetween}>
-        <div className={`${style.displayInRow}`}>
-          {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
+        </div >
+        <div className={style.spaceBetween}>
+          <div className={`${style.displayInRow}`}>
+            {/* <p className={`${style.poweredBy} ${style.marginTop10}`}>
             Powered by
           </p> */}
-          <img
-            src={HapiCare}
-            alt="footer"
-            className={`${style.footerIconStyle} ${style.marginLeft10}`}
-          />
+            <img
+              src={HapiCare}
+              alt="footer"
+              className={`${style.footerIconStyle} ${style.marginLeft10}`}
+            />
+          </div>
+          <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
         </div>
-        <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
-      </div>
 
 
-      {
-        showApplicationRejectionDialog && (
-          <ApplicationRejection
-            getApplicationRejectionDialog={getApplicationRejectionDialog}
-            rejectionListData={rejectionListData}
-            // rejectedCount={applicationRejected?.appointmentRequestsDenied}
-            declineCount={applicationRejected?.applicationsRejected}
-          />
-        )
-      }
-      {
-        showApplicationApprovedDeclineDialog && (
-          <ApplicationApprovedDeclined
-            getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
-            declineListData={declineListData}
-            // declineCount={applicationRejected?.applicationsRejected}
-            rejectedCount={applicationRejected?.appointmentRequestsDenied}
-          />
-        )
-      }
-      {
-        showCheckListDialog && (
-          <CheckListDialog getCheckListDialog={getCheckListDialog} />
-        )
-      }
-    </div >
+        {
+          showApplicationRejectionDialog && (
+            <ApplicationRejection
+              getApplicationRejectionDialog={getApplicationRejectionDialog}
+              rejectionListData={rejectionListData}
+              // rejectedCount={applicationRejected?.appointmentRequestsDenied}
+              declineCount={applicationRejected?.applicationsRejected}
+            />
+          )
+        }
+        {
+          showApplicationApprovedDeclineDialog && (
+            <ApplicationApprovedDeclined
+              getApplicationApprovedDeclineDialog={getApplicationApprovedDeclineDialog}
+              declineListData={declineListData}
+              // declineCount={applicationRejected?.applicationsRejected}
+              rejectedCount={applicationRejected?.appointmentRequestsDenied}
+            />
+          )
+        }
+        {
+          showCheckListDialog && (
+            <CheckListDialog getCheckListDialog={getCheckListDialog} />
+          )
+        }
+      </div >
 
-     {/* )} */}
+      {/* )} */}
     </>
   );
 };
