@@ -11,7 +11,7 @@ import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 
-const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
+const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicantName }) => {
   const [state, setState] = useState({
     number: '',
     expiry: '',
@@ -166,7 +166,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     console.log('payment')
     console.log(file, file?.name, 'Test')
     let fileName = {
-      "fileName": 'payment.pdf'
+      "fileName": `${applicantName}_Reappointment_Fee_${format(new Date(), 'dd_MM_yyyy')}.pdf`
     };
     const formData = new FormData();
 
