@@ -24,6 +24,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import axios from "axios";
 
 import style from "./index.module.scss";
+import { useDescope } from "@descope/react-sdk";
+// import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
   popover: {
@@ -36,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { logout } = useDescope();
   const [showMenu, setShowMenu] = useState(false);
   const [screenCapture, setScreenCapture] = useState("");
   const [showToolsMenu, setShowToolsMenu] = useState(false);
@@ -194,85 +197,65 @@ const Navbar = () => {
     window.location.href = `https://acme-hospital.doxonify.ca/logout`;
   };
 
-  const logout = async () => {
-    const cookies = new Cookies();
-    let token = cookies.get("user");
-    let entityId = cookies.get("entityId");
-    // await fetch(`https://acme-hospital.doxonify.ca/logout`, {
-    //   // redirect: 'manual',
-    //   method: 'PUT',
-    //   body: JSON.stringify({}),
-    // }).then(response => {
-    //   console.log('response', response.headers, response.status, response);
-    //   const logouturi = response.headers.get('location') || '';
-    //   console.log('logouturi', logouturi)
-    //   window.location.href = logouturi;
-    // })
+  // const Logout = async () => {
+  //   logout()
+  //     .then(() => {
+  //       console.log("User logged out successfully");
+  //       window.location.href = "/login"; // Redirect to login or home page
+  //     })
+  //     .catch((error) => {
+  //       console.error("Failed to logout:", error);
+  //     });
+  // };
 
-    // let data = JSON.stringify({});
-    // await axios(`https://acme-hospital.doxonify.ca/logout`, {
-    //   method: 'PUT',
-    //   data,
-    // }).then(response => {
-    //   const logouturi = response.headers.get('location') || '';
-    //   cookies.remove("user", { path: '/' });
-    //   cookies.remove("entityId", { path: '/' });
-    //   if (logouturi) {
-    //     window.location.href = logouturi;
-    //   }
-    // })
+  // const logout = async () => {
+  //   const cookies = new Cookies();
+  //   let token = cookies.get("user");
+  //   let entityId = cookies.get("entityId");
 
-    // window.location.href = respose.headers?.get('Location')
-    // axios.post(`https://acme-hospital.doxonify.ca/logout`, {
-    //   // Add parameters here
-    //   // transformRequest: (data, headers) => {
-    //   //   delete headers.common['X-XSRF-TOKEN'];
-    //   //   return data;
-    //   // }
-    // })
-    //   .then((response) => {
-    //     const logouturi = response.headers.get('location') || '';
-    //     cookies.remove("user", { path: '/' });
-    //     cookies.remove("entityId", { path: '/' });
-    //     if (logouturi) {
-    //       window.location.href = logouturi;
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   })
-    await PUT(`logout`, null)
-      .then((response) => {
-        const logouturi = response.headers["location"] || "";
-        cookies.remove("user", { path: "/" });
-        cookies.remove("entityId", { path: "/" });
-        if (logouturi) {
-          window.location.href = logouturi;
-        }
-      })
-      .catch((error) => {
-        ErrorToaster("Unexpected Error");
-      });
-  };
+  //   await PUT(`logout`, null)
+  //     .then((response) => {
+  //       const logouturi = response.headers["location"] || "";
+  //       cookies.remove("user", { path: "/" });
+  //       cookies.remove("entityId", { path: "/" });
+  //       if (logouturi) {
+  //         window.location.href = logouturi;
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       ErrorToaster("Unexpected Error");
+  //     });
+  // };
 
   useEffect(() => {
     var cookie = new Cookies();
     var accessToken = cookie.get("user");
-    let roles = jwt(accessToken)?.roles?.split(",");
-    // console.log(roles);
-    setCurrentUserRoles(roles);
-    setIsContractManager(roles.includes("Contract Manager") ? true : false);
-    setIsEntityLevelAdmin(
-      roles.includes("Super Sys Admin") ||
-        roles.includes("Entity Sys Admin") ||
-        roles.includes("Entity Sys User") ||
-        roles.includes("Distributor Admin")
-        ? true
-        : false
-    );
+    if (accessToken !== undefined) {
+      let roles = jwt(accessToken)?.roles?.split(",");
+      // console.log(roles);
+      setCurrentUserRoles(roles);
+      setIsContractManager(roles?.includes("Contract Manager") ? true : false);
+      setIsEntityLevelAdmin(
+        roles?.includes("Super Sys Admin") ||
+          roles?.includes("Entity Sys Admin") ||
+          roles?.includes("Entity Sys User") ||
+          roles?.includes("Distributor Admin")
+          ? true
+          : false
+      );
+    }
   }, []);
 
   const classes = useStyles();
+
+  const handleLogout = () => {
+    var cookies = new Cookies();
+    cookies.remove("user", { path: "/" });
+    cookies.remove("entityId", { path: "/" });
+    cookies.remove("authorization", { path: "/" });
+    logout()
+    navigate('/')
+  }
 
   const handleScreenshot = () => {
     setShowToolsMenu(false);
@@ -281,7 +264,7 @@ const Navbar = () => {
       setScreenCapture(base64image);
       sessionStorage.setItem("screenCapture", base64image);
       // sessionStorage.setItem("selectedOption", "OPEN FEEDBACK TICKETS");
-      window.location.href = "/app/help";
+      window.location.href = "/help";
     });
   };
   // console.log('currentUserRoles', currentUserRoles);
@@ -295,22 +278,22 @@ const Navbar = () => {
   let homeLink = currentUserRoles?.includes("Contract Manager")
     ? "/contracts"
     : isFlutterRoles?.length !== 0
-    ? `/home/#/dashboardRoute`
-    : currentUserRoles?.includes("Super Sys Admin")
-    ? "/partnerPortal"
-    : currentUserRoles?.includes("Entity Sys Admin")
-    ? "/entitySitePortal"
-    : "/entitySitePortal";
+      ? `/home/#/dashboardRoute`
+      : currentUserRoles?.includes("Super Sys Admin")
+        ? "/partnerPortal"
+        : currentUserRoles?.includes("Entity Sys Admin")
+          ? "/entitySitePortal"
+          : "/entitySitePortal";
   const homeRoute = () => {
     let homeLink = currentUserRoles?.includes("Contract Manager")
       ? "/contracts"
       : isFlutterRoles?.length !== 0
-      ? `/`
-      : currentUserRoles?.includes("Super Sys Admin")
-      ? "/partnerPortal"
-      : currentUserRoles?.includes("Entity Sys Admin")
-      ? "/entitySitePortal"
-      : "/entitySitePortal";
+        ? `/`
+        : currentUserRoles?.includes("Super Sys Admin")
+          ? "/partnerPortal"
+          : currentUserRoles?.includes("Entity Sys Admin")
+            ? "/entitySitePortal"
+            : "/entitySitePortal";
     console.log(homeLink);
     if (homeLink === "/") {
       window.location.href = "/home/#/dashboardRoute";
@@ -364,31 +347,28 @@ const Navbar = () => {
           } */}
           <Link to={"/applications"} className={style.noFontStyle}>
             <div
-              className={`${style.menuStyle} ${
-                window.location.pathname.includes("/applications") &&
+              className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
                 style.activeMenuColor
-              }`}
+                }`}
             >
               <p>STAFF APPLICATIONS</p>
             </div>
           </Link>
           <Link to={"/activeStaff"} className={style.noFontStyle}>
             <div
-             onClick={handlePrivilegedStaffClick}
-              className={`${style.menuStyle} ${
-                window.location.pathname.includes("/activeStaff") &&
+              onClick={handlePrivilegedStaffClick}
+              className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") &&
                 style.activeMenuColor
-              }`}
+                }`}
             >
               <p>PRIVILEGED STAFF</p>
             </div>
           </Link>
 
           <div
-            className={`${style.menuStyle} ${
-              window.location.pathname.includes("/inactiveStaff") &&
+            className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") &&
               style.activeMenuColor
-            }`}
+              }`}
           >
             <p>INACTIVE STAFF</p>
           </div>
@@ -464,22 +444,21 @@ const Navbar = () => {
             isPaymentsAvailable ||
             isContractManagementAvailable ||
             isContractComplianceAvailable) && (
-            <div>
-              <div
-                className={`${style.menuStyle} ${
-                  (window.location.pathname.includes("/reports") ||
+              <div>
+                <div
+                  className={`${style.menuStyle} ${(window.location.pathname.includes("/reports") ||
                     window.location.pathname.includes("/reportTypeOverview") ||
                     window.location.pathname.includes("/myReport")) &&
-                  style.activeMenuColor
-                }`}
-                ref={popoverAnchor}
-                onMouseEnter={(e) => handleClick(e)}
-                onMouseLeave={() => handleClose()}
-                aria-owns={open ? "mouse-over-popover" : undefined}
-                aria-haspopup="true"
-              >
-                <p>REPORTS</p>
-                {/* <Popover
+                    style.activeMenuColor
+                    }`}
+                  ref={popoverAnchor}
+                  onMouseEnter={(e) => handleClick(e)}
+                  onMouseLeave={() => handleClose()}
+                  aria-owns={open ? "mouse-over-popover" : undefined}
+                  aria-haspopup="true"
+                >
+                  <p>REPORTS</p>
+                  {/* <Popover
                   id={"mouse-over-popover"}
                   open={open}
                   anchorEl={popoverAnchor.current}
@@ -496,11 +475,11 @@ const Navbar = () => {
                     onMouseLeave: handleClose,
                   }}
                 > */}
-                {/* <div
+                  {/* <div
                     className={style.optionsCardStyle}
                     onClick={() => handleClose()}
                   > */}
-                {/* {isActivityServiceLogAvailable && (
+                  {/* {isActivityServiceLogAvailable && (
                       <Link
                         to={"/reports/servicesOrActivities"}
                         className={style.noFontStyle}
@@ -510,7 +489,7 @@ const Navbar = () => {
                         </div>
                       </Link>
                     )} */}
-                {/* {isContractManagementAvailable && (
+                  {/* {isContractManagementAvailable && (
                       <Link
                         to={"/reports/contractManagement"}
                         className={style.noFontStyle}
@@ -518,7 +497,7 @@ const Navbar = () => {
                         <div className={style.options}>Contract Management</div>
                       </Link>
                     )} */}
-                {/* {isTimesheetsAvailable && (
+                  {/* {isTimesheetsAvailable && (
                       <Link
                         to={"/reports/timesheets"}
                         className={style.noFontStyle}
@@ -526,13 +505,13 @@ const Navbar = () => {
                         <div className={style.options}>Timesheets</div>
                       </Link>
                     )} */}
-                {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
+                  {/* <Link to={'/reports/reviewsAndApprovals'} className={style.noFontStyle}>
                                     <div className={style.options}>Reviews & Approvals</div>
                                 </Link>
                                 <Link to={'/reports/taskManagement'} className={style.noFontStyle}>
                                     <div className={style.options}>Task Management</div>
                                 </Link> */}
-                {/* {isPaymentsAvailable && (
+                  {/* {isPaymentsAvailable && (
                       <Link
                         to={"/reports/payments"}
                         className={style.noFontStyle}
@@ -541,7 +520,7 @@ const Navbar = () => {
                       </Link>
                     )} */}
 
-                {/* {isContractComplianceAvailable && (
+                  {/* {isContractComplianceAvailable && (
                       <Link
                         to={"/reports/contractCompliance"}
                         className={style.noFontStyle}
@@ -549,27 +528,26 @@ const Navbar = () => {
                         <div className={style.options}>Contract Compliance</div>
                       </Link>
                     )} */}
-                {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
+                  {/* <Link to={'/reports/contractPerformance'} className={style.noFontStyle}>
                                     <div className={style.options}>Contract Performance</div>
                                 </Link>
                                 <Link to={'/reports/systemAdministration'} className={style.noFontStyle}>
                                     <div className={style.options}>System Administration</div>
                                 </Link> */}
-                {/* </div> */}
-                {/* </Popover> */}
+                  {/* </div> */}
+                  {/* </Popover> */}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           {isEntityLevelAdmin && (
             <div>
               <div
-                className={`${style.menuStyle} ${
-                  (window.location.pathname === "/user" ||
-                    window.location.pathname === "/welcome" ||
-                    window.location.pathname === "/partnerPortal") &&
+                className={`${style.menuStyle} ${(window.location.pathname === "/user" ||
+                  window.location.pathname === "/welcome" ||
+                  window.location.pathname === "/partnerPortal") &&
                   style.activeMenuColor
-                }`}
+                  }`}
                 ref={popoverAnchorTools}
                 onMouseEnter={(e) => handleClickTools(e)}
                 onMouseLeave={() => handleCloseTools()}
@@ -672,11 +650,11 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div  className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
-          <div  className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>    
+          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
+          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
-            onClick={logout}
+            onClick={() => handleLogout()}
           >
             <div className={`${style.logOutTextStyle}`}>Logout</div>
           </div>
@@ -686,7 +664,7 @@ const Navbar = () => {
             className={style.logoutIcons}
             onClick={logout}
           /> */}
-          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`}  onClick={logout} style={{ fontSize: 40 }}/> 
+          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 40 }} />
         </div>
       </div>
     </div>

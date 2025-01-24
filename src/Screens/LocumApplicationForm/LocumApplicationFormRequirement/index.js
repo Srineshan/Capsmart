@@ -11,7 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import DaysToComplete from '../../../Components/DaysToCompleteCard';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSession } from '@descope/react-sdk';
+import { useDescope, useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, POST } from '../../dataSaver';
@@ -20,7 +20,6 @@ import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
-import { logout } from '../../../utils/auth';
 import { Dialog, Classes } from "@blueprintjs/core";
 import ESignature from "../../../Components/ESignature";
 import CryptoJS from "crypto-js";
@@ -44,6 +43,7 @@ const LocumApplicationFormRequirement = () => {
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId } = useParams();
+    const { logout } = useDescope();
     const { isAuthenticated, isSessionLoading } = useSession();
     const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(true);
@@ -69,14 +69,14 @@ const LocumApplicationFormRequirement = () => {
 
     console.log(basicForm)
 
-    useEffect(() => {
-        const hasReloaded = sessionStorage.getItem('hasReloaded');
+    // useEffect(() => {
+    //     const hasReloaded = sessionStorage.getItem('hasReloaded');
 
-        if (!hasReloaded) {
-            sessionStorage.setItem('hasReloaded', 'true');
-            window.location.reload();
-        }
-    }, []);
+    //     if (!hasReloaded) {
+    //         sessionStorage.setItem('hasReloaded', 'true');
+    //         window.location.reload();
+    //     }
+    // }, []);
 
     useEffect(() => {
         // getBasicForm();

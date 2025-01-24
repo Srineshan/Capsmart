@@ -22,7 +22,7 @@
     grid-gap: 20px;
     position: relative;
 
-    @media (max-width: 820px) {
+    @media (max-width: 768px) {
         grid-template-columns: 1fr;
     }
 }
@@ -50,16 +50,9 @@
     }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 768px) {
     .stickyContainer {
-        position: sticky;
-        bottom: 0;
-        left: auto;
-        right: auto;
-        width: auto;
-        padding: 20px 20px 20px 20px;
-        margin: 0 auto;
-        box-sizing: border-box;
+        display: none;
     }
 }
 
@@ -154,6 +147,101 @@
     cursor: not-allowed !important;
 }
 
+.toggleButton {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .toggleButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        color: white;
+        padding: 10px 5px;
+        border-radius: 0 0 0 12px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .infoContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        padding: 20px;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        width: 40%;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .infoContainer.show {
+        display: block;
+    }
+}
+
+.closeIcon {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
+}
+
+.blurredBackground {
+    pointer-events: none;
+}
+
+.bgdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    z-index: 999;
+}
+
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -161,9 +249,14 @@
 }
 
 .threeColForButton {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 70px;
+    display: none;
+
+    @media (max-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        float: right;
+        gap: 10px;
+    }
 }
 
 .displayInRow {
@@ -340,7 +433,7 @@
 
 .restrictedPrivilegeGrid {
     display: grid;
-    grid-template-columns: 5% 78% 15%;
+    grid-template-columns: 5% 75% 18%;
     gap: 1%;
 }
 
@@ -536,7 +629,7 @@
 
 .hospitalPrivilegeSetGrid {
     display: grid;
-    grid-template-columns: 20% 73% 5%;
+    grid-template-columns: 43% 50% 5%;
     gap: 1%;
 }
 
@@ -667,6 +760,7 @@
 .privilegeConfirmationGrid {
     display: grid;
     grid-template-columns: 3% 84% 10%;
+    padding: 10px;
     gap: 1%;
 }
 
@@ -712,7 +806,7 @@
 
 .eSignDialog {
     height: 75%;
-    width: 75% !important;
+    width: 80% !important;
 }
 
 .fullWidth {
@@ -807,4 +901,8 @@
 .disabledButton {
     cursor: not-allowed !important;
     opacity: 0.4;
+}
+
+.alignLeft {
+    text-align: left;
 }

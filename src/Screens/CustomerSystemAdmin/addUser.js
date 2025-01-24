@@ -196,14 +196,15 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                 userType: user?.userType,
                 ssoId: user?.ssoId
             });
+            setDeptTitle(user?.secondaryTitle);
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
-            user?.sites?.sites?.map((data, index) => {
-                if (data?.departmentList?.departments?.length !== 0) {
-                    setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
-                }
-            })
+            // user?.sites?.sites?.map((data, index) => {
+            //     if (data?.departmentList?.departments?.length !== 0) {
+            //         setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
+            //     }
+            // })
             setSuffix(user?.name?.suffix);
             let rolesToShow = [];
             user?.roles?.map(data => {
@@ -219,12 +220,14 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }
 
     const getUserCreatedDialog = async (value, sendInvite) => {
-        setShowUserCreatedDialog(value)
+
         if (sendInvite === 'OKAY' && createdUserDetails !== undefined) {
             if (createdUserDetails !== undefined) {
-                await POST(`user-management-service/user/${createdUserDetails?.id}/sendInviteEmail`)
+                await POST(`user-management-service/user/${createdUserDetails}/sendInviteEmail`)
+                setShowUserCreatedDialog(value)
             }
         }
+
     }
 
     const handleAccessLevelChange = (value) => {
@@ -253,7 +256,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             let deptData = [];
             site?.departmentList?.departments?.filter(dept => selectedDepartments?.includes(dept?.id))?.map(dept => {
                 dept.departmentResponsibility = deptTitle;
-                dept.serviceAreas = selectedSpecialtys?.includes(dept?.serviceAreas?.id)
+                dept.serviceAreas = dept?.serviceAreas?.filter(item1 => selectedSpecialtys?.some(item2 => item1?.id === item2))
                 deptData.push(dept);
             });
             site.departmentList.departments = deptData;
@@ -264,11 +267,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         return siteData;
     }
 
-    console.log('site title', siteTitle, deptTitle, addUser, sites, selectedDepartments, selectedSpecialtys, getFinalSiteValueWithDepartments());
+    console.log('site title', siteTitle, deptTitle, addUser, sites, selectedDepartments, selectedSpecialtys);
 
     console.log(accessLevelNeeded, selectedAccessLevelToShow)
     const submitUserDetails = async () => {
-        console.log('roles', addUser?.roles);
+        // console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
             ErrorToaster('First Name is Mandatory');
             return;
@@ -277,14 +280,14 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ErrorToaster('Enter a valid mail-id');
             return;
         }
-        if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0 || getFinalSiteValueWithDepartments()?.length === 0) {
-            ErrorToaster('All Fields are Mandatory');
-            return;
-        }
-        if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
-            ErrorToaster('Access Level is Mandatory');
-            return;
-        }
+        // if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0 || getFinalSiteValueWithDepartments()?.length === 0) {
+        //     ErrorToaster('All Fields are Mandatory');
+        //     return;
+        // }
+        // if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
+        //     ErrorToaster('Access Level is Mandatory');
+        //     return;
+        // }
 
         const user = {
             ...(isEdit && { 'id': userId }),
@@ -302,13 +305,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             },
             ...(!isEdit && {
                 "password": {
-                    "password": "string"
+                    "password": ""
                 }
             }),
             "communication": {
                 "personalEmail": addUser?.email,
                 "mobileNumber": addUser?.phone,
-                "landlineNumber": "string",
+                "landlineNumber": "",
                 "mobileNumberNotApplicable": true
             },
             "accessLevel": (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "") ? "USER" : selectedAccessLevelToShow,
@@ -331,7 +334,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             ...(isEdit && { "serviceProviderType": userDataById?.serviceProviderType }),
             ...(isEdit && { "npin": userDataById?.npin }),
         }
+        console.log('is edit', isEdit);
         if (isEdit) {
+            console.log('is edit', isEdit);
+
+
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
                     SuccessToaster('User Modified Successfully');
@@ -343,6 +350,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
                     setCreatedUserDetails(response?.data)
+                    handleAddStep3()
                     SuccessToaster('User Added Successfully');
                 })
                 .catch(error => {
@@ -377,7 +385,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //     }
         // }
 
-        getManageUserDialog(false);
+        // getManageUserDialog(false);
     };
 
     const handleAddStep1 = () => {
@@ -532,7 +540,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                                     className={style.selectFontStyle}
                                                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                                 >
-                                                                    {departmentList?.map((deptData, deptIndex) => (
+                                                                    {sites?.[0]?.departmentList?.departments?.map((deptData, deptIndex) => (
                                                                         <MenuItem value={deptData?.id} key={deptIndex}>{deptData?.departmentName?.name}</MenuItem>
                                                                     ))}
                                                                 </Select>
@@ -551,7 +559,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                                     onChange={(e) => handleSpecialtyChange(e.target.value)}
                                                                     SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                                 >
-                                                                    {departmentList?.filter(data => selectedDepartments?.includes(data?.id))?.map((deptData, deptIndex) =>
+                                                                    {sites?.[0]?.departmentList?.departments?.filter(data => selectedDepartments?.includes(data?.id))?.map((deptData, deptIndex) =>
                                                                         deptData?.serviceAreas?.map((data, index) => (
                                                                             <MenuItem value={data?.id} key={index}>{data?.name}</MenuItem>
                                                                         )))}
@@ -702,7 +710,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep1()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >ADD</button>
                                     </div>
                                 </div>
                             </div>
@@ -846,7 +854,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep3()} >SAVE</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >SAVE</button>
                                     </div>
                                 </div>
                             </div>

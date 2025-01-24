@@ -15,6 +15,8 @@ import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -30,6 +32,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -159,7 +162,8 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
     }
     return (
         <div>
-            <div className={`${style.applicationScreenGrid}`}>
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
@@ -171,12 +175,38 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                             <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.conductGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                     </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                    </div>
                 </div>
                 <div>
+                {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                                <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Professional Disclosure</span>
+                                </div>
+                        </div>        
+                    )}
+
+                <div>
+                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
                     <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
                     <div className={style.marginTop}>
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div>
+                    </div>
+                </div>
+
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
@@ -186,9 +216,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                         </div>
                     </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
+    
                 </div>
             </div>
             {

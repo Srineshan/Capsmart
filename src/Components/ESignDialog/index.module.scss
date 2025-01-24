@@ -28,6 +28,15 @@
 .eSignDialog {
     height: 75%;
     width: 40% !important;
+    @media (max-width: 1130px) {
+        width: 50% !important;
+    }
+    @media (max-width: 1000px) {
+        width: 60% !important;
+    }
+    @media (max-width: 768px) {
+        width: 70% !important;
+    }
 }
 
 .eSignDialogBackground {

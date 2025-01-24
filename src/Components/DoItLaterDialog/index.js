@@ -3,11 +3,11 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss'
-import { logout } from '../../utils/auth';
+import { useDescope } from '@descope/react-sdk';
 
 const DoItLaterDialog = ({ getIsOpen }) => {
     const [isContinue, setIsContinue] = useState(false);
-
+    const { logout } = useDescope();
     return (
         <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
             <div>

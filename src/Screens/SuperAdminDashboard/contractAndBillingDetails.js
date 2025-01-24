@@ -433,7 +433,7 @@ const ContractAndBillingDetails = ({ getActiveStep }) => {
             return;
         }
         if (type === 'Continue') {
-            window.location = `/app/entitySetup/${id}/entitySetup`
+            window.location = `/entitySetup/${id}/entitySetup`
             // navigate(`/entitySetup/${id}/entitySetup`);
         } else {
             navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');

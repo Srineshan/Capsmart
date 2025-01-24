@@ -134,7 +134,7 @@
 
 //   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
 //     let label;
-  
+
 //     if (currentRoleIndex === index) {
 //       if (applicationType === "NEW") {
 //         label = "Applicants to Verify";
@@ -148,7 +148,7 @@
 //     }  else {
 //       label = value.tabDisplayName;
 //     }
-  
+
 //     return {
 //       label: label,
 //       count: counts[`level-${key}`],
@@ -359,7 +359,7 @@
 
 //   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
 //     let label;
-  
+
 //     if (currentRoleIndex === index) {
 //       if (applicationType === "NEW") {
 //         label = "Applicants to Verify";
@@ -373,7 +373,7 @@
 //     } else {
 //       label = value.tabDisplayName;
 //     }
-  
+
 //     return {
 //       label: label,
 //       count: counts[`level-${key}`],
@@ -500,7 +500,7 @@
 //     if (applicationType === "LOCUM") {
 //       return;
 //     }
-  
+
 //     try {
 //       const response = await GET(
 //         `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationType}`
@@ -565,7 +565,7 @@
 
 //   const userFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
 //     let label;
-  
+
 //     if (currentRoleIndex === index) {
 //       if (applicationType === "NEW") {
 //         label = "Applicants to Verify";
@@ -579,7 +579,7 @@
 //     } else {
 //       label = value.tabDisplayName;
 //     }
-  
+
 //     return {
 //       label: label,
 //       count: counts[`level-${key}`],
@@ -614,7 +614,7 @@
 //           />
 //         </>
 //       )}
-      
+
 //       {userRole?.includes("Department Head") && applicationType === "LOCUM" && (
 //         <TileApplication 
 //           selectedTab={selectedTab} 
@@ -635,11 +635,12 @@ import style from './index.module.scss';
 import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import LoadingScreen from "../../Components/LoadingScreen";
 
 const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
-  const user = jwt(userDetails);
+  const [user, setUser] = useState();
   const [userRole, setUserRole] = useState([]);
   const [initialTabSet, setInitialTabSet] = useState(false);
   const [counts, setCounts] = useState({
@@ -656,6 +657,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const applicationId = "66dc44ec788741fedc982b01";
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
 
   // Listen for session storage changes
   useEffect(() => {
@@ -668,12 +670,36 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
     return () => clearInterval(intervalId);
   }, [applicationType]);
+  // Fetch user details and role
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!user?.id) return;
+
+      try {
+        setIsLoadingImage(true);
+        const { data: userData } = await GET(`user-management-service/user/${user.id}`);
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        setUserRole(userData?.roles?.map(data => data?.roleName) || []);
+        setIsLoadingImage(false);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    fetchUserDetails();
+  }, [user]);
 
   useEffect(() => {
     if (applicationType) {
       getTitleCounts();
     }
   }, [applicationType]);
+
+  useEffect(() => {
+    if (userDetails !== undefined) {
+      setUser(jwt(userDetails));
+    }
+  }, [userDetails])
 
   const getTitleCounts = async () => {
     if (applicationType === "LOCUM") {
@@ -690,21 +716,23 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
   };
 
-  const setUserDetails = async () => {
-    try {
-      const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
-      sessionStorage.setItem('user', JSON.stringify(userData));
-      setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
-  };
+  // const setUserDetails = async () => {
+  //   if (user !== undefined) {
+  //     try {
+  //       const { data: userData } = await GET(`user-management-service/user/${user?.id}`);
+  //       sessionStorage.setItem('user', JSON.stringify(userData));
+  //       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+  //     } catch (error) {
+  //       console.error('Error fetching user details:', error);
+  //     }
+  //   }
+  // };
 
   const getUserRoleType = async () => {
     if (applicationType === "LOCUM") {
       return;
     }
-  
+
     try {
       const response = await GET(
         `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationType}`
@@ -717,7 +745,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   // Initial data fetching
   useEffect(() => {
-    setUserDetails();
+    // setUserDetails();
     getUserRoleType();
   }, [applicationType]);
 
@@ -748,7 +776,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       let initialTab;
       if (applicationType === "LOCUM") {
         // For LOCUM, set initial tab to LocumRenewals if the user is a Department Head
-        initialTab =  "LocumRenewals" ;
+        initialTab = "LocumRenewals";
       } else {
         // For other application types, keep the existing logic
         initialTab = (isManagerOrChief
@@ -765,13 +793,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     setCurrentRoleIndex(newCurrentRoleIndex);
   }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType]);
 
-   const getFilteredTiles = () => {
+  const getFilteredTiles = () => {
     const UserFlowType = userFlow?.workflow || [];
     let filteredArray = [];
 
     const baseUserFlowArray = Object.entries(UserFlowType).map(([key, value], index) => {
       let label;
-    
+
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
           label = "Applicants to Verify";
@@ -785,10 +813,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       } else {
         label = value.tabDisplayName;
       }
-    
+
       return {
         label: label,
-        count: counts[`level-${key}`],
+        count: counts?.[`level-${key}`],
         level: `level-${key}`,
       };
     });
@@ -810,7 +838,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   return (
     <div className={style.tabs}>
-        {applicationType !== "LOCUM" && (
+       {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+      <LoadingScreen/>
+    </div>
+    )}
+      {applicationType !== "LOCUM" && (
         <>
           {getFilteredTiles().map(tile => (
             <TileApplication
@@ -831,12 +864,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           />
         </>
       )}
-      
+
       {userRole?.includes("Department Head") && applicationType === "LOCUM" && (
-        <TileApplication 
-          selectedTab={selectedTab} 
-          getSelectedTab={handleTabClick} 
-          tileLabel="Renewals to Review" 
+        <TileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={handleTabClick}
+          tileLabel="Renewals to Review"
           currentTile="LocumRenewals"
         />
       )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
 import Loader from "./Components/LoadingScreen";
@@ -19,6 +19,7 @@ import {
 import { SuccessToaster, ErrorToaster } from "./utils/toaster";
 import axios from "axios";
 import jwt from "jwt-decode";
+import { isSessionTokenExpired, useSession, getSessionToken, useDescope } from '@descope/react-sdk';
 import MileageRateForCustomers from "./Screens/ReferenceList/mileageRateForCustomers";
 import GeneralConfigurationForCustomers from "./Screens/ReferenceList/generalConfigurationForCustomers";
 import LoginDialog from "./Components/LoginDialog";
@@ -47,6 +48,7 @@ const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
 const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
+const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
 );
@@ -289,6 +291,9 @@ const ApplicationSetup = React.lazy(() =>
 );
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
+  const { isAuthenticated, isSessionLoading } = useSession();
+  const { refreshSession, setSession, logout, refresh } = useDescope();
+  const sessionToken = getSessionToken();
   const [tenantId, setTenantId] = useState(GetEntityDetails());
   const [logo, setLogo] = useState(null);
   const [title, setTitle] = useState("CAPManager");
@@ -296,34 +301,108 @@ const App = ({ props }) => {
   const [currentUserDetails, setCurrentUserDetails] = useState();
   const [entityDetails, setEntityDetails] = useState();
   var cookie = new Cookie();
-  const loggedInUser = currentUser();
-
-  // const navigate = useNavigate();
-
-  useEffect(() => {
-    if (cookie.get('entityId') === undefined || cookie.get('entityId') === null) {
-      getEntityId();
-    }
-  }, [])
+  const [loggedInUser, setLoggedInUser] = useState();
+  const [visibilityState, setVisibilityState] = useState(document.visibilityState);
+  let authorization = cookie.get("authorization");
+  let userFromCookie = cookie.get("user");
+  let entityIdFromCookie = cookie.get('entityId');
+  let errorInfo = sessionStorage.getItem('errorInfo');
+  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
 
   // useEffect(() => {
-  //   if(!cookie.get("user")){
-  //     login();
-  //   }
-  // }, [entityId])
+  //   const handleVisibilityChange = () => {
+  //     setVisibilityState(document.visibilityState); // Update state on visibility change
+  //   };
+
+  //   // Add event listener
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
+
+  //   // Cleanup listener on unmount
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
 
   useEffect(() => {
-    const reloadCount = sessionStorage.getItem("reloadCount");
-    if (reloadCount < 1) {
-      sessionStorage.setItem("reloadCount", String(reloadCount + 1));
-      window.location.reload();
-    } else {
-      sessionStorage.removeItem("reloadCount");
+    console.log('entered', (cookie.get("authorization") !== undefined && isAuthenticated), cookie.get("authorization") !== undefined, isAuthenticated)
+    if (((cookie.get("authorization") !== undefined && isAuthenticated) || (authorization !== undefined && isAuthenticated && (errorInfo === 'Invalid token specified'))) && (cookie.get('entityId') === undefined || cookie.get('entityId') === 'undefined' || cookie.get('entityId') === '' || cookie.get('entityId') === null)) {
+      console.log('entered')
+      getEntityId();
     }
-  }, []);
+  }, [cookie.get("authorization"), isAuthenticated, errorInfo, isSessionLoading])
 
   useEffect(() => {
-    setUserDetails();
+    if ((entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated) || (entityId !== undefined && entityId !== '' && cookie.get("authorization") !== undefined && isAuthenticated && errorInfo === 'Invalid token specified')) {
+      login(entityId);
+    }
+    console.log(isAuthenticated, 'isAuthenticated')
+  }, [entityId, cookie.get("authorization"), isAuthenticated, errorInfo])
+
+  useEffect(() => {
+    if (userFromCookie) {
+      setLoggedInUser(currentUser());
+    }
+  }, [userFromCookie])
+
+  useEffect(() => {
+    if (sessionToken && cookie.get("authorization") !== undefined) {
+      let token = sessionToken
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
+      if (typeof token !== 'string') {
+        // If the token is not a string, make sure to convert it into a string
+        token = JSON.stringify(token);
+      }
+      if (isSessionTokenExpired(cookie.get("authorization"))) {
+        cookie.remove("authorization", { path: "/" });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout()
+      }
+      const decodedToken = jwt(cookie.get("authorization"));
+      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, sessionToken)
+      if (Date.now() > decodedToken.exp * 1000) {
+        console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
+        cookie.remove("authorization", { path: "/" });
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        logout()
+      }
+    }
+  }, [cookie.get("authorization")])
+
+  // useEffect(() => {
+  //   startTokenRefreshInterval();
+  // }, []);
+
+  // useEffect(() => {
+  //   console.log(sessionToken, sessionToken.split('.')[1], JSON.parse(atob(sessionToken.split('.')[1])), 'session check')
+  //   const interval = setInterval(() => {
+  //     scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+  //   }, 30000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  useEffect(() => {
+    if (entityIdFromCookie !== undefined) {
+      setEntityId(entityIdFromCookie)
+    }
+  }, [entityIdFromCookie]);
+
+  // useEffect(() => {
+  //   const reloadCount = sessionStorage.getItem("reloadCount");
+  //   if (reloadCount < 1) {
+  //     sessionStorage.setItem("reloadCount", String(reloadCount + 1));
+  //     window.location.reload();
+  //   } else {
+  //     sessionStorage.removeItem("reloadCount");
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    if (loggedInUser?.id !== undefined) {
+      setUserDetails();
+    }
   }, [loggedInUser?.id]);
 
   useEffect(() => {
@@ -360,8 +439,8 @@ const App = ({ props }) => {
       return response;
     },
     (error) => {
-      // logError(error);
-      console.log("response error", error);
+      logError(error);
+      console.log("response error", error, error.status);
       return error;
     }
   );
@@ -506,22 +585,110 @@ const App = ({ props }) => {
         type: "application/json",
       })
     );
-    if (
-      interceptorsInfo !==
-      `${error?.response?.data?.error} ${error?.response?.data?.path}`
-    ) {
-      await POST(`feedback-management-service/ticket`, formData)
-        .then((response) => {
-          sessionStorage.setItem(
-            "interceptorsInfo",
-            `${error?.response?.data?.error} ${error?.response?.data?.path}`
-          );
-          // SuccessToaster('Error Logged Successfully');
+    console.log(error)
+    sessionStorage.setItem('errorInfo', error.message)
+    // if (
+    //   interceptorsInfo !==
+    //   `${error?.response?.data?.error} ${error?.response?.data?.path}`
+    // ) {
+    //   await POST(`feedback-management-service/ticket`, formData)
+    //     .then((response) => {
+    //       sessionStorage.setItem(
+    //         "interceptorsInfo",
+    //         `${error?.response?.data?.error} ${error?.response?.data?.path}`
+    //       );
+    //       // SuccessToaster('Error Logged Successfully');
+    //     })
+    //     .catch((error) => {
+    //       // ErrorToaster('Unexpected Error Occured');
+    //     });
+    // }
+  };
+
+  // const refreshTokens = async () => {
+  //   try {
+  //     const response = await refresh(); // Refresh the tokens
+  //     const { sessionJwt, refreshJwt } = response;
+
+  //     console.log("Session Token:", sessionJwt);
+  //     console.log("Refresh Token:", refreshJwt);
+  //     if (isSessionTokenExpired()) {
+  //       cookie.set('authorization', sessionJwt, { path: '/' });
+  //     }
+  //     // Optionally, store tokens in cookies/localStorage for use
+  //   } catch (error) {
+  //     console.error("Failed to refresh tokens:", error);
+
+  //     // Handle token refresh failure (e.g., logout the user)
+  //   }
+  // };
+
+  // const startTokenRefreshInterval = () => {
+  //   const interval = 5 * 60 * 1000; // 5 minutes (adjust based on token expiry time)
+
+  //   setInterval(async () => {
+  //     try {
+  //       if (isSessionTokenExpired()) {
+  //         await refreshTokens();
+  //       }
+  //     } catch (error) {
+  //       console.error("Token refresh failed:", error);
+  //     }
+  //   }, interval);
+  // };
+
+  const refreshToken = async () => {
+    if (isAuthenticated) {
+      // try {
+      refresh()
+        .then((refreshedSession) => {
+          console.log(refreshedSession, 'refreshed session')
+          if (refreshedSession) {
+            cookie.set('authorization', refreshedSession?.data?.sessionJwt, {
+              path: '/'
+            });
+            console.log('Session refreshed and cookie updated!', refreshedSession);
+          }
         })
         .catch((error) => {
-          // ErrorToaster('Unexpected Error Occured');
+          console.error('Failed to refresh token:', error);
+          cookie.remove("authorization", { path: "/" });
+          cookie.remove("user", { path: "/" });
+          cookie.remove("entityId", { path: "/" });
+          logout();
         });
+      // const { data } = refresh();
+      // setSession(data?.sessionJwt); // Update the session with the new token
+      // cookie.set('authorization', data?.sessionJwt, {
+      //   path: '/',
+      // });
+      // console.log('Token refreshed successfully!', data?.sessionJwt);
+      // } catch (error) {
+      //   console.error('Failed to refresh token:', error);
+      //   cookie.remove("user", { path: "/" });
+      //   cookie.remove("entityId", { path: "/" });
+      //   logout();
+      //   // window.location.href = '/';
+      // }
+    } else {
+      cookie.remove("authorization", { path: "/" });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout();
     }
+  };
+
+  const scheduleTokenRefresh = (decodedToken) => {
+    console.log('entered')
+    const currentTime = Date.now() / 1000; // Current time in seconds
+    const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
+
+    // Schedule the refresh 1 minute before expiration
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
+    setTimeout(() => {
+      refreshToken();
+    }, (timeToExpiry - 60) * 1000);
   };
 
   const setUserDetails = async () => {
@@ -533,18 +700,35 @@ const App = ({ props }) => {
 
   const getEntityId = async () => {
     let hostname = window.location.hostname;
-    let requestHeader = hostname.includes("acme-hospital")
+    let requestHeader = hostname?.split('.')?.length === 3
       ? {
         method: "GET",
-        headers: { "X-subdomain": "acme-hospital" },
+        headers: {
+          "Authorization": `Bearer ${authorization}`,
+          "X-subdomain": hostname?.split('.')?.[0],
+        },
       }
-      : { method: "GET" };
+      : {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${authorization}`,
+          "X-subdomain": 'master',
+        },
+      };
+    console.log(requestHeader, 'requestHeader')
     await axios(`${baseUrl()}/entity-service/entityID`, requestHeader)
       .then((response) => {
-        cookie.set("entityId", response?.data?.id, { path: "/" });
-        setEntityId(response?.data?.id);
-        if (cookie.get("user") === undefined || cookie.get("user") === null) {
+        if (response?.data?.id) {
+          cookie.set("entityId", response?.data?.id, {
+            path: "/",
+            // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+            // secure: true,
+            // sameSite: 'none',
+          });
+          setEntityId(response?.data?.id);
+          // if ((userFromCookie === undefined || userFromCookie === null) && authorization !== undefined) {
           login(response?.data?.id);
+          // }
         }
       })
       .catch((error) => {
@@ -553,18 +737,38 @@ const App = ({ props }) => {
   };
 
   const login = (id) => {
-    const requestOptions = {
+    let hostname = window.location.hostname;
+    const requestOptions = hostname?.split('.')?.length === 3 ? {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
         "X-tenantID": id,
+        "Authorization": `Bearer ${authorization}`,
+        "X-subdomain": hostname?.split('.')?.[0]
       },
-    };
+    } : {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-tenantID": id,
+        "Authorization": `Bearer ${authorization}`,
+        "X-subdomain": 'cmh-hospital',
+      },
+    }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
-        cookie.set("user", data?.accessToken, { path: "/" });
+        cookie.set("user", data?.accessToken, {
+          path: "/",
+          // domain: window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname,
+          // secure: true,
+          // sameSite: 'none',
+        });
       });
+    console.log('entered')
+    if (sessionToken) {
+      scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+    }
     return true;
   };
 
@@ -588,7 +792,9 @@ const App = ({ props }) => {
 
   useEffect(() => {
     changeFavicon();
-    getLogo();
+    if (TenantID !== undefined && TenantID !== '' && TenantID) {
+      getLogo();
+    }
   }, []);
 
   const getLogo = async () => {
@@ -625,157 +831,198 @@ const App = ({ props }) => {
   // }
 
   const LoginRoute = () => {
-    let roles = jwt(Auth())?.roles?.split(",");
-    let isAppUser =
-      roles.includes("Approver") ||
-      roles.includes("Reviewer") ||
-      roles.includes("Activity Logger");
-    let isContractManager = roles.includes("Contract Manager");
-    let isEntityLevelAdmin =
-      roles.includes("Super Sys Admin") ||
-      roles.includes("Entity Sys Admin") ||
-      roles.includes("Entity Sys User") ||
-      roles.includes("Distributor Admin");
-    let isStaffManager = roles.includes("Staff Manager");
-    let isApplicant = roles.includes("Applicant");
-
-    if (isAppUser) {
-      window.location.href = "/";
-      return <Login />;
-    } else if (isContractManager) {
-      window.location.pathname = "/app/contracts";
-      // navigate("/contracts");
-      // window.location.reload();
-      return <ActiveContracts />;
-    } else if (isEntityLevelAdmin) {
-      window.location.pathname = "/app/entitySitePortal";
-      // navigate("/entitySitePortal");
-      // window.location.reload();
-      return <Home />;
-    } else if (isStaffManager) {
-      window.location.pathname = "/app/staffs";
-    } else if (isApplicant) {
-      window.location.pathname = "/app/applicant";
+    // const navigate = useNavigate();
+    const fetchData = () => {
+      console.log('login route', Auth())
+      if (Auth()) {
+        console.log('login route')
+        let roles = jwt(Auth())?.roles?.split(",");
+        let isAppUser =
+          roles?.includes("Approver") ||
+          roles?.includes("Reviewer") ||
+          roles?.includes("Activity Logger");
+        let isContractManager = roles?.includes("Contract Manager");
+        let isEntityLevelAdmin =
+          roles?.includes("Super Sys Admin") ||
+          roles?.includes("Entity Sys Admin") ||
+          roles?.includes("Entity Sys User") ||
+          roles?.includes("Distributor Admin");
+        let isStaffManager = roles?.includes("Staff Manager");
+        let isApplicant = roles?.includes("Applicant");
+        console.log('login route', roles)
+        if (isAppUser) {
+          window.location.href = "/";
+          // navigate("/");
+          return <Login />;
+        } else if (isContractManager) {
+          window.location.pathname = "/contracts";
+          // navigate("/contracts");
+          // window.location.reload();
+          return <ActiveContracts />;
+        } else if (isEntityLevelAdmin) {
+          window.location.pathname = "/entitySitePortal";
+          // navigate("/entitySitePortal");
+          // window.location.reload();
+          return <Home />;
+        } else if (isStaffManager) {
+          console.log('login route', roles, isStaffManager)
+          window.location.pathname = "/applications";
+          // navigate("/applications");
+        } else if (isApplicant) {
+          window.location.pathname = "/applicant";
+          // navigate("/applicant");
+        } else {
+          window.location.pathname = "/entitySitePortal";
+          // navigate("/entitySitePortal");
+          // window.location.reload();
+          return <Home />;
+        }
+      } else {
+        window.location.pathname = "/loginPage";
+      }
+    }
+    if (!Auth()) {
+      console.log('login route', Auth())
+      setTimeout(() => {
+        fetchData();
+      }, 2000);
     } else {
-      window.location.pathname = "/app/entitySitePortal";
-      // navigate("/entitySitePortal");
-      // window.location.reload();
-      return <Home />;
+      console.log('login route', Auth())
+      fetchData();
     }
   };
 
+  const ProtectedRoute = ({ children }) => {
+    return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
+  };
+
+  const IsLoggedIn = ({ children }) => {
+    return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
+  };
+
+  if (isSessionLoading) {
+    return <Loader />;
+  }
+
   return (
-    <BrowserRouter basename="/app">
+    <BrowserRouter basename="/">
       <Suspense fallback={<Loader />}>
-        {accessToken !== undefined && accessToken !== false && (
+        {/* {accessToken !== undefined && accessToken !== false && ( */}
+        {isAuthenticated && (
           <IdleTimer></IdleTimer>
         )}
         <div className="App">
           {/* {(accessToken !== false && accessToken !== undefined) ? ( */}
+          {/* {isAuthenticated ? ( */}
           <>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<LoginRoute />} />
-              <Route path="/contracts" element={<ActiveContracts />} />
-              <Route path="/staffs" element={<StaffManager />} />
-              <Route path="/applications" element={<StaffApplication />} />
-              <Route path="/activeStaff" element={<ActiveStaff />} />
+              <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
+              {/* <Route path="/loginPage" element={<DescopeLoginDialog />} /> */}
+
+              {/* Private Routes */}
+              <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
+              <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
+              <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+              <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
               {/* <Route
                 path="/privilegeListManager"
                 element={<PrivilegeListMaster />}
               /> */}
               <Route
                 path="/referenceList/privilegeListMaster"
-                element={<PrivilegeListMaster />}
+                element={<ProtectedRoute><PrivilegeListMaster /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/privilegeListManager"
-                element={<PrivilegeListManager />}
+                element={<ProtectedRoute><PrivilegeListManager /></ProtectedRoute>}
               />
 
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/notifyUser" element={<Notify />} />
-              <Route path="/applicant" element={<Applicant />} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/notifyUser" element={<ProtectedRoute><Notify /></ProtectedRoute>} />
+              <Route path="/applicant" element={<ProtectedRoute><Applicant /></ProtectedRoute>} />
               <Route
                 path="/trackContracts/:trackType"
-                element={<TrackYourContracts />}
+                element={<ProtectedRoute><TrackYourContracts /></ProtectedRoute>}
               />
-              <Route path="/contracts/moveToDraft" element={<MoveToDraft />} />
+              <Route path="/contracts/moveToDraft" element={<ProtectedRoute><MoveToDraft /></ProtectedRoute>} />
               <Route
                 path="/remindContractors"
-                element={<RemindContractors />}
+                element={<ProtectedRoute><RemindContractors /></ProtectedRoute>}
               />
-              <Route path="notifyEntityUser" element={<NotifyEntityUser />} />
+              <Route path="notifyEntityUser" element={<ProtectedRoute><NotifyEntityUser /></ProtectedRoute>} />
               {/* <Route path="/user" element={<Users />} /> */}
-              <Route path="/pages" element={<EntryPage />} />
-              <Route path="/user/ssoId/:userId" element={<GetSSOId />} />
-              <Route path="/setPassword/:randomId" element={<SetPassword />} />
+              <Route path="/pages" element={<ProtectedRoute><EntryPage /></ProtectedRoute>} />
+              <Route path="/user/ssoId/:userId" element={<ProtectedRoute><GetSSOId /></ProtectedRoute>} />
+              <Route path="/setPassword/:randomId" element={<ProtectedRoute><SetPassword /></ProtectedRoute>} />
               <Route
                 path="/activateAccess/:randomId"
-                element={<ActivateAccess />}
+                element={<ProtectedRoute><ActivateAccess /></ProtectedRoute>}
               />
               <Route
                 path="/setPassword"
-                element={<SetPasswordWithoutEmail />}
+                element={<ProtectedRoute><SetPasswordWithoutEmail /></ProtectedRoute>}
               />
               <Route
                 path="/applicationForm/applicationSummary"
-                element={<ApplicationSummary />}
+                element={<ProtectedRoute><ApplicationSummary /></ProtectedRoute>}
               />
               <Route path="/historicalData"
               element={<HistoricalData/>
               }/>
               <Route
                 path="/applicationForm/applicationAcknowledgement"
-                element={<ApplicationAcknowledgement />}
+                element={<ProtectedRoute><ApplicationAcknowledgement /></ProtectedRoute>}
               />
               <Route
                 path="/applicationForm/acknowledgementReview"
-                element={<AcknowledgementReview />}
+                element={<ProtectedRoute><AcknowledgementReview /></ProtectedRoute>}
               />
-              <Route path="/applicationForm/podcheck" element={<PODCheck />} />
-              <Route path="/welcome" element={<Welcome />} />
-              <Route path="/entitySetup/:id/:page" element={<EntitySetup />} />
+              <Route path="/applicationForm/podcheck" element={<ProtectedRoute><PODCheck /></ProtectedRoute>} />
+              <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+              <Route path="/entitySetup/:id/:page" element={<ProtectedRoute><EntitySetup /></ProtectedRoute>} />
               <Route
                 path="/entitySystemAdmin"
-                element={<EntitySystemAdmin />}
+                element={<ProtectedRoute><EntitySystemAdmin /></ProtectedRoute>}
               />
-              <Route path="/siteInformation" element={<SiteInformation />} />
-              <Route path="/siteUsers" element={<SiteUsers />} />
-              <Route path="/appSubscription" element={<AppSubscription />} />
-              <Route path="/setupComplete" element={<SetupComplete />} />
-              <Route path="/otpPage" element={<OTPPage />} />
+              <Route path="/siteInformation" element={<ProtectedRoute><SiteInformation /></ProtectedRoute>} />
+              <Route path="/siteUsers" element={<ProtectedRoute><SiteUsers /></ProtectedRoute>} />
+              <Route path="/appSubscription" element={<ProtectedRoute><AppSubscription /></ProtectedRoute>} />
+              <Route path="/setupComplete" element={<ProtectedRoute><SetupComplete /></ProtectedRoute>} />
+              <Route path="/otpPage" element={<ProtectedRoute><OTPPage /></ProtectedRoute>} />
               <Route
                 path="/welcomeToDashboard"
-                element={<WelcomeToDashboard />}
+                element={<ProtectedRoute><WelcomeToDashboard /></ProtectedRoute>}
               />
-              <Route path="/tasks" element={<ReportsHome />} />
+              <Route path="/tasks" element={<ProtectedRoute><ReportsHome /></ProtectedRoute>} />
               <Route
                 path="/reports/:reportType"
-                element={<TimeSheetReportsBase />}
+                element={<ProtectedRoute><TimeSheetReportsBase /></ProtectedRoute>}
               />
-              <Route path="/chart" element={<ChartPage />} />
-              <Route path="/help" element={<HelpHome />} />
-              <Route path="/partnerPortal" element={<TasksAndAlerts />} />
-              <Route path="/activeCustomers" element={<CustomerManagement />} />
-              <Route path="/customerSetup" element={<CustomerSetup />} />
-              <Route path="/referenceList" element={<ReferenceList />} />
-              <Route path="/applicationSetup" element={<ApplicationSetup />} />
+              <Route path="/chart" element={<ProtectedRoute><ChartPage /></ProtectedRoute>} />
+              <Route path="/help" element={<ProtectedRoute><HelpHome /></ProtectedRoute>} />
+              <Route path="/partnerPortal" element={<ProtectedRoute><TasksAndAlerts /></ProtectedRoute>} />
+              <Route path="/activeCustomers" element={<ProtectedRoute><CustomerManagement /></ProtectedRoute>} />
+              <Route path="/customerSetup" element={<ProtectedRoute><CustomerSetup /></ProtectedRoute>} />
+              <Route path="/referenceList" element={<ProtectedRoute><ReferenceList /></ProtectedRoute>} />
+              <Route path="/applicationSetup" element={<ProtectedRoute><ApplicationSetup /></ProtectedRoute>} />
               <Route
                 path="/Screens/ReferenceList/superAdminDashboard"
-                element={<SuperAdminDashboard />}
+                element={<ProtectedRoute><SuperAdminDashboard /></ProtectedRoute>}
               />
               <Route
                 path="/Screens/ReferenceList/customerAdminDashboard"
-                element={<ClientAdminDashboard />}
+                element={<ProtectedRoute><ClientAdminDashboard /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/industriesWithEntityTypes"
-                element={<IndustriesWithEntityTypes />}
+                element={<ProtectedRoute><IndustriesWithEntityTypes /></ProtectedRoute>}
               />
 
               <Route
                 path="/referenceList/departmentsByEntityTypes"
-                element={<DepartmentsByEntityTypes />}
+                element={<ProtectedRoute><DepartmentsByEntityTypes /></ProtectedRoute>}
               />
               {/* <Route
                 path="/referenceList/acknowledgementForms"
@@ -783,63 +1030,63 @@ const App = ({ props }) => {
               /> */}
               <Route
                 path="/referenceList/functionalTitles"
-                element={<FunctionalTitles />}
+                element={<ProtectedRoute><FunctionalTitles /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/boardCertification"
-                element={<BoardCertification />}
+                element={<ProtectedRoute><BoardCertification /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/holidayListByIndustries"
-                element={<HolidayListByIndustries />}
+                element={<ProtectedRoute><HolidayListByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/terminationReasons"
-                element={<TerminationReasons />}
+                element={<ProtectedRoute><TerminationReasons /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/absenseReasonsByIndustries"
-                element={<AbsenseReasonsByIndustries />}
+                element={<ProtectedRoute><AbsenseReasonsByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/suffixByIndustries"
-                element={<SuffixByIndustries />}
+                element={<ProtectedRoute><SuffixByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractByIndustries"
-                element={<ContractByIndustries />}
+                element={<ProtectedRoute><ContractByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/disclosureByIndustries/disclosureIndustries"
-                element={<DisclosureIndustries />}
+                element={<ProtectedRoute><DisclosureIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractedServiceProviderByIndustries"
-                element={<ContractedServiceProvidedByIndustries />}
+                element={<ProtectedRoute><ContractedServiceProvidedByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/proofOfDocumentByEntity"
-                element={<ProofOfDocumentationByEntity />}
+                element={<ProtectedRoute><ProofOfDocumentationByEntity /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/ProofOfDocumentByApplicantType"
-                element={<ProofOfDocumentByIndustries />}
+                element={<ProtectedRoute><ProofOfDocumentByIndustries /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractDoumentTypeForUpload"
-                element={<ContractDocumentTypeForUpload />}
+                element={<ProtectedRoute><ContractDocumentTypeForUpload /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/holidayScheduleForCustomers"
-                element={<HolidayScheduleForCustomers />}
+                element={<ProtectedRoute><HolidayScheduleForCustomers /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/countriesSupportedWithStates"
-                element={<CountriesSupportedWithStates />}
+                element={<ProtectedRoute><CountriesSupportedWithStates /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/countryWithStatesEntity"
-                element={<CountriesWithStatesEntity />}
+                element={<ProtectedRoute><CountriesWithStatesEntity /></ProtectedRoute>}
               />
               {/* <Route
                 path="/referenceList/countryWithStatesEntity"
@@ -847,7 +1094,7 @@ const App = ({ props }) => {
               /> */}
               <Route
                 path="/referenceList/applicantTypesByEntity/applicantTypesByEntity"
-                element={<ApplicantTypesByEntity />}
+                element={<ProtectedRoute><ApplicantTypesByEntity /></ProtectedRoute>}
               />
               {/* <Route
                 path="/referenceList/departmentsForCustomers"
@@ -855,164 +1102,165 @@ const App = ({ props }) => {
               /> */}
               <Route
                 path="/referenceList/departmentsForCustomerMultiSite"
-                element={<DepartmentsForCustomersMultiSite />}
+                element={<ProtectedRoute><DepartmentsForCustomersMultiSite /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/absenceReasonsForCustomer"
-                element={<AbsenceReasonsForCustomer />}
+                element={<ProtectedRoute><AbsenceReasonsForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/suffixByCustomer"
-                element={<SuffixByCustomer />}
+                element={<ProtectedRoute><SuffixByCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractDocumentTypeUploadForCustomer"
-                element={<ContractDocumentUploadForCustomer />}
+                element={<ProtectedRoute><ContractDocumentUploadForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractedServicesByEntityType"
-                element={<ContractServicesByEntityType />}
+                element={<ProtectedRoute><ContractServicesByEntityType /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractTypeForCustomer"
-                element={<ContractTypeForCustomer />}
+                element={<ProtectedRoute><ContractTypeForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractServiceProviderBySiteType"
-                element={<ContractServiceProviderBySiteType />}
+                element={<ProtectedRoute><ContractServiceProviderBySiteType /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractServiceProviderMultiSite"
-                element={<ContractServiceProviderForMultiSite />}
+                element={<ProtectedRoute><ContractServiceProviderForMultiSite /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/functionalTitleForCustomer"
-                element={<FunctionalTitleForCustomer />}
+                element={<ProtectedRoute><FunctionalTitleForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/functionalTitleMultiSitesForCustomer"
-                element={<FunctionalTitleMultiSitesForCustomer />}
+                element={<ProtectedRoute><FunctionalTitleMultiSitesForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/contractTerminationReasonForCustomer"
-                element={<TerminationReasonForCustomer />}
+                element={<ProtectedRoute><TerminationReasonForCustomer /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/holidayScheduleForCustomers"
-                element={<HolidayScheduleForCustomers />}
+                element={<ProtectedRoute><HolidayScheduleForCustomers /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/organizationCostCenters"
-                element={<CostCenterAndLocations />}
+                element={<ProtectedRoute><CostCenterAndLocations /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/departmentsForCustomers"
-                element={<DepartmentsForCustomers />}
+                element={<ProtectedRoute><DepartmentsForCustomers /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/department/department"
-                element={<Departments />}
+                element={<ProtectedRoute><Departments /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/staffPrivilegesByDepartment"
-                element={<StaffPrivilegesByDepartment />}
+                element={<ProtectedRoute><StaffPrivilegesByDepartment /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/applicantCheckList/applicantProcessingCheckList"
-                element={<ApplicantProcessingCheckList />}
+                element={<ProtectedRoute><ApplicantProcessingCheckList /></ProtectedRoute>}
               />
 
               <Route
                 path="/referenceList/speciality/Speciality"
-                element={<Speciality />}
+                element={<ProtectedRoute><Speciality /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/acknowledgementForms"
-                element={<AcknowledgementForm />}
+                element={<ProtectedRoute><AcknowledgementForm /></ProtectedRoute>}
               />
-              <Route path="/referenceList/consents" element={<Consent />} />
+              <Route path="/referenceList/consents" element={<ProtectedRoute><Consent /></ProtectedRoute>} />
               <Route
                 path="/referenceList/mileageRateForCustomers"
-                element={<MileageRateForCustomers />}
+                element={<ProtectedRoute><MileageRateForCustomers /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/generalConfigurationForCustomers"
-                element={<GeneralConfigurationForCustomers />}
+                element={<ProtectedRoute><GeneralConfigurationForCustomers /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/paymentList"
-                element={<PaymentList />}
+                element={<ProtectedRoute><PaymentList /></ProtectedRoute>}
               />
               <Route
                 path="/referenceList/settingList"
-                element={<SettingList />}
+                element={<ProtectedRoute><SettingList /></ProtectedRoute>}
               />
-              <Route path="/entitySitePortal" element={<Home />} />
-              <Route path="/thankyou" element={<Thankyou />} />
-              <Route path="/reportType" element={<ReportType />} />
+              <Route path="/entitySitePortal" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route path="/thankyou" element={<ProtectedRoute><Thankyou /></ProtectedRoute>} />
+              <Route path="/reportType" element={<ProtectedRoute><ReportType /></ProtectedRoute>} />
               <Route
                 path="/reportTypeOverview/:reportType"
-                element={<ReportTypeOverview />}
+                element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
               />
               <Route
                 path="/myReport/:reportType"
-                element={<ReportTypeOverview />}
+                element={<ProtectedRoute><ReportTypeOverview /></ProtectedRoute>}
               />
               <Route
                 path="/applicationForm/:applicationId/:section/:step"
-                element={<ApplicationForm />}
+                element={<ProtectedRoute><ApplicationForm /></ProtectedRoute>}
               />
               <Route
                 path="/reappointmentApplicationForm/:applicationId/:section/:step"
-                element={<ReappointmentApplicationForm />}
+                element={<ProtectedRoute><ReappointmentApplicationForm /></ProtectedRoute>}
               />
               <Route
                 path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
-                element={<MedicalDirectivesAttest />}
+                element={<ProtectedRoute><MedicalDirectivesAttest /></ProtectedRoute>}
               />
               <Route
                 path="/locumApplicationForm/:applicationId/:section/:step"
-                element={<LocumApplicationForm />}
+                element={<ProtectedRoute><LocumApplicationForm /></ProtectedRoute>}
               />
               <Route
                 path="/applicationForm/:applicationId"
-                element={<ApplicationFormRequirement />}
+                element={<ProtectedRoute><ApplicationFormRequirement /></ProtectedRoute>}
               />
               <Route
                 path="/reappointmentApplicationForm/:applicationId"
-                element={<ReappointmentApplicationFormRequirement />}
+                element={<ProtectedRoute><ReappointmentApplicationFormRequirement /></ProtectedRoute>}
               />
               <Route
                 path="/locumApplicationForm/:applicationId"
-                element={<LocumApplicationFormRequirement />}
+                element={<ProtectedRoute><LocumApplicationFormRequirement /></ProtectedRoute>}
               />
               <Route
                 path="/applicationRequest"
-                element={<ApplicationRequest />}
+                element={<ProtectedRoute><ApplicationRequest /></ProtectedRoute>}
               />
               <Route
                 path="/completeApplicationRequest"
-                element={<CompleteApplicationRequest />}
+                element={<ProtectedRoute><CompleteApplicationRequest /></ProtectedRoute>}
               />
               <Route
                 path="/createStaffMemberApplication"
-                element={<CreateStaffMemberApplication />}
+                element={<ProtectedRoute><CreateStaffMemberApplication /></ProtectedRoute>}
               />
               <Route
                 path="/createStaffReapplication"
-                element={<CreateStaffReapplication />}
+                element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
               />
-              <Route path="/loginPage" element={<LoginDialog />} />
-            </Routes>
+              <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
+
+            </Routes >
           </>
           {/* ) : (
             <Routes>
-              <Route path="*" element={<Login />} {...props} exact={true} />
-            </Routes>
-          )} */}
-        </div>
-      </Suspense>
-    </BrowserRouter>
+               <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
+             </Routes>
+           )} */}
+        </div >
+      </Suspense >
+    </BrowserRouter >
   );
 };
 

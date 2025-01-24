@@ -34,6 +34,7 @@ import CheckListDialog from "./checkListDialog";
 import CircleIcon from '@mui/icons-material/Circle';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import LoadingScreen from "../../Components/LoadingScreen";
 // import Checkbox from '@mui/material/Checkbox';
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -85,7 +86,7 @@ const StaffApplicationList = ({
   const [totalCountDept, setTotalCountDept] = useState(0);
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
-  const users = jwt(userDetails);
+  const [users, setUsers] = useState();
   const [userRole, setUserRole] = useState('');
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   const [checkedIds, setCheckedIds] = useState([]);
@@ -543,14 +544,22 @@ const StaffApplicationList = ({
   }, [applicationIsLocum]);
 
   useEffect(() => {
+    if (userDetails !== undefined) {
+      setUsers(jwt(userDetails));
+    }
+  }, [userDetails])
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
   const setUserDetails = async () => {
-    const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
-    console.log("userdataaaa" + JSON.stringify(userData))
-    sessionStorage.setItem('user', JSON.stringify(userData))
-    setUserRole(userData?.roles?.map((data) => data?.roleName));
+    if (users !== undefined) {
+      const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+      console.log("userdataaaa" + JSON.stringify(userData))
+      sessionStorage.setItem('user', JSON.stringify(userData))
+      setUserRole(userData?.roles?.map((data) => data?.roleName));
+    }
   }
 
   const getReFetchMetaData = (value) => {
@@ -1057,7 +1066,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1228,7 +1237,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        ` ${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1409,7 +1418,7 @@ const StaffApplicationList = ({
       console.log("data?.currentLevelCompleted" + data?.currentLevelCompleted);
 
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1708,7 +1717,7 @@ const StaffApplicationList = ({
       }
 
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
@@ -1973,7 +1982,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -2199,7 +2208,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -3011,15 +3020,13 @@ const StaffApplicationList = ({
 
   return (
     <>
-      {/* {isLoadingImage && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter1} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
+      {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+      <LoadingScreen/>
+    </div>
     )}
 
- {!isLoadingImage && ( */}
+ {/* {!isLoadingImage && ( */}
 
       <div className={style.margin20}>
         <div className={isExpanded ? style.bigCardGrid : style.smallCardGrid}>
@@ -3194,9 +3201,9 @@ const StaffApplicationList = ({
                                       }
                                     ></div>
                                     <div className={style.marginLeft10}>
+                                    {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
                                       {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
-                                      , {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"}
+                                       status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
                                     </div>
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
@@ -3427,7 +3434,7 @@ const StaffApplicationList = ({
           )
         }
       </div >
-      {/* //  )}  */}
+     {/* )} */}
     </>
   );
 };

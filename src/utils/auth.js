@@ -27,13 +27,15 @@ export const baseUrl = () => {
   //   response = 'https://doxonify.ca';
   // }
 
-  if (hostname === 'localhost') {
-    response = 'http://ec2-107-23-66-238.compute-1.amazonaws.com';
-  } else {
-    response = window.location.origin;
-  }
+  // if (hostname === 'localhost') {
+  //   response = 'http://ec2-107-23-66-238.compute-1.amazonaws.com';
+  // } else {
+  //   response = window.location.origin;
+  // }
 
   // response = `http://${hostname}:8000`;
+
+  response = `https://rest.indocaribe.com`
 
   return response;
 }
@@ -52,9 +54,10 @@ export const currentUser = () => {
   if (!window.location.href?.includes('user/ssoId')) {
     let cookie = new Cookie();
     let accessToken = cookie.get('user');
-    let decoded = jwt(accessToken);
+    let decoded;
     let user = {};
     if (accessToken) {
+      decoded = jwt(accessToken);
       user.id = decoded?.id;
       user.firstName = decoded?.userName?.split(' ')[0];
       user.lastName = decoded?.userName?.split(' ')[1];
@@ -77,7 +80,7 @@ export const GetRoles = () => {
   return roles;
 }
 
-export const logout = async () => {
+export const Logout = async () => {
   const cookies = new Cookie();
   await PUT(`logout`, null)
     .then((response) => {

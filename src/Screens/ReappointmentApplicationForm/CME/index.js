@@ -26,6 +26,9 @@ import WelcomeCard from '../../../Components/WelcomeCard';
 import FileWithFields from '../../../Components/FileWithFields';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import DeleteIcon from './../../../images/deleteHcRow.png';
+import MenuIcon from "@mui/icons-material/Menu";
+import Tooltip from "@mui/material/Tooltip";
+import Close from './../../../images/close.png';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -48,9 +51,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [isLoading, setIsLoading] = useState(false);
     const [yesOrNoCMETranscript, setYesOrNoCMETranscript] = useState('');
     const [files, setFiles] = useState([]);
-    const [updatedDateCMETranscript, setUpdatedDateCMETranscript] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [updatedDateCMETranscript, setUpdatedDateCMETranscript] = useState(format(new Date(), "yyyy-MM-dd'T'00:00"));
     const [yesOrNoCME, setYesOrNoCME] = useState('');
-    const [updatedDateCME, setUpdatedDateCME] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [updatedDateCME, setUpdatedDateCME] = useState(format(new Date(), "yyyy-MM-dd'T'00:00"));
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
@@ -58,7 +61,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     const [showUploadDialog, setShowUploadDialog] = useState(false);
     const [showFileWithFields, setShowFileWithFields] = useState(false);
-    const [fields, setFields] = useState();
+    const [fields, setFields] = useState([]);
     const [fileMetadata, setFileMetadata] = useState();
     const [file, setFile] = useState();
     const [applicationDocumentId, setApplicationDocumentId] = useState('');
@@ -66,6 +69,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [selectedUpload, setSelectedUpload] = useState('');
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [selectedFile, setselectedFile] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -73,7 +77,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
             if (basicForm?.forms[formIndex]?.data !== null) {
-                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : basicForm?.forms?.[formIndex]?.data?.cmeCertificates !== undefined ? 'Yes' : 'No');
+                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : (basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== undefined) ? 'Yes' : 'No');
             }
             if (basicForm?.forms[formIndex]?.data !== null) {
                 setYesOrNoCMETranscript(basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : 'No');
@@ -313,8 +317,22 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
     };
 
+
+    const getDocument = async (rowId) => {
+        const { data: response } = await GET(
+            `document-management-service/document/${rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setFile(response?.file);
+        setFileMetadata(response?.metaData);
+        setApplicationDocumentId(response?.id);
+        console.log("fffffff", fields)
+    }
+
+
     const handleContinue = async () => {
-        let tempData = basicForm?.forms?.[formIndex]?.data;
+        let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
         let temp = {
@@ -362,7 +380,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                     <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            <div className={`${style.applicationScreenGrid}`}>
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
@@ -386,13 +405,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 >
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), 'yyyy-MM-dd')); setShowUploadDialog(true) }}
+                                        onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
                                     >
                                         YES
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), 'yyyy-MM-dd')) }}
+                                        onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                                     >
                                         NO
                                     </div>
@@ -436,14 +455,29 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         <div className={style.cmeCard}>
                                             <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
                                             <div className={`${style.twoCol} ${style.marginTop}`}>
-                                                <div className={style.cmeHourCard}>
-                                                    <div className={style.totalText}>Your Total</div>
-                                                    <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
-                                                    <div className={style.totalText}>Credits / Hours</div>
-                                                    {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
-                                                        <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
-                                                    )}
-                                                </div>
+                                                <Tooltip
+                                                    title="Click Here to Edit"
+                                                    arrow
+                                                    {...(!basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file && { open: false })}
+                                                >
+                                                    <div className={`${style.cmeHourCard} ${style.cursorPointer} `} onClick={() => {
+                                                        const fileData = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file;
+                                                        const rowId = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;
+                                                        if (!fileData) {
+                                                            setShowFileWithFields(false);
+                                                        } else {
+                                                            setShowFileWithFields(true);
+                                                            getDocument(rowId);
+                                                        }
+                                                    }}>
+                                                        <div className={style.totalText}>Your Total</div>
+                                                        <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                                                        <div className={style.totalText}>Credits / Hours</div>
+                                                        {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                            <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                                                        )}
+                                                    </div>
+                                                </Tooltip>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Required</div>
                                                     <div className={style.hourText}>25</div>
@@ -455,7 +489,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
-                                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                <span>
+                                                    <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                </span>
                                             )}
                                             <div
                                                 className={`${style.leftAlign} ${style.marginTop10}`}
@@ -497,13 +533,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 >
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setSelectedUpload('certificate'); setYesOrNoCME('Yes'); setUpdatedDateCME(format(new Date(), 'yyyy-MM-dd')); setShowUploadDialog(true) }}
+                                        onClick={() => { setSelectedUpload('certificate'); setYesOrNoCME('Yes'); setUpdatedDateCME(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
                                     >
                                         YES
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNoCME('No'); setUpdatedDateCME(format(new Date(), 'yyyy-MM-dd')) }}
+                                        onClick={() => { setYesOrNoCME('No'); setUpdatedDateCME(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                                     >
                                         NO
                                     </div>
@@ -536,11 +572,35 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             </>
                         )}
                     </div>
+                    <div className={style.threeColForButton}>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
+                    </div>
                 </div>
                 <div>
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                    <div className={style.marginTop}>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Continuing Medical Education</span>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
@@ -550,9 +610,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
                         </div>
                     </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
+
                 </div>
             </div>
             {

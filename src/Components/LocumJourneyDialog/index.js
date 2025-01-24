@@ -3,17 +3,18 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
 import style from './index.module.scss'
-import { logout } from '../../utils/auth';
 import { POST } from '../../Screens/dataSaver';
 import Pencil from "./../../images/pencil.png";
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
+import { useDescope } from '@descope/react-sdk';
 
 const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const entityName = sessionStorage.getItem('title')
     const navigate = useNavigate()
@@ -108,7 +109,7 @@ const LocumJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, conti
             </Dialog >
 
             {showSubmitDialog && (
-                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished!You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of ${entityName} for final consideration.`} />
+                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished!You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
             )}
         </>
     )

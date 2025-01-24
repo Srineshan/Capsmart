@@ -7,7 +7,7 @@ import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 
-const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, updateFunc, confirmFunc }) => {
+const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, updateFunc, confirmFunc, hideCross }) => {
     let eSignImg = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.file`);
     let eSignTypeContent = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.text`);
     let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.type.style`);
@@ -44,12 +44,14 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                         <div className={style.displayInRow}>
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
-                            <img
-                                src={CrossPink}
-                                alt="cross"
-                                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
-                                onClick={() => { getIsOpen(false) }}
-                            />
+                            {!hideCross && (
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
+                            )}
                         </div>
                     </div>
 

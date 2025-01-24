@@ -11,7 +11,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import DaysToComplete from '../../../Components/DaysToCompleteCard';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useSession } from '@descope/react-sdk';
+import { useDescope, useSession } from '@descope/react-sdk';
 import LoginDialog from '../../../Components/LoginDialog';
 import RequiredDocumentCard from '../../../Components/RequiredDocumentCard';
 import { GET, PUT } from '../../dataSaver';
@@ -21,10 +21,11 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import Cookie from "universal-cookie";
 import { differenceInDays, format } from 'date-fns';
 import DoItLaterDialog from '../../../Components/DoItLaterDialog';
-import { logout } from '../../../utils/auth';
+// import { Logout } from '../../../utils/auth';
 
 const ApplicationFormRequirement = () => {
     let cookie = new Cookie();
+    const { logout } = useDescope();
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId } = useParams();
@@ -56,6 +57,17 @@ const ApplicationFormRequirement = () => {
     useEffect(() => {
         setUserDetails();
     }, [user?.id])
+
+    // const Logout = async () => {
+    //     logout()
+    //         .then(() => {
+    //             console.log("User logged out successfully");
+    //             window.location.href = "/login"; // Redirect to login or home page
+    //         })
+    //         .catch((error) => {
+    //             console.error("Failed to logout:", error);
+    //         });
+    // };
 
     const setUserDetails = async () => {
         const { data: userDetails } = await GET(`user-management-service/user/${user?.id}`);

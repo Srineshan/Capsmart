@@ -3,13 +3,12 @@ import { GET } from '../dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from './index.module.scss';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationHeader from '../../Components/ApplicationHeader';
 import DemographicData from './DemographicData';
 import PrivilegeSelection from './PrivilegeSelection';
 import ProfessionalConduct from './ProfessionalConduct';
 import UploadYourDoc from './UploadYourDoc';
-import { logout } from '../../utils/auth';
 import MedicalHistory from './MedicalHistory';
 import CriminalHistory from './CriminalHistory';
 import LMSModules from './LMSModules';
@@ -24,15 +23,19 @@ import MiscellaneousQuestions from './MiscellaneousQuestions';
 import PatientConcern from './PatientConcern';
 import PrivilegeStatusHospital from './PrivilegeStatusOtherHospital';
 import LoadingScreen from '../../Components/LoadingScreen';
+import HapiCare from "./../../images/PoweredHapiCare.png";
 import { dataLoadingGIF } from '../../utils/formatting';
 import ScheduleA from './ScheduleA';
 import ScheduleB from './ScheduleB';
+import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentApplicationForm = () => {
     let cookie = new Cookie();
+    const navigate = useNavigate()
     let userDetails = cookie.get('user');
     const user = jwt(userDetails);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [basicForm, setBasicForm] = useState({})
     // const applicationId = sessionStorage.getItem('applicationId')
     const [isOpen, setIsOpen] = useState(true);
@@ -72,6 +75,15 @@ const ReappointmentApplicationForm = () => {
         );
         setBasicForm(basicForm)
         setIsLoading(false);
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
     }
 
     const StepDisplay = () => {
@@ -137,10 +149,20 @@ const ReappointmentApplicationForm = () => {
                 </div>
             )}
             <div className={style.screenBackground}>
-                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={logout} />
+                <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? `${basicForm?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}` : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                 <div className={style.screenPadding}>
                     {StepDisplay()}
                 </div>
+                {/* <div className={`${style.spaceBetween} ${style.paddingForFooter}`}>
+                    <div className={`${style.displayInRow}`}>
+                        <img
+                            src={HapiCare}
+                            alt="footer"
+                            className={`${style.footerIconStyle} ${style.marginLeft10}`}
+                        />
+                    </div>
+                    <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
+                </div> */}
             </div>
         </div>
     )

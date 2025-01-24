@@ -1,0 +1,65 @@
+@import "../../index.scss";
+
+.headerCard {
+    height: clamp(80px, 8vh, 100px);
+    background-color: white;
+    box-shadow: 0px 6px 20px #22292929;
+    padding: 0px 60px;
+}
+
+.headerGrid {
+    display: grid;
+    grid-template-columns: 20% 67% 5% 3%;
+    gap: 1%;
+}
+
+.logo {
+    position: relative;
+    width: auto;
+    height: 60px;
+    object-fit: contain;
+}
+
+.titleText {
+    text-align: center;
+    font: normal normal bold 20px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: capitalize;
+    word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .titleText {
+        text-align: center;
+        font-size: 18px; 
+    }
+
+    .headerCard{
+        height: auto;
+    }
+}
+
+.marginLeft20 {
+    margin-left: 20px !important;
+}
+
+.crossStyle {
+    height: 18px;
+    width: 18px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}

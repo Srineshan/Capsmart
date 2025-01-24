@@ -17,7 +17,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
-import { logout } from "../../utils/auth";
 import { GET, PUT } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
@@ -25,6 +24,7 @@ import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
   const descopeSdk = useDescope();
+  const { logout } = useDescope();
   const [isContinue, setIsContinue] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -186,7 +186,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogoCenterAlign}`} />
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title} has been suspended.`}
+            {`Your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''} has been suspended.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {`Prior to Jun 30, 2025, if you change your mind, you can click on the link in the application declined notification.`}
@@ -258,19 +258,31 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               <span className={style.bold}>CAP</span>Smart
             </p>
           </div> */}
-            <div className={style.spaceBetween}>
+            <div className={`${style.logoStyle} ${style.spaceBetween}`}>
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
             <br />
+            <div
+              className={`${style.daysToComplete} ${style.marginTop30} ${style.displayInRow} ${style.alignCenter}`}
+            >
+              <div className={`${style.verticalAlignCenter1} ${style.alignCenter}`}>
+                <div className={style.textStyle}>{"YOU HAVE"}</div>
+                <div className={style.daysCountStyle}>{days}</div>
+                <div className={`${style.textStyle}`}>{"DAYS TO COMPLETE"}</div>
+              </div>
+            </div>
             <div className={style.reappointmentGrid}>
               <div className={style.imageCard}>
                 <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
               </div>
               <div className={style.contentCard}>
                 <div className={style.welcomeText}>Your Reappointment Application</div>
+                <div className={style.headerData}>
+                  <span style={{ marginLeft: '20px' }}>Your Reappointment Application</span>
+                </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  {title} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
+                  {title !== 'HapiCare' ? title : ''} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop}`}>
                   Processing of Your Reappointment Application will now be a less burdensome activity.
@@ -328,25 +340,14 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                   </ThemeProvider>
                 </div>
                 <div >
-                  {/* <div
+                  <div
                     className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
                     onClick={processReappointment !== '' ? () => {
                       handleContinue();
                     } : () => { }}
                   >
                     CONTINUE
-                  </div> */}
-                  <button
-                    className={`${style.continue} ${style.marginTop}
-                     ${processReappointment !== '' ? '' : style.disable}`
-                    }
-                    onClick={processReappointment !== '' ? () => {
-                      handleContinue();
-                    } : () => { }}
-                    disabled={processReappointment === ''}
-                  >
-                    CONTINUE
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -373,7 +374,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
         <div className={style.dialogContent}>
           <div className={style.alignCenter}><WarningAmberIcon sx={{ fontSize: 60, color: '#FF5555' }} /></div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title}.`}
+            {`You have opted to not continue with your reappointment application for recredentialing and continuation of privileges for July 1, 2025 to June 30, 2026 at ${title !== 'HapiCare' ? title : ''}.`}
           </div>
           <div className={`${style.descriptionStyle} ${style.marginTop}`}>
             {/* {`If we do not receive a completed reappointment application by ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')} your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`} */}

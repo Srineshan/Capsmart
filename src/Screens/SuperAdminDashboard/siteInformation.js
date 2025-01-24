@@ -389,7 +389,7 @@ const SiteInformation = ({ getActiveStep }) => {
           }
           let newEntityId = response?.data?.id;
           if (buttonText === 'Continue') {
-            window.location = `/app/entitySetup/${newEntityId}/entitySystemAdmin`
+            window.location = `/entitySetup/${newEntityId}/entitySystemAdmin`
             !isSuperAdminAccess
               ? setIsCompleteSetup(true)
               : navigate(`/entitySetup/${newEntityId}/entitySystemAdmin`);

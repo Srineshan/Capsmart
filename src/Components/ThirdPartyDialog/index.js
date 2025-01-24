@@ -20,8 +20,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     focus: '',
   });
   const { applicationId, section, step } = useParams()
-  const merchantId = "383612842";
-  const apiPasscode = "c3c57e781e63444fB66d87caDeC54AC5";
+  const merchantId = process.env.REACT_APP_MERCHANT_ID;
+  const apiPasscode = process.env.REACT_APP_PASSCODE;
   const base64ApiKey = btoa(`${merchantId}:${apiPasscode}`);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
@@ -55,7 +55,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
 
     const paymentData = {
-      amount: paymentListData?.[0]?.fee?.toFixed(2), // Replace with the amount you want to charge
+      amount: paymentListData?.fee?.toFixed(2), // Replace with the amount you want to charge
       payment_method: "card",
       card: {
         name: state.name,
@@ -79,8 +79,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       );
     } catch (error) {
       setPaymentStatus(
-        `Payment Failed! Error: ${error.response?.data?.message || error.message
-        }`
+        `Payment Failed!`
       );
     }
   };
@@ -107,7 +106,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
-      "currency": paymentListData?.[0]?.currencyType,
+      "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
       "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
@@ -119,6 +118,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     };
     try {
       await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+      handleDownload(data)
     } catch (error) {
       console.log(error);
     }
@@ -153,7 +153,6 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       );
       setPaymentInfo(response.data)
       savePaymentInfo(response.data)
-      handleDownload(response.data)
     } catch (error) {
       setPaymentStatus(
         `Payment Failed! Error: ${error.response?.data?.message || error.message
@@ -164,13 +163,15 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   };
 
   const addNewDocument = async (file, data) => {
+    console.log('payment')
     console.log(file, file?.name, 'Test')
     let fileName = {
-      "fileName": 'acknowledgement.pdf'
+      "fileName": 'payment.pdf'
     };
     const formData = new FormData();
 
     if (file !== null) {
+      console.log('payment')
       const blob = new Blob([file], { type: `application/pdf` });
       formData.append('files', new Blob([JSON.stringify(fileName)], {
         type: "application/json"
@@ -181,6 +182,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       try {
         const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
         console.log(response?.data);
+        console.log('payment')
         handleSavePDF(response?.data, data)
         uploadedFile = response?.data;
       } catch (error) {
@@ -200,6 +202,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
   }
 
   const handleSavePDF = async (file, data) => {
+    console.log('payment')
     let temp = {
       "payee": {
         "name": {
@@ -221,7 +224,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       "fee": data?.amount,
       "tax": 0,
       "total": data?.amount,
-      "currency": paymentListData?.[0]?.currencyType,
+      "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
       "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
@@ -234,14 +237,18 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     }
 
     try {
-      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp)
+        .then(response => {
+          handleSendReceipt()
+        })
     } catch (error) {
       console.log(error);
     }
-    continueClick();
+    continueClick(true);
   }
 
   const handleDownload = (data) => {
+    console.log('payment')
     const element = targetRef.current;
     const opt = {
       margin: 0.5,
@@ -263,6 +270,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       addNewDocument(pdfBlob, data);
     });
   };
+
+  const handleSendReceipt = async () => {
+    await POST(`application-management-service/application/${applicationId}/sendPaymentReceipt`)
+  }
 
   return (
 
@@ -318,7 +329,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
               type="text"
               name="amount"
               placeholder="Amount"
-              value={`${paymentListData?.[0]?.currencyType}${paymentListData?.[0]?.fee}`}
+              value={`${paymentListData?.currencyType}${paymentListData?.fee}`}
               // onChange={handleInputChange}
               disabled={true}
               onFocus={handleInputFocus}

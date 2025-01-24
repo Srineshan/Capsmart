@@ -322,7 +322,7 @@ const AppSubscription = ({ getActiveStep }) => {
           SuccessToaster('Entity Subscription Added Successfully');
           let newEntityId = response?.data?.id;
           if (type === 'Continue') {
-            window.location = `/app/entitySetup/${newEntityId}/contractAndBilling`
+            window.location = `/entitySetup/${newEntityId}/contractAndBilling`
             navigate(`/entitySetup/${newEntityId}/contractAndBilling`);
           } else {
             navigate(isSuperAdminAccess ? '/activeCustomers' : '/entitySitePortal');

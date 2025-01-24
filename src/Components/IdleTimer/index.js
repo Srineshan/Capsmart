@@ -6,11 +6,13 @@ import axios from 'axios';
 import { ErrorToaster } from "./../../utils/toaster";
 import Cookies from "universal-cookie";
 import style from './index.module.scss';
+import { useDescope } from "@descope/react-sdk";
 
 
 export default function IdleTimer() {
     const [isLoggedIn, setIsLoggedIn] = useState(true);
     const [showAlert, setShowAlert] = useState(false);
+    const { logout } = useDescope();
     const sessionTimeoutRef = useRef(null);
     const cookies = new Cookies();
     let token = cookies.get("user");
@@ -34,20 +36,20 @@ export default function IdleTimer() {
     }
 
 
-    const logout = async () => {
-        await PUT(`logout`, null)
-            .then(response => {
-                const logouturi = response.headers['location'] || '';
-                cookies.remove("user", { path: '/' });
-                cookies.remove("entityId", { path: '/' });
-                if (logouturi) {
-                    window.location.href = logouturi;
-                }
-            }).catch(error => {
-                console.log('error msg', error);
-                ErrorToaster('Unexpected Error');
-            })
-    };
+    // const logout = async () => {
+    //     await PUT(`logout`, null)
+    //         .then(response => {
+    //             const logouturi = response.headers['location'] || '';
+    //             cookies.remove("user", { path: '/' });
+    //             cookies.remove("entityId", { path: '/' });
+    //             if (logouturi) {
+    //                 window.location.href = logouturi;
+    //             }
+    //         }).catch(error => {
+    //             console.log('error msg', error);
+    //             ErrorToaster('Unexpected Error');
+    //         })
+    // };
 
     return (
         <div>
@@ -65,7 +67,7 @@ export default function IdleTimer() {
                     </p>
                     <div className={`${style.positionCenter} ${style.marginTop20}`}>
                         <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={onContinue}>Continue</button>
-                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={logout}>Logout</button>
+                        <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => logout()}>Logout</button>
                     </div>
                 </div>
             </Dialog>

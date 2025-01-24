@@ -103,7 +103,7 @@
 //       const response = await GET(
 //         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
 //       );
-      
+
 //       if (response?.data) {
 //         if (type === 'NEW') {
 //           setNewCounts(response.data);
@@ -144,7 +144,7 @@
 
 //   const sumCounts = (countsObj) => {
 //     if (!countsObj) return 0;
-    
+
 //     return Object.entries(countsObj)
 //       .filter(([key]) => key.startsWith('level-'))
 //       .reduce((sum, [_, value]) => sum + (value || 0), 0);
@@ -208,7 +208,7 @@
 //       const response = await GET(
 //         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&isLocum=${level}`
 //       );
-      
+
 //       if (response?.data) {
 //         if (type === 'NEW' && !level) {
 //           setNewCounts(response.data);
@@ -260,7 +260,7 @@
 
 //   const sumCounts = (countsObj) => {
 //     if (!countsObj) return 0;
-    
+
 //     return Object.entries(countsObj)
 //       .filter(([key]) => key.startsWith('level-'))
 //       .reduce((sum, [_, value]) => sum + (value || 0), 0);
@@ -357,7 +357,7 @@
 //       const response = await GET(
 //         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
 //       );
-      
+
 //       if (response?.data) {
 //         if (type === 'NEW') {
 //           setNewCounts(response.data);
@@ -403,7 +403,7 @@
 
 //   const sumCounts = (countsObj) => {
 //     if (!countsObj) return 0;
-    
+
 //     return Object.entries(countsObj)
 //       .filter(([key]) => key.startsWith('level-'))
 //       .reduce((sum, [_, value]) => sum + (value || 0), 0);
@@ -481,7 +481,7 @@ import jwt from 'jwt-decode';
 const StaffApplicationTopTiles = () => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
-  const user = jwt(userDetails);
+  const [user, setUser] = useState();
   const [userRole, setUserRole] = useState('');
   const [selectedTab, setSelectedTab] = useState('NewApplicants');
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
@@ -498,7 +498,7 @@ const StaffApplicationTopTiles = () => {
       const response = await GET(
         `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
       );
-      
+
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
@@ -515,7 +515,7 @@ const StaffApplicationTopTiles = () => {
 
   const getUserRoleType = async (type) => {
     if (type === "LOCUM") return;
-    
+
     try {
       const response = await GET(
         `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${type}`
@@ -535,8 +535,8 @@ const StaffApplicationTopTiles = () => {
         storedApplicationType === 'NEW'
           ? 'NewApplicants'
           : storedApplicationType === 'REAPPOINTMENT'
-          ? 'StaffReappointments'
-          : 'LocumRenewals'
+            ? 'StaffReappointments'
+            : 'LocumRenewals'
       );
     } else {
       sessionStorage.setItem('applicationCreationType', 'NEW');
@@ -557,36 +557,34 @@ const StaffApplicationTopTiles = () => {
     fetchData();
   }, []);
 
-  const calculateVisibleCounts = (countsObj) => {
-    if (!countsObj || !userFlow?.workflow) return 0;
-    
-    const UserFlowType = userFlow.workflow;
-    const isManagerOrChief = userRole?.includes("Staff Manager") || userRole?.includes("Chief Of Staff");
-    
-    let visibleLevels = [];
-    if (userRole?.includes("Department Head")) {
-      visibleLevels = ['level-2'];
-    } else if (userRole?.includes("Credentialing Committee")) {
-      visibleLevels = ['level-3'];
-    } else if (isManagerOrChief) {
-      visibleLevels = Object.keys(UserFlowType).map(key => `level-${key}`);
-    } else {
-      const currentIndex = Object.entries(UserFlowType).findIndex(([key, value]) => {
-        const details = value?.flowDetails;
-        return details?.some(detail => 
-          detail?.role && userRole?.includes(detail?.role?.roleName)
-        );
-      });
-      
-      if (currentIndex !== -1) {
-        visibleLevels = Object.keys(UserFlowType)
-          .slice(currentIndex)
-          .map(key => `level-${key}`);
-      }
+  useEffect(() => {
+    if (userDetails !== undefined) {
+      setUser(jwt(userDetails));
     }
+  }, [userDetails])
 
-    return visibleLevels.reduce((sum, level) => sum + (countsObj[level] || 0), 0) + 
-           (countsObj.clarificationsRequired || 0);
+  const calculateVisibleCounts = (countsObj) => {
+    if (!countsObj) return 0;
+  
+    // Add clarifications
+    const clarifications = parseInt(countsObj.clarificationsRequired) || 0;
+    
+    // For Department Head, show only level-2 count
+    if (userRole?.includes("Department Head")) {
+      return (parseInt(countsObj['level-2']) || 0) + clarifications;
+    }
+    
+    // For Credentialing Committee, show only level-3 count
+    if (userRole?.includes("Credentialing Committee")) {
+      return (parseInt(countsObj['level-3']) || 0) + clarifications;
+    }
+    
+    // For all other roles, show total count
+    const levelSum = Object.entries(countsObj)
+      .filter(([key]) => key.startsWith('level-'))
+      .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0);
+    
+    return levelSum + clarifications;
   };
 
   const getSelectedTab = (tab) => {
@@ -620,19 +618,19 @@ const StaffApplicationTopTiles = () => {
 
   return (
     <div className={style.tabs}>
-      <TopTileApplication 
-        selectedTab={selectedTab} 
-        getSelectedTab={getSelectedTab} 
+      <TopTileApplication
+        selectedTab={selectedTab}
+        getSelectedTab={getSelectedTab}
         tileCount={calculateVisibleCounts(newCounts)}
-        tileLabel="New Applicants" 
+        tileLabel="New Applicants"
         currentTile="NewApplicants"
         isLoading={isLoading}
       />
-      <TopTileApplication 
-        selectedTab={selectedTab} 
-        getSelectedTab={getSelectedTab} 
+      <TopTileApplication
+        selectedTab={selectedTab}
+        getSelectedTab={getSelectedTab}
         tileCount={calculateVisibleCounts(reappointmentCounts)}
-        tileLabel="Staff Reappointments" 
+        tileLabel="Staff Reappointments"
         currentTile="StaffReappointments"
         isLoading={isLoading}
       />
@@ -650,6 +648,3 @@ const StaffApplicationTopTiles = () => {
 };
 
 export default StaffApplicationTopTiles;
-
-
-

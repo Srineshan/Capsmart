@@ -13,27 +13,36 @@ import style from './index.module.scss';
 const UserCard = ({ getIsExpanded, updateProfileData }) => {
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
-    const user = jwt(userDetails);
+    const [user, setUser] = useState();
     const [currentUserDetails, setCurrentUserDetails] = useState();
-    const [userId, setUserId] = useState(user?.id);
+    const [userId, setUserId] = useState();
     const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    console.log('in user card', user?.id);
+    console.log('in user card', user?.id, user);
     useEffect(() => {
-        console.log('inside func call useEffect 1', user?.id)
-        setUserId(user?.id);
-        setUserDetails();
-    }, [])
+        if (user?.id !== undefined) {
+            console.log('inside func call useEffect 1', user?.id)
+            setUserId(user?.id);
+        }
+    }, [user])
 
     useEffect(() => {
         console.log('inside the func call useeffect', user?.id);
-        setUserDetails();
+        if (userId !== undefined && userId !== '') {
+            setUserDetails();
+        }
     }, [userId])
 
+    useEffect(() => {
+        if (userDetails !== undefined) {
+            setUser(jwt(userDetails));
+        }
+    }, [userDetails])
+
     const setUserDetails = async () => {
-        const { data: user } = await GET(`user-management-service/user/${userId}`);
-        setCurrentUserDetails(user);
-        console.log('users', user)
+        const { data: userData } = await GET(`user-management-service/user/${userId}`);
+        setCurrentUserDetails(userData);
+        console.log('users', userData)
     }
 
     console.log('currentUserDetails', currentUserDetails, currentUserDetails?.lastLogin);
@@ -53,7 +62,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
 
                         <div className={style.marginLeft20}>
                             <div className={style.userNameStyle}>
-                                Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName}`}
+                                Hi, {updateProfileData ? `${updateProfileData?.name?.lastName.toUpperCase()}, ${updateProfileData?.name?.firstName}` : `${currentUserDetails?.name?.lastName.toUpperCase()}, ${currentUserDetails?.name?.firstName.charAt(0).toUpperCase()+currentUserDetails?.name?.firstName.slice(1).toLowerCase()}`}
                             </div>
                             <div className={style.loginStatus}>
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}

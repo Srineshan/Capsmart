@@ -17,6 +17,8 @@ import ValidationDialog from '../../../Components/validationDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -33,8 +35,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [warningFields, setWarningFields] = useState([]);
     const [warningFieldsContact, setWarningFieldsContact] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
-    const [showDemographicInfo, setShowDemographicInfo] = useState(false);
-    const [showContactInfo, setShowContactInfo] = useState(false);
+    const [showDemographicInfo, setShowDemographicInfo] = useState(true);
+    const [showContactInfo, setShowContactInfo] = useState(true);
     const [viewDemographicInfo, setViewDemographicInfo] = useState(false);
     const [viewContactInfo, setViewContactInfo] = useState(false);
     const [isDemographicInfoEdited, setIsDemographicInfoEdited] = useState(false);
@@ -43,8 +45,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateURL, setNavigateURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [updateFrom, setUpdateFrom] = useState('');
-    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('');
-    const [yesOrNoAddress, setYesOrNoAddress] = useState('');
+    const [yesOrNoDemographic, setYesOrNoDemographic] = useState('YES');
+    const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
+    const [showInfo, setShowInfo] = useState(false);
+
+
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -52,14 +57,19 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
         }
+
+
     }, [basicForm, formIndex])
 
-    useEffect(() => {
-        if (formIndex !== undefined) {
-            setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
-            setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
-        }
-    }, [formIndex])
+    // useEffect(() => {
+    //     if (formIndex !== undefined) {
+    //         if (basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) {
+    //             setShowContactInfo(true)
+    //         }
+    //         setYesOrNoAddress((basicForm?.forms?.[formIndex]?.data?.contactAddress1 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress2 === undefined && basicForm?.forms?.[formIndex]?.data?.contactAddress3 === undefined) ? 'Yes' : (basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoAddress : '');
+    //         setYesOrNoDemographic((basicForm?.forms?.[formIndex]?.data?.yesOrNoData !== undefined && basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic !== undefined) ? basicForm?.forms?.[formIndex]?.data?.yesOrNoData?.yesOrNoDemographic : '');
+    //     }
+    // }, [formIndex])
 
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
@@ -327,16 +337,16 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
-        // if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
-        //     let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
-        //     let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
-        //     missingKeys = temp;
-        // }
+        if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         setWarningFieldsContact(missingKeys)
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
         } else {
-            setShowContactInfo(false);
+            // setShowContactInfo(false);
             getIsSubmitClickedForContact(true);
         }
         console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
@@ -459,7 +469,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     console.log('Metadata', metadata);
     return (
         <div>
-            <div className={`${style.applicationScreenGrid} `}>
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard
                         step={""}
@@ -596,7 +607,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 UPDATE
                                             </button>
                                         </div>
-                                        <div>
+                                        {/* <div>
                                             <div
                                                 className={`${style.reappointmentButtonOutlined}`}
                                                 onClick={() => {
@@ -605,7 +616,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             >
                                                 CANCEL
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 ) : (
                                     <div
@@ -646,20 +657,44 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             </>
                         )}
                     </div>
-                    {/* <div className={style.threeColForButton}>
+                    <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
-                    </div> */}
+                    </div>
                 </div>
+
                 <div>
-                    <ApplicationAssistanceCard
-                        user={"Neena Greenly"}
-                        designation={"{Designation}"}
-                        contactNumber={"{Contact Number}"}
-                        email={"{Email}"}
-                    />
+
+                    {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                            <div className={`${style.headerData}${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Demographic Data</span>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard
+                                    user={"Neena Greenly"}
+                                    designation={"{Designation}"}
+                                    contactNumber={"{Contact Number}"}
+                                    email={"{Email}"}
+                                />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
+
+                    </div>
                     {/* <div className={style.twoColForButton}>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop}`}
@@ -675,7 +710,6 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             SAVE IN PROGRESS
                         </div>
-                        {/* </div> */}
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
@@ -689,12 +723,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             CONTINUE
                         </div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && handleContinue()}>CONTINUE</div>
                         </div>
+
                     </div>
-                    <div className={style.marginTop}>
+                    {/* <div className={`${style.infoContainer} ${showInfo ? style.show : ""} ${style.marginTop}`}>
                         <ApplicationReferenceDocuments />
-                    </div>
+                    </div> */}
                 </div>
             </div>
             {/* {isOpen && <AIAssistantDialog getIsOpen={getIsOpen} />} */}

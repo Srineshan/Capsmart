@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-
+import Cookie from 'universal-cookie';
 import style from './index.module.scss'
-import { logout } from '../../utils/auth';
 import { POST } from '../../Screens/dataSaver';
 import Pencil from "./../../images/pencil.png";
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import WarningIcon from '@mui/icons-material/Warning';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
+import { useDescope } from '@descope/react-sdk';
 
 const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
     const { applicationId, section, step } = useParams();
+    const { logout } = useDescope();
     const [showSubmitDialog, setShowSubmitDialog] = useState(false);
     const [errorSchema, setErrorSchema] = useState('');
     const entityName = sessionStorage.getItem('title')
@@ -21,6 +22,15 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
     const [disclosureList, setDisclosureList] = useState(['ProfessionalConduct', 'CriminalHistory', 'MedicalHistory', 'PATIENT_CONCERN_DISCLOSURE', 'PRIVILEGE_STATUS_AT_HOSPITAL'])
     const getIsShowSubmitDialog = (value) => {
         setShowSubmitDialog(value);
+    }
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+        navigate('/')
     }
 
 
@@ -53,7 +63,6 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                             {errorSchema !== '' && (
                                 <div className={style.displayInRow}>
                                     <div className={style.completedItemsTextRed} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
-                                    {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                 </div>
                             )}
                         </div>
@@ -75,10 +84,10 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             )}
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
-                                                    <div className={`${style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                    <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
                                                     {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                                 </div>
-                                                <div>{data?.acknowledged ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} /> : <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} />}</div>
+                                                <div>{(!data?.acknowledged || errorSchema === data?.schemaCategory) ? <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />}</div>
                                             </div>
                                             {/* {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
                                                 <>
@@ -111,7 +120,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                         </>
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
-                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); logout() }}>LOGOUT</div>
+                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
                                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
                                         </div>
                                     )}
@@ -124,7 +133,7 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
             </Dialog >
 
             {showSubmitDialog && (
-                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete. The completed file will be forwarded to the credentials committee and medical advisory committee for review before being forwarded to the board of ${entityName} for final consideration.`} />
+                <ApplicationSubmitDialog getIsOpen={getIsShowSubmitDialog} title={`Mission Accomplished! You're A Champion`} description={`Please note that the entire application process for full board approval may take up to 3 months to complete.`} />
             )}
         </>
     )

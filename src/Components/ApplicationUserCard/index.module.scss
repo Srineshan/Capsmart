@@ -1,5 +1,14 @@
 @import "../../index.scss";
 
+
+.marginTop {
+    margin-top: 10px;
+}
+
+.marginLeft {
+    margin-left: 10px;
+}
+
 .applicationUserCard {
     height: auto;
     padding: 10px;
@@ -11,8 +20,12 @@
 
 .profilePic {
     height: 80px;
-    width: 80px; 
-    object-fit: cover; 
+    width: 80px;
+    object-fit: cover;
+
+    @media (max-width: 768px) {
+        background: $primarycolor;
+    }
 }
 
 .profileGrid {
@@ -38,14 +51,14 @@
 
 .nameStyle {
     text-align: left;
-    font: normal normal bold 17px/31px proxima-nova;
+    font: normal normal bold 17px/21px proxima-nova;
     color: $textgrey;
     text-transform: capitalize;
 }
 
 .applyingFor {
     text-align: left;
-    font: normal normal normal 13px/20px proxima-nova;
+    font: normal normal normal 13px/17px proxima-nova;
     letter-spacing: 0px;
     color: $textgrey;
 }
@@ -62,6 +75,10 @@
     margin-top: 10px;
 }
 
+.marginTop5 {
+    margin-top: 5px;
+}
+
 .verticalSpaceBetween {
     display: flex;
     justify-content: center;
@@ -69,15 +86,69 @@
     align-items: center;
 }
 
-.rowSpaceBetween{
+.rowSpaceBetween {
     display: flex;
     justify-content: start;
     flex-direction: row;
     align-items: center;
 }
 
+.iconStyle {
+    height: 19px;
+    width: 16px;
+    object-fit: contain;
+
+    @media (max-width: 768px) {
+        background: #FFF;
+    }
+}
+
+.displayInRow {
+    display: flex;
+    flex-direction: row;
+}
+
+.cursorPointer {
+    cursor: pointer !important;
+}
+
+
+.contactStyle {
+    text-align: left;
+    font: normal normal normal 14px/19px proxima-nova;
+    color: $textgrey;
+
+    @media (max-width: 768px) {
+        color: #FFF;
+    }
+}
+
+.purpleText {
+    color: $primarycolor !important;
+
+    @media (max-width: 768px) {
+        color: #FFF !important;
+    }
+}
+
 @media (max-width: 768px) {
     .applicationUserCard {
-        height: auto;
+        background: $primarycolor 0% 0% no-repeat padding-box;
+        border: $primarycolor;
+    }
+
+    .nameStyle {
+        font: normal normal bold 15px proxima-nova;
+        color: #FFFFFF;
+    }
+
+    .applyingFor {
+        font: normal normal normal 10px proxima-nova;
+        color: #FFFFFF;
+    }
+
+    .connectToLinkedIn {
+        font: normal normal medium 16px proxima-nova;
+        color: #FFFFFF;
     }
 }
