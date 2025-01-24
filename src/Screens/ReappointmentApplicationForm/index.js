@@ -153,16 +153,19 @@ const ReappointmentApplicationForm = () => {
                 <div className={style.screenPadding}>
                     {StepDisplay()}
                 </div>
-                {/* <div className={`${style.spaceBetween} ${style.paddingForFooter}`}>
-                    <div className={`${style.displayInRow}`}>
-                        <img
-                            src={HapiCare}
-                            alt="footer"
-                            className={`${style.footerIconStyle} ${style.marginLeft10}`}
-                        />
-                    </div>
-                    <p className={style.poweredBy}>© {new Date().getFullYear()} HapiCare</p>
-                </div> */}
+                <div>
+                <div className={`${style.footerContainer}`}>
+    <img
+        src={HapiCare}
+        alt="footer"
+        className={style.footerIconStyle}
+    />
+    <p className={style.poweredBy}>
+        © {new Date().getFullYear()} HapiCare, Inc
+    </p>
+</div>
+                   
+                </div>
             </div>
         </div>
     )
