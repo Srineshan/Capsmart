@@ -262,9 +262,8 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
-            <br />
             <div
-              className={`${style.daysToComplete} ${style.marginTop30} ${style.displayInRow} ${style.alignCenter}`}
+              className={`${style.daysToComplete} ${style.marginTop10} ${style.displayInRow} ${style.alignCenter}`}
             >
               <div className={`${style.verticalAlignCenter1} ${style.alignCenter}`}>
                 <div className={style.textStyle}>{"YOU HAVE"}</div>
@@ -281,11 +280,11 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 <div className={style.headerData}>
                   <span style={{ marginLeft: '20px' }}>Your Reappointment Application</span>
                 </div>
-                <div className={`${style.descriptionStyle} ${style.marginTop}`}>
+                <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   {title !== 'HapiCare' ? title : ''} has automated its credentialing & privileging business functions with CAPManager, an AI solution for end to end credentialing and privileging activities.
                 </div>
-                <div className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  Processing of Your Reappointment Application will now be a less burdensome activity.
+                <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
+                  Processing of your Reappointment Application will now be a less burdensome activity.
                 </div>
                 <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>

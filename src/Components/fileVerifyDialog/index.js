@@ -8,6 +8,7 @@ import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import style from './index.module.scss';
 import LoadingScreen from "../LoadingScreen";
+import Tooltip from "@mui/material/Tooltip";
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -101,27 +102,33 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     };
 
     const handleDocVerify = async () => {
+        let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
+    
         let temp = {
             formId: selectedFormId,
             contentToVerify: "DATA",
             tableName: selectedRowTableName,
             rowId: file?.rowId,
         };
-        await PUT(`application-management-service/application/${applicationId}/verifyForm`, temp)
+    
+        await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${verificationStatus}`, temp)
             .then((response) => {
                 console.log("success");
-                // Update the fileArray with the verified status
+    
+                // Update the fileArray with the correct verified status
                 const updatedFileArray = fileArray.map((record, index) => {
                     if (index === selectedFileIndex) {
-                        return { ...record, isVerified: true };
+                        return { ...record, isVerified: !file?.isVerified }; 
                     }
                     return record;
                 });
+    
                 setFileArray(updatedFileArray);
             })
             .catch((error) => {
                 console.log(error);
             });
+    
         getPreApplication();
     };
 
@@ -189,16 +196,42 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 CLOSE
                                 </div>
                             </div>
-                    {file?.isVerified === true ? (
-                            <div className={`${style.greenButtonVerify} ${style.cursorPointer}`}>
-                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                        {file?.isVerified ? (
+                            <div className={`${style.displayInRow} ${style.cursorPointer}`}>
+                                <Tooltip title="Click To Revert Verification">
+                                <div 
+                                    className={`${style.greenButtonVerify} ${style.buttonGreyTextStyle} ${style.alignCenter}`} 
+                                    onClick={handleDocVerify}
+                                >
                                     VERIFIED
+                                </div>
+                                </Tooltip>
+                                <div 
+                                    className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`} 
+                                    onClick={handleNext}
+                                >
+                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        NEXT
+                                    </div>
                                 </div>
                             </div>
                         ) : (
-                            <div className={`${style.purpleButtonVerify} ${style.cursorPointer}`} onClick={handleDocVerify}>
-                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                            <div className={`${style.displayInRow} ${style.cursorPointer}`}>
+                                <Tooltip title="Click To Verify">
+                                <div 
+                                    className={`${style.purpleButtonVerify} ${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                    onClick={handleDocVerify}
+                                >
                                     VERIFY
+                                </div>
+                                </Tooltip>
+                                <div 
+                                    className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`} 
+                                    onClick={handleNext}
+                                >
+                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        NEXT
+                                    </div>
                                 </div>
                             </div>
                         )}

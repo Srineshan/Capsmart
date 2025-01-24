@@ -84,10 +84,17 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             )}
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
-                                                    <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                    <div>
+                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                        {(data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0) && (
+                                                            data?.unFilledFields?.map((innerData, innerIndex) => (
+                                                                <div className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{`${innerIndex + 1}. ${innerData}`}</div>
+                                                            ))
+                                                        )}
+                                                    </div>
                                                     {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                                 </div>
-                                                <div>{(!data?.acknowledged || errorSchema === data?.schemaCategory) ? <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />}</div>
+                                                <div>{(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0)) ? <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />}</div>
                                             </div>
                                             {/* {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
                                                 <>

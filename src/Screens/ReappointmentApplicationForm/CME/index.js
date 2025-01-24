@@ -29,6 +29,8 @@ import DeleteIcon from './../../../images/deleteHcRow.png';
 import MenuIcon from "@mui/icons-material/Menu";
 import Tooltip from "@mui/material/Tooltip";
 import Close from './../../../images/close.png';
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -70,6 +72,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [selectedFile, setselectedFile] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [notes, setNotes] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -85,6 +88,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
+        setNotes(basicForm?.forms?.[formIndex]?.data?.notes !== undefined ? basicForm?.forms?.[formIndex]?.data?.notes : '')
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -109,6 +113,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
         console.log(fileMetadata, file, fields, 'fields')
     }, [fileMetadata])
+
+    useEffect(() => {
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25) {
+            setIsChecked(false)
+            setIsSigned(false);
+        }
+    }, [basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours])
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -335,12 +346,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
+        tempData.notes = notes;
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: basicForm?.forms?.[formIndex]?.data,
+            data: tempData,
             unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
             acknowledged: true,
-            esign: basicForm?.forms?.[formIndex]?.esign !== null ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            esign: (basicForm?.forms?.[formIndex]?.esign !== null && isSigned) ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -486,11 +498,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                             </div>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? style.disabled : ''}>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
                                                 <span>
-                                                    <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                    <CommonCheckBox checked={isChecked} onChange={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                                                 </span>
                                             )}
                                             <div
@@ -519,6 +531,49 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         )}
                                     </div>
                                 </div>
+                                {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && (
+                                    <div>
+                                        <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                                        <div className={style.marginTop10}>
+                                            <CKEditor
+                                                editor={ClassicEditor}
+                                                data={notes}
+                                                onChange={(event, editor) => {
+                                                    const data = editor.getData();
+                                                    setNotes(data);
+                                                }}
+                                                onReady={(editor) => {
+                                                    editor.editing.view.change((writer) => {
+                                                        writer.setStyle(
+                                                            "height",
+                                                            "150px",
+                                                            editor.editing.view.document.getRoot()
+                                                        );
+                                                    });
+                                                }}
+                                                config={{
+                                                    placeholder: "Type your content here...",
+                                                    toolbar: {
+                                                        shouldNotGroupWhenFull: true,
+                                                        sticky: true,
+                                                        items: [
+                                                            'undo', 'redo',
+                                                            '|',
+                                                            'heading',
+                                                            '|',
+                                                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                            '|',
+                                                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                            '|',
+                                                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                        ],
+                                                    },
+                                                    autoGrow: false,
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>

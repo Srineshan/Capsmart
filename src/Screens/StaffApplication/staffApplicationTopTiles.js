@@ -491,12 +491,13 @@ const StaffApplicationTopTiles = () => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
+  const workModeType = sessionStorage.getItem('workModeType')
 
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&role=${workModeType}`
       );
 
       if (response?.data) {
@@ -570,12 +571,12 @@ const StaffApplicationTopTiles = () => {
     const clarifications = parseInt(countsObj.clarificationsRequired) || 0;
     
     // For Department Head, show only level-2 count
-    if (userRole?.includes("Department Head")) {
+    if (workModeType === "Department Head") {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
     
     // For Credentialing Committee, show only level-3 count
-    if (userRole?.includes("Credentialing Committee")) {
+    if (workModeType === "Credentialing Committee") {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
     

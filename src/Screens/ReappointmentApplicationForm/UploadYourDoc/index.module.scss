@@ -485,12 +485,26 @@
 
 .fileLoadingStyle {
     height: auto;
-    width: 40%;
+    width: 60%;
     object-fit: contain;
 
     @media (max-width: 1130px) {
         width: 20%;
     }
+}
+
+.uploadContainer {
+    background-color: #FFF;
+    padding: 40px;
+    border-radius: 20px;
+    transition: all 5s ease-in-out;
+}
+
+.fileImportingMsg {
+    text-align: center;
+    font: normal normal bold 20px/28px Proxima Nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
 }
 
 .loadingOverlay {
@@ -648,5 +662,86 @@
 
     @media (max-width: 1130px) {
         grid-template-columns: 1fr;
+    }
+}
+
+.rotating_text {
+    position: relative;
+    height: 1.5rem;
+    /* Adjust this based on your text height */
+    overflow: hidden;
+}
+
+.rotating_text span {
+    display: block;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    white-space: nowrap;
+    font-weight: 500;
+    font-size: 1.1rem;
+    left: 0;
+    opacity: 0;
+    transform: translateY(100%);
+    color: #2C2C2C;
+    animation: rotateWord 24s linear infinite;
+}
+
+.rotating_text span:nth-child(1) {
+    animation-delay: 1s;
+}
+
+.rotating_text span:nth-child(2) {
+    animation-delay: 3s;
+}
+
+.rotating_text span:nth-child(3) {
+    animation-delay: 6s;
+}
+
+.rotating_text span:nth-child(4) {
+    animation-delay: 9s;
+}
+
+.rotating_text span:nth-child(5) {
+    animation-delay: 12s;
+}
+
+.rotating_text span:nth-child(6) {
+    animation-delay: 15s;
+}
+
+.rotating_text span:nth-child(7) {
+    animation-delay: 18s;
+}
+
+.rotating_text span:nth-child(8) {
+    animation-delay: 21s;
+}
+
+@keyframes rotateWord {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    50% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
     }
 }

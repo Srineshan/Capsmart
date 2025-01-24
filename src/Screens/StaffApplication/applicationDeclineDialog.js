@@ -257,8 +257,8 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const handleApplicationReject = async () => {
     try {
-      const files = (uploadFileData || []).map((file, index) => ({
-        ...file,              
+      const files = (uploadFileData || []).map((item, index) => ({
+        ...item.file,              
         description: documentDesc[index] || "",
         title: documentTitle[index] || "", 
       }));
@@ -346,30 +346,30 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       return isChecked.isChecked
   };
 
-  const getUserRole = (selectedTab) => {
-    switch (selectedTab) {
-      case "level-1":
-        return "Staff Manager";
-      case "level-2":
-        return "Department Head";
-      case "level-3":
-        if (userRole?.includes("Credentialing Committee")) {
-          return "Credentialing Committee";
-        }
-        if (userRole === "Chief Of Staff") {
-          return "Chief Of Staff";
-        }
-        return "Credentialing Committee";
-      case "level-4":
-        return "Advisory Committee";
-      case "level-5":
-        return "Board";
-      default:
-        return "";
-    }
-  };
+  // const getUserRole = (selectedTab) => {
+  //   switch (selectedTab) {
+  //     case "level-1":
+  //       return "Staff Manager";
+  //     case "level-2":
+  //       return "Department Head";
+  //     case "level-3":
+  //       if (userRole?.includes("Credentialing Committee")) {
+  //         return "Credentialing Committee";
+  //       }
+  //       if (userRole === "Chief Of Staff") {
+  //         return "Chief Of Staff";
+  //       }
+  //       return "Credentialing Committee";
+  //     case "level-4":
+  //       return "Advisory Committee";
+  //     case "level-5":
+  //       return "Board";
+  //     default:
+  //       return "";
+  //   }
+  // };
 
-  const userRoleTab = getUserRole(selectedTab);
+  // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");

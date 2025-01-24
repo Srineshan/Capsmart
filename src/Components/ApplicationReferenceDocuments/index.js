@@ -47,39 +47,70 @@ const ApplicationReferenceDocuments = () => {
   return (
     <div className={style.referenceDocumentParentCard}>
       <div className={style.referenceDocumentTitle}>Your Reappointment Documents</div>
-      {tableData?.length > 0 ? (
-        tableData.map((document, index) => {
-          console.log(document); // Log the document object for debugging
+      {(tableData?.length > 0 || basicForm?.payment?.invoice?.fileURL !== undefined) ? (
+        <>
+          {tableData?.map((document, index) => {
+            console.log(document); // Log the document object for debugging
 
-          // Determine the icon to show based on file type
-          const docIcon =
-            document?.fileType === "application/pdf"
-              ? PDFDocs
-              : document?.fileType?.startsWith("image/")
-                ? imgDocs
-                : null;
+            // Determine the icon to show based on file type
+            const docIcon =
+              document?.fileType === "application/pdf"
+                ? PDFDocs
+                : document?.fileType?.startsWith("image/")
+                  ? imgDocs
+                  : null;
 
-          return (
+            return (
+              <div
+                className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                key={index}
+              >
+                <div className={style.fullWidth}>
+                  <div className={`${style.documentsGrid} ${style.verticalAlignCenter}`}>
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                      {docIcon && (
+                        <img
+                          src={docIcon}
+                          alt="Document Type Icon"
+                          className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
+                          onClick={() => openDialog(document)}
+                        />
+                      )}
+                      <div
+                        className={style.documentNameStyle}
+                        onClick={() => openDialog(document)}
+                      >
+                        {document?.documentType}
+                      </div>
+                    </div>
+                    <div
+                      className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
+                    >
+                      <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          {basicForm?.payment?.invoice?.fileURL !== undefined && (
             <div
               className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
-              key={index}
             >
               <div className={style.fullWidth}>
                 <div className={`${style.documentsGrid} ${style.verticalAlignCenter}`}>
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                    {docIcon && (
-                      <img
-                        src={docIcon}
-                        alt="Document Type Icon"
-                        className={style.docTypeImgStyle}
-                        onClick={() => openDialog(document)}
-                      />
-                    )}
+                    <img
+                      src={PDFDocs}
+                      alt="Document Type Icon"
+                      className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
+                      onClick={() => openDialog(basicForm?.payment?.invoice)}
+                    />
                     <div
                       className={style.documentNameStyle}
-                      onClick={() => openDialog(document)}
+                      onClick={() => openDialog(basicForm?.payment?.invoice)}
                     >
-                      {document?.documentType}
+                      Payment Receipt
                     </div>
                   </div>
                   <div
@@ -90,10 +121,10 @@ const ApplicationReferenceDocuments = () => {
                 </div>
               </div>
             </div>
-          );
-        })
+          )}
+        </>
       ) : (
-        <div className={style.noDocumentsMessage}>No documents available.</div>
+        <div className={style.noDocumentsMessage}>No documents uploaded.</div>
       )}
       {isDialogOpen && (
         <FileDisplayDialog getIsOpen={setIsDialogOpen} file={selectedFile} />

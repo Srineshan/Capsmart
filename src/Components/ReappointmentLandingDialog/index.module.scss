@@ -2,7 +2,8 @@
 
 .welcomeDialog {
     height: 75%;
-    width: 80% !important;
+    width: 70% !important;
+
     @media (max-width: 806px) {
         width: 100% !important;
     }
@@ -21,6 +22,7 @@
     background: $primarycolor 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
+
     @media (max-width: 806px) {
         background: #fff 0% 0% no-repeat padding-box !important;
         border-radius: 0 !important;
@@ -36,6 +38,7 @@
     border-radius: 12px;
     padding: 20px;
     margin: -20px -40px 0 -40px;
+
     @media (max-width: 806px) {
         border-radius: 0;
         box-shadow: none;
@@ -109,8 +112,8 @@
 }
 
 .daysToComplete {
-    display: none; 
-  
+    display: none;
+
     @media (max-width: 806px) {
         width: 98%;
         background-color: #06617A;
@@ -125,18 +128,19 @@
 
 .welcomeText {
     text-align: left;
-    font: normal normal bold 38px/45px proxima-nova;
+    font: normal normal bold 28px/35px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
     display: block;
+
     @media (max-width: 806px) {
         display: none;
     }
 }
 
 .headerData {
-    display: none; 
-  
+    display: none;
+
     @media (max-width: 806px) {
         display: flex;
         align-items: center;
@@ -157,7 +161,7 @@
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal normal 20px/26px proxima-nova;
+    font: normal normal normal 17px/26px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
 }
@@ -205,12 +209,13 @@
     color: #FFFFFF;
     text-transform: uppercase;
     margin: 0 30px;
+
     @media (max-width: 806px) {
-       font: normal normal normal 14px proxima-nova;
-       letter-spacing: 0px;
-       margin: 0 10px;
-       opacity: 1;
-       text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+        font: normal normal normal 14px proxima-nova;
+        letter-spacing: 0px;
+        margin: 0 10px;
+        opacity: 1;
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
     }
 }
 
@@ -222,11 +227,12 @@
     text-transform: uppercase;
     opacity: 0.7;
     z-index: 1;
+
     @media (max-width: 806px) {
         font: normal normal normal 14px proxima-nova;
         opacity: 1;
         text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
-     }
+    }
 }
 
 .linkStyle {
@@ -250,16 +256,17 @@
     cursor: pointer;
     width: 240px;
     transition: background-color 0.3s ease;
-     @media (max-width: 806px) {
-       width: 100%;
+
+    @media (max-width: 806px) {
+        width: 100%;
     }
 }
 
 .continue:hover {
-    background: #044D61 0% 0% no-repeat padding-box; 
-    box-shadow: 0px 3px 12px #00000052; 
-    border-radius: 8px; 
-    opacity: 1; 
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .saveInProgress {
@@ -278,12 +285,12 @@
     transition: background-color 0.3s ease;
 }
 
-.saveInProgress:hover { 
+.saveInProgress:hover {
     background: #F1F6F7 0% 0% no-repeat padding-box;
-    box-shadow: 0px 3px 12px #00000052; 
+    box-shadow: 0px 3px 12px #00000052;
     border: 0.5px solid #9AAFB5;
     border-radius: 8px;
-    opacity: 1; 
+    opacity: 1;
 }
 
 .displayInRow {
@@ -301,6 +308,7 @@
     display: flex;
     align-items: center;
     height: 100%;
+
     @media (min-width: 806px) {
         display: none;
     }
@@ -456,13 +464,14 @@
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 5px;
     margin-top: 0 !important;
+
     @media (max-width: 806px) {
         margin-top: 10px !important;
     }
 }
 
 .imageCard {
-    width: 100%; 
+    width: 100%;
     height: 100%;
     max-width: none;
     object-fit: contain;
@@ -472,22 +481,22 @@
 }
 
 .reappointmentLandingImage {
-    width: 100%; 
-    height: 100%;
+    width: 100%;
+    height: 400px;
     max-width: none;
     object-fit: contain;
 }
 
 @media (max-width: 1050px) {
     .imageCard {
-        width: 100%; 
+        width: 100%;
         height: 100%;
     }
 
     .reappointmentLandingImage {
-        width: 100%; 
+        width: 100%;
         height: 100%;
-        max-width: none; 
+        max-width: none;
     }
 
     .descriptionStyle {
@@ -499,28 +508,29 @@
     .descriptionStyle {
         font: normal normal normal 16px proxima-nova;
     }
+
     .logoStyle {
-        display:none;
+        display: none;
     }
 }
 
 .reappointmentCard {
     background: #14358F0A 0% 0% no-repeat padding-box;
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 20px 10px 20px;
     margin-right: 60px;
+
     @media (max-width: 806px) {
         margin-right: 0;
     }
 }
 
 .disable {
-    opacity: 0.5 !important; 
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
 
 .disabled:hover {
-    opacity: 0.5 !important; 
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
-

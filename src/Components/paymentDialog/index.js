@@ -11,7 +11,7 @@ import { GET } from '../../Screens/dataSaver';
 const stripePromise = loadStripe('pk_test_51OPIp6SJfzua1uDJrMdrq3o5Sfq9wWdv7y3Ev62RkNJEHGrHdMRcrLrxzNMMXiQTCvi9eR3QuvzxqY1OTMPv9mnp003pgscIaj');
 
 
-const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
+const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applicantName }) => {
     const [formIndex, setFormIndex] = useState();
     const [isContinue, setIsContinue] = useState(false);
     const [showThirdPartyDialog, setShowThirdPartyDialog] = useState(false);
@@ -97,7 +97,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData }) => {
                 </div>
             </Dialog >
             {showThirdPartyDialog && (
-                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} paymentListData={paymentListData} />
+                <ThirdPartyDialog getIsOpen={getIsShowThirdPartyDialog} continueClick={continueClickFunc} paymentListData={paymentListData} applicantName={applicantName} />
             )}
         </>
     )
