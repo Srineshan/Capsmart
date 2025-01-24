@@ -1578,7 +1578,7 @@ const ApplicationFieldCard = ({
                           'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
                           '|',
                           'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                      ],
+                        ],
                       },
                       autoGrow: false,
                     }}
@@ -1716,7 +1716,7 @@ const ApplicationFieldCard = ({
             if (minDateForDate2) {
               return minDateForDate2; // Date2 > Date1 logic
             }
-            if(shouldSetMaxDateForBirthday) {
+            if (shouldSetMaxDateForBirthday) {
               return minDateForBirthday
             }
             return null; // Default
@@ -1795,7 +1795,7 @@ const ApplicationFieldCard = ({
                     fieldKey,
                     fieldData.format === "date-time"
                       ? format(new Date(newValue), "yyyy-MM-dd'T'HH:mm:ss'Z'")
-                      : format(new Date(newValue), "yyyy-MM-dd"),
+                      : format(new Date(newValue), "yyyy-MM-dd'T'00:00"),
                     baseKey
                   )
                 }
@@ -2680,7 +2680,7 @@ const ApplicationFieldCard = ({
     delete basicForm[baseKey];
     delete basicForm.undefined;
     getIsSubmitClicked(true);
-    setIsChanged(false);
+    // setIsChanged(false);
   };
 
   const isValidDateString = (dateString) => {
@@ -3014,21 +3014,21 @@ const ApplicationFieldCard = ({
                                 }
                                 : () => { }
                             }
-                             disabled={!isEdited}
+                            disabled={!isEdited}
                           >
                             UPDATE
                           </button>
                         </div>
-                        <div>
+                        {/* <div>
                           <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => {
-                              setIsChanged(false);
+                              // setIsChanged(false);
                             }}
                           >
                             CANCEL
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     ) : (
                       <div

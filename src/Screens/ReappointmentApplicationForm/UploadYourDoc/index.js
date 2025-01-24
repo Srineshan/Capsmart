@@ -42,6 +42,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import ESignature from '../../../Components/ESignature';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -79,7 +80,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(eSignTypeContent + dateTime, publicKey).toString());
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
-     const [showInfo, setShowInfo] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -532,7 +533,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
                 >
-                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                    <div className={style.uploadContainer}>
+                        <div className={style.fileImportingMsg}>We are importing your documents and extracting the required data.</div>
+                        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                        <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
+                        {/* <div className={style.rotating_text}>
+                            {['text', 'text 2', 'text 3', 'text 4']?.map((message) => (
+                                <span key={message}>{message}</span>
+                            ))}
+                        </div> */}
+                    </div>
                 </div>
             )}
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
@@ -665,7 +675,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             />
                         </div>
                         <div className={style.tableContainer}>
-                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (     
+                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                                 <TableTwo
                                     tableHeaderValues={[
                                         "",
@@ -684,8 +694,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     tableSortValues={[]}
                                     heading={"You have not yet uploaded any documents."}
                                     onClickFunction={() => { }}
-                                />  
-                            )} 
+                                />
+                            )}
                         </div>
                         <input
                             type="file"
@@ -778,35 +788,41 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> 
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
 
                 <div>
-                {!showInfo && (
+                    {!showInfo && (
                         <div>
                             <div className={`${style.toggleButton} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
-                        || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Required Documents</span>
-                                </div>
-                        </div>        
+                            </div>
+                        </div>
                     )}
-                <div>
-                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
-                    <ApplicationAssistanceCard
-                        user={"Neena Greenly"}
-                        designation={"{Designation}"}
-                        contactNumber={"{Contact Number}"}
-                        email={"{Email}"}
-                    />
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard
+                                    user={"Neena Greenly"}
+                                    designation={"{Designation}"}
+                                    contactNumber={"{Contact Number}"}
+                                    email={"{Email}"}
+                                />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
+
                     </div>
-                 
-                  </div>
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>

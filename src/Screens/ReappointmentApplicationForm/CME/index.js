@@ -29,6 +29,8 @@ import DeleteIcon from './../../../images/deleteHcRow.png';
 import MenuIcon from "@mui/icons-material/Menu";
 import Tooltip from "@mui/material/Tooltip";
 import Close from './../../../images/close.png';
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -51,9 +53,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [isLoading, setIsLoading] = useState(false);
     const [yesOrNoCMETranscript, setYesOrNoCMETranscript] = useState('');
     const [files, setFiles] = useState([]);
-    const [updatedDateCMETranscript, setUpdatedDateCMETranscript] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [updatedDateCMETranscript, setUpdatedDateCMETranscript] = useState(format(new Date(), "yyyy-MM-dd'T'00:00"));
     const [yesOrNoCME, setYesOrNoCME] = useState('');
-    const [updatedDateCME, setUpdatedDateCME] = useState(format(new Date(), 'yyyy-MM-dd'));
+    const [updatedDateCME, setUpdatedDateCME] = useState(format(new Date(), "yyyy-MM-dd'T'00:00"));
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
     const [dateTime, setDateTime] = useState(new Date().toISOString());
     const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(name + dateTime, publicKey).toString());
@@ -70,6 +72,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     const [selectedFile, setselectedFile] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [notes, setNotes] = useState('');
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -77,7 +80,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         if (basicForm !== undefined && formIndex !== undefined) {
             setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
             if (basicForm?.forms[formIndex]?.data !== null) {
-                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : basicForm?.forms?.[formIndex]?.data?.cmeCertificates !== undefined ? 'Yes' : 'No');
+                setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : (basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== undefined) ? 'Yes' : 'No');
             }
             if (basicForm?.forms[formIndex]?.data !== null) {
                 setYesOrNoCMETranscript(basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : 'No');
@@ -85,6 +88,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         setIsChecked(basicForm?.forms?.[formIndex]?.acknowledged);
+        setNotes(basicForm?.forms?.[formIndex]?.data?.notes !== undefined ? basicForm?.forms?.[formIndex]?.data?.notes : '')
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -109,6 +113,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         }
         console.log(fileMetadata, file, fields, 'fields')
     }, [fileMetadata])
+
+    useEffect(() => {
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25) {
+            setIsChecked(false)
+            setIsSigned(false);
+        }
+    }, [basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours])
 
     const getIsValidationDialogOpen = (value) => {
         setShowValidationDialog(value);
@@ -316,7 +327,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             return null;
         }
     };
-    
+
 
     const getDocument = async (rowId) => {
         const { data: response } = await GET(
@@ -327,7 +338,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         setFile(response?.file);
         setFileMetadata(response?.metaData);
         setApplicationDocumentId(response?.id);
-        console.log("fffffff",fields)
+        console.log("fffffff", fields)
     }
 
 
@@ -335,12 +346,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
+        tempData.notes = notes;
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-            data: basicForm?.forms?.[formIndex]?.data,
+            data: tempData,
             unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
             acknowledged: true,
-            esign: basicForm?.forms?.[formIndex]?.esign !== null ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            esign: (basicForm?.forms?.[formIndex]?.esign !== null && isSigned) ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -405,13 +417,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 >
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), 'yyyy-MM-dd')); setShowUploadDialog(true) }}
+                                        onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
                                     >
                                         YES
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), 'yyyy-MM-dd')) }}
+                                        onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                                     >
                                         NO
                                     </div>
@@ -455,14 +467,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         <div className={style.cmeCard}>
                                             <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
                                             <div className={`${style.twoCol} ${style.marginTop}`}>
-                                            <Tooltip 
-                                                    title="Click Here to Edit" 
-                                                    arrow 
+                                                <Tooltip
+                                                    title="Click Here to Edit"
+                                                    arrow
                                                     {...(!basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file && { open: false })}
                                                 >
-                                                <div className={`${style.cmeHourCard} ${style.cursorPointer} `} onClick={() => {
+                                                    <div className={`${style.cmeHourCard} ${style.cursorPointer} `} onClick={() => {
                                                         const fileData = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file;
-                                                        const rowId = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;      
+                                                        const rowId = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;
                                                         if (!fileData) {
                                                             setShowFileWithFields(false);
                                                         } else {
@@ -470,13 +482,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                             getDocument(rowId);
                                                         }
                                                     }}>
-                                                    <div className={style.totalText}>Your Total</div>
-                                                    <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
-                                                    <div className={style.totalText}>Credits / Hours</div>
-                                                    {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
-                                                        <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
-                                                    )}
-                                                </div>
+                                                        <div className={style.totalText}>Your Total</div>
+                                                        <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                                                        <div className={style.totalText}>Credits / Hours</div>
+                                                        {(25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                            <div className={style.hourRemainingText}>{25 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                                                        )}
+                                                    </div>
                                                 </Tooltip>
                                                 <div className={style.cmeHourCard}>
                                                     <div className={style.totalText}>Required</div>
@@ -486,11 +498,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                             </div>
                                         </div>
                                     </div>
-                                    <div>
+                                    <div className={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? style.disabled : ''}>
                                         <div className={`${style.checkGrid}`}>
                                             {formContent?.disclaimer?.content !== null && (
                                                 <span>
-                                                <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                    <CommonCheckBox checked={isChecked} onChange={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                                                 </span>
                                             )}
                                             <div
@@ -519,6 +531,49 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         )}
                                     </div>
                                 </div>
+                                {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && (
+                                    <div>
+                                        <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                                        <div className={style.marginTop10}>
+                                            <CKEditor
+                                                editor={ClassicEditor}
+                                                data={notes}
+                                                onChange={(event, editor) => {
+                                                    const data = editor.getData();
+                                                    setNotes(data);
+                                                }}
+                                                onReady={(editor) => {
+                                                    editor.editing.view.change((writer) => {
+                                                        writer.setStyle(
+                                                            "height",
+                                                            "150px",
+                                                            editor.editing.view.document.getRoot()
+                                                        );
+                                                    });
+                                                }}
+                                                config={{
+                                                    placeholder: "Type your content here...",
+                                                    toolbar: {
+                                                        shouldNotGroupWhenFull: true,
+                                                        sticky: true,
+                                                        items: [
+                                                            'undo', 'redo',
+                                                            '|',
+                                                            'heading',
+                                                            '|',
+                                                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                            '|',
+                                                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                            '|',
+                                                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                        ],
+                                                    },
+                                                    autoGrow: false,
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
@@ -533,13 +588,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 >
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
-                                        onClick={() => { setSelectedUpload('certificate'); setYesOrNoCME('Yes'); setUpdatedDateCME(format(new Date(), 'yyyy-MM-dd')); setShowUploadDialog(true) }}
+                                        onClick={() => { setSelectedUpload('certificate'); setYesOrNoCME('Yes'); setUpdatedDateCME(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
                                     >
                                         YES
                                     </div>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                                        onClick={() => { setYesOrNoCME('No'); setUpdatedDateCME(format(new Date(), 'yyyy-MM-dd')) }}
+                                        onClick={() => { setYesOrNoCME('No'); setUpdatedDateCME(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                                     >
                                         NO
                                     </div>

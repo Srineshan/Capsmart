@@ -459,13 +459,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               >
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
-                  onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), 'yyyy-MM-dd')) }}
+                  onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   YES
                 </div>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                  onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), 'yyyy-MM-dd')) }}
+                  onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   NO
                 </div>
@@ -496,13 +496,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               >
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
-                  onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), 'yyyy-MM-dd')) }}
+                  onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   YES
                 </div>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                  onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), 'yyyy-MM-dd')) }}
+                  onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                 >
                   NO
                 </div>
@@ -534,13 +534,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 >
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
-                    onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
+                    onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                   >
                     YES
                   </div>
                   <div
                     className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                    onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), 'yyyy-MM-dd')) }}
+                    onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
                   >
                     NO
                   </div>

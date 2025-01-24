@@ -11,7 +11,7 @@ import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 
-const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
+const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicantName }) => {
   const [state, setState] = useState({
     number: '',
     expiry: '',
@@ -20,8 +20,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     focus: '',
   });
   const { applicationId, section, step } = useParams()
-  const merchantId = "383612842";
-  const apiPasscode = "c3c57e781e63444fB66d87caDeC54AC5";
+  const merchantId = process.env.REACT_APP_MERCHANT_ID;
+  const apiPasscode = process.env.REACT_APP_PASSCODE;
   const base64ApiKey = btoa(`${merchantId}:${apiPasscode}`);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
@@ -79,8 +79,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       );
     } catch (error) {
       setPaymentStatus(
-        `Payment Failed! Error: ${error.response?.data?.message || error.message
-        }`
+        `Payment Failed!`
       );
     }
   };
@@ -167,7 +166,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     console.log('payment')
     console.log(file, file?.name, 'Test')
     let fileName = {
-      "fileName": 'payment.pdf'
+      "fileName": `${applicantName}_Reappointment_Fee_${format(new Date(), 'dd_MM_yyyy')}.pdf`
     };
     const formData = new FormData();
 
@@ -238,7 +237,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
     }
 
     try {
-      await PUT(`application-management-service/application/${applicationId}/payment`, temp);
+      await PUT(`application-management-service/application/${applicationId}/payment`, temp)
+        .then(response => {
+          handleSendReceipt()
+        })
     } catch (error) {
       console.log(error);
     }
@@ -268,6 +270,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData }) => {
       addNewDocument(pdfBlob, data);
     });
   };
+
+  const handleSendReceipt = async () => {
+    await POST(`application-management-service/application/${applicationId}/sendPaymentReceipt`)
+  }
 
   return (
 

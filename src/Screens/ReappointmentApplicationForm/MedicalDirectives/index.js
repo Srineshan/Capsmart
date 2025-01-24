@@ -507,15 +507,15 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         />
                                     )}
                                 </div>
-                                <div className={style.spaceBetween}>
+                                {/* <div className={`${style.spaceBetween} ${style.marginTop}`}>
                                     <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}></div>
                                     <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
                                     >
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
                                     </div>
-                                </div>
-                                {(attestClicked || medicalDirectivesStatus === 'completed') && (
+                                </div> */}
+                                {(selectedIds.length === selectedMedicalDirectiveList.length || medicalDirectivesStatus === 'completed') && (
                                     <div className={`${style.marginTop10} `}>
                                         <div>
                                             <div className={`${style.checkGrid}`}>
@@ -587,7 +587,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { } : () => handleContinue()}>CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div>
                         </div>
                     </div>
 

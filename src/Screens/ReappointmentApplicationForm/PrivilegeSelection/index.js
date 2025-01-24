@@ -171,6 +171,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const [isHistoricalSign, setIsHistoricalSign] = useState(false);
   const [selectedValue, setSelectedValue] = useState("NA");
   const [dontUpdatePrivilegeState, setDontUpdatePrivilegeState] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
   const theme = createTheme({
     palette: {
       error: {
@@ -200,6 +201,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     }
     // handleSubmitAcknowledgement();
   }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
+
+  useEffect(() => {
+    if (isSubmit) {
+      handleSubmit();
+      setIsSubmit(false);
+    }
+  }, [isSubmit])
 
   useEffect(() => {
     if (departmentChangeYesOrNo !== '') {
@@ -698,7 +706,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         tempHospitalPrivilegeSet = hospitalPrivilegeSet;
         tempHospitalPrivilegeSet[privilegeAtOtherHospitalIndex] = { hospitalName: hospitalName, privileges: hospitalPrivilege, privilegeCategory: hospitalPrivilegeCategory };
       } else {
-        tempHospitalPrivilegeSet = [...(hospitalPrivilegeSet || []), { hospitalName: hospitalName, privileges: hospitalPrivilege, privilegeCategory: hospitalPrivilegeCategory }];
+        if (hospitalName !== "") {
+          tempHospitalPrivilegeSet = [...(hospitalPrivilegeSet || []), { hospitalName: hospitalName, privileges: hospitalPrivilege, privilegeCategory: hospitalPrivilegeCategory }];
+        } else {
+          console.log('updatedP', hospitalPrivilegeSet)
+          tempHospitalPrivilegeSet = hospitalPrivilegeSet;
+        }
       }
       setHospitalName('');
       setHospitalPrivilege('');
@@ -3957,7 +3970,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         className={`${style.docTypeImgStyle} ${style.marginLeft}`}
                         onClick={() => {
                           setHospitalPrivilegeSet(hospitalPrivilegeSet?.filter(privilegeData => data?.hospitalName !== privilegeData?.hospitalName));
-                          handleSubmit()
+                          setIsSubmit(true);
                         }}
                       />
                     </div>
@@ -4665,6 +4678,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             getIsOpen={getIsShowPaymentDialog}
             continueClickFunc={handleContinue}
             paymentListData={paymentListData}
+            applicantName={`${basicForm?.applicant?.name?.firstName}_${basicForm?.applicant?.name?.lastName}`}
           />
         )
       }

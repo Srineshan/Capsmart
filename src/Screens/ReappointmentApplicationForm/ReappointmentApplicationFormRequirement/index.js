@@ -170,11 +170,11 @@ const ReappointmentApplicationFormRequirement = () => {
                 <>
                     {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
                     <div className={`${style.screenBackground} ${showInfo ? "blurredBackground" : ""}`}>
-                        <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
+                        <ApplicationHeader title={`Reappointment Application For ${basicForm?.basicDetails?.applicant?.name?.firstName !== undefined ? basicForm?.basicDetails?.applicant?.name?.firstName : '{First Name}'} ${basicForm?.basicDetails?.applicant?.name?.lastName !== undefined ? basicForm?.basicDetails?.applicant?.name?.lastName?.toLowerCase() : '{Last Name}'}, ${(basicForm?.basicDetails?.applicant?.applicantType !== null) ? basicForm?.basicDetails?.applicant?.applicantType : ''}`} close={true} closeClick={handleLogout} />
                         <div className={style.screenPadding}>
                             <div className={`${style.applicationScreenGrid}`}>
                                 <div>
-                                    <WelcomeCard title={'Before you get started having the documents listed below will expedite the completion of your reappointment application.'} description={''} />
+                                    <WelcomeCard title={<strong>Before you get started having the documents listed below will expedite the completion of your reappointment application.</strong>} description={''} />
                                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                                         <div className={style.titleTextStyle}> List of Documents to Complete this Application</div>
                                         {/* <div className={style.marginTop}>

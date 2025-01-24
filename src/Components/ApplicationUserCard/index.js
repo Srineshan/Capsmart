@@ -4,6 +4,8 @@ import DefaultUserAvatar from "./../../images/defaultUserLogo.jpg";
 import style from "./index.module.scss";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
+import PhoneIcon from "../../images/phoneIcon.png";
+import MailIcon from "../../images/mailIcon.png";
 
 const ApplicationUserCard = ({ user, applyingFor }) => {
   const userDetails = useUser();
@@ -67,17 +69,14 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
             <div
               className={`${style.applyingFor}`}
             >{`Applying As ${basicForm?.basicDetailReferences?.applicantType?.serviceProviderType}`}</div>
-            <div
-              className={`${style.applyingFor} `}
-            >{`${basicForm?.basicDetails?.applicant?.email?.officialEmail}`}</div>
-            <div
-              className={`${style.applyingFor}`}
-            >{`${basicForm?.basicDetails?.applicant?.cellPhone}`}</div>
+            <div className={`${style.displayInRow} ${style.marginTop5} ${style.cursorPointer}`} onClick={() => window.location.href = `mailto:${basicForm?.basicDetails?.applicant?.email?.officialEmail}`}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> {basicForm?.basicDetails?.applicant?.email?.officialEmail}</span> </div>
+            <div className={`${style.displayInRow} ${style.marginTop5}`}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> {basicForm?.basicDetails?.applicant?.cellPhone}</span> </div>
             {/* <div className={`${style.connectToLinkedIn} ${style.marginTop10}`}>Connect To LinkedIn</div> */}
           </div>
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 
