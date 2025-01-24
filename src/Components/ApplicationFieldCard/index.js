@@ -491,6 +491,142 @@ const ApplicationFieldCard = ({
       });
     }
   }, [isMailingAddressSameAsHomeAddress]);
+  
+  useEffect(() => {
+    if (
+      isMailingAddressSameAsHomeAddress !== undefined &&
+      isMailingAddressSameAsHomeAddress !== null &&
+      !isPOD &&
+      (baseKey?.split(".")[0] === "contactAddress1" ||
+        baseKey?.split(".")[0] === "contactAddress2" ||
+        baseKey?.split(".")[0] === "contactAddress3")
+    ) {
+      console.log("isMailingAddress:",isMailingAddressSameAsHomeAddress);
+      setBasicForm((prevData) => {
+        let tempContactAddress2 = { ...prevData };
+        if (
+          tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress2
+            ?.mailingAddress === undefined
+        ) {
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress = {};
+        }
+       
+        if (
+          isMailingAddressSameAsHomeAddress ===
+          "Same as Home Address"
+        ) {
+          tempContactAddress2.contactAddress2 = { mailingAddress: {} };
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.streetName =
+            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+              ?.homeAddress?.streetName !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                ?.homeAddress?.streetName
+              : ""
+              tempContactAddress2.forms[
+                addressPageIndex
+              ].data.contactAddress2.mailingAddress.pinCode =
+                tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                  ?.homeAddress?.pinCode !== undefined
+                  ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                    ?.homeAddress?.pinCode
+                  : "";
+                  tempContactAddress2.forms[
+                    addressPageIndex
+                  ].data.contactAddress2.mailingAddress.city =
+                    tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                      ?.homeAddress?.city !== undefined
+                      ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                        ?.homeAddress?.city
+                      : "";
+                      tempContactAddress2.forms[
+                        addressPageIndex
+                      ].data.contactAddress2.mailingAddress.province =
+                        tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                          ?.homeAddress?.province !== undefined
+                          ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                            ?.homeAddress?.province
+                          : "";
+          tempContactAddress2.contactAddress2 = {
+            mailingAddress: 
+                tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+                  .mailingAddress,
+          };
+        } else if (
+          isMailingAddressSameAsHomeAddress ===
+          "Same as Business Address"
+        ) {
+          tempContactAddress2.contactAddress2 = { mailingAddress: {} };
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.streetName =
+            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.streetName !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.streetName
+              : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.pinCode =
+          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+          ?.business?.businessAddress?.pinCode !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.pinCode
+              : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.city =
+          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+          ?.business?.businessAddress?.city !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.city
+              : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.province =
+          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+          ?.business?.businessAddress?.province !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.province
+              : "";
+          tempContactAddress2.contactAddress2 = {
+            
+              mailingAddress:
+                tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+                  .mailingAddress,
+            
+          };
+        } else {
+          tempContactAddress2.contactAddress2 = {
+             mailingAddress: {} 
+          };
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.streetName = "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.pinCode = "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.city = "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.province = "";
+          tempContactAddress2.contactAddress2 = {
+            
+              mailingAddress:
+                tempContactAddress2.forms[addressPageIndex].data.contactAddress3
+                  .mailingAddress,
+            
+          };
+        }
+        return tempContactAddress2;
+      });
+    }
+  }, [isMailingAddressSameAsHomeAddress]);
 
   useEffect(() => {
     if (
