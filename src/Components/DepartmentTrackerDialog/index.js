@@ -178,9 +178,10 @@ const headerValues = [
   
       staff.push(
         <>
-          {`${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
+          {/* {`${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
             data?.applicant?.name?.firstName.slice(1).toLowerCase()
-            }`}
+            }`} */}
+            {data?.applicant?.name?.firstName} {data?.applicant?.name?.lastName.toLowerCase()}
         </>
       );
 
