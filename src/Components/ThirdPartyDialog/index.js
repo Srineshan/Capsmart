@@ -10,8 +10,11 @@ import { formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../u
 import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import CAPManager from './../../images/capSmartTransparent.png';
+import CambridgeHospital from './../../images/cambridgeHospital.png';
+import PoweredHapiCare from './../../images/PoweredHapiCare.png';
 
-const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicantName }) => {
+const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicantName, basicForm }) => {
   const [state, setState] = useState({
     number: '',
     expiry: '',
@@ -166,7 +169,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
     console.log('payment')
     console.log(file, file?.name, 'Test')
     let fileName = {
-      "fileName": `${applicantName}_Reappointment_Fee_${format(new Date(), 'dd_MM_yyyy')}.pdf`
+      "fileName": `${applicantName}_ReApp_Payment_Receipt_${format(new Date(), 'MMM_dd_yyyy')}.pdf`
     };
     const formData = new FormData();
 
@@ -281,134 +284,203 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
     <Dialog
       isOpen={getIsOpen}
       onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+      className={`${showReceipt ? style.eSignDialogPDF : style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
     >
       <div>
-        <div className={`${style.container} ${style.displayInCol}`}>
-          {/* <div></div>
-          <div className={style.text}>
-            Third Party Payment Gateway
-          </div> */}
-          <div className={style.heading}>Payment Required</div>
-          <div className={style.marginTop}>
-            <Cards
-              number={state.number}
-              expiry={state.expiry}
-              cvc={state.cvc}
-              name={state.name}
-              focused={state.focus}
-            />
-          </div>
-          {/* <form> */}
-          {/* <input
-              type="number"
-              name="number"
-              placeholder="Card Number"
-              value={state.number}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-            /> */}
-          <div className={`${style.marginTop} ${style.fullWidth}`}>
-            <TextField
-              type="tel"
-              name="number"
-              placeholder="Card Number"
-              value={state.number}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              className={`${style.marginTop} ${style.fullWidth}`}
-              inputProps={{
-                pattern: "[\\d| ]{16,22}",
-              }}
-            />
-          </div>
-          <div className={`${style.marginTop} ${style.fullWidth}`}>
-            <TextField
-              type="text"
-              name="amount"
-              placeholder="Amount"
-              value={`${paymentListData?.currencyType}${paymentListData?.fee}`}
-              // onChange={handleInputChange}
-              disabled={true}
-              onFocus={handleInputFocus}
-              className={`${style.marginTop} ${style.fullWidth}`}
-            />
-          </div>
-          <div className={`${style.marginTop} ${style.fullWidth}`}>
-            <TextField
-              type="text"
-              name="name"
-              placeholder="Name on card"
-              value={state.name}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              className={`${style.marginTop} ${style.fullWidth}`}
-            />
-          </div>
-          <div className={`${style.cvvGrid} ${style.marginTop} ${style.fullWidth}`}>
-            <TextField
-              type="tel"
-              name="expiry"
-              placeholder="Valid Thru"
-              value={state.expiry}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              className={style.marginTop}
-              inputProps={{
-                pattern: "\d\d/\d\d",
-              }}
-            />
-            <TextField
-              type="number"
-              name="cvc"
-              placeholder="CVC"
-              value={state.cvc}
-              onChange={handleInputChange}
-              onFocus={handleInputFocus}
-              className={style.marginTop}
-              inputProps={{
-                pattern: "\d{3,4}",
-              }}
-            />
-          </div>
-          {paymentStatus && <p>{paymentStatus}</p>}
-          {showReceipt && (
-            <div className={`${style.receiptContainer}`} ref={targetRef}>
-              {/* Header */}
-              <div className={style.receiptHeader}>
-                <h2>Payment Receipt</h2>
-              </div>
+        {!showReceipt ? (
 
-              {/* Receipt Details */}
-              <div className={style.receiptDetails}>
-                <h3>Transaction Details</h3>
-                <p>
-                  <strong>Description:</strong> Reappointment Application Fee
-                </p>
-                <p>
-                  <strong>Transaction ID:</strong> {paymentInfo?.order_number}
-                </p>
-                <p>
-                  <strong>Date Paid:</strong> {format(new Date(paymentInfo?.created || new Date()), "MMM dd, yyyy HH:mm:ss")}
-                </p>
-                <p>
-                  <strong>Amount Paid:</strong> {paymentInfo?.amount}
-                </p>
-                <p>
-                  <strong>Card Number:</strong>{" "}
-                  <span
-                  >
-                    {paymentInfo?.card?.last_four}
-                  </span>
-                </p>
+          <div className={`${style.container} ${style.displayInCol}`}>
+            <div className={style.heading}>Payment Required</div>
+            <div className={style.marginTop}>
+              <Cards
+                number={state.number}
+                expiry={state.expiry}
+                cvc={state.cvc}
+                name={state.name}
+                focused={state.focus}
+              />
+            </div>
+            <div className={`${style.marginTop} ${style.fullWidth}`}>
+              <TextField
+                type="tel"
+                name="number"
+                placeholder="Card Number"
+                value={state.number}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                className={`${style.marginTop} ${style.fullWidth}`}
+                inputProps={{
+                  pattern: "[\\d| ]{16,22}",
+                }}
+              />
+            </div>
+            <div className={`${style.marginTop} ${style.fullWidth}`}>
+              <TextField
+                type="text"
+                name="amount"
+                placeholder="Amount"
+                value={`${paymentListData?.currencyType}${paymentListData?.fee}`}
+                // onChange={handleInputChange}
+                disabled={true}
+                onFocus={handleInputFocus}
+                className={`${style.marginTop} ${style.fullWidth}`}
+              />
+            </div>
+            <div className={`${style.marginTop} ${style.fullWidth}`}>
+              <TextField
+                type="text"
+                name="name"
+                placeholder="Name on card"
+                value={state.name}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                className={`${style.marginTop} ${style.fullWidth}`}
+              />
+            </div>
+            <div className={`${style.cvvGrid} ${style.marginTop} ${style.fullWidth}`}>
+              <TextField
+                type="tel"
+                name="expiry"
+                placeholder="Valid Thru"
+                value={state.expiry}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                className={style.marginTop}
+                inputProps={{
+                  pattern: "\d\d/\d\d",
+                }}
+              />
+              <TextField
+                type="number"
+                name="cvc"
+                placeholder="CVC"
+                value={state.cvc}
+                onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                className={style.marginTop}
+                inputProps={{
+                  pattern: "\d{3,4}",
+                }}
+              />
+            </div>
+            {paymentStatus && <p>{paymentStatus}</p>}
+            <div className={`${style.continue} ${style.marginLeft} ${style.marginTop}`} onClick={() => { submitPayment(); }} >PAY</div>
+          </div>
+        ) : (
+          <div className={`${style.receiptContainer}`} ref={targetRef}>
+            <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
+              <div><img src={CambridgeHospital} className={style.receiptLogo} alt="" /></div>
+              <div><img src={CAPManager} className={style.receiptLogo} alt="" /></div>
+            </div>
+            <div>
+              <div className={style.receiptHeader}>Payment Receipt</div>
+              <div className={style.receiptNumber}>Transaction ID: {paymentInfo?.order_number}</div>
+              <div className={style.divider}></div>
+            </div>
+
+            {/* Receipt Details */}
+            <div className={style.receiptDetails}>
+              {/* <h3>Transaction Details</h3> */}
+              <div className={`${style.receiptDescription} ${style.marginTop10}`}>
+                This is confirmation for the Reappointment Application Processing Fee that was charged to {basicForm?.applicant?.name?.firstName} {basicForm?.applicant?.name?.lastName}'s Credit Card. Save this receipt for your finance department records. The receipt will also be available from the Staff Account in CAPManager.
+              </div>
+              <div className={style.twoCol}>
+                <div>
+                  <div className={style.marginTop10}>
+                    <div className={style.receiptTo}>Fee Charged To</div>
+                    <div className={style.applicantName}>{`${basicForm?.applicant?.name?.firstName} ${basicForm?.applicant?.name?.lastName}`}</div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Description:
+                    </div>
+                    <div className={style.detailsText}>
+                      Reappointment Application Processing Fee
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Period Start To End:
+                    </div>
+                    <div className={style.detailsText}>
+                      July 1, 2025 To June 30, 2026
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Department / Division:
+                    </div>
+                    <div className={style.detailsText}>
+                      {basicForm?.basicDetails?.departmentSpecialty?.department} {basicForm?.basicDetails?.departmentSpecialty?.specialty !== null ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Staff Type & Privilege Category:
+                    </div>
+                    <div className={style.detailsText}>
+                      {basicForm?.basicDetails?.applicant?.applicantType} - {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div className={style.marginTop10}>
+                    <div className={style.receiptTo}>Transaction Details</div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Transaction ID:
+                    </div>
+                    <div className={style.detailsText}>
+                      {paymentInfo?.order_number}
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Payment Date:
+                    </div>
+                    <div className={style.detailsText}>
+                      {format(new Date(paymentInfo?.created || new Date()), "MMM dd, yyyy HH:mm")}
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Card Used:
+                    </div>
+                    <div className={style.detailsText}>
+                      {paymentInfo?.card?.last_four}
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Payment Gateway:
+                    </div>
+                    <div className={style.detailsText}>
+                      Bambora
+                    </div>
+                  </div>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.receiptDescription}`}>
+                      Total Amount Charged:
+                    </div>
+                    <div className={style.detailsText}>
+                      {paymentListData?.currencyType} {paymentInfo?.amount}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className={`${style.footer} ${style.marginTop10}`}>
+                <div className={style.divider}></div>
+                <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                  <div><img src={PoweredHapiCare} className={style.receiptLogo} alt="" /></div>
+                  <div className={style.copyRight}>Copyright {format(new Date(), 'yyyy')}. All Rights Reserved by HapiCare, Inc.</div>
+                </div>
               </div>
             </div>
-          )}
-          {/* </form> */}
-          <div className={`${style.continue} ${style.marginLeft} ${style.marginTop}`} onClick={() => { submitPayment(); }} >PAY</div>
-        </div>
+          </div>
+        )}
       </div>
     </Dialog>
 

@@ -216,6 +216,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     function checkRoleVisibility(actionsData, workModeType) {
         if (!actionsData.hideForRoles &&
             !actionsData.hideForRoles2 &&
+            !actionsData.hideForRoles3 &&
             !actionsData.showForRoles &&
             !actionsData.showForRoles2) {
             return true;
@@ -224,6 +225,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
             return false;
         }
         if (actionsData.hideForRoles2?.includes(workModeType)) {
+            return false;
+        }
+        if (actionsData.hideForRoles3?.includes(workModeType)) {
             return false;
         }
         if (actionsData.showForRoles && actionsData.showForRoles.includes(workModeType)) {

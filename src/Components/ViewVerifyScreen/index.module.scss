@@ -1805,6 +1805,7 @@ select {
   color: #FFFFFF;
   text-transform: uppercase;
   opacity: 1;
+  padding: 5px;
 }
 
 
@@ -5400,4 +5401,13 @@ input[type="number"] {
   display: grid;
   grid-template-columns: 8% 76% 9%;
   grid-gap: 10px;
+}
+
+.notesTitle{
+  text-align: left;
+  font: normal normal medium 14px/20px Proxima Nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  text-transform: capitalize;
+  opacity: 1;
 }

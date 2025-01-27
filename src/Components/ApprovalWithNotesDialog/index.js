@@ -332,8 +332,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
+        role = "Credentialing Committee";
         title = "Chief Of Staff Review";
       }
     } else if (selectedTab === 'level-4') {
@@ -435,7 +434,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     let notesComments = userRoleComments;
     let isDelegate = true;
 
-    // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
         role = "Department Head";
@@ -451,9 +449,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
-        title = "Chief Of Staff Review";
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -665,11 +662,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                     <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                       <span className={style.rejectionHeadingTextStyle}>
-                      {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                      {formDetails?.basicDetails?.applicant?.name?.firstName
-                      ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                        formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                      : ""}{", "}
+                      {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
                         {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                       </span>
                       <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
