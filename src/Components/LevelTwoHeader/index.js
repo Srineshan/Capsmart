@@ -51,6 +51,7 @@ const LevelTwoHeader = ({
   getAddEntityTypes,
   getEntityTypes,
   onAddClick,
+  hideButton
 }) => {
   const [timeFrame, setTimeFrame] = useState("This Week");
   const [showCustomRangeSelection, setShowCustomRangeSelection] =
@@ -65,8 +66,8 @@ const LevelTwoHeader = ({
         timeFrame === "Last 60 days"
           ? 60
           : timeFrame === "Last 90 days"
-          ? 90
-          : 0;
+            ? 90
+            : 0;
       if (timeFrame === "This Week") {
         setFrom(startOfWeek(new Date()));
         setTo(endOfWeek(new Date()));
@@ -248,15 +249,17 @@ const LevelTwoHeader = ({
 
         {!needHeader && !hideClose && (
           <div>
-            <button
-              className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
-              onClick={handleOpenDialog} // Open dialog on button click
-            >
-              <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
-                <AddIcon />
-                <span> Add New</span>
-              </div>
-            </button>
+            {!hideButton && (
+              <button
+                className={`${style.borderNone} ${style.backgroundBlue} ${style.borderRadius5}`}
+                onClick={handleOpenDialog} // Open dialog on button click
+              >
+                <div className={` ${style.addNewButton} ${style.textColorWhite}`}>
+                  <AddIcon />
+                  <span> Add New</span>
+                </div>
+              </button>
+            )}
             <img
               src={CrossPink}
               alt="cross"
