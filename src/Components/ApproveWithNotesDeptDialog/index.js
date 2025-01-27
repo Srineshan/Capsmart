@@ -95,7 +95,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
     getApplicationUserRoleDept();
     console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
     console.log("selectedRoleDept" + JSON.stringify(selectedRoleDept))
-}, [])
+}, [formDetails])
 
 useEffect(() => {
   console.log('userSelectRole:', userSelectRole);
@@ -242,12 +242,12 @@ useEffect(() => {
   // };
 
   const getApplicationUserRole = async () => {
+    try {
     const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
     const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
     const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
     // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
     const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
-    try {
       const { data: basicFormRole } = await GET(`user/role?role=Credentialing Committee`);
       
       const filteredRoles = basicFormRole.filter((user) => {
@@ -264,7 +264,8 @@ useEffect(() => {
       });
   
       console.log("filteredRoles", filteredRoles);
-  
+      console.log("applicantNameCC",applicantfirstName)
+      console.log("applicantNameCC",applicantlastName)
       const ccDataMember = filteredRoles.filter(
         (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
       );
@@ -295,12 +296,11 @@ useEffect(() => {
   // };
 
   const getApplicationUserRoleDept = async () => {
-    const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
-    const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
-    const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
-    // const applicantDepartmentId = "66dc4b370e34d3372e43f009"
-    const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
     try {
+      const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
+      const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
+      const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
+      const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
       const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
   
       const filteredRoles = basicFormRole.filter((user) => {
@@ -324,6 +324,8 @@ useEffect(() => {
       });
   
       console.log("filteredRoles", filteredRoles);
+      console.log("applicantName",applicantfirstName)
+      console.log("applicantName",applicantlastName)
       const deptDataMember = filteredRoles.filter(
               (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
             );
@@ -375,7 +377,7 @@ useEffect(() => {
     const hasValidComments = userRoleComments.trim() !== '';
     const hasValidDate = selectedDateForDept !== null ; 
     const hasValidMember = selectedRoleCred !== '';
-    // const hasValidMemberDept = selectedRoleDept !== '';
+    const hasValidMemberDept = selectedRoleDept !== '';
     
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
@@ -384,10 +386,10 @@ useEffect(() => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
       
-      setIsApproveEnabled(hasValidComments && hasValidMember  && hasValidDate && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidComments && hasValidMember  && hasValidDate);
+      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate);
     }
   };
 
@@ -437,12 +439,14 @@ useEffect(() => {
   };
 
   const handleApplicationApprove = async () => {
+            let role;
             let title;
             const files = (uploadFileData || []).map((item, index) => ({
               ...item.file,              
               description: documentDesc[index] || "",
               title: documentTitle[index] || "", 
             }));
+            let isDelegate = true;
             if (selectedTab === 'level-2') {
             if (workModeType === "Department Head") {
               title = "Dept. Head / Chief Review";
@@ -460,11 +464,19 @@ useEffect(() => {
           } else if (selectedTab === 'level-5') {
             title = "BOD Approval";
           } else if (selectedTab === 'level-1') {
-            title = "Staff Manager Verification";
+            if (workModeType === "Staff Manager") {
+              role = "Staff Manager";
+              isDelegate = false;
+              title = "Staff Manager Verification";
+            } else {
+              role = "Staff Manager";
+              title = "Staff Manager Verification";
+            }
           }
 
         const payload = {
           // notes: userRoleComments,
+          role: isDelegate ? role : "",
           notes: {
             notes: userRoleComments
           },
@@ -499,7 +511,7 @@ useEffect(() => {
         };
         
       await PUT(
-        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=false&approvalType=VERIFIED_AND_ACCEPTED`,
+        `application-management-service/application/${id}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=VERIFIED_AND_ACCEPTED`,
         payload
       ) 
       .then(response => {
@@ -512,13 +524,14 @@ useEffect(() => {
   };
 
   const getApplicationMoveToNext = async () => {
-
+   let role;
    let title;
    const files = (uploadFileData || []).map((item, index) => ({
     ...item.file,              
     description: documentDesc[index] || "",
     title: documentTitle[index] || "", 
   }));
+  let isDelegate = true;
        if (selectedTab === 'level-2') {
         if (workModeType === "Department Head") {
           title = "Dept. Head / Chief Review";
@@ -536,12 +549,20 @@ useEffect(() => {
       } else if (selectedTab === 'level-5') {
         title = "BOD Approval";
       } else if (selectedTab === 'level-1') {
-        title = "Staff Manager Verification";
+        if (workModeType === "Staff Manager") {
+          role = "Staff Manager";
+          isDelegate = false;
+          title = "Staff Manager Verification";
+        } else {
+          role = "Staff Manager";
+          title = "Staff Manager Verification";
+        }
       }
 
 
     const payload = {
       // notes: userRoleComments,
+      role: isDelegate ? role : "",
       notes: {
         notes: userRoleComments
       },
@@ -571,7 +592,7 @@ useEffect(() => {
        upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=false`, payload)
+    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, payload)
       .then(response => {
         console.log('successfull');
         onClose();

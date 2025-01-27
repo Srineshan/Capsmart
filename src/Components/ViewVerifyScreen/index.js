@@ -4242,13 +4242,13 @@ const NewActiveApplication = ({
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
-       title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  ${form?.basicDetails?.applicant?.name?.lastName !== undefined
-        ?  form?.basicDetails?.applicant?.name?.lastName.toUpperCase()
-          : "{Last Name}"
-        }, ${form?.basicDetails?.applicant?.name?.firstName !== undefined
-          ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase()+form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
+       title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+          ? form?.basicDetails?.applicant?.name?.firstName
         : "{First Name}"
-        }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+        } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+          ?  form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
+            : "{Last Name}"
+          }, ${form?.basicDetails?.applicant?.applicantType !== undefined
           ? form?.basicDetails?.applicant?.applicantType
           : "{Applicant Type}"
         }`}
@@ -4289,12 +4289,12 @@ const NewActiveApplication = ({
                           <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
-                                {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
-                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
+                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "}
+                                  : ""}{", "} */}
                                 {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
@@ -4410,12 +4410,12 @@ const NewActiveApplication = ({
                           <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
-                                {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""} */}
-                                {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                              {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
+                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "}
+                                  : ""}{", "} */}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
                                 {/* {form?.displayId || ""} */}
@@ -4496,7 +4496,7 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                        <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
                         <div className={style.greyDotTextStyle}>
                           Overall Review Status
                         </div>
@@ -4841,9 +4841,8 @@ const NewActiveApplication = ({
                                           form,
                                           "basicDetails.departmentSpecialty.department"
                                         ) ===
-                                        form1.if.properties.departmentSpecialty.properties
-                                          .department.const &&
-                                        form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                                        form1?.if?.properties?.departmentSpecialty?.properties?.department?.const &&
+                                        form1?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(
                                           getValueByPath(
                                             form,
                                             "basicDetails.departmentSpecialty.specialty"
@@ -5337,8 +5336,8 @@ const NewActiveApplication = ({
                                             <>
                                               {logDetails?.logs && Array.isArray(logDetails.logs) && (
                                                 (() => {
-                                                  const isMatch = logDetails.logs.some((log) => {
-                                                    if (log.form && log.form.id) {
+                                                  const isMatch = logDetails?.logs?.some((log) => {
+                                                    if (log?.form && log?.form?.id) {
                                                       const match = log.form.id === form?.forms[index]?.id;
                                                       console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
@@ -5437,7 +5436,7 @@ const NewActiveApplication = ({
                                                     let Match = false;
 
                                                     // Check if userRole includes log.role
-                                                    if (workModeType === log.role) {
+                                                    if (workModeType === log?.role) {
                                                       console.log("Role matches user role: " + log.role);
                                                       Match = true;
                                                     }
@@ -9766,7 +9765,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                {(workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") ? (
+                {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")) ? (
                   // <div className={`${style.twoColumnGrid}`}>
                   //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                   //     <div
@@ -10099,15 +10098,15 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 ) : (" ")}
-                {workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                {(workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Dept. Head. Recommendation
                     </div>
                   </div>
-                </>)}
+                </>): ("")}
 
-                {(workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
+                {(workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Cred. Comm. Recommendation
@@ -10130,7 +10129,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 </>) : (" ")}
-                {(workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -10183,7 +10182,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {(workModeType ==='Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") ? (
+                {((workModeType ==='Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInCol}`}>
@@ -10278,7 +10277,7 @@ const NewActiveApplication = ({
                         )}
                       </>
                     )}
-                    {(selectedTab === "level-1") && (
+                    {(selectedTab === "level-1" && applicationType === "NEW") && (
                       <>
                         <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                           <div
@@ -10849,19 +10848,19 @@ const NewActiveApplication = ({
                                 .map((log, index) => (
                                   <div key={index}>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                      {log.title}
+                                      {log?.title}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                      {log.user.name.firstName}{log.user.name.lastName && ` ${log.user.name.lastName}`}, on {format(new Date(log.createdDate), 'MMM d, yyyy, H.mm')}
+                                      {log?.user?.name?.firstName}{log?.user?.name?.lastName && ` ${log?.user?.name?.lastName}`}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                       <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
                                     </div>
 
                                     {/* Check if there are files */}
-                                    {log.files && log.files.length > 0 && (
+                                    {log?.files && log?.files?.length > 0 && (
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                        {log.files.map((file, fileIndex) => {
+                                        {log?.files?.map((file, fileIndex) => {
                                           // let innerData = log?.files[0];
                                           return (
                                             <div key={fileIndex}>
@@ -10880,7 +10879,7 @@ const NewActiveApplication = ({
                                                   />
                                                 </div>
                                                 <div
-                                                  className={`${style.cursorPointer} ${style.docsIcon}`}
+                                                  className={`${style.cursorPointer} ${style.notesTitle}`}
                                                   onClick={() => {
                                                     setShowFileDisplayDialog(true);
                                                     setselectedFile(file);
