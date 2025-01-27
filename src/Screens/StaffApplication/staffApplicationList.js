@@ -1247,8 +1247,12 @@ const StaffApplicationList = ({
           assignedColor: color
         });
       }
+      // applicantName.push(
+      //   ` ${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+      //   " "
+      // );
       applicantName.push(
-        ` ${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1271,11 +1275,12 @@ const StaffApplicationList = ({
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
-      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
+
       // else if (data?.documents?.verifiedCount === 0) {
       //   docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `#94979A` }} />);
       // } else {
@@ -1429,7 +1434,7 @@ const StaffApplicationList = ({
       console.log("data?.currentLevelCompleted" + data?.currentLevelCompleted);
 
       applicantName.push(
-        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -1446,7 +1451,7 @@ const StaffApplicationList = ({
       docsHoverText.push(docHoverTextArray);
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
-      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
@@ -1728,7 +1733,7 @@ const StaffApplicationList = ({
       }
 
       applicantName.push(
-        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       applicantType.push(data?.providerType.serviceProviderType);
@@ -1751,7 +1756,7 @@ const StaffApplicationList = ({
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
-      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
@@ -1993,7 +1998,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -2017,7 +2022,7 @@ const StaffApplicationList = ({
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
-      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
@@ -2219,7 +2224,7 @@ const StaffApplicationList = ({
         });
       }
       applicantName.push(
-        `${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantId.push(data?.displayId);
@@ -2242,7 +2247,7 @@ const StaffApplicationList = ({
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
-      } else if (data?.documents?.uploadedCount < data?.documents?.verifiedCount) {
+      } else if (data?.documents?.uploadedCount > data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#FEC106' }} />);
       } else if (data?.documents?.uploadedCount === data?.documents?.verifiedCount) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
@@ -2644,11 +2649,11 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: workModeType === "Staff Manager" ? "View" : "Review to Recommend",
+      data: workModeType === "Staff Manager" || workModeType === "Chief Of Staff" ? "View" : "Review to Recommend",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager" },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff" },
     // {
     //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
     //   requiredValue: "boolean",
@@ -2674,12 +2679,12 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       isParagraph: true,
       hideForRoles: "Staff Manager",
-      showForRoles: "Chief Of Staff",
-      showForRoles2: "Department Head",
+      hideForRoles2: "Chief Of Staff",
+      showForRoles: "Department Head",
     },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
   ];
 
   const applicationActionsData = applicationType === "NEW" ? [
@@ -2748,8 +2753,8 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickMoveToNextFunction,
     // },
-    { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head" },
+    { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Chief Of Staff") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
     // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     {
@@ -2758,6 +2763,7 @@ const StaffApplicationList = ({
       isParagraph: true,
       hideForRoles: "Staff Manager",
       hideForRoles2: "Department Head",
+      hideForRoles3: "Chief Of Staff",
       // showForRoles: "Chief Of Staff",
       // showForRoles2: "Credentialing Committee",
     },
@@ -2771,9 +2777,9 @@ const StaffApplicationList = ({
     //   // showForRoles: "Chief Of Staff",
     //   // showForRoles: ["Chief Of Staff","Credentialing Committee"],
     // },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", },
+    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
   ]
 
   const macActionsData = applicationType === "NEW" ? [
@@ -3058,7 +3064,7 @@ const StaffApplicationList = ({
                         }
                       />
                       <div
-                        className={`${style.displayInRow} ${style.alignCenter}`}
+                        className={`${style.alignCenter} ${style.marginLeft10}`}
                         onClick={() =>
                           applicationType === "NEW"
                             ? navigate("/createStaffMemberApplication")
@@ -3213,9 +3219,11 @@ const StaffApplicationList = ({
                                       }
                                     ></div>
                                     <div className={style.marginLeft10}>
-                                      {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
+                                      {/* {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
                                       {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"}
+                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"} */}
+                                        
+                                      {status?.basicDetail?.applicant?.name?.firstName}{" "} {status?.basicDetail?.applicant?.name?.lastName.toLowerCase()}
                                     </div>
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>

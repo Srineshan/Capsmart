@@ -321,9 +321,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
-        title = "Chief Of Staff Review";
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -430,9 +429,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
-        title = "Chief Of Staff Review";
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -588,11 +586,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                  {formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
                   </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>

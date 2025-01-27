@@ -714,7 +714,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -754,7 +754,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -849,7 +849,6 @@ const App = ({ props }) => {
         }
         if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
-        }
         let isAppUser =
           roles?.includes("Approver") ||
           roles?.includes("Reviewer") ||
@@ -861,6 +860,9 @@ const App = ({ props }) => {
           roles?.includes("Entity Sys User") ||
           roles?.includes("Distributor Admin");
         let isStaffManager = roles?.includes("Staff Manager");
+        let isDepartmentHead = roles?.includes("Department Head");
+        let isCredentialingCommittee = roles?.includes("Credentialing Committee");
+        let isChiefOfStaff = roles?.includes("Chief Of Staff");
         let isApplicant = roles?.includes("Applicant");
         console.log('login route', roles)
         if (isAppUser) {
@@ -883,6 +885,18 @@ const App = ({ props }) => {
           console.log('login route', roles, isStaffManager)
           window.location.pathname = "/applications";
           // navigate("/applications");
+        } else if (isDepartmentHead) {
+          console.log('login route', roles, isDepartmentHead)
+          window.location.pathname = "/applications";
+          // navigate("/applications");
+        } else if (isCredentialingCommittee) {
+          console.log('login route', roles, isCredentialingCommittee)
+          window.location.pathname = "/applications";
+          // navigate("/applications");
+        } else if (isChiefOfStaff) {
+          console.log('login route', roles, isChiefOfStaff)
+          window.location.pathname = "/applications";
+          // navigate("/applications");
         } else if (isApplicant) {
           window.location.pathname = "/applicant";
           // navigate("/applicant");
@@ -893,7 +907,8 @@ const App = ({ props }) => {
         //   // window.location.reload();
         //   return <Home />;
         // }
-      } else {
+      } 
+    } else {
         window.location.pathname = "/loginPage";
       }
     }

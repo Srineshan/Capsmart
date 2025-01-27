@@ -184,10 +184,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         {!isLoading && (
                     <div className={style.marginTop}>
                         {file?.fileType === 'application/pdf' ? (
-                            <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>
+                            <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="300px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>
                         ) : file?.fileType?.startsWith("image/") ? (
-                            <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                        ) :  <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>}
+                            <img src={file?.fileURL} alt="" width="100%" height="300px" className={style.objectFitContain} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                        ) :  <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="300px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>}
                     </div>
                         )}
                     <div className={`${style.spaceBetween} ${style.marginTop}`}>
