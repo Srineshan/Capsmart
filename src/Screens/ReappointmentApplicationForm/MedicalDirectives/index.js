@@ -280,56 +280,53 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
 
     const handleContinue = async () => {
-        if (isSigned) {
-
-            let payload = medicalDirectives?.map((innerData, index) => ({
-                attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
-                mdId: innerData?.medicalDirective?.mdID,
-                title: innerData?.medicalDirective?.title,
-                type: innerData?.medicalDirective?.creationType,
-                rowId: generateRandomId(),
-                fileURL: innerData?.medicalDirective?.file?.fileURL,
-            }));
-            let temp = {
-                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                // data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
-                data: {
-                    table: payload,
-                },
-                acknowledged: isSigned,
-                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
-            }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-                .then(response => {
-                    console.log(response)
-                    getPreApplication()
-                    SuccessToaster("Application Updated Successfully");
-                    if (sessionStorage.getItem('fromSummary') === "true") {
-                        sessionStorage.removeItem('fromSummary')
-                        navigate(-1);
-                        // navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
-                    }
-                    else {
-                        navigate(navigateURL)
-
-                    }
-                })
-                .catch((error) => {
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Application");
-                });
+        // if (isSigned) {
+        console.log(medicalDirectives)
+        let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
+            attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
+            mdId: innerData?.medicalDirective?.mdID,
+            title: innerData?.medicalDirective?.title,
+            type: innerData?.medicalDirective?.creationType,
+            rowId: generateRandomId(),
+            fileURL: innerData?.medicalDirective?.file?.fileURL,
+        }));
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: {
+                table: payload,
+            },
+            acknowledged: isSigned,
+            esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
-        else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                sessionStorage.removeItem('fromSummary')
-                navigate(-1);
-                // navigate(`/reappointmentApplicationForm/${applicationId}/Acknowledgement/ApplicantAcknowledgement`);
-            }
-            else {
-                navigate(navigateURL)
+        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                getPreApplication()
+                SuccessToaster("Application Updated Successfully");
+                if (sessionStorage.getItem('fromSummary') === "true") {
+                    sessionStorage.removeItem('fromSummary')
+                    navigate(-1);
+                }
+                else {
+                    navigate(navigateURL)
 
-            }
-        }
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+        // }
+        // else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         sessionStorage.removeItem('fromSummary')
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
+
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -556,7 +553,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? (showMedicalDirectives && attestClicked) ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => handleContinue() : () => { } : () => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
