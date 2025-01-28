@@ -723,7 +723,7 @@
   color: #7165e3;
   text-decoration: underline;
   cursor: pointer;
-  font: normal normal bold $labelvaluetext Proxima Nova;
+  font: normal normal bold $labelvaluetext proxima-nova;
 }
 
 .tableHeaderIndustriesFontStyle {
@@ -3342,7 +3342,7 @@
   width: 35px;
   height: 10px;
   text-align: left;
-  font: normal normal 600 20px/41px Proxima Nova;
+  font: normal normal 600 20px/41px proxima-nova;
   letter-spacing: 2.3px;
   color: #52575d;
   text-transform: uppercase;
@@ -3879,7 +3879,8 @@ input:checked+.slider:before {
 
 .inputField {
   width: 100% !important;
-  margin-bottom: 15px; /* Add gap between select and button */
+  margin-bottom: 15px;
+  /* Add gap between select and button */
 }
 
 .commonCell {
@@ -3908,6 +3909,7 @@ input:checked+.slider:before {
   display: flex;
   justify-content: center;
 }
+
 .rowGap {
   margin-bottom: 16px; // Add gap between rows
 }
@@ -3915,13 +3917,15 @@ input:checked+.slider:before {
 .verticalStack {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Add spacing between each dropdown */
+  gap: 20px;
+  /* Add spacing between each dropdown */
 }
 
 .flexRow {
   display: flex;
   width: 100%;
-  gap: 1px; /* Adjust space between dropdown and input */
+  gap: 1px;
+  /* Adjust space between dropdown and input */
 }
 
 .marginLeft20 {
@@ -3935,14 +3939,16 @@ input:checked+.slider:before {
 
 .actionButtonContainer {
   display: flex;
-  justify-content: flex-end; /* Align button to the right */
+  justify-content: flex-end;
+  /* Align button to the right */
   margin-top: 10px;
 }
 
 .responseMessage {
   margin-top: 10px;
   font-size: 14px;
-  color: green; /* Adjust according to success/failure color */
+  color: green;
+  /* Adjust according to success/failure color */
 }
 
 .submitButton {
@@ -3972,19 +3978,25 @@ input:checked+.slider:before {
 .feeContainer {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc; /* Optional border styling */
-  border-radius: 4px; /* Optional border radius */
-  padding: 4px; /* Padding for alignment */
+  border: 1px solid #ccc;
+  /* Optional border styling */
+  border-radius: 4px;
+  /* Optional border radius */
+  padding: 4px;
+  /* Padding for alignment */
 }
 
 .currencyLabel {
-  margin-right: 8px; /* Space between currency and input */
+  margin-right: 8px;
+  /* Space between currency and input */
   font-weight: bold;
-  color: #555; /* Optional text color */
+  color: #555;
+  /* Optional text color */
 }
 
 .feeInput {
-  flex: 1; /* Input takes the remaining width */
+  flex: 1;
+  /* Input takes the remaining width */
   border: none;
   outline: none;
   font-size: 1rem;

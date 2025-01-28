@@ -1,11 +1,10 @@
-
 @import "../../index.scss";
+
 .heading {
   text-align: left;
-  font: normal normal bold 24px Proxima Nova;
+  font: normal normal bold 24px proxima-nova;
   letter-spacing: 0px;
-  color: $primarycolor
-;
+  color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -71,42 +70,42 @@
   cursor: pointer;
 }
 
-.Resend{
-  color: $primarycolor
-;
-  font: normal normal bold 14px Proxima Nova;
+.Resend {
+  color: $primarycolor;
+  font: normal normal bold 14px proxima-nova;
   text-align: right;
   border: none;
   background-color: #ffffff;
   cursor: pointer;
 }
 
-.sentstatus{
+.sentstatus {
   text-align: left;
-  font: normal normal bold 14px Proxima Nova;
+  font: normal normal bold 14px proxima-nova;
   letter-spacing: 0px;
   color: #94979A;
   opacity: 1;
 }
 
-.sentto{
-  font: italic normal normal 12px Proxima Nova;
+.sentto {
+  font: italic normal normal 12px proxima-nova;
   color: #171338;
   opacity: 0.5;
 }
 
-.task{
-  font: normal normal bold 16px Proxima Nova;
+.task {
+  font: normal normal bold 16px proxima-nova;
   opacity: 1;
 }
 
-.correcticon{
+.correcticon {
   text-align: left;
   font: normal normal normal 27px la-solid-900;
   color: #14B15A;
   opacity: 1;
   place-self: center;
 }
+
 .shadowdown {
   background: var(---ffffff) 0% 0% no-repeat padding-box;
   border: 1px solid var(--unnamed-color-ededf3);
@@ -128,71 +127,70 @@
   padding: 10px;
 }
 
-.option{
+.option {
   width: 100%;
 }
 
-.selectoption{
-  background-color: #ffffff ;
+.selectoption {
+  background-color: #ffffff;
 }
 
-.date{
+.date {
   text-align: left;
-  font: italic normal normal 14px Proxima Nova;
+  font: italic normal normal 14px proxima-nova;
   letter-spacing: 0px;
   color: #171338;
   opacity: 0.5;
 }
 
-.fontstyle{
+.fontstyle {
   text-align: left;
-  font: normal normal bold 20px Proxima Nova;
+  font: normal normal bold 20px proxima-nova;
   color: #646D82;
 }
 
-.fontstyleassociate{
+.fontstyleassociate {
   text-align: left;
-  font: normal normal bold 14px Proxima Nova;
+  font: normal normal bold 14px proxima-nova;
   letter-spacing: 0px;
   color: #646D82;
   text-transform: uppercase;
 }
 
-.referenceFont{
+.referenceFont {
   text-align: left;
-  font: normal normal bold 12px Proxima Nova;
+  font: normal normal bold 12px proxima-nova;
   letter-spacing: 0px;
   color: #171338;
   opacity: 0.5;
 }
 
-.marginRight30{
+.marginRight30 {
   margin-right: 30px;
 }
 
-.copyicon{
+.copyicon {
   text-align: left;
   // font-size: normal 10px;
   font: normal normal normal 5px !important;
   letter-spacing: 0.9px;
-  color: $primarycolor
-;
+  color: $primarycolor;
   opacity: 1;
   margin-top: 5px;
   margin-left: 5px;
   cursor: pointer;
 }
 
-.warning{
+.warning {
   color: var(--unnamed-color-f94848);
-text-align: left;
-font: normal normal normal 27px la-solid-900;
-letter-spacing: 0px;
-color: #F94848;
-opacity: 1;
+  text-align: left;
+  font: normal normal normal 27px la-solid-900;
+  letter-spacing: 0px;
+  color: #F94848;
+  opacity: 1;
 }
 
-.progress{
+.progress {
   color: var(--unnamed-color-fec106);
   text-align: left;
   font: normal normal normal 27px/45px la-solid-900;
@@ -201,15 +199,14 @@ opacity: 1;
   opacity: 1;
 }
 
-.requestForm{
+.requestForm {
   text-align: left;
-text-decoration: underline;
-font: normal normal normal 12px Proxima Nova;
-cursor: pointer;
-color: $primarycolor
-;
-opacity: 1;
-margin-top: 5px;
+  text-decoration: underline;
+  font: normal normal normal 12px proxima-nova;
+  cursor: pointer;
+  color: $primarycolor;
+  opacity: 1;
+  margin-top: 5px;
 }
 
 @media print {
@@ -222,8 +219,9 @@ margin-top: 5px;
 
   .pagebreak:nth-child(odd) {
     background-color: #ffffff;
-}
-.pagebreak:nth-child(even) {
+  }
+
+  .pagebreak:nth-child(even) {
     background-color: #ffffff;
-}
+  }
 }
