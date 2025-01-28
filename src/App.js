@@ -849,50 +849,65 @@ const App = ({ props }) => {
         }
         if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
+          let isAppUser =
+            roles?.includes("Approver") ||
+            roles?.includes("Reviewer") ||
+            roles?.includes("Activity Logger");
+          let isContractManager = roles?.includes("Contract Manager");
+          let isEntityLevelAdmin =
+            roles?.includes("Super Sys Admin") ||
+            roles?.includes("Entity Sys Admin") ||
+            roles?.includes("Entity Sys User") ||
+            roles?.includes("Distributor Admin");
+          let isStaffManager = roles?.includes("Staff Manager");
+          let isDepartmentHead = roles?.includes("Department Head");
+          let isCredentialingCommittee = roles?.includes("Credentialing Committee");
+          let isChiefOfStaff = roles?.includes("Chief Of Staff");
+          let isApplicant = roles?.includes("Applicant");
+          console.log('login route', roles)
+          if (isAppUser) {
+            window.location.href = "/";
+            // navigate("/");
+            return <Login />;
+          } else if (isContractManager) {
+            window.location.pathname = "/contracts";
+            // navigate("/contracts");
+            // window.location.reload();
+            return <ActiveContracts />;
+          }
+          else if (isEntityLevelAdmin) {
+            window.location.pathname = "/entitySitePortal";
+            // navigate("/entitySitePortal");
+            // window.location.reload();
+            return <Home />;
+          }
+          else if (isStaffManager) {
+            console.log('login route', roles, isStaffManager)
+            window.location.pathname = "/applications";
+            // navigate("/applications");
+          } else if (isDepartmentHead) {
+            console.log('login route', roles, isDepartmentHead)
+            window.location.pathname = "/applications";
+            // navigate("/applications");
+          } else if (isCredentialingCommittee) {
+            console.log('login route', roles, isCredentialingCommittee)
+            window.location.pathname = "/applications";
+            // navigate("/applications");
+          } else if (isChiefOfStaff) {
+            console.log('login route', roles, isChiefOfStaff)
+            window.location.pathname = "/applications";
+            // navigate("/applications");
+          } else if (isApplicant) {
+            window.location.pathname = "/applicant";
+            // navigate("/applicant");
+          }
+          // else {
+          //   window.location.pathname = "/entitySitePortal";
+          //   // navigate("/entitySitePortal");
+          //   // window.location.reload();
+          //   return <Home />;
+          // }
         }
-        let isAppUser =
-          roles?.includes("Approver") ||
-          roles?.includes("Reviewer") ||
-          roles?.includes("Activity Logger");
-        let isContractManager = roles?.includes("Contract Manager");
-        let isEntityLevelAdmin =
-          roles?.includes("Super Sys Admin") ||
-          roles?.includes("Entity Sys Admin") ||
-          roles?.includes("Entity Sys User") ||
-          roles?.includes("Distributor Admin");
-        let isStaffManager = roles?.includes("Staff Manager");
-        let isApplicant = roles?.includes("Applicant");
-        console.log('login route', roles)
-        if (isAppUser) {
-          window.location.href = "/";
-          // navigate("/");
-          return <Login />;
-        } else if (isContractManager) {
-          window.location.pathname = "/contracts";
-          // navigate("/contracts");
-          // window.location.reload();
-          return <ActiveContracts />;
-        }
-        else if (isEntityLevelAdmin) {
-          window.location.pathname = "/entitySitePortal";
-          // navigate("/entitySitePortal");
-          // window.location.reload();
-          return <Home />;
-        }
-        else if (isStaffManager) {
-          console.log('login route', roles, isStaffManager)
-          window.location.pathname = "/applications";
-          // navigate("/applications");
-        } else if (isApplicant) {
-          window.location.pathname = "/applicant";
-          // navigate("/applicant");
-        }
-        // else {
-        //   window.location.pathname = "/entitySitePortal";
-        //   // navigate("/entitySitePortal");
-        //   // window.location.reload();
-        //   return <Home />;
-        // }
       } else {
         window.location.pathname = "/loginPage";
       }

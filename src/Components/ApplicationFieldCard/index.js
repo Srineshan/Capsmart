@@ -2090,6 +2090,7 @@ const ApplicationFieldCard = ({
             let isIssueResolved = basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== undefined && basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== null;
             let isShowAdditionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.if?.properties?.[fieldKey]?.const;
             console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData, currentValue !== priorData, currentValue, priorData, basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]], basicForm?.forms?.[formIndex], formIndex, isShowAdditionalFields, priorData !== undefined, priorData !== null, currentValue !== undefined, currentValue !== null, currentValue !== priorData, isShowAdditionalFields !== currentValue)
+            console.log("currentValue2",currentValue)
             if (isConflict && !showPriorDataDialog && !isIssueResolved && isShowAdditionalFields !== currentValue) {
               setDisclosureBaseKey(baseKey?.split('.')?.[1])
               setDisclosureFieldKey(fieldKey)
@@ -2098,6 +2099,7 @@ const ApplicationFieldCard = ({
             }
           }
           const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
+          console.log("currentValue1",currentValue)
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2164,8 +2166,17 @@ const ApplicationFieldCard = ({
             </div>
           );
 
-        case "switchbutton":
-          return (
+        case "switchbutton":{
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? "Yes" : "No";
+          console.log("currentValueee",currentValue)
+          return isPOD ?  (
+            <div className={style.leftAlign}>
+              <span>{fieldData.label}:</span>
+              <span className={`${style.marginLeft10} ${currentValue === 'Yes' ? style.RadiobuttonYesStyle : style.RadiobuttonNoStyle}`}>
+              {currentValue}
+            </span>
+            </div>
+          ) : (
             <CommonSwitch
               label={
                 getValueByPath(
@@ -2196,7 +2207,8 @@ const ApplicationFieldCard = ({
                     : false)
               }
             />
-          );
+          )
+        };
         case "checkbox":
           if (isPOD) {
             return <div></div>;

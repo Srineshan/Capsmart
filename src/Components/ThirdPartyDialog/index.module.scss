@@ -13,6 +13,17 @@
   width: 35% !important;
 }
 
+.eSignDialogPDF {
+  height: 80%;
+  width: 75% !important;
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
 .eSignDialogBackground {
   // background: #ffffff 0% 0% no-repeat padding-box;
 
@@ -67,6 +78,10 @@
   margin-top: 20px;
 }
 
+.marginTop10 {
+  margin-top: 10px;
+}
+
 .cvvGrid {
   display: grid;
   grid-template-columns: 71% 25%;
@@ -106,24 +121,34 @@
 /* Header */
 .receiptHeader {
   text-align: center;
-  margin-bottom: 20px;
+  font: normal normal normal 28px/38px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.receiptNumber {
+  text-align: center;
+  font: normal normal bold 14px/16px proxima-nova;
+  letter-spacing: 0px;
+  color: #454747;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
 }
 
 .receiptLogo {
   width: 100px;
   margin-bottom: 10px;
+  object-fit: contain;
 }
 
-.receiptHeader h2 {
-  margin: 0;
-  color: #333;
-  font-size: 1.8em;
-}
-
-.receiptHeader p {
-  margin: 0;
-  color: #666;
-  font-size: 0.9em;
+.receiptDescription {
+  text-align: left;
+  font: normal normal normal 14px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
 }
 
 /* Details Section */
@@ -200,6 +225,55 @@
 
 .hiddenForScreen {
   display: none;
+}
+
+.divider {
+  height: 1px;
+  background: $tableheadhover 0% 0% no-repeat padding-box;
+}
+
+.receiptTo {
+  text-align: left;
+  font: normal normal normal 24px/34px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.applicantName {
+  text-align: left;
+  font: normal normal bold 22px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+}
+
+.detailsText {
+  text-align: left;
+  font: normal normal normal 16px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+// .footer {
+//   display: fixed;
+//   bottom: 20px;
+//   left: 0;
+//   right: 0;
+// }
+
+.copyRight {
+  text-align: right;
+  font: normal normal 600 12px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #454747;
+  opacity: 0.6;
 }
 
 @media print {
