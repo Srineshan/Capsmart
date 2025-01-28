@@ -2656,12 +2656,12 @@ const StaffApplicationList = ({
     },
     // ...(isApproved[index]
     //   ? [
-          {
-            data: "Send for Dept Head Review",
-            requiredValue: "boolean",
-            onClick: "",
-            // hideData: isApproved[index],
-          },
+          // {
+          //   data: "Send for Dept Head Review",
+          //   requiredValue: "boolean",
+          //   onClick: "",
+          //   // hideData: isApproved[index],
+          // },
         // ]
       // : []),
     {

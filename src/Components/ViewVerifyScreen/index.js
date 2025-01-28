@@ -464,6 +464,8 @@ const NewActiveApplication = ({
 
       if (staffManagerWorkflow?.allFormsApproved) {
         setIsApproved(true);
+      } else {
+        setIsApproved(false); 
       }
     }
   }, [form]);
@@ -1804,7 +1806,8 @@ const NewActiveApplication = ({
   let daysDifference;
   if (submissionDate) {
     // Calculate the difference in days
-    daysDifference = differenceInDays(currentDatenow, submissionDate);
+    daysDifference = differenceInDays(currentDatenow, submissionDate) + 1;
+
   } else {
     daysDifference = "-";
   }
@@ -4384,7 +4387,7 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle}`}>
 
                             <img
                               src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -4489,7 +4492,7 @@ const NewActiveApplication = ({
                         </div>
                         <div className={style.cursorPointer}> Transaction ID:{" "}
                           <Tooltip title="View Transaction Details" arrow>
-                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={onClickPaymentFunction}>{form?.payment?.receiptId || "-"}</span>
+                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
                           </Tooltip>
                         </div>
                       </div>
@@ -4505,7 +4508,7 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle}`}>
 
                             <img
                               src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -5031,7 +5034,7 @@ const NewActiveApplication = ({
                                       </>
                                     </div>
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft30}`}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
                                       <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
                                         {data?.title}
@@ -7082,7 +7085,7 @@ const NewActiveApplication = ({
                   <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                     <div className={style.spaceBetween}>
                       <div className={style.displayInRow}>
-                        <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                        <div className={`${style.photoBorderStyle}`}>
 
                           <img
                             src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -9934,6 +9937,20 @@ const NewActiveApplication = ({
                     <div className={`${style.marginTop20}`}>
                       <div
                         // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                        className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                        style={{ opacity: isApproved ? 1 : 0.5 }}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          // onClick={onClickApprovalDeptFunction}
+                          onClick={isApproved ? onClose : undefined}
+                        >
+                          Verified, send later to Department Head
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${style.marginTop20}`}>
+                      <div
+                        // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                         className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                         style={{ opacity: isApproved ? 1 : 0.5 }}>
                         <div
@@ -11071,7 +11088,7 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                         </div> */}
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                           <div
                             className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -11135,7 +11152,7 @@ const NewActiveApplication = ({
                         </div>
 
                         <div className={style.marginBottom20}></div>
-                      </div>
+                      </div> */}
                     </>
                   ) : (" ")}
 

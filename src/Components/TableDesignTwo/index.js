@@ -213,12 +213,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const classes = useStyles();
 
-    function checkRoleVisibility(actionsData, workModeType,index) {
+    function checkRoleVisibility(actionsData, workModeType) {
         if (!actionsData.hideForRoles &&
             !actionsData.hideForRoles2 &&
             !actionsData.hideForRoles3 &&
             !actionsData.showForRoles &&
-            !actionsData.hideData &&
+            // !actionsData.hideData &&
             !actionsData.showForRoles2) {
             return true;
         }
@@ -231,9 +231,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         if (actionsData.hideForRoles3?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideData[index] === false) {
-            return false;
-        }
+        // if (actionsData.hideData[index] === false) {
+        //     return false;
+        // }
         if (actionsData.showForRoles && actionsData.showForRoles.includes(workModeType)) {
             return true;
         }
@@ -246,7 +246,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         return true;
     }
 
-    const visibleActions = actions?.filter((actionData, index) => checkRoleVisibility(actionData, workModeType, index));
+    const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, workModeType));
 
     useEffect(() => {
         if (userDetails !== undefined) {
