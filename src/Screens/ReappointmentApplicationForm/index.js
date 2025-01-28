@@ -154,17 +154,17 @@ const ReappointmentApplicationForm = () => {
                     {StepDisplay()}
                 </div>
                 <div>
-                <div className={`${style.footerContainer}`}>
-    <img
-        src={HapiCare}
-        alt="footer"
-        className={style.footerIconStyle}
-    />
-    <p className={style.poweredBy}>
-        © {new Date().getFullYear()} HapiCare, Inc
-    </p>
-</div>
-                   
+                    <div className={`${style.footerContainer}`}>
+                        <img
+                            src={HapiCare}
+                            alt="footer"
+                            className={style.footerIconStyle}
+                        />
+                        <p className={style.poweredBy}>
+                            © {new Date().getFullYear()} HapiCare, Inc
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </div>

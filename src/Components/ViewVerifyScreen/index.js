@@ -280,11 +280,11 @@ const NewActiveApplication = ({
 
   };
 
-    const handleExpandClick = (catIndex) => {
-      setExpandedIcon(prev => ({
-        ...prev,
-        [catIndex]: !prev[catIndex]
-      }));
+  const handleExpandClick = (catIndex) => {
+    setExpandedIcon(prev => ({
+      ...prev,
+      [catIndex]: !prev[catIndex]
+    }));
   };
 
   const handleExpandClickAdvance = (Index) => {
@@ -292,7 +292,7 @@ const NewActiveApplication = ({
       ...prev,
       [Index]: !prev[Index]
     }));
-};
+  };
 
   const getJune30thOfCurrentYear = () => {
     const currentDate = new Date();
@@ -371,7 +371,7 @@ const NewActiveApplication = ({
   //     "5555555555555",staffPrivilege,
   //     "6666666666666",selectedPrivilegesForDisplayMultiple
   //   );
-    
+
   // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
 
   // useEffect(() => {
@@ -381,9 +381,9 @@ const NewActiveApplication = ({
   //   console.log(
   //     "1111111111111",selectedPrivilegeForDisplay,
   //   );
-    
+
   // }, [selectedPrivilegeForDisplay,selectedPrivilege]);
-  
+
 
   useEffect(() => {
     if (form?.forms[formIndex]?.data !== null) {
@@ -1451,12 +1451,12 @@ const NewActiveApplication = ({
     if (!array || !Array.isArray(array)) {
       console.error("Array is undefined or not an array:", array);
       return [];
-  }
+    }
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy')
-    console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
-    
+    console.log("allFormSchemas?.[index]?.formSchema?.schema", allFormSchemas?.[index]?.formSchema?.schema);
+
     Object.keys(schema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
       if (data === "file") {
         temp.push({
@@ -1490,7 +1490,7 @@ const NewActiveApplication = ({
                   ? (
                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
                       <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                      onClick={() => handleVerifyClickDocs(array, index)}
+                        onClick={() => handleVerifyClickDocs(array, index)}
                       >
                         Verified
                       </div>
@@ -1590,14 +1590,14 @@ const NewActiveApplication = ({
     if (!array || !Array.isArray(array)) {
       console.error("Array is undefined or not an array:", array);
       return [];
-  }
+    }
     let schema = applicationType === "NEW" ? formSchema : allFormSchemas?.[index]?.formSchema?.schema
     let temp = [];
     console.log(array, 'arrayyyyyy1233')
     // console.log(array[data],"@@@@@@@@@");
-    
-    console.log("allFormSchemas?.[index]?.formSchema?.schema",allFormSchemas?.[index]?.formSchema?.schema);
-    
+
+    console.log("allFormSchemas?.[index]?.formSchema?.schema", allFormSchemas?.[index]?.formSchema?.schema);
+
     Object.keys(schema?.properties?.medicalDirectives?.tableHeaders || {})?.map((data, index) => {
       // temp.push({
       //     "type": "icon",
@@ -1610,7 +1610,7 @@ const NewActiveApplication = ({
           "type": "icon",
           "icon": array?.map(innerData =>
             // <img src={PdfDoc} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />),
-            <CheckCircleRoundedIcon style={{ fontSize: 20,color: `#25BF6A` }}  onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData?.file) }} />),
+            <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData?.file) }} />),
           'isShowHoverText': false
         });
       } else {
@@ -1690,7 +1690,7 @@ const NewActiveApplication = ({
   }
 
 
- 
+
   const getFileFields = (value) => {
     console.log(value);
     setFileFields(value);
@@ -1750,7 +1750,7 @@ const NewActiveApplication = ({
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
   const allVerifiedMD = form?.forms[9]?.data?.table?.every(item => item.isVerified === true);
 
-  const buttonStyle = (isUploadYourDoc && !allVerified)  ? { opacity: 0.5, pointerEvents: 'none' } : {};
+  const buttonStyle = (isUploadYourDoc && !allVerified) ? { opacity: 0.5, pointerEvents: 'none' } : {};
 
 
   const getButtonStyle = () => {
@@ -2111,22 +2111,22 @@ const NewActiveApplication = ({
                                           config={{
                                             placeholder:
                                               "Insert any privilege competency and qualification information...",
-                                              toolbar: {
-                                                shouldNotGroupWhenFull: true,
-                                                sticky: true,
-                                                items: [
-                                                  'undo', 'redo',
-                                                  '|',
-                                                  'heading',
-                                                  '|',
-                                                  'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                                  '|',
-                                                  'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                                  '|',
-                                                  'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                            toolbar: {
+                                              shouldNotGroupWhenFull: true,
+                                              sticky: true,
+                                              items: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                '|',
+                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
                                               ],
-                                              },
-                                              autoGrow: false,
+                                            },
+                                            autoGrow: false,
                                           }}
                                         />
                                       </div>
@@ -2401,7 +2401,7 @@ const NewActiveApplication = ({
                                           'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
                                           '|',
                                           'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                                      ],
+                                        ],
                                       },
                                       autoGrow: false,
                                     }}
@@ -3393,82 +3393,139 @@ const NewActiveApplication = ({
       case "CME":
         return (
           <>
-            {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
-              allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
-              'cmeTranscripts' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
-                <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeTranscripts} baseKey={'cmeTranscripts'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
-                  heading={'No Documents Uploaded.'}
-                  // subHeading={'For this application you are required to provide information on the CME transcript.'}
-                  // subHeading2={'You will not be able to submit your application if this is not provided.'} 
+            <>
+              {form?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
+                <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
+                  <div><strong>CME / CEU Transcript</strong></div>
+                  <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
+                  <img
+                    src={VerifiedImage}
+                    alt=""
+                    className={`${style.imgIcon} ${style.cursorPointer}`}
+                    onClick={() => {
+                      setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
+                    }
+                    }
                   />
+                </div>
               )}
-            { form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
-              <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
-                <div><strong>CME / CEU Transcript</strong></div>
-                <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
-                <img
-                  src={VerifiedImage}
-                  alt=""
-                  className={`${style.imgIcon} ${style.cursorPointer}`}
-                  onClick={() => {
-                    setShowFileDisplayDialog(true); setselectedFile(form?.forms?.[formIndex]?.data?.cmeTranscripts?.file);
-                  }
-                  }
-                />
-              </div>
-            )}
-            <div className={`${style.cmeCreditsGrid} ${style.marginTop20}`}>
-              <div>
-                <div className={style.cmeCard}>
-                  <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
-                  <div className={`${style.twoCol} ${style.marginTop20}`}>
-                    <div className={style.cmeHourCard}>
-                      <div className={style.totalText}>Your Total</div>
-                      <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
-                      <div className={style.totalText}>Credits / Hours</div>
-                      {(40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
-                        <div className={style.hourRemainingText}>{40 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
-                      )}
-                    </div>
-                    <div className={style.cmeHourCard}>
+              <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
+                <div>
+                  <div className={style.cmeCard}>
+                    <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
+                    <div className={`${style.twoCol} ${style.marginTop}`}>
+                      {/* <Tooltip
+                        title="Click Here to Edit"
+                        arrow
+                        {...(!form?.forms?.[formIndex]?.data?.cmeTranscripts?.file && { open: false })}
+                      > */}
+                      <div className={`${style.cmeHourCard} `}
+                      // onClick={() => {
+                      //   const fileData = form?.forms?.[formIndex]?.data?.cmeTranscripts?.file;
+                      //   const rowId = form?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;
+                      //   if (!fileData) {
+                      //     setShowFileWithFields(false);
+                      //   } else {
+                      //     setShowFileWithFields(true);
+                      //     getDocument(rowId);
+                      //   }
+                      // }}
+                      >
+                        <div className={style.totalText}>Your Total</div>
+                        <div className={style.hourText}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                        <div className={style.totalText}>Credits / Hours</div>
+                        {(25 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                          <div className={style.hourRemainingText}>{25 - form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                        )}
+                      </div>
+                      {/* </Tooltip> */}
+                      <div className={style.cmeHourCard}>
                         <div className={style.totalText}>Required</div>
                         <div className={style.hourText}>25</div>
                         <div className={style.totalText}>Credits / Hours</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className={`${style.checkGrid}`}>
-                  {allFormSchemas?.[index]?.formSchema?.disclaimer?.content !== undefined && (
-                    <CommonCheckBox checked={form?.forms?.[formIndex]?.acknowledged} bigCheckbox={true} />
-                  )}
-                  <div
-                    className={`${style.leftAlign} ${style.marginTop10}`}
-                    dangerouslySetInnerHTML={{ __html: allFormSchemas?.[index]?.formSchema?.disclaimer?.content }}
-                  />
-                </div>
-                {form?.forms?.[formIndex]?.esign?.name !== undefined && (
-                  <div className={style.eSignGrid}>
-                    <div>
-                      <ESignature
-                        userName={form?.forms?.[formIndex]?.esign?.name !== undefined ? form?.forms?.[formIndex]?.esign?.name : ""}
-                        encData={form?.forms?.[formIndex]?.esign?.esign !== undefined ? form?.forms?.[formIndex]?.esign?.esign : ""}
-                        showData={true}
-                        showDatais={true}
-                      />
-                    </div>
-                    <div className={style.verticalAlignCenter}>
-                      <div className={style.displayInRow}>
-                        <div className={style.dateTitle}>Date: </div>
-                        <div className={`${style.date} ${style.marginLeft}`}>{(form?.forms?.[formIndex]?.esign?.signedDate !== '' && form?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? form?.forms?.[formIndex]?.esign?.signedDate : ""}</div>
                       </div>
                     </div>
                   </div>
-                )}
+                </div>
+                <div className={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? style.disabled : ''}>
+                  <div className={`${style.checkGrid}`}>
+                    {allFormSchemas?.[index]?.formSchema?.disclaimer?.content !== undefined && (
+                      <span>
+                        <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
+                          // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
+                          bigCheckbox={true} />
+                      </span>
+                    )}
+                    <div
+                      className={`${style.leftAlign} ${style.marginTop10}`}
+                      dangerouslySetInnerHTML={{ __html: allFormSchemas?.[index]?.formSchema?.disclaimer?.content }}
+                    />
+                  </div>
+                  {form?.forms?.[formIndex]?.esign?.name !== undefined && (
+                    <div className={style.eSignGrid}>
+                      <div
+                      >
+                        <ESignature
+                          userName={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? '' : form?.forms?.[formIndex]?.esign?.name !== undefined ? form?.forms?.[formIndex]?.esign?.name : ""}
+                          encData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? "" : form?.forms?.[formIndex]?.esign?.esign !== undefined ? form?.forms?.[formIndex]?.esign?.esign : ""}
+                          showData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.esign?.esign !== undefined}
+                          showDatais={true}
+                        />
+                      </div>
+                      <div className={style.verticalAlignCenter}>
+                        <div className={style.displayInRow}>
+                          <div className={style.dateTitle}>Date: </div>
+                          <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.[formIndex]?.esign?.signedDate ? (form?.forms?.[formIndex]?.esign?.signedDate !== '' && form?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? form?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+              {form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && (
+                <div>
+                  <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                  <div className={style.marginTop10}>
+                    <CKEditor
+                      editor={ClassicEditor}
+                      data={form?.forms?.[formIndex]?.data?.notes !== undefined ? form?.forms?.[formIndex]?.data?.notes : ''}
+                      // onChange={(event, editor) => {
+                      //   const data = editor.getData();
+                      //   setNotes(data);
+                      // }}
+                      onReady={(editor) => {
+                        editor.editing.view.change((writer) => {
+                          writer.setStyle(
+                            "height",
+                            "150px",
+                            editor.editing.view.document.getRoot()
+                          );
+                        });
+                      }}
+                      config={{
+                        placeholder: "Type your content here...",
+                        toolbar: {
+                          shouldNotGroupWhenFull: true,
+                          sticky: true,
+                          items: [
+                            'undo', 'redo',
+                            '|',
+                            'heading',
+                            '|',
+                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                            '|',
+                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                            '|',
+                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                          ],
+                        },
+                        autoGrow: false,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </>
             <CommonDivider />
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
@@ -3476,33 +3533,38 @@ const NewActiveApplication = ({
               'cmeCertificates' in allFormSchemas?.[index]?.formSchema?.schema?.properties && (
                 <ApplicationFieldCard object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.cmeCertificates} baseKey={'cmeCertificates'} basicForm={form} setBasicForm={setForm} addMoreType={true} formId={form?.forms?.[formIndex]?.id} applicationId={applicationId} tableGrid={style.tableGridCME} isPOD={true}
                   heading={'No Documents Uploaded.'}
-                  // subHeading={'For this application you are required to provide information on the CME certificates.'}
-                  // subHeading2={'You will not be able to submit your application if this is not provided.'} 
-                  />
+                // subHeading={'For this application you are required to provide information on the CME certificates.'}
+                // subHeading2={'You will not be able to submit your application if this is not provided.'} 
+                />
               )}
           </>
         );
       case "MEDICAL_DIRECTIVES":
         return (
           <>
-            <TableTwo
-              tableHeaderValues={[
-                "",
-                "Title",
-                "MD ID",
-                "Type",
-                "Attestation Date",
-                "",
-              ]}
-              tableDataValues={getMedicalDirectiveTable(form?.forms?.[formIndex]?.data?.table, index)}
-              tableData={form?.forms?.[formIndex]?.data?.table || []}
-              gridStyle={style.medicalDirectivesGridStyle}
-              actions={[]}
-              // scrollStyle={style.contractScrollStyle}
-              tableSortValues={[]}
-              heading={"There are no Record for you to manage"}
-              onClickFunction={() => { }}
-            />
+            <div className={`${style.totalText} ${style.leftAlign}`}>
+              All Medical Directives that required Attestation for this reappointment period for this Medical Staff have been attested.
+            </div>
+            <div className={style.marginTop}>
+              <TableTwo
+                tableHeaderValues={[
+                  "",
+                  "Title",
+                  "MD ID",
+                  "Type",
+                  "Attestation Date",
+                  "",
+                ]}
+                tableDataValues={getMedicalDirectiveTable(form?.forms?.[formIndex]?.data?.table, index)}
+                tableData={form?.forms?.[formIndex]?.data?.table || []}
+                gridStyle={style.medicalDirectivesGridStyle}
+                actions={[]}
+                // scrollStyle={style.contractScrollStyle}
+                tableSortValues={[]}
+                heading={"There are no Record for you to manage"}
+                onClickFunction={() => { }}
+              />
+            </div>
           </>
         );
       case "MISCELLANEOUS_QUESTIONS":
@@ -3539,14 +3601,14 @@ const NewActiveApplication = ({
                 <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
               </div>
               <div className={style.marginTop20}>
-                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverageDetails?.providerType !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.providerType : ''} : {form?.forms?.[formIndex]?.data?.coverageDetails?.covererName !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.covererName : ''}</strong></div>
+                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.providerType !== undefined ? form?.coverageDetails?.providerType : ''} : {form?.coverageDetails?.providerDetails?.length !== 0 ? form?.coverageDetails?.providerDetails?.map(data => data?.name)?.join(', ') : ''}</strong></div>
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
                 <div className={style.marginTop20}>
                   <div className={`${style.cardTitle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                   </div>
-                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType : ''} : {form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName !== undefined ? form?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName : ''}</strong></div>
+                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.obstetricsProviderType !== undefined ? form?.coverageDetails?.obstetricsProviderType : ''} : {form?.coverageDetails?.obstetricsProviderDetails?.length !== 0 ? form?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.name)?.join(', ') : ''}</strong></div>
                 </div>
               )}
             </div>
@@ -3630,7 +3692,7 @@ const NewActiveApplication = ({
         const fileURL = form?.forms?.[formIndex]?.uploadedFiles?.[
           form?.forms?.[formIndex]?.uploadedFiles?.length - 1
         ]?.fileURL;
-        return  fileURL ? (
+        return fileURL ? (
           <>
             <iframe
               src={`${form?.forms?.[formIndex]?.uploadedFiles[
@@ -3771,35 +3833,13 @@ const NewActiveApplication = ({
       case "PrivilegeSelection":
         return (
           <>
-            {/* <div className={style.padding}>
-              <div className={style.cardTextBoldStyle}>Selected Privileges</div>
-              {form?.privileges?.obligatedPrivileges?.map((data, index) => (
-                <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
-                  key={index}
-                >
-                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
-                </div>
-              ))}
-              {form?.privileges?.additionalPrivileges?.length !== 0 && (
-                <div className={`${style.cardTextBoldStyle} ${style.marginTop20}`}>Selected Additional Privileges</div>
-              )}
-              {form?.privileges?.additionalPrivileges?.map((data, index) => (
-                <div
-                  className={`${style.documentTextStyle} ${style.marginLeft} ${style.marginTop10}`}
-                  key={index}
-                >
-                  <div className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChange(data?.id) }}>{data?.privilegeSetTitle}</div>
-                </div>
-              ))}
-            </div> */}
             <div className={`${style.applicationCardStyleReappointment} ${style.marginTop10}`}>
               <div className={`${style.privilegeCard} ${style.marginTop10}`}>
                 <div>
                   <div className={style.privilegeHeading}>
                     <strong>Privilege Category</strong>
                   </div>
-                  <div className={style.twoColReappointment}>
+                  <div className={style.twoCol}>
                     <div
                       className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
@@ -3813,7 +3853,7 @@ const NewActiveApplication = ({
                             ?.credentialingCategory}
                       </div>
                     </div>
-                    {privilegeChangeYesOrNo !== '' && (
+                    {form?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== undefined && (
                       <div
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
@@ -3839,152 +3879,18 @@ const NewActiveApplication = ({
                     )}
                   </div>
                   <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-                    <strong>Privilege Sets</strong>
+                    <strong>Department</strong>
                   </div>
-                  <div className={style.twoColReappointment}>
-                    <div
-                      className={`${style.privilegeContentCard} ${style.marginTop10}`}
-                    >
-                      <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-                      {form?.privileges?.priorObligatedPrivileges?.length ===
-                        0 ? (
-                        <>
-                          {form?.privileges?.obligatedPrivileges?.map(
-                            (data) => (
-                              <div
-                                className={style.privilegeHeading}
-                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                onClick={() => {
-                                  setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategory('Basic')
-                                  handleChange(data?.id);
-                                }}
-                              >
-                                {data?.privilegeSetTitle}
-                              </div>
-                            )
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {form?.privileges?.priorObligatedPrivileges?.map(
-                            (data) => (
-                              <div
-                                className={style.privilegeHeading}
-                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                onClick={() => {
-                                  setShowCurrentPrivileges(true);
-                                  setCurrentPrivilegesCategory('Basic')
-                                  handleChange(data?.id);
-                                }}
-                              >
-                                {data?.privilegeSetTitle}
-                              </div>
-                            )
-                          )}
-                        </>
-                      )}
-                    </div>
-                    {privilegeSetChangeYesOrNo !== '' && (
-                      <div
-                        className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
-                      >
-                        <div className={`${style.privilegeHeadingReappointment}`}>
-                          Change for Reappointment
-                        </div>
-                        {privilegeSetChangeYesOrNo === "Yes" ? (
-                          <div className={style.privilegeHeading}>
-                            Same Privileges Requested
-                          </div>
-                        ) : (
-                          <>
-                            {form?.privileges?.obligatedPrivileges?.map(
-                              (data) => (
-                                <div
-                                  className={style.privilegeHeading}
-                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`}
-                                  onClick={() => {
-                                    setShowCurrentPrivileges(true);
-                                    setCurrentPrivilegesCategory('Basic')
-                                    handleChange(data?.id);
-                                  }}
-                                >
-                                  {data?.privilegeSetTitle}
-                                </div>
-                              )
-                            )}
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
-                    <div className={style.twoColReappointment}>
-                      <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-                        <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-                        {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
-                          <>
-                            {form?.privileges?.additionalPrivileges?.length === 0 ? (
-                              <div className={style.privilegeHeading}>None</div>
-                            ) : (
-                              <>
-                                {form?.privileges?.additionalPrivileges?.map(data => (
-                                  <div className={style.privilegeHeading}
-                                  // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                  >{data?.privilegeSetTitle}</div>
-                                ))}
-                              </>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            {form?.privileges?.priorAdditionalPrivileges?.map(data => (
-                              <div className={style.privilegeHeading}
-                              // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                              >{data?.privilegeSetTitle}</div>
-                            ))}
-                          </>
-                        )}
-                      </div>
-                      {additionalPrivilegeChangeYesOrNo !== '' && (
-                        <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                          <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Additional Privileges Requested' : 'Change for Reappointment'}</div>
-                          {additionalPrivilegeChangeYesOrNo === 'No' ? (
-                            <div className={`${style.privilegeHeading}`}>None</div>
-                          ) : (
-                            <>
-                              {form?.privileges?.additionalPrivileges?.map(data => (
-                                <div className={style.privilegeHeading}
-                                // className={`${style.privilegeTitleStyle} ${style.cursorPointer}`} onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
-                                >Requested: {data?.privilegeSetTitle}</div>
-                              ))}
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-                    <strong>Privileges at Other Hospitals</strong>
-                  </div>
-                  <div className={style.twoColReappointment}>
+                  <div className={style.twoCol}>
                     <div
                       className={`${style.privilegeContentCard} ${style.marginTop10}`}
                     >
                       <div className={style.privilegeHeadingCurrent}>Current</div>
                       <div className={style.privilegeHeading}>
-                        {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null)
-                          ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
-                            <div>{data?.privileges}</div>
-                          )) : (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null)
-                            ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
-                              <div>{data?.privileges}</div>
-                            ))
-                            : 'None'}
+                        {(form?.basicDetails?.priorDepartmentSpecialty !== null && form?.basicDetails?.priorDepartmentSpecialty?.department !== null) ? form?.basicDetails?.priorDepartmentSpecialty?.department : (form?.basicDetails?.departmentSpecialty !== null && form?.basicDetails?.departmentSpecialty?.department !== null) ? form?.basicDetails?.departmentSpecialty?.department : 'None'}
                       </div>
                     </div>
-                    {privilegeAtOtherHospitalYesOrNo !== '' && (
+                    {form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined && (
                       <div
                         className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                       >
@@ -3992,213 +3898,414 @@ const NewActiveApplication = ({
                           Change for Reappointment
                         </div>
                         <div className={style.privilegeHeading}>
-                          <div>
-                            {privilegeAtOtherHospitalYesOrNo === 'No' ? (
-                              <div className={style.privilegeHeading}>None</div>
-                            ) : (
-                              <div>
-                                {hospitalPrivilegeSet?.map(data => (
-                                  <div className={style.privilegeHeading}>{`${data?.hospitalName} - ${data?.privileges}`}</div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className={`${style.cardTitle} ${style.marginTop30}`}>
-                    Do you want to keep your current Privilege Category?
-                  </div>
-                  <div className={`${style.borderStyleTiles}`}></div>
-                  {privilegeChangeYesOrNo !== '' && (
-                      <div
-                        className={`${style.marginTop10} ${style.marginLeft30}`}
-                      >
-                        <div className={style.privilegeHeading}>
-                          {privilegeChangeYesOrNo === "Yes" ? (
-                            <div className= {`${style.fontSize}`}>
+                          {form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo === "No" ? (
+                            <div className={style.privilegeHeading}>
                               Same as Before
                             </div>
                           ) : (
-                            <div className={`${style.privilegeHeading} ${style.marginTop10} ${style.fontSize}`}>
-                              Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
-                          ? form?.basicDetails?.priorPrivilegeCategory
-                            ?.name
-                          : form?.basicDetails
-                            ?.credentialingPrivilegeCategory
-                            ?.credentialingCategory} To {" "}
-                              {
-                                form?.basicDetails
-                                  ?.credentialingPrivilegeCategory
-                                  ?.credentialingCategory
-                              }
+                            <div className={style.privilegeHeading}>
+                              {form?.basicDetails?.priorDepartmentSpecialty?.department !== null ? form?.basicDetails?.priorDepartmentSpecialty?.department === form?.basicDetails?.departmentSpecialty?.department ? 'Same as Before' : form?.basicDetails?.departmentSpecialty?.department : form?.basicDetails?.departmentSpecialty?.department}
                             </div>
                           )}
                         </div>
                       </div>
                     )}
-                    {/* <div className={`${style.cardTitle}  ${style.marginTop30}`}>
+                  </div>
+                  {(form?.privileges?.priorObligatedPrivileges?.length !== 0 || form?.privileges?.obligatedPrivileges?.length !== 0) && (
+                    <>
+                      <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                        <strong>Privilege Sets</strong>
+                      </div>
+                      <div className={style.twoCol}>
+                        <div
+                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                        >
+                          <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                          {form?.privileges?.priorObligatedPrivileges?.length === 0 ?
+                            // form?.privileges?.obligatedPrivileges?.length === 0 ? 
+                            (
+                              <div className={style.privilegeHeading}>None</div>
+                            )
+                            //  : (
+                            //   <>
+                            //     {form?.privileges?.obligatedPrivileges?.map(
+                            //       (data) => (
+                            //         <div className={style.privilegeHeading}
+                            //         // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
+                            //         // onClick={() => {
+                            //         //   setShowCurrentPrivileges(true);
+                            //         //   setCurrentPrivilegesCategory('Basic')
+                            //         //   handleChange(data?.id);
+                            //         // }}
+                            //         >
+                            //           {data?.privilegeSetTitle}
+                            //         </div>
+                            //       )
+                            //     )}
+                            //   </>
+                            // ) 
+                            : (
+                              <>
+                                {form?.privileges?.priorObligatedPrivileges?.map(
+                                  (data) => (
+                                    <div className={style.privilegeHeading}
+                                    // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
+                                    // onClick={() => {
+                                    //   setShowCurrentPrivileges(true);
+                                    //   setCurrentPrivilegesCategory('Basic')
+                                    //   handleChange(data?.id);
+                                    // }}
+                                    >
+                                      {data?.privilegeSetTitle}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            )}
+                        </div>
+                        {form?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined && (
+                          <div
+                            className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                          >
+                            <div className={`${style.privilegeHeadingReappointment}`}>
+                              Change for Reappointment
+                            </div>
+                            {privilegeSetChangeYesOrNo === "Yes" ? (
+                              <>
+                                <div className={style.privilegeHeading}>
+                                  Same Privileges Requested
+                                </div>
+                                {form?.privileges?.obligatedPrivileges?.map(
+                                  (data) => (
+                                    <div
+                                      className={`${style.privilegeHeading} `}
+                                    // onClick={() => {
+                                    //   setShowCurrentPrivileges(true);
+                                    //   setCurrentPrivilegesCategory('Basic')
+                                    //   setSelectedPrivilege(data?.id);
+                                    // }}
+                                    >
+                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {form?.privileges?.obligatedPrivileges?.map(
+                                  (data) => (
+                                    <div
+                                      className={`${style.privilegeHeading} `}
+                                    // onClick={() => {
+                                    //   setShowCurrentPrivileges(true);
+                                    //   setCurrentPrivilegesCategory('Basic')
+                                    //   setSelectedPrivilege(data?.id);
+                                    // }}
+                                    >
+                                      {data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                  {(form?.privileges?.priorAdditionalPrivileges?.length !== 0 || form?.privileges?.additionalPrivileges?.length !== 0) && (
+                    <div>
+                      <div className={`${style.privilegeHeading} ${style.marginTop10}`}><strong>Additional Privileges</strong></div>
+                      <div className={style.twoCol}>
+                        <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
+                          <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
+                          {form?.privileges?.priorAdditionalPrivileges?.length === 0 ? (
+                            <>
+                              {form?.privileges?.additionalPrivileges?.length === 0 ? (
+                                <div className={style.privilegeHeading}>None</div>
+                              ) : (
+                                <>
+                                  {form?.privileges?.additionalPrivileges?.map(data => (
+                                    <div
+                                      className={`${style.privilegeHeading} `}
+                                    // onClick={() => { setShowCurrentPrivileges(true); handleChangeAdditional(data?.id); setCurrentPrivilegesCategory('Additional') }}
+                                    >{data?.privilegeSetTitle}</div>
+                                  ))}
+                                </>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {form?.privileges?.priorAdditionalPrivileges?.map(data => (
+                                <div
+                                  className={`${style.privilegeHeading} `}
+                                // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional') }}
+                                >{data?.privilegeSetTitle}</div>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                        {form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== '' && form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined && (
+                          <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
+                            <div className={`${style.privilegeHeadingReappointment}`}>{additionalPrivilegeChangeYesOrNo === 'No' ? 'Privileges Requested' : 'Change for Reappointment'}</div>
+                            {additionalPrivilegeChangeYesOrNo === 'No' ? (
+                              <div className={`${style.privilegeHeading}`}>None</div>
+                            ) : (
+                              <>
+                                <div className={style.privilegeHeading}>
+                                  Additional Privilege Requested
+                                </div>
+                                {form?.privileges?.additionalPrivileges?.map(data => (
+                                  <div
+                                    className={`${style.privilegeHeading} ${style.cursorPointer}`}
+                                  // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
+                                  >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
+                                ))}
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {((form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null) && (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0)) && (
+                    <>
+                      <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                        <strong>Privileges at Other Hospitals</strong>
+                      </div>
+                      <div className={style.twoCol}>
+                        <div
+                          className={`${style.privilegeContentCard} ${style.marginTop10}`}
+                        >
+                          <div className={style.privilegeHeadingCurrent}>Current</div>
+                          <div className={style.privilegeHeading}>
+                            {(form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.length !== 0)
+                              ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(data => (
+                                <div>{data?.privileges}</div>
+                              )) : (form?.basicDetails?.existingCredentialingPrivilegeCategory !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null && form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0)
+                                ? form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map(data => (
+                                  <div>{data?.privileges}</div>
+                                ))
+                                : 'None'}
+                          </div>
+                        </div>
+                        {form?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== '' && form?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined && (
+                          <div
+                            className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
+                          >
+                            <div className={style.privilegeHeadingReappointment}>
+                              Change for Reappointment
+                            </div>
+                            <div className={style.privilegeHeading}>
+                              <div>
+                                {privilegeAtOtherHospitalYesOrNo === 'No' ? (
+                                  <div className={style.privilegeHeading}>None</div>
+                                ) : (
+                                  <div>
+                                    {hospitalPrivilegeSet?.map(data => (
+                                      <div className={style.privilegeHeading}>{`${form?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map(priorData => priorData?.privileges)?.includes(data?.privileges) ? 'Existing: ' : 'New: '} ${data?.hospitalName} - ${data?.privileges}`}</div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className={`${style.cardTitle} ${style.marginTop30}`}>
+              Do you want to keep your current Privilege Category?
+            </div>
+            <div className={`${style.borderStyleTiles}`}></div>
+            {privilegeChangeYesOrNo !== '' && (
+              <div
+                className={`${style.marginTop10} ${style.marginLeft30}`}
+              >
+                <div className={style.privilegeHeading}>
+                  {privilegeChangeYesOrNo === "Yes" ? (
+                    <div className={`${style.fontSize}`}>
+                      {`Same as Before - ${form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}`}
+                    </div>
+                  ) : (
+                    <div className={`${style.privilegeHeading} ${style.marginTop10} ${style.fontSize}`}>
+                      Changed From {(form?.basicDetails?.priorPrivilegeCategory !== null && form?.basicDetails?.priorPrivilegeCategory?.name !== null)
+                        ? form?.basicDetails?.priorPrivilegeCategory
+                          ?.name
+                        : form?.basicDetails
+                          ?.credentialingPrivilegeCategory
+                          ?.credentialingCategory} To {" "}
+                      {
+                        form?.basicDetails
+                          ?.credentialingPrivilegeCategory
+                          ?.credentialingCategory
+                      }
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {/* <div className={`${style.cardTitle}  ${style.marginTop30}`}>
                     Requested Privilege Set(s) for Reappointment
                   </div> */}
-                  {(selectedPrivilegeForDisplay?.length > 0 || 
-                  selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
-                    <>
+            {(selectedPrivilegeForDisplay?.length > 0 ||
+              selectedPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
+                <>
                   <div className={`${style.cardTitle} ${style.marginTop30}`}>
                     Requested Privilege Sets for Reappointment
                   </div>
                   <div className={`${style.borderStyleTiles}`}></div>
-                  </>
-                )}
-                  {/* <div className={`${style.borderStyleTiles}`}></div> */}
+                </>
+              )}
+            {/* <div className={`${style.borderStyleTiles}`}></div> */}
 
-                  {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
-                    <div key={dataIndex}>
-                    <div
-                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
-                    >
-                      {data?.privilegeSetTitle}
-                    </div>
-                      {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
-                        <div key={catIndex} >
-                          <div className={`${style.flex}`}>
-                            <div className={style.itemLeft}>
-                              <strong>{categories?.category || ""}</strong>
-                            </div>
-                          </div>
-                          {categories?.privileges?.map((privilege, privIndex) => (
-                            <div key={privIndex} className={style.privilegeCodeGrid}>
-                              <div className={style.itemLeft}>
-                                <strong>{privilege?.privilegeId || ""}</strong>
-                              </div>
-                              <div className={style.itemLeft}>{privilege?.title || ""}</div>
-                            </div>
-                          ))}
-                        
-                        </div>
-                      ))}
-                      <div className={style.twoCol}>
-                    {selectedPrivilegeForDisplay?.[0] && (
-                      <>
-                        <div>
-                          <ESignature
-                            userName={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
-                            }
-                            encData={
-                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
-                            }
-                            showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
-                            showDatais={true}
-                          />
-                        </div>
-                        <div className={style.verticalAlignCenter}>
-                          <div className={style.displayInRow}>
-                            <div className={style.dateTitle}>Date:</div>
-                            <div className={`${style.date} ${style.marginLeft}`}>
-                              {
-                                selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
-                                ""
-                              }
-                            </div>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  {dataIndex !== selectedPrivilegeForDisplay.length - 1 && (
-                    <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
-                  )}
-                    </div>
-                  ))}
-              <>
-              {(selectedAdditionalPrivilegeForDisplay?.length > 0 || 
-                  selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.restrictedPrivileges) && (
-                  <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
-                    Advanced Privileges
-                  </div>
-                )}
-                  {
-              selectedAdditionalPrivilegeForDisplay?.map((data,dataIndex) => 
-                ( <div key={dataIndex}>
-                  <div
-                      className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
-                    >
-                      {data?.privilegeSetTitle}
-                    </div>
-                {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories) => {
-                  return (
-                <div>
-                  <div className={style.flex}>
-                    <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
-                  </div>
-                  <>{
-                    categories?.privileges?.map(privileges => (
-                      <div className={style.privilegeCodeGrid}>
-                        <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
-                        <div className={style.itemLeft}>{privileges?.title || ''}</div>
-                      </div>
-
-                    ))
-                  }
-                  </>
+            {selectedPrivilegeForDisplay?.map((data, dataIndex) => (
+              <div key={dataIndex}>
+                <div
+                  className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                >
+                  {data?.privilegeSetTitle}
                 </div>
-                  )
-                })}
+                {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                  <div key={catIndex} >
+                    <div className={`${style.flex}`}>
+                      <div className={style.itemLeft}>
+                        <strong>{categories?.category || ""}</strong>
+                      </div>
+                    </div>
+                    {categories?.privileges?.map((privilege, privIndex) => (
+                      <div key={privIndex} className={style.privilegeCodeGrid}>
+                        <div className={style.itemLeft}>
+                          <strong>{privilege?.privilegeId || ""}</strong>
+                        </div>
+                        <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                      </div>
+                    ))}
+
+                  </div>
+                ))}
                 <div className={style.twoCol}>
-                  {selectedAdditionalPrivilegeForDisplay?.[0] && (
+                  {selectedPrivilegeForDisplay?.[0] && (
                     <>
                       <div>
                         <ESignature
                           userName={
-                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign !== null
-                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.esign?.name
-                              : ""
+                            selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.name || ""
                           }
                           encData={
-                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign !== null
-                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.esign?.esign
-                              : ""
+                            selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.esign || ""
                           }
-                          showData={
-                            selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign !== null &&
-                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.esign !== undefined
-                              ? true
-                              : false
-                          }
+                          showData={!!selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign}
                           showDatais={true}
                         />
                       </div>
                       <div className={style.verticalAlignCenter}>
                         <div className={style.displayInRow}>
-                          <div className={style.dateTitle}>Date: </div>
+                          <div className={style.dateTitle}>Date:</div>
                           <div className={`${style.date} ${style.marginLeft}`}>
-                            {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                              ?.restrictedPrivileges?.esign !== null
-                              ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
-                                ?.restrictedPrivileges?.esign?.signedDate
-                              : ""}
+                            {
+                              selectedPrivilegeForDisplay[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
+                              ""
+                            }
                           </div>
                         </div>
                       </div>
                     </>
                   )}
                 </div>
-                {dataIndex !== selectedAdditionalPrivilegeForDisplay.length - 1 && (
+                {dataIndex !== selectedPrivilegeForDisplay.length - 1 && (
+                  <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
+                )}
+              </div>
+            ))}
+            <>
+              {(selectedAdditionalPrivilegeForDisplay?.length > 0 ||
+                selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.restrictedPrivileges) && (
+                  <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
+                    Advanced Privileges
+                  </div>
+                )}
+              {
+                selectedAdditionalPrivilegeForDisplay?.map((data, dataIndex) =>
+                (<div key={dataIndex}>
+                  <div
+                    className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                  >
+                    {data?.privilegeSetTitle}
+                  </div>
+                  {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories) => {
+                    return (
+                      <div>
+                        <div className={style.flex}>
+                          <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                        </div>
+                        <>{
+                          categories?.privileges?.map(privileges => (
+                            <div className={style.privilegeCodeGrid}>
+                              <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                              <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                            </div>
+
+                          ))
+                        }
+                        </>
+                      </div>
+                    )
+                  })}
+                  <div className={style.twoCol}>
+                    {selectedAdditionalPrivilegeForDisplay?.[0] && (
+                      <>
+                        <div>
+                          <ESignature
+                            userName={
+                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign !== null
+                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                  ?.restrictedPrivileges?.esign?.name
+                                : ""
+                            }
+                            encData={
+                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign !== null
+                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                  ?.restrictedPrivileges?.esign?.esign
+                                : ""
+                            }
+                            showData={
+                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign !== null &&
+                                selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                  ?.restrictedPrivileges?.esign !== undefined
+                                ? true
+                                : false
+                            }
+                            showDatais={true}
+                          />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Date: </div>
+                            <div className={`${style.date} ${style.marginLeft}`}>
+                              {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.esign !== null
+                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                  ?.restrictedPrivileges?.esign?.signedDate
+                                : ""}
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {dataIndex !== selectedAdditionalPrivilegeForDisplay.length - 1 && (
                     <div className={`${style.borderStyleTiles}  ${style.marginTop10}`}></div>
                   )}
-              </div>)
-              )}
-                {/* <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
+                </div>)
+                )}
+              {/* <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                 Application Payment Status
                 <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
                   {form?.payment?.paymentCompleted ? 'Paid' : 'Unpaid'}
@@ -4222,8 +4329,8 @@ const NewActiveApplication = ({
                 </div>
 
                 </div> */}
-                </>
-        </>
+            </>
+          </>
         );
       default:
         return <></>;
@@ -4242,16 +4349,16 @@ const NewActiveApplication = ({
       <div className={style.screenBackground}></div>
 
       <ApplicationHeader
-       title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
           ? form?.basicDetails?.applicant?.name?.firstName
-        : "{First Name}"
-        } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
-          ?  form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
+          : "{First Name}"
+          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+            ? form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
             : "{Last Name}"
           }, ${form?.basicDetails?.applicant?.applicantType !== undefined
-          ? form?.basicDetails?.applicant?.applicantType
-          : "{Applicant Type}"
-        }`}
+            ? form?.basicDetails?.applicant?.applicantType
+            : "{Applicant Type}"
+          }`}
         close={true}
         closeClick={onClose}
       />
@@ -4381,10 +4488,10 @@ const NewActiveApplication = ({
                           Application Payment Status
                         </div>
                         <div className={style.cursorPointer}> Transaction ID:{" "}
-                        <Tooltip title="View Transaction Details" arrow>
-                        <span className={`${style.marginTop10} ${style.paymentIDStyle}`}  onClick={onClickPaymentFunction}>{form?.payment?.receiptId || "-"}</span>
-                        </Tooltip>
-                      </div>
+                          <Tooltip title="View Transaction Details" arrow>
+                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={onClickPaymentFunction}>{form?.payment?.receiptId || "-"}</span>
+                          </Tooltip>
+                        </div>
                       </div>
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                         <div className={`${statusStyle} ${style.marginCenter}`}></div>
@@ -4410,7 +4517,7 @@ const NewActiveApplication = ({
                           <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
-                              {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
+                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
                                 {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
@@ -4511,45 +4618,45 @@ const NewActiveApplication = ({
                       >
 
                         <div>
-                        {applicationType === "REAPPOINTMENT" && (
-                          <div
-                            className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
-                          >
+                          {applicationType === "REAPPOINTMENT" && (
                             <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
                             >
                               <div
-                                className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                Required Data & POD Verification
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div
+                                  className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                                ></div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
+                                  Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                </div>
                               </div>
                             </div>
-                            </div>
-                        )}
-                            {applicationType === "NEW" && (
-                              <div
+                          )}
+                          {applicationType === "NEW" && (
+                            <div
                               className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
                             >
                               <>
-                               <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div
-                                className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                            >
-                              <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Data & POD Verification
-                              </div>
-                            </div>
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                >
+                                  <div
+                                    className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                                  ></div>
+                                </div>
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                >
+                                  <div className={`${style.tableHeaderTextStyle}`}>
+                                    Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                  </div>
+                                </div>
                                 <div
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
@@ -4666,8 +4773,8 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               </>
-                              </div>
-                            )}
+                            </div>
+                          )}
                           {/* </div> */}
                           <div>
                             <>
@@ -5480,45 +5587,45 @@ const NewActiveApplication = ({
                                                   {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                     isMatch ? (
                                                       <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                         <Tooltip title="Click To Revert Verification">
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                        onClick={() => {
-                                                          handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                      }}
-                                                        >
-                                                          Verified
-                                                        </div>
-                                                        </Tooltip>
-                                                      </div>
-                                                    ) :
-                                                     (
-                                                      form?.forms[index]?.status !== "APPROVED" ? (
-                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Verify">
-                                                          <div
-                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                            onClick={() => {
-                                                                handleStepsVerify(form?.forms[index]?.id);
-                                                            }}
-                                                          >
-                                                            Verify
-                                                          </div>
-                                                          </Tooltip>
-                                                        </div>
-                                                      ) : (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Revert Verification">
+                                                        <Tooltip title="Click To Revert Verification">
                                                           <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                          onClick={() => {
-                                                            handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                        }}
+                                                            onClick={() => {
+                                                              handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                            }}
                                                           >
                                                             Verified
                                                           </div>
-                                                          </Tooltip>
-                                                        </div>
+                                                        </Tooltip>
+                                                      </div>
+                                                    ) :
+                                                      (
+                                                        form?.forms[index]?.status !== "APPROVED" ? (
+                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                            <Tooltip title="Click To Verify">
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => {
+                                                                  handleStepsVerify(form?.forms[index]?.id);
+                                                                }}
+                                                              >
+                                                                Verify
+                                                              </div>
+                                                            </Tooltip>
+                                                          </div>
+                                                        ) : (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <Tooltip title="Click To Revert Verification">
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => {
+                                                                  handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                }}
+                                                              >
+                                                                Verified
+                                                              </div>
+                                                            </Tooltip>
+                                                          </div>
+                                                        )
                                                       )
-                                                    )
                                                   )}
                                                   {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
@@ -5538,37 +5645,36 @@ const NewActiveApplication = ({
                                                       form?.forms[index]?.status !== "APPROVED" ? (
                                                         <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
                                                           <Tooltip title="Click To Verify">
-                                                          <div
-                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                            onClick={() => {
-                                                              if (
-                                                                !(isUploadYourDoc && !allVerified)
-                                                              )
-                                                               {
-                                                                handleStepsVerify(form?.forms[index]?.id);
-                                                              }
-                                                            }}
-                                                          >
-                                                            Verify
-                                                          </div>
+                                                            <div
+                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => {
+                                                                if (
+                                                                  !(isUploadYourDoc && !allVerified)
+                                                                ) {
+                                                                  handleStepsVerify(form?.forms[index]?.id);
+                                                                }
+                                                              }}
+                                                            >
+                                                              Verify
+                                                            </div>
                                                           </Tooltip>
                                                         </div>
                                                       ) : (
                                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                           <Tooltip title="Click To Revert Verification">
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                           onClick={() => {
-                                                            handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                        }}
-                                                          >
-                                                            Verified
-                                                          </div>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => {
+                                                                handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                              }}
+                                                            >
+                                                              Verified
+                                                            </div>
                                                           </Tooltip>
                                                         </div>
                                                       )
                                                     )
-                                                  ): null}
-                                             </div>
+                                                  ) : null}
+                                                </div>
                                               );
                                             })()
                                           )}
@@ -5997,7 +6103,7 @@ const NewActiveApplication = ({
                           <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Data & POD Verification </div>
+                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                             </div>
 
                           </div>
@@ -7042,7 +7148,7 @@ const NewActiveApplication = ({
                               className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                             >
                               <div className={`${style.tableHeaderTextStyle}`}>
-                                Required Data & POD Verification
+                                Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
                               </div>
                             </div>
                             <div
@@ -8012,7 +8118,7 @@ const NewActiveApplication = ({
                           <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
                             <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Data & POD Verification </div>
+                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
                             </div>
 
                           </div>
@@ -8620,7 +8726,7 @@ const NewActiveApplication = ({
                             className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                           >
                             <div className={`${style.tableHeaderTextStyle}`}>
-                              Required Data & POD Verification
+                              Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
                             </div>
                           </div>
                           <div
@@ -10042,7 +10148,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || ( workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
+                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
                     <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10104,7 +10210,7 @@ const NewActiveApplication = ({
                       Pending Dept. Head. Recommendation
                     </div>
                   </div>
-                </>): ("")}
+                </>) : ("")}
 
                 {(workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
@@ -10182,7 +10288,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {((workModeType ==='Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInCol}`}>
@@ -10240,7 +10346,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {(workModeType ==='Chief Of Staff') && (
+                {(workModeType === 'Chief Of Staff') && (
                   <>
                     {selectedTab === "level-3" && (
                       <>
@@ -10397,7 +10503,7 @@ const NewActiveApplication = ({
                   )} */}
                 {applicationType === "NEW" ? (
                   ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
-                    (workModeType ==='Chief Of Staff' && selectedTab === "level-3") ||
+                    (workModeType === 'Chief Of Staff' && selectedTab === "level-3") ||
                     (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
                     (workModeType === 'Department Head' && selectedTab === "level-3")) ? (
                     <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
@@ -10888,11 +10994,11 @@ const NewActiveApplication = ({
                                                   {file?.fileName}
                                                 </div>
                                                 <div>
-                                                <DescriptionOutlinedIcon
+                                                  <DescriptionOutlinedIcon
                                                     // className={style.docsIcon}
                                                     style={{ marginRight: '8px' }}
                                                   />
-                                                  </div>
+                                                </div>
                                               </div>
                                               {file?.title && (
                                                 <div
