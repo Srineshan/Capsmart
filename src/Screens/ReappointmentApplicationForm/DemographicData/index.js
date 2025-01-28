@@ -55,6 +55,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             getBasicForm()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
+            getMissingFieldsContact();
             setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
         }
 
@@ -74,6 +75,36 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     useEffect(() => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
+
+    useEffect(() => {
+        if (formSchema) {
+          const updatedSchema = { ...formSchema }; 
+      
+          
+          const contactAddress2 = updatedSchema?.properties?.contactAddress2;
+          const mailingAddressEnum =
+            contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
+      
+          
+          if (mailingAddressEnum) {
+            if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
+              contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
+                mailingAddressEnum.filter(
+                  (option) => option !== "Same as Business Address"
+                );
+            } else {
+              if (!mailingAddressEnum.includes("Same as Business Address")) {
+                contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = [
+                  ...mailingAddressEnum,
+                  "Same as Business Address",
+                ];
+              }
+            }
+          }
+      
+          setFormSchema(updatedSchema); // Update the state with the modified schema
+        }
+      }, [formSchema, basicForm, formIndex]); 
 
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -122,6 +153,38 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         setUniqueLabels(tempLabels)
         console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
     }
+    const getMissingFieldsContact = () => {
+        setUpdateFrom('')
+        let missingKeys = [];
+        let keyValuePair = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
+        })
+        const validateBusinessPhone = (phone) => {
+            const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
+            return phoneRegex.test(phone);
+        };
+        const validateBusinessWebsite = (website) => {
+            const websiteRegex =
+                /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/; // Simple URL validation
+            return websiteRegex.test(website);
+        };
+
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0
+            ) {
+                missingKeys.push(data)
+            }
+        })
+        if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
+            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        setWarningFieldsContact(missingKeys)
+        console.log(keyValuePair, 'MetadataContact', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
+    }
+
 
     const getMissingFieldsBasicInfo = () => {
         setUpdateFrom('')
@@ -541,7 +604,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
+                                                warningFields={warningFieldsContact}
                                                 formSchema={formSchemaWholeObject}
                                             />
 
@@ -563,7 +626,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
+                                                warningFields={warningFieldsContact}
                                                 formSchema={formSchemaWholeObject}
                                             />
                                         </div>
@@ -583,7 +646,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFields}
+                                                warningFields={warningFieldsContact}
                                                 formSchema={formSchemaWholeObject}
                                             />
 

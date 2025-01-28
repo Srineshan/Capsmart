@@ -972,6 +972,32 @@ const ApplicationFieldCard = ({
     }
   }, [isMailingAddressPincodeEntered]);
 
+  //   useEffect(() => {
+//   if (registeredBusinessAddress === false) {
+//     // Create a derived schema from the props
+//     const updatedSchema = { ...formSchema };
+
+//     // Access and modify the enum if necessary
+//     const contactAddress2 =
+//       updatedSchema?.schema?.properties?.contactAddress2;
+//     const isMailingAddressEnum =
+//       contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
+
+//     if (isMailingAddressEnum?.includes("Same as Business Address")) {
+//       contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
+//         isMailingAddressEnum.filter(
+//           (option) => option !== "Same as Business Address"
+//         );
+//     }
+
+//     // Pass the updated schema to wherever it's needed (e.g., a callback, or memoized)
+//     onUpdateSchema(updatedSchema);
+//   }
+// }, [registeredBusinessAddress, formSchema]);
+
+// Add the onUpdateSchema function as a prop or handler
+// This should allow you to pass the updated schema wherever it's required
+
   useEffect(() => {
     const fetchData = async () => {
       try {
