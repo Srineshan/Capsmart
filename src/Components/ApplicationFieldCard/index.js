@@ -491,7 +491,7 @@ const ApplicationFieldCard = ({
       });
     }
   }, [isMailingAddressSameAsHomeAddress]);
-  
+
   useEffect(() => {
     if (
       isMailingAddressSameAsHomeAddress !== undefined &&
@@ -501,7 +501,7 @@ const ApplicationFieldCard = ({
         baseKey?.split(".")[0] === "contactAddress2" ||
         baseKey?.split(".")[0] === "contactAddress3")
     ) {
-      console.log("isMailingAddress:",isMailingAddressSameAsHomeAddress);
+      console.log("isMailingAddress:", isMailingAddressSameAsHomeAddress);
       setBasicForm((prevData) => {
         let tempContactAddress2 = { ...prevData };
         if (
@@ -512,7 +512,7 @@ const ApplicationFieldCard = ({
             addressPageIndex
           ].data.contactAddress2.mailingAddress = {};
         }
-       
+
         if (
           isMailingAddressSameAsHomeAddress ===
           "Same as Home Address"
@@ -526,34 +526,34 @@ const ApplicationFieldCard = ({
               ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
                 ?.homeAddress?.streetName
               : ""
-              tempContactAddress2.forms[
-                addressPageIndex
-              ].data.contactAddress2.mailingAddress.pinCode =
-                tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                  ?.homeAddress?.pinCode !== undefined
-                  ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                    ?.homeAddress?.pinCode
-                  : "";
-                  tempContactAddress2.forms[
-                    addressPageIndex
-                  ].data.contactAddress2.mailingAddress.city =
-                    tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                      ?.homeAddress?.city !== undefined
-                      ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                        ?.homeAddress?.city
-                      : "";
-                      tempContactAddress2.forms[
-                        addressPageIndex
-                      ].data.contactAddress2.mailingAddress.province =
-                        tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                          ?.homeAddress?.province !== undefined
-                          ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                            ?.homeAddress?.province
-                          : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.pinCode =
+            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+              ?.homeAddress?.pinCode !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                ?.homeAddress?.pinCode
+              : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.city =
+            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+              ?.homeAddress?.city !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                ?.homeAddress?.city
+              : "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.province =
+            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+              ?.homeAddress?.province !== undefined
+              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+                ?.homeAddress?.province
+              : "";
           tempContactAddress2.contactAddress2 = {
-            mailingAddress: 
-                tempContactAddress2.forms[addressPageIndex].data.contactAddress2
-                  .mailingAddress,
+            mailingAddress:
+              tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+                .mailingAddress,
           };
         } else if (
           isMailingAddressSameAsHomeAddress ===
@@ -566,42 +566,42 @@ const ApplicationFieldCard = ({
             tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
               ?.business?.businessAddress?.streetName !== undefined
               ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.streetName
+                ?.business?.businessAddress?.streetName
               : "";
           tempContactAddress2.forms[
             addressPageIndex
           ].data.contactAddress2.mailingAddress.pinCode =
-          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-          ?.business?.businessAddress?.pinCode !== undefined
+            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.pinCode !== undefined
               ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.pinCode
+                ?.business?.businessAddress?.pinCode
               : "";
           tempContactAddress2.forms[
             addressPageIndex
           ].data.contactAddress2.mailingAddress.city =
-          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-          ?.business?.businessAddress?.city !== undefined
+            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.city !== undefined
               ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.city
+                ?.business?.businessAddress?.city
               : "";
           tempContactAddress2.forms[
             addressPageIndex
           ].data.contactAddress2.mailingAddress.province =
-          tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-          ?.business?.businessAddress?.province !== undefined
+            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+              ?.business?.businessAddress?.province !== undefined
               ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.province
+                ?.business?.businessAddress?.province
               : "";
           tempContactAddress2.contactAddress2 = {
-            
-              mailingAddress:
-                tempContactAddress2.forms[addressPageIndex].data.contactAddress2
-                  .mailingAddress,
-            
+
+            mailingAddress:
+              tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+                .mailingAddress,
+
           };
         } else {
           tempContactAddress2.contactAddress2 = {
-             mailingAddress: {} 
+            mailingAddress: {}
           };
           tempContactAddress2.forms[
             addressPageIndex
@@ -616,11 +616,11 @@ const ApplicationFieldCard = ({
             addressPageIndex
           ].data.contactAddress2.mailingAddress.province = "";
           tempContactAddress2.contactAddress2 = {
-            
-              mailingAddress:
-                tempContactAddress2.forms[addressPageIndex].data.contactAddress3
-                  .mailingAddress,
-            
+
+            mailingAddress:
+              tempContactAddress2.forms[addressPageIndex].data.contactAddress3
+                .mailingAddress,
+
           };
         }
         return tempContactAddress2;
@@ -1907,7 +1907,21 @@ const ApplicationFieldCard = ({
                       ),
                       canadaData?.dateFormat || "dd/MM/yyyy"
                     )
-                    : "-"}
+                    : (getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== undefined || getValueByPath(
+                      basicForm,
+                      `${basicpath}.${baseKey}.${fieldKey}`
+                    ) !== "") ? format(
+                      new Date(
+                        getValueByPath(
+                          basicForm,
+                          `${basicpath}.${baseKey}.${fieldKey}`
+                        )
+                      ),
+                      canadaData?.dateFormat || "dd/MM/yyyy"
+                    ) : "-"}
                 </div>
               </div>
             );
@@ -2064,7 +2078,7 @@ const ApplicationFieldCard = ({
             let isIssueResolved = basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== undefined && basicForm?.forms?.[formIndex]?.data?.disclosures?.[baseKey?.split('.')?.[1]][parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.then?.required[2]] !== null;
             let isShowAdditionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)[0]?.if?.properties?.[fieldKey]?.const;
             console.log("Disclosure Conflict", isConflict, fieldKey, priorData, parentData, fieldData.priorDataComparisonNeeded, fieldData, currentValue !== priorData, currentValue, priorData, basicForm?.forms?.[formIndex]?.priorData?.disclosures?.[baseKey?.split('.')?.[1]], basicForm?.forms?.[formIndex], formIndex, isShowAdditionalFields, priorData !== undefined, priorData !== null, currentValue !== undefined, currentValue !== null, currentValue !== priorData, isShowAdditionalFields !== currentValue)
-            console.log("currentValue2",currentValue)
+            console.log("currentValue2", currentValue)
             if (isConflict && !showPriorDataDialog && !isIssueResolved && isShowAdditionalFields !== currentValue) {
               setDisclosureBaseKey(baseKey?.split('.')?.[1])
               setDisclosureFieldKey(fieldKey)
@@ -2073,7 +2087,7 @@ const ApplicationFieldCard = ({
             }
           }
           const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
-          console.log("currentValue1",currentValue)
+          console.log("currentValue1", currentValue)
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2140,15 +2154,15 @@ const ApplicationFieldCard = ({
             </div>
           );
 
-        case "switchbutton":{
-          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? "Yes" : "No";
-          console.log("currentValueee",currentValue)
-          return isPOD ?  (
+        case "switchbutton": {
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? "Yes" : (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === false && fieldKey === "registeredBusinessAddress") ? "This applicant has no business address" : "No";
+          console.log("currentValueee", currentValue, fieldKey)
+          return isPOD ? (
             <div className={style.leftAlign}>
               <span>{fieldData.label}:</span>
               <span className={`${style.marginLeft10} ${currentValue === 'Yes' ? style.RadiobuttonYesStyle : style.RadiobuttonNoStyle}`}>
-              {currentValue}
-            </span>
+                {currentValue}
+              </span>
             </div>
           ) : (
             <CommonSwitch
