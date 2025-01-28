@@ -61,7 +61,7 @@ const StaffApplicationList = ({
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
-  // const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
+  const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
   const [rejectionTab, setRejectionTab] = useState("rejected");
   const [requestAppointment, setRequestAppointment] = useState(null);
   const [sentCompletion, setSentCompletion] = useState(null);
@@ -459,7 +459,7 @@ const StaffApplicationList = ({
     false,
     false,
   ];
-  // const [form, setForm] = useState();
+  const [form, setForm] = useState();
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
   const [showApplicationRejectionDialog, setShowApplicationRejectionDialog] =
@@ -467,7 +467,8 @@ const StaffApplicationList = ({
   const [showApplicationApprovedDeclineDialog, setShowApplicationApprovedDeclineDialog] =
     useState(false);
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
-  const [reFetchMetaData, setReFetchMetaData] = useState(false)
+  const [reFetchMetaData, setReFetchMetaData] = useState(false);
+  const [isApproved, setIsApproved] = useState(false);
   // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   // const [applicationType, setApplicationType] = useState(() => 
   //   sessionStorage.getItem('applicationCreationType') || 'NEW'
@@ -481,16 +482,16 @@ const StaffApplicationList = ({
   //   'level-2' :0,
   // });
 
-  // useEffect(() => {
-  //   getPreApplication();
-  // }, [])
+  useEffect(() => {
+    getPreApplication();
+  }, [])
 
-  // const getPreApplication = async () => {
-  //   const { data: basicForm } = await GET(
-  //     `application-management-service/application/${applicationId}`
-  //   );
-  //   setForm(basicForm)
-  // }
+  const getPreApplication = async () => {
+    const { data: basicForm } = await GET(
+      `application-management-service/application/${applicationId}`
+    );
+    setForm(basicForm)
+  }
 
   // useEffect(() => {
   //   const intervalId = setInterval(() => {
@@ -530,6 +531,42 @@ const StaffApplicationList = ({
     });
     setCheckedIds([]);
   }, [sortField, sortValue]);
+
+
+  useEffect(() => {
+    console.log("Debug: tableData", tableData);
+  
+    const newApprovedStatus = {}; // Temporary object to hold approval states
+  
+    tableData?.forEach((item, index) => {
+      console.log(`Debug: Processing item at index ${index}`, item);
+  
+      const staffManagerWorkflow = item?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Staff Manager"
+      );
+  
+      console.log("Debug: staffManagerWorkflow for item", staffManagerWorkflow);
+  
+      if (staffManagerWorkflow?.allFormsApproved) {
+        console.log(`Debug: staffManagerWorkflow.allFormsApproved is true for item at index ${index}`);
+        newApprovedStatus[index] = true; // Mark this index as approved
+      } else {
+        console.log(`Debug: staffManagerWorkflow.allFormsApproved is false or undefined for item at index ${index}`);
+        newApprovedStatus[index] = false; // Mark this index as not approved
+      }
+    });
+  
+    setIsApproved(newApprovedStatus); // Update the state with the new approval statuses
+  }, [tableData]);
+  
+  useEffect(() => {
+    console.log("Debug: approvedStatus", isApproved);
+    console.log("Final approvedStatus:", isApproved);
+    console.log("Is approved for index 0:", isApproved[0]);
+    console.log("Is approved for index 1:", isApproved[1]);
+    console.log("Is approved for index 2:", isApproved[2]);
+    console.log("Is approved for index 3:", isApproved[3]);
+  }, [isApproved]);
 
   useEffect(() => {
     if (applicationType) {
@@ -833,7 +870,7 @@ const StaffApplicationList = ({
     }
   };
 
-  console.log("0000000000000000000000" + tableData);
+  console.log("0000000000000000000000" + JSON.stringify(tableData));
 
   const getHandleSort = (value, sortBy) => {
     if (sortBy === 'ASCENDING') {
@@ -2617,11 +2654,16 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevel1Function,
     },
-    {
-      data: "Send for Dept Head Review",
-      requiredValue: "boolean",
-      onClick: "",
-    },
+    // ...(isApproved[index]
+    //   ? [
+          {
+            data: "Send for Dept Head Review",
+            requiredValue: "boolean",
+            onClick: "",
+            // hideData: isApproved[index],
+          },
+        // ]
+      // : []),
     {
       data: "Create Note",
       requiredValue: "boolean",
@@ -2632,19 +2674,19 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   onClick: onClickProcessingTaskFunction,
     // },
-    {
-      data: "Update Staff Status",
-      requiredValue: "boolean",
-      onClick: "",
-    },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
+    // {
+    //   data: "Update Staff Status",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ]
 
   const departmentHeadActionsData = [
@@ -2674,17 +2716,17 @@ const StaffApplicationList = ({
     //   //  onClick: onClickViewAndVerifyFunction,
     //   hideForRoles: userRole,
     // },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-      hideForRoles: "Staff Manager",
-      hideForRoles2: "Chief Of Staff",
-      showForRoles: "Department Head",
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    //   hideForRoles: "Staff Manager",
+    //   hideForRoles2: "Chief Of Staff",
+    //   showForRoles: "Department Head",
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
   ];
 
   const applicationActionsData = applicationType === "NEW" ? [
@@ -2757,29 +2799,29 @@ const StaffApplicationList = ({
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
     // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-      hideForRoles: "Staff Manager",
-      hideForRoles2: "Department Head",
-      hideForRoles3: "Chief Of Staff",
-      // showForRoles: "Chief Of Staff",
-      // showForRoles2: "Credentialing Committee",
-    },
     // {
-    //   data: `From ${userRole}`,
+    //   data: "Request For Clarification",
     //   requiredValue: "boolean",
-    //   onClick: "",
-    //   isIndent: true,
+    //   isParagraph: true,
     //   hideForRoles: "Staff Manager",
     //   hideForRoles2: "Department Head",
+    //   hideForRoles3: "Chief Of Staff",
     //   // showForRoles: "Chief Of Staff",
-    //   // showForRoles: ["Chief Of Staff","Credentialing Committee"],
+    //   // showForRoles2: "Credentialing Committee",
     // },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    // // {
+    // //   data: `From ${userRole}`,
+    // //   requiredValue: "boolean",
+    // //   onClick: "",
+    // //   isIndent: true,
+    // //   hideForRoles: "Staff Manager",
+    // //   hideForRoles2: "Department Head",
+    // //   // showForRoles: "Chief Of Staff",
+    // //   // showForRoles: ["Chief Of Staff","Credentialing Committee"],
+    // // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
   ]
 
   const macActionsData = applicationType === "NEW" ? [
@@ -2815,16 +2857,16 @@ const StaffApplicationList = ({
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-      hideForRoles: "Credentialing Committee",
-      hideForRoles2: "Department Head",
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    //   hideForRoles: "Credentialing Committee",
+    //   hideForRoles2: "Department Head",
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
   ]
 
   const bodActionsData = applicationType === "NEW" ? [
@@ -2851,16 +2893,16 @@ const StaffApplicationList = ({
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    {
-      data: "Request For Clarification",
-      requiredValue: "boolean",
-      isParagraph: true,
-      hideForRoles: "Credentialing Committee",
-      hideForRoles2: "Department Head",
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
-    { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
+    // {
+    //   data: "Request For Clarification",
+    //   requiredValue: "boolean",
+    //   isParagraph: true,
+    //   hideForRoles: "Credentialing Committee",
+    //   hideForRoles2: "Department Head",
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
   ]
   const clarificationActionsData = [
     { data: "View & Verify", requiredValue: "boolean", onClick: "" },

@@ -340,9 +340,8 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
+        " "
       );
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
@@ -487,7 +486,7 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
@@ -587,9 +586,8 @@ const ActiveStaffList = ({
 
     tableData?.map((data) => {
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
+        " "
       );
       applicantId.push(data?.staffId || "123");
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -987,6 +985,13 @@ const ActiveStaffList = ({
                     color: isPrintClicked ? "#fff" : "#06617A",
                   }}
                 />
+              </div>
+              <div
+                className={`${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight20}`}
+                  onClick={() => navigate("/historicalData")}
+              >
+              <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
               </div>
               <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
