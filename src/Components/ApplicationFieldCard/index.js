@@ -2155,7 +2155,7 @@ const ApplicationFieldCard = ({
           );
 
         case "switchbutton": {
-          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? "Yes" : (getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === false && fieldKey === "registeredBusinessAddress") ? "This applicant has no business address" : "No";
+          const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === true ? "Yes" : ((getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === false || getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`) === undefined) && fieldKey === "registeredBusinessAddress") ? "This applicant has no business address" : "No";
           console.log("currentValueee", currentValue, fieldKey)
           return isPOD ? (
             <div className={style.leftAlign}>

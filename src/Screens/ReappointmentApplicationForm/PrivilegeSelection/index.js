@@ -585,6 +585,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       data
     )
       .then((response) => {
+        getPreApplication()
         console.log(response);
       })
       .catch((error) => {
@@ -2527,7 +2528,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     openIndex,
     selectedPrivilegeForDisplay,
     selectedPrivilege,
-    getDeptItems(departmentList)
+    getDeptItems(departmentList),
+    selectedDepartment, selectedSpeciality,
+    getDeptItems(departmentList)?.filter(data => data?.id === selectedDepartment && data?.specialityId === selectedSpeciality)?.[0]?.value
   );
 
   return (
@@ -3247,21 +3250,23 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <DatalistInput
                         items={getDeptItems(departmentList) || []}
                         onSelect={(item) => {
+                          console.log('setDept', item.id, item.specialityId, item)
                           setSelectedDepartment(item.id)
                           setSelectedSpeciality(item.specialityId)
                         }}
                         className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                         maxLength={50}
-                        onChange={(e) => {
-                          setSelectedDepartment(e.target.value);
-                        }}
+                        // onChange={(e) => {
+                        //   console.log(e.target.value, 'setDept')
+                        //   setSelectedDepartment(e.target.value);
+                        // }}
                         placeholder={'Enter Department Name'}
-                        // value={getDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedDepartment : data?.id === selectedDepartment)?.[0]?.data?.value}
-                        value={
-                          getDeptItems(departmentList)?.find(
-                            (data) => data?.id === selectedDepartment || data?.departmentId === selectedDepartment
-                          )?.value || ''
-                        }
+                        value={getDeptItems(departmentList)?.filter(data => data?.id === selectedDepartment && data?.specialityId === selectedSpeciality)?.[0]?.value}
+                        // value={
+                        //   getDeptItems(departmentList)?.find(
+                        //     (data) => data?.id === selectedDepartment || data?.departmentId === selectedDepartment
+                        //   )?.value || ''
+                        // }
                         required={true}
                       />
                       {departmentList?.some(department => department.id === selectedDepartment) && (
