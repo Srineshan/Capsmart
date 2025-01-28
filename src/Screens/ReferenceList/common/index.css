@@ -16,7 +16,7 @@
 }
 
 .ql-editor {
-    font: normal normal normal 23px/26px Proxima Nova;
+    font: normal normal normal 23px/26px proxima-nova;
     font-size: 15px;
     line-height: 15px;
 }
@@ -161,7 +161,7 @@
     width: 187px;
     height: 52px;
     text-align: left;
-    font: normal normal normal 23px/26px Proxima Nova;
+    font: normal normal normal 23px/26px proxima-nova;
     letter-spacing: 0px;
     color: #94979a;
     opacity: 1;
@@ -174,7 +174,7 @@
     height: 52px;
     color: #52575d;
     text-align: left;
-    font: normal normal 600 23px/26px Proxima Nova;
+    font: normal normal 600 23px/26px proxima-nova;
     letter-spacing: 0px;
     color: #52575d;
     opacity: 1;
@@ -186,7 +186,7 @@
     width: 1181px;
     height: 54px;
     text-align: left;
-    font: normal normal normal 23px/28px Proxima Nova;
+    font: normal normal normal 23px/28px proxima-nova;
     letter-spacing: 0px;
     color: #94979a;
     opacity: 1;
@@ -205,7 +205,7 @@
 }
 
 #toolbar3 {
-    background-color:#d2e7f9;
+    background-color: #d2e7f9;
     display: flex;
     justify-content: space-evenly;
 }

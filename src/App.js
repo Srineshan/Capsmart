@@ -931,9 +931,9 @@ const App = ({ props }) => {
     return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
   };
 
-  if (isSessionLoading) {
-    return <Loader />;
-  }
+  // if (isSessionLoading) {
+  //   return <Loader />;
+  // }
 
   return (
     <>
