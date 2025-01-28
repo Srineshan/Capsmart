@@ -108,7 +108,7 @@ body::-webkit-scrollbar {
   font-weight: 400;
 }
 
-.fontSize{
+.fontSize {
   font-size: 16px;
 }
 
@@ -243,7 +243,7 @@ body::-webkit-scrollbar {
 
 .docsTitleTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px Proxima Nova;
+  font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -549,7 +549,7 @@ body::-webkit-scrollbar {
 
 .tableHeaderHeadingTextStyle1 {
   text-align: left;
-  font: normal normal normal 18px/23px Proxima Nova;
+  font: normal normal normal 18px/23px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   opacity: 1;
@@ -1165,7 +1165,7 @@ body::-webkit-scrollbar {
 
 .rejectionSubHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px Proxima Nova;
+  font: normal normal bold 16px proxima-nova;
   letter-spacing: 0px;
   color: #454747;
   opacity: 1;
@@ -4194,14 +4194,14 @@ input[type="number"] {
 
 .documentTextStyle {
   text-align: left;
-  font: normal normal medium 18px/34px Proxima Nova;
+  font: normal normal medium 18px/34px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
 }
 
 .clickToVerify {
   text-align: left;
-  font: normal normal medium 16px/34px Proxima Nova;
+  font: normal normal medium 16px/34px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
 }
@@ -4378,7 +4378,7 @@ input[type="number"] {
 
 .buttonTextStyleCred {
   text-align: center;
-  font: normal normal normal 18px/22px Proxima Nova;
+  font: normal normal normal 18px/22px proxima-nova;
   letter-spacing: 0px;
   color: #171338;
   opacity: 1;
@@ -4388,7 +4388,7 @@ input[type="number"] {
 .overallStatus {
   color: var(--unnamed-color-52575d);
   text-align: left;
-  font: normal normal bold 20px Proxima Nova;
+  font: normal normal bold 20px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -4420,7 +4420,7 @@ input[type="number"] {
 .statusCardTextStyle1 {
   color: var(--unnamed-color-52575d);
   text-align: left;
-  font: normal normal bold 23px/26px Proxima Nova;
+  font: normal normal bold 23px/26px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
@@ -4430,7 +4430,7 @@ input[type="number"] {
 
 .statusStartTextStyle {
   text-align: center;
-  font: normal normal bold 28px/34px Proxima Nova;
+  font: normal normal bold 28px/34px proxima-nova;
   letter-spacing: 0px;
   color: #94979A;
   text-transform: capitalize;
@@ -4439,7 +4439,7 @@ input[type="number"] {
 
 .statusRoleTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext Proxima Nova;
+  font: normal normal bold $labelvaluetext proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: uppercase;
@@ -4535,7 +4535,7 @@ input[type="number"] {
 
 .sideHeadingRefFrontStyle {
   text-align: left;
-  font: italic normal medium 14px/22px Proxima Nova;
+  font: italic normal medium 14px/22px proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
   text-transform: capitalize;
@@ -4577,7 +4577,7 @@ input[type="number"] {
 .viewTextStyle {
 
   text-align: center;
-  font: normal normal 600 16px/34px Proxima Nova;
+  font: normal normal 600 16px/34px proxima-nova;
   letter-spacing: 0px;
   color: #362B9F;
   text-transform: capitalize;
@@ -4616,7 +4616,7 @@ input[type="number"] {
 
 .assessTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext Proxima Nova;
+  font: normal normal bold $labelvaluetext proxima-nova;
   letter-spacing: 0px;
   color: $statusred;
   opacity: 1;
@@ -4631,7 +4631,7 @@ input[type="number"] {
 
 .ApprovedTextStyle {
   text-align: center;
-  font: normal normal bold $labelvaluetext Proxima Nova;
+  font: normal normal bold $labelvaluetext proxima-nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -4675,7 +4675,7 @@ input[type="number"] {
 .checkListitem {
   // color: var(--unnamed-color-52575d);
   text-align: left;
-  font: italic normal medium $tabledatatext2 Proxima Nova;
+  font: italic normal medium $tabledatatext2 proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 0.5;
@@ -4714,7 +4714,7 @@ input[type="number"] {
 
 .uploadTextStyle1 {
   text-align: left;
-  font: normal normal normal 18px/26px Proxima Nova;
+  font: normal normal normal 18px/26px proxima-nova;
   letter-spacing: 0px;
   color: black;
   opacity: 1;
@@ -4807,9 +4807,9 @@ input[type="number"] {
 
 .markedAsText {
   text-align: left;
-  font: italic normal medium $tabledatatext2 proxima-nova;
+  font: italic normal normal 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #1D2437;
+  color: $textsecondary;
 }
 
 .yesText {
@@ -4831,9 +4831,9 @@ input[type="number"] {
 
 .lableReadOnlyStyleInPOD {
   text-align: left;
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textsecondary;
   // text-transform: capitalize;
   opacity: 1;
   margin-top: 10px;
@@ -4896,6 +4896,13 @@ input[type="number"] {
   background-color: $secondarycolor;
 }
 
+.fileDisplayCME {
+  background: $tableheadbg 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid $tableheadhover;
+  border-radius: 4px;
+  padding: 10px;
+}
+
 .fileDisplayText {
   font: normal normal normal $navbartext proxima-nova;
   color: #2C2C2C;
@@ -4951,7 +4958,7 @@ input[type="number"] {
 }
 
 .privilegeHeadingTitle {
-  font: normal normal medium 18px/24px Proxima Nova;
+  font: normal normal medium 18px/24px proxima-nova;
   letter-spacing: 0px;
   color: #1D2437;
   text-transform: capitalize;
@@ -5020,7 +5027,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  font-family: 'Proxima Nova', Arial, sans-serif;
+  font-family: 'proxima-nova', Arial, sans-serif;
 }
 
 .row {
@@ -5033,7 +5040,7 @@ input[type="number"] {
 }
 
 .topLeft {
-  font: normal normal normal 14px 'Proxima Nova';
+  font: normal normal normal 14px 'proxima-nova';
   font-weight: bold;
   color: #06617A;
 }
@@ -5043,22 +5050,22 @@ input[type="number"] {
 // }
 
 .centerLeft {
-  font: normal normal normal 16px 'Proxima Nova';
+  font: normal normal normal 16px 'proxima-nova';
   font-weight: bold;
 }
 
 .middleRight {
-  font: normal normal normal 12px 'Proxima Nova';
+  font: normal normal normal 12px 'proxima-nova';
   font-weight: normal;
 }
 
 .bottomLeft {
-  font: normal normal normal 14px 'Proxima Nova';
+  font: normal normal normal 14px 'proxima-nova';
   font-weight: normal;
 }
 
 .bottomRight {
-  font: normal normal normal 12px 'Proxima Nova';
+  font: normal normal normal 12px 'proxima-nova';
   font-weight: normal;
 }
 
@@ -5084,7 +5091,7 @@ input[type="number"] {
 
 .verificationTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px Proxima Nova;
+  font: normal normal bold 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: $textcolor;
   opacity: 0.9;
@@ -5092,7 +5099,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px Proxima Nova;
+  font: normal normal bold 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -5100,7 +5107,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle {
   text-align: left;
-  font: normal normal bold 16px/24px Proxima Nova;
+  font: normal normal bold 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
@@ -5108,7 +5115,7 @@ input[type="number"] {
 
 .verificationMethodTextStyle1 {
   text-align: left;
-  font: normal normal bold 16px/24px Proxima Nova;
+  font: normal normal bold 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: #FFCA27;
   opacity: 1;
@@ -5116,7 +5123,7 @@ input[type="number"] {
 
 .notesTextStyle {
   text-align: left;
-  font: normal normal normal 14px/22px Proxima Nova;
+  font: normal normal normal 14px/22px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
   opacity: 1;
@@ -5124,7 +5131,7 @@ input[type="number"] {
 
 .DepartmentHeadingTextStyle {
   text-align: left;
-  font: normal normal normal 16px/24px Proxima Nova;
+  font: normal normal normal 16px/24px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
@@ -5333,7 +5340,7 @@ input[type="number"] {
 
 .paidTextStyle {
   text-align: left;
-  font: italic normal bold 20px/26px Proxima Nova;
+  font: italic normal bold 20px/26px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   opacity: 1;
@@ -5341,7 +5348,7 @@ input[type="number"] {
 
 .unpaidTextStyle {
   text-align: left;
-  font: italic normal bold 20px/26px Proxima Nova;
+  font: italic normal bold 20px/26px proxima-nova;
   letter-spacing: 0px;
   color: $statusred;
   opacity: 1;
@@ -5349,15 +5356,15 @@ input[type="number"] {
 
 .paymentIDStyle {
   text-align: center;
-  font: normal normal 600 15px/18px Proxima Nova;
+  font: normal normal 600 15px/18px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   text-transform: capitalize;
   opacity: 1;
 }
 
-.acknowledgmentErrorTextStyle{
-  font: normal normal 600 24px Proxima Nova;
+.acknowledgmentErrorTextStyle {
+  font: normal normal 600 24px proxima-nova;
   font-style: italic;
   text-align: center;
   margin-top: 20px;
@@ -5382,7 +5389,7 @@ input[type="number"] {
   grid-column: 1 / -1;
 }
 
-.backgroundColorStyle{
+.backgroundColorStyle {
   border: 0.4px solid var(--unnamed-color-9aafb5);
   background: #F5F8F8 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #9AAFB5;
@@ -5390,24 +5397,45 @@ input[type="number"] {
   opacity: 1;
 }
 
-.fileBackgroundStyle{
+.fileBackgroundStyle {
   background: #9AAFB5 0% 0% no-repeat padding-box;
   border: 0.4000000059604645px solid #2F20BE;
   border-radius: 4px;
   opacity: 0.8;
 }
 
-.threeColGrid{
+.threeColGrid {
   display: grid;
   grid-template-columns: 8% 76% 9%;
   grid-gap: 10px;
 }
 
-.notesTitle{
+.notesTitle {
   text-align: left;
-  font: normal normal medium 14px/20px Proxima Nova;
+  font: normal normal medium 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.disabledButton {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+.lableStyle {
+  text-align: left;
+  font: normal normal 500 15px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #FF5555;
+  text-transform: capitalize;
+  opacity: 1;
+  margin-top: 5px;
+  max-width: 85%;
 }
