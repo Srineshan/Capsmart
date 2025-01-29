@@ -295,7 +295,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             data: {
                 table: payload,
             },
-            acknowledged: isSigned,
+            acknowledged: allMedicalDirectives?.completed?.length !== 0 ? true : false,
             esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -383,13 +383,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
-
-        temp.push({
-            "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
-                <div className={`${style.continue} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)}>SIGN</div>
-                // <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
-            ), 'isShowHoverText': medicalDirectivesStatus === 'completed' ? false : true, 'hoverText': selectedMedicalDirectiveList?.map(innerData => 'Click to attest')
-        });
+        if (medicalDirectivesStatus !== 'completed') {
+            temp.push({
+                "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
+                    <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)}>View, Review and Sign</div>
+                    // <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
+                ), 'isShowHoverText': medicalDirectivesStatus === 'completed' ? false : true, 'hoverText': selectedMedicalDirectiveList?.map(innerData => 'Click to attest')
+            });
+        }
         console.log(temp, selectedMedicalDirectiveList)
         return temp;
     }
@@ -412,7 +413,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {!showMedicalDirectives ? allMedicalDirectives?.completed?.length !== undefined && (
                             <>
-                                <div className={`${style.cardTitle} ${style.marginTop}`}>Medical Directives Review</div>
+                                <div className={`${style.cardTitle} ${style.marginTop}`}>{allMedicalDirectives?.completed?.length !== 0 ? 'All Medical Directives applicable to me have been reviewed and Signed off.' : 'Medical Directives Review'}</div>
                                 <CommonDivider />
                                 {/* {allMedicalDirectives?.pending?.length !== 0 && ( */}
                                 {/* <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => setShowMedicalDirectives(true)}>
@@ -442,14 +443,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <div className={`${style.marginLeft} ${style.textTransform}`}> {medicalDirectives?.length === allMedicalDirectives?.completed?.length ? 'All Medical Directives Completed & Up-To-Date' : `${allMedicalDirectives?.completed?.length} Completed`}</div>
                                     </div>
                                 )}
-                                {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
+                                {/* {medicalDirectives?.length === allMedicalDirectives?.completed?.length && (
                                     <div className={`${style.description} ${style.marginTop}`}>You have attested to all of the Medical Directives.</div>
-                                )}
+                                )} */}
                             </>
                         ) : (
                             <>
                                 <div className={style.spaceBetween}>
-                                    <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>Medical Directives to Attest</div>
+                                    <div className={`${style.medicalDirectivesText} ${style.marginTop10}`}>{medicalDirectivesStatus === 'completed' ? 'Attested Medical Directives' : 'Medical Directives to Attest'}</div>
                                     {/* <div className={`${style.attestButton} ${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter}
                                          ${selectedIds?.length !== 0 ? '' : style.disabledButton}`} onClick={selectedIds?.length !== 0 ? () => { setAttestClicked(true) } : () => { }}
                                     >
@@ -512,7 +513,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                         <img src={WhiteSign} alt="" className={`${style.whiteSignIcon} ${style.marginRight}`} />Attest To All
                                     </div>
                                 </div> */}
-                                {(selectedIds.length === selectedMedicalDirectiveList.length || medicalDirectivesStatus === 'completed') && (
+                                {(selectedIds.length !== 0) && (
                                     <div className={`${style.marginTop10} `}>
                                         <div>
                                             <div className={`${style.checkGrid}`}>

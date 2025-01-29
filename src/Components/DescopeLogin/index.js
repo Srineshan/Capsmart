@@ -262,7 +262,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
       <div className={style.whiteBackground}>
         <div className={style.loginGrid}>
           <div>
-            <div
+            {/* <div
               className={` ${style.marginTop} ${style.displayInRow} ${style.alignCenter}`}
             >
               <img
@@ -274,7 +274,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
               <p className={style.loginHeaderText}>
                 <span className={style.bold}>CAP</span>Manager
               </p>
-            </div>
+            </div> */}
             {/* <Slider {...settings}>
               <div>
                 <div className={`${style.alignCenter} ${style.marginTop}`}>
@@ -327,10 +327,10 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
                 </div>
               </div>
             </Slider> */}
-            <div className={`${style.alignCenter} ${style.marginTop}`}>
+            <div className={`${style.alignCenter} ${style.verticalAlignCenter} ${style.marginTop}`}>
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/opening_Keycloak.gif'} alt="" className={style.descriptionContainer} />
             </div>
-            <div className={`${style.alignCenter} ${style.marginTop}`}>
+            {/* <div className={`${style.alignCenter} ${style.marginTop}`}>
               <div>
                 <div
                   className={`${style.loginDescription} ${style.textAlignCenter}`}
@@ -338,7 +338,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
                   © Copyright {format(new Date(), 'yyyy')}. Hapicare, Inc. All Rights Reserved.
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
           {/* {isRegistrationComplete && (
             <div className={style.createYourAccountSectionPadding}>
@@ -537,18 +537,20 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
               </div>
             </div>
           )} */}
-          <Descope
-            flowId={window.location.hostname?.split('.')?.length === 3 ? `${window.location.hostname?.split('.')?.[0]}` : `master`}
-            theme="light"
-            onSuccess={(e) => {
-              handleSession(e.detail.sessionJwt)
-              console.log(e.detail.sessionJwt)
-              console.log(e.detail.user.email)
-            }}
-            onError={(err) => {
-              console.log("Error!", err)
-            }}
-          />
+          <div className={`${style.alignCenter} ${style.verticalAlignCenter}`}>
+            <Descope
+              flowId={window.location.hostname?.split('.')?.length === 3 ? `${window.location.hostname?.split('.')?.[0]}` : `master`}
+              theme="light"
+              onSuccess={(e) => {
+                handleSession(e.detail.sessionJwt)
+                console.log(e.detail.sessionJwt)
+                console.log(e.detail.user.email)
+              }}
+              onError={(err) => {
+                console.log("Error!", err)
+              }}
+            />
+          </div>
         </div>
       </div>
       <div

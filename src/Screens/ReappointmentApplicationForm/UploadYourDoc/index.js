@@ -703,10 +703,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             onChange={handleFileChange}
                             style={{ display: "none" }} // Hide the actual file input
                         />
-                        {((basicForm?.forms?.[formIndex]?.data !== null &&
+                        {/* {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <>
-                                {/* <div
+                                <div
                                     className={`${style.setupCompleteCard} ${style.setupCompleteGrid}  ${style.marginTop}`}
 
                                 >
@@ -731,8 +731,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         fontFamily: eSignTypeContentStyle,
                                         fontSize: "24px",
                                     }}>{eSignTypeContent}</div>
-                                </div> */}
-                                {/* <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                                </div>
+                                <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
                                     <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
                                     <div>
                                         <div className={style.eSignGrid}>
@@ -756,7 +756,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>CLICK TO UPDATE</div>
                                         </div>
                                     </div>
-                                </div> */}
+                                </div>
                             </>
                         ) : (
                             <div
@@ -782,7 +782,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
                     <div className={style.threeColForButton}>
                         <div></div>

@@ -191,12 +191,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }, []);
 
   useEffect(() => {
-    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
+    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '') {
       setIsContinueEnabled(true);
     } else {
       setIsContinueEnabled(false);
     }
-    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && departmentChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes') {
+    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes') {
       setIsContinueEnabled(true);
     }
     // handleSubmitAcknowledgement();
@@ -894,13 +894,13 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }
 
   const handleKeepYourPrivilegeNo = () => {
-    if (((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined))) {
-      setDontUpdatePrivilegeState(true)
-      setIsShowESignConfirmationDialog(true)
-    } else {
-      setDontUpdatePrivilegeState(true)
-      setIsShowESignDialog(true)
-    }
+    // if (((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL !== undefined || basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text !== undefined))) {
+    //   setDontUpdatePrivilegeState(true)
+    //   setIsShowESignConfirmationDialog(true)
+    // } else {
+    //   setDontUpdatePrivilegeState(true)
+    //   setIsShowESignDialog(true)
+    // }
     setIsPrivilegeSetChanging(true);
     setPrivilegeSetChangeYesOrNo('No');
   }
@@ -2599,7 +2599,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                   )}
                 </div>
-                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                {/* <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
                   <strong>Department</strong>
                 </div>
                 <div className={style.twoCol}>
@@ -2631,7 +2631,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div>
                     </div>
                   )}
-                </div>
+                </div> */}
                 {(basicForm?.privileges?.priorObligatedPrivileges?.length !== 0 || basicForm?.privileges?.obligatedPrivileges?.length !== 0) && (
                   <>
                     <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
@@ -3218,7 +3218,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               )}
             </>
             {/* )} */}
-            <>
+            {/* <>
               <div className={`${style.cardTitle} ${style.marginTop}`}>
                 Confirm your Department / Division or Specialty for this Reappointment?
               </div>
@@ -3289,20 +3289,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ) : null
                       )}
                     </div>
-                    {/* <div
-                      className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
-                    >
-                      <div
-                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                        onClick={() => {
-                          setIsDepartmentChanging(false);
-                          setDepartmentChangeYesOrNo('Yes');
-                          handleDeptSubmit();
-                        }}
-                      >
-                        UPDATE
-                      </div>
-                    </div> */}
                     <div className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}>
                       <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
@@ -3345,20 +3331,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
                       >
-                        {/* <CommonSelectField
-                          // value={selectedDepartment}
-                          onChange={(e) =>
-                            setSelectedDepartment(e.target.value)
-                          }
-                          className={style.fullWidth}
-                          valueList={departmentList?.map((data) => data?.id)}
-                          labelList={departmentList?.map(
-                            (data) => data?.id === selectedDepartment ? `${data?.departmentName?.name} (Current)` : data?.departmentName?.name
-                          )}
-                          disabledList={departmentList?.map((data) => data?.id === selectedDepartment ? true : false)}
-                          label={"Department / Division or Specialty"}
-                          required={false}
-                        /> */}
                         <div>
                           <div className={`${style.lableStyle}`}>
                             {'Department / Division or Specialty'}
@@ -3421,7 +3393,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   )}
                 </>
               )}
-            </>
+            </> */}
             {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && (
               <>
                 {(
