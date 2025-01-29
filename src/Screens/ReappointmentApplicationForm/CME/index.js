@@ -409,7 +409,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )} */}
                         <div>
                             <div className={style.cardTitle}>
-                                Do you have any CME / CEU Transcript from your College or Membership Organisation?
+                                Do you have any CME / CEU Transcript from your College or Membership Organization?
                             </div>
                             {yesOrNoCMETranscript === '' ? (
                                 <div
