@@ -302,7 +302,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 focused={state.focus}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="tel"
                 name="number"
@@ -310,13 +310,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.number}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={` ${style.fullWidth}`}
                 inputProps={{
                   pattern: "[\\d| ]{16,22}",
                 }}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="text"
                 name="amount"
@@ -325,10 +325,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 // onChange={handleInputChange}
                 disabled={true}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={` ${style.fullWidth}`}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="text"
                 name="name"
@@ -336,10 +336,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.name}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={`${style.fullWidth}`}
               />
             </div>
-            <div className={`${style.cvvGrid} ${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.cvvGrid} ${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="tel"
                 name="expiry"
@@ -347,7 +347,6 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.expiry}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={style.marginTop}
                 inputProps={{
                   pattern: "\d\d/\d\d",
                 }}
@@ -359,14 +358,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.cvc}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={style.marginTop}
                 inputProps={{
                   pattern: "\d{3,4}",
                 }}
               />
             </div>
             {paymentStatus && <p>{paymentStatus}</p>}
-            <div className={`${style.continue} ${style.marginLeft} ${style.marginTop}`} onClick={() => { submitPayment(); }} >PAY</div>
+            <div className={`${style.continue} ${style.marginLeft} ${style.marginTop10}`} onClick={() => { submitPayment(); }} >PAY</div>
           </div>
         ) : (
           <div className={`${style.receiptContainer}`} ref={targetRef}>

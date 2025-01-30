@@ -655,8 +655,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 vertical: 'bottom',
                                                                 horizontal: 'left',
                                                             }}
-                                                            anchorReference="anchorPosition"
-                                                            anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1120 }}
+                                                        // anchorReference="anchorPosition"
+                                                        // anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1120 }}
                                                         >
                                                             <div className={style.actionsCard} ref={menuRef}>
                                                                 {visibleActions?.map((actionsData, actionsIndex) => {
