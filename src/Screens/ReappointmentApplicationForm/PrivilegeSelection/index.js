@@ -191,12 +191,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }, []);
 
   useEffect(() => {
-    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '') {
+    if (privilegeChangeYesOrNo !== '' && privilegeSetChangeYesOrNo !== '' && additionalPrivilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo !== '' && departmentChangeYesOrNo !== '') {
       setIsContinueEnabled(true);
     } else {
       setIsContinueEnabled(false);
     }
-    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes') {
+    if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
       setIsContinueEnabled(true);
     }
     // handleSubmitAcknowledgement();
@@ -2574,7 +2574,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           ?.credentialingCategory}
                     </div>
                   </div>
-                  {basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== '' && basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== undefined && (
+                  {privilegeChangeYesOrNo !== '' && (
                     <div
                       className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                     >
@@ -2599,7 +2599,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                   )}
                 </div>
-                {/* <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
+                <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
                   <strong>Department</strong>
                 </div>
                 <div className={style.twoCol}>
@@ -2631,7 +2631,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       </div>
                     </div>
                   )}
-                </div> */}
+                </div>
                 {(basicForm?.privileges?.priorObligatedPrivileges?.length !== 0 || basicForm?.privileges?.obligatedPrivileges?.length !== 0) && (
                   <>
                     <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
@@ -3218,7 +3218,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               )}
             </>
             {/* )} */}
-            {/* <>
+            <>
               <div className={`${style.cardTitle} ${style.marginTop}`}>
                 Confirm your Department / Division or Specialty for this Reappointment?
               </div>
@@ -3393,7 +3393,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   )}
                 </>
               )}
-            </> */}
+            </>
             {basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory !== ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && (
               <>
                 {(

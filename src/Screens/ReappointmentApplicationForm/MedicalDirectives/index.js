@@ -28,6 +28,7 @@ import jwt from 'jwt-decode';
 import { Tooltip } from '@mui/material';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -43,6 +44,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const [allMedicalDirectives, setAllMedicalDirectives] = useState([])
     const { section, step } = useParams()
     const [formIndex, setFormIndex] = useState();
+    const [selectedFile, setselectedFile] = useState(false);
     const navigate = useNavigate()
     const [isChecked, setIsChecked] = useState(false);
     const [navigateURL, setNavigateURL] = useState();
@@ -59,6 +61,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const [selectedIds, setSelectedIds] = useState([]);
     const [attestClicked, setAttestClicked] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
@@ -88,6 +91,20 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     useEffect(() => {
         setUserDetails();
     }, [users?.id])
+
+    const handleView = (data) => {
+        setselectedFile(data?.medicalDirective?.file)
+        setShowFileDisplayDialog(true);
+    }
+
+    const handleSign = (data) => {
+        handleEdit(data);
+    }
+
+    const actions = [
+        { 'data': 'View', 'requiredValue': 'boolean', "onClick": handleView },
+        { 'data': 'Review & Sign', 'requiredValue': 'boolean', "onClick": handleSign },
+    ]
 
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -123,6 +140,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             `application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}/render`
         );
         setFormContent(content)
+    }
+
+    const getIsShowFileDialog = (value) => {
+        setShowFileDisplayDialog(value);
     }
 
     const handleIsChecked = (value) => {
@@ -366,30 +387,33 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     />)
             });
         }
-        temp.push({
-            "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
-                <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : style.iconBackgroundColorRed} 
+        if (medicalDirectivesStatus === 'completed') {
+            temp.push({
+                "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
+                    <div className={`${innerData?.status === 'COMPLETED' ? style.iconBackgroundColorGreen : innerData?.status === 'INPROGRESS' ? style.iconBackgroundColorYellow : style.iconBackgroundColorRed} 
                 ${style.verticalAlignCenter} ${style.justifyCenter}`}>
-                    {innerData?.status === 'COMPLETED' ? (
-                        <CheckCircleOutlineIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
-                    ) : (
-                        <WarningAmberIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
-                    )}
-                </div>
-                // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
-            ), 'isShowHoverText': false
-        });
+                        {innerData?.status === 'COMPLETED' ? (
+                            <CheckCircleOutlineIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+                        ) : (
+                            <WarningAmberIcon sx={{ fontSize: 20, color: '#FFFFFF' }} />
+                        )}
+                    </div>
+                    // <img src={BlueSign} alt="" className={style.blueSignImgStyle} onClick={() => { }} />
+                ), 'isShowHoverText': false
+            });
+        }
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
         if (medicalDirectivesStatus !== 'completed') {
-            temp.push({
-                "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
-                    <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)}>View, Review and Sign</div>
-                    // <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
-                ), 'isShowHoverText': medicalDirectivesStatus === 'completed' ? false : true, 'hoverText': selectedMedicalDirectiveList?.map(innerData => 'Click to attest')
-            });
+            // temp.push({
+            //     "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
+            //         <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)}>View, Review and Sign</div>
+            //         // <img src={BlueSign} alt="" className={`${style.blueSignImgStyle} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={() => handleEdit(innerData)} />
+            //     ), 'isShowHoverText': medicalDirectivesStatus === 'completed' ? false : true, 'hoverText': selectedMedicalDirectiveList?.map(innerData => 'Click to attest')
+            // });
+            temp.push({ type: "action", value: actions })
         }
         console.log(temp, selectedMedicalDirectiveList)
         return temp;
@@ -423,9 +447,9 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 {/* )} */}
                                 {allMedicalDirectives?.pending?.length !== 0 && (
                                     <Tooltip title="Click to attest" arrow>
-                                        <div className={`${style.pastDueCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
-                                            <div className={`${style.iconBackgroundPastDue} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
-                                            <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.pending?.length} Pending / Past Due</div>
+                                        <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
+                                            <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
+                                            <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.pending?.length} Pending</div>
                                         </div>
                                     </Tooltip>
                                 )}
@@ -485,7 +509,6 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                                     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
                                                     onChange={(e) => e.target.checked ? setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id }))) : setSelectedIds([])}
                                                 />,
-                                                "",
                                                 "Title",
                                                 "MD ID",
                                                 "Type",
@@ -495,7 +518,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                             tableDataValues={getMedicalDirectiveTable()}
                                             tableData={selectedMedicalDirectiveList}
                                             gridStyle={style.gridStyleWithCheckbox}
-                                            actions={[]}
+                                            actions={actions}
                                             // scrollStyle={style.contractScrollStyle}
                                             tableSortValues={[]}
                                             heading={"There are no Record for you to manage"}
@@ -596,6 +619,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )
             }
+            {showFileDisplayDialog && (
+                <FileDisplayDialog
+                    getIsOpen={getIsShowFileDialog}
+                    file={selectedFile}
+                />
+            )}
             {/* {showValidationDialog && (
                 <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
             )} */}

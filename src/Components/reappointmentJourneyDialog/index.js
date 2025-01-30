@@ -60,11 +60,11 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                     <div className={Classes.DIALOG_BODY}>
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>{title}</div>
-                            {errorSchema !== '' && (
+                            {/* {errorSchema !== '' && (
                                 <div className={style.displayInRow}>
                                     <div className={style.completedItemsTextRed} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.formCategory}/${btoa(basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.schemaCategory)}`); getIsOpen(false) }}>{basicForm?.forms?.filter((data, index) => data?.schemaCategory === errorSchema)?.[0]?.title}</div>
                                 </div>
-                            )}
+                            )} */}
                         </div>
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             <div className={`${style.imageCard} ${style.verticalAlignCenter}`}>
