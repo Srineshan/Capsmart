@@ -41,6 +41,8 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { loadStripe } from "@stripe/stripe-js";
 import ESignature from '../../../Components/ESignature';
 import MenuIcon from "@mui/icons-material/Menu";
+import EditIcon from '@mui/icons-material/Edit';
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import Close from './../../../images/close.png';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { Tooltip } from '@mui/material';
@@ -449,7 +451,21 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
                     ), 'isShowHoverText': false
                 });
-            }
+            } 
+            if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                temp.push({
+                    type: "icon", icon: array?.map(innerData => {
+                        const rowId = innerData?.rowId;
+                        return (
+                            <Tooltip title="Click to Edit" arrow>
+                            <ModeEditOutlinedIcon  alt="" className={style.docTypeEditImgStyle} onClick={() => {setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }}/>
+                            </Tooltip>
+                        );
+                    }),
+                    isShowHoverText: false
+                });
+            }           
         })
         console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.name))
         return temp;
