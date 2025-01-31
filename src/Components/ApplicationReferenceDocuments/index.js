@@ -5,6 +5,7 @@ import { GET } from "../../Screens/dataSaver";
 import FileDisplayDialog from "../fileDisplayDialog";
 import PDFDocs from './../../images/PDFDocs.png';
 import imgDocs from './../../images/imgDocs.png';
+import { Tooltip } from "@mui/material";
 
 const ApplicationReferenceDocuments = () => {
   const [basicForm, setBasicForm] = useState({});
@@ -65,23 +66,22 @@ const ApplicationReferenceDocuments = () => {
                 className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 key={index}
               >
-                <div className={style.fullWidth}>
-                  <div className={`${style.documentsGrid} ${style.verticalAlignCenter}`}>
+                <div className={style.fullWidth}> 
+                <Tooltip title="Click to Open">  
+                  <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(document)}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                      {docIcon && (
+                      {docIcon && (                       
                         <img
                           src={docIcon}
                           alt="Document Type Icon"
                           className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
-                          onClick={() => openDialog(document)}
-                        />
-                      )}
+                        />                        
+                      )}              
                       <div
                         className={style.documentNameStyle}
-                        onClick={() => openDialog(document)}
                       >
                         {document?.documentType}
-                      </div>
+                      </div>                     
                     </div>
                     <div
                       className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
@@ -89,6 +89,7 @@ const ApplicationReferenceDocuments = () => {
                       <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
                     </div>
                   </div>
+                  </Tooltip>
                 </div>
               </div>
             );
@@ -97,28 +98,29 @@ const ApplicationReferenceDocuments = () => {
             <div
               className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
+              
               <div className={style.fullWidth}>
-                <div className={`${style.documentsGrid} ${style.verticalAlignCenter}`}>
+              <Tooltip title="Click to Open">
+                <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`}  onClick={() => openDialog(basicForm?.payment?.invoice)}>            
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <img
                       src={PDFDocs}
                       alt="Document Type Icon"
                       className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
-                      onClick={() => openDialog(basicForm?.payment?.invoice)}
                     />
                     <div
                       className={style.documentNameStyle}
-                      onClick={() => openDialog(basicForm?.payment?.invoice)}
                     >
                       Payment Receipt
-                    </div>
-                  </div>
+                    </div>       
+                  </div>               
                   <div
                     className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                   >
                     <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
                   </div>
                 </div>
+                </Tooltip>
               </div>
             </div>
           )}

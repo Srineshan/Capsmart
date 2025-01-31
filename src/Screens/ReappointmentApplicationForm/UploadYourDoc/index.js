@@ -43,6 +43,8 @@ import ESignature from '../../../Components/ESignature';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import { Tooltip } from '@mui/material';
+import FileWithFields from '../../../Components/FileWithFields';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -60,6 +62,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [showFileWithFields, setShowFileWithFields] = useState(false);
+    const [fields, setFields] = useState([]);
+    const [fileMetadata, setFileMetadata] = useState();
+    const [file, setFile] = useState();
+    const [applicationDocumentId, setApplicationDocumentId] = useState('');
     const [selectedFile, setselectedFile] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
@@ -97,6 +104,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     useEffect(() => {
         getApplicantProfile()
     }, [applicationId])
+
+    useEffect(() => {
+        if (fileMetadata) {
+            setShowFileWithFields(true)
+        }
+        console.log(fileMetadata, file, fields, 'fieldsssss')
+    }, [fileMetadata])
 
     useEffect(() => {
         const fetchSessionDetails = async () => {
@@ -150,6 +164,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsOpenESignConfirmation = (value) => {
         setIsShowESignConfirmationDialog(value);
+    }
+
+    const getIsOpenFileWithFields = (value) => {
+        setShowFileWithFields(value);
     }
 
     const updateFunc = () => {
@@ -264,6 +282,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         try {
             const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
             SuccessToaster('File Uploaded Successfully');
+            setFields(response?.data?.[0]?.fields);
+            setFile(response?.data?.[0]?.file);
+            setFileMetadata(response?.data?.[0]?.metaData);
+            setApplicationDocumentId(response?.data?.[0]?.id)
             console.log(response?.data);
             event.map((data, index) => {
                 table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
@@ -288,6 +310,19 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             return null;
         }
     };
+
+     const getDocument = async (rowId) => {
+            const { data: response } = await GET(
+                `document-management-service/document/${rowId}`
+            );
+            console.log(response);
+            setFields(response?.fields);
+            setFile(response?.file);
+            setFileMetadata(response?.metaData);
+            setApplicationDocumentId(response?.id);
+            setIsLoading(false);
+            console.log("fields", fields)
+    }
 
     const handleChange = async (value, index) => {
         setIsLoading(true)
@@ -358,10 +393,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-                        : innerData?.fileType?.startsWith("image/") ?
-                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData => { const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
+                        (<Tooltip title="Click to Open">
+                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoading(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                        ) : innerData?.fileType?.startsWith("image/") ?
+                        ( <Tooltip title="Click to Open">
+                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoading(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip> ): ( <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)}), 'isShowHoverText': false
                 });
             } else {
                 if (data === "documentType") {
@@ -384,20 +421,21 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 } else {
                     temp.push({
                         "type": "text",
-                        "value": array?.map(innerData =>
-                            innerData[data] && (
+                        "value": array?.map(innerData => {
+                           const rowId = innerData?.rowId;
+                           return  innerData[data] && (
+                                <Tooltip title="Click to Open">
                                 <span
                                     onClick={() => {
-                                        setShowFileDisplayDialog(true);
-                                        setselectedFile(innerData);
+                                        setIsLoading(true); setShowFileWithFields(true); getDocument(rowId)
                                     }}
                                 >
                                     {innerData[data]}
                                 </span>
-                            )
-                        )
+                                </Tooltip>
+                            );
+                    })
                     });
-                    ;
                 }
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
@@ -921,6 +959,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+            )}
+             {showFileWithFields && (
+                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={basicForm?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
             )}
             <Dialog
                 isOpen={isShowUploadValidation}
