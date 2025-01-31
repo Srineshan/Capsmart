@@ -53,6 +53,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [sessionDetails, setSessionDetails] = useState(null);
     const [formSchema, setFormSchema] = useState();
     const fileInputRef = useRef(null);
+    const tableRef = useRef(null);
     const [isEdited, setIsEdited] = useState(false);
     const [openCategoryIndex, setOpenCategoryIndex] = useState(-1);
     const [applicantProfile, setApplicantProfile] = useState();
@@ -262,6 +263,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     }
     console.log(formSchema, basicForm, tempValue)
 
+    useEffect(() => {
+        if (tempValue?.table?.length > 0) {
+            tableRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [tempValue?.table]);
+
     const changeHandler = async (event) => {
         setIsLoading(true);
         setFiles(event);
@@ -282,10 +289,6 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         try {
             const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
             SuccessToaster('File Uploaded Successfully');
-            setFields(response?.data?.[0]?.fields);
-            setFile(response?.data?.[0]?.file);
-            setFileMetadata(response?.data?.[0]?.metaData);
-            setApplicationDocumentId(response?.data?.[0]?.id)
             console.log(response?.data);
             event.map((data, index) => {
                 table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType === "Profile Picture" ? 'Optional' : response?.data[index]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
@@ -718,7 +721,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 accept="image/*"
                             />
                         </div>
-                        <div className={style.tableContainer}>
+                        <div ref={tableRef} className={style.tableContainer}>
                             {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                                 <TableTwo
                                     tableHeaderValues={[
