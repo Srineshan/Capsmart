@@ -291,12 +291,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType === "Profile Picture" ? 'Optional' : response?.data[index]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
                     if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -561,12 +561,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const getMissingDocs = () => {
         let temp = []
         basicForm?.documentsRequired?.map((data, index) => {
-            if ((basicForm?.forms?.[formIndex]?.data !== null && tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
+            if ((tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
                 temp.push(data)
-            } else {
-                if (data?.required) {
-                    temp.push(data)
-                }
             }
         })
         return temp;

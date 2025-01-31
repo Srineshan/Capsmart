@@ -404,8 +404,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
-        temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
-        temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
+        // temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
+        // temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
         if (medicalDirectivesStatus !== 'completed') {
             // temp.push({
             //     "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
@@ -504,15 +504,16 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     ) : (
                                         <TableTwo
                                             tableHeaderValues={[
-                                                <CommonCheckBox
-                                                    size="medium"
-                                                    checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
-                                                    onChange={(e) => e.target.checked ? setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id }))) : setSelectedIds([])}
-                                                />,
+                                                <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={(e) => setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}>Select All</div>,
+                                                // <CommonCheckBox
+                                                //     size="medium"
+                                                //     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
+                                                //     onChange={(e) => e.target.checked ? setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id }))) : setSelectedIds([])}
+                                                // />,
                                                 "Title",
                                                 "MD ID",
-                                                "Type",
-                                                "Attestation Due Date",
+                                                // "Type",
+                                                // "Attestation Due Date",
                                                 "",
                                             ]}
                                             tableDataValues={getMedicalDirectiveTable()}
