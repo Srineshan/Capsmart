@@ -117,7 +117,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     }, [fileMetadata])
 
     useEffect(() => {
-        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25) {
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && basicForm?.basicDetails?.applicant?.applicantType !== "Midwife") {
             setIsChecked(false)
             setIsSigned(false);
         }
@@ -361,7 +361,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             data: tempData,
             unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
             acknowledged: true,
-            esign: (basicForm?.forms?.[formIndex]?.esign !== null && isSigned) ? basicForm?.forms?.[formIndex]?.esign : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -522,7 +522,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                 <div className={`${style.checkGridMidwife}`}>
                                                     {formContent?.disclaimer?.content !== null && (
                                                         <span>
-                                                            <CommonCheckBox checked={isChecked} onChange={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                            <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                                                         </span>
                                                     )}
                                                     <div
