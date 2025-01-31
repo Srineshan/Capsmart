@@ -104,6 +104,11 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
             let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
             let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
@@ -181,33 +186,33 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     </div>
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>  
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> 
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
-                {!showInfo && (
+                    {!showInfo && (
                         <div>
                             <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
                                 <MenuIcon className={style.toggleIcon} />
                             </div>
-                                <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
                                 <span style={{ marginLeft: '20px' }}>Confirm Your Medical Disclosure</span>
-                                </div>
-                        </div>        
+                            </div>
+                        </div>
                     )}
                     <div>
-                    <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                    <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)}/>
-                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                    <div className={style.marginTop}>
-                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                    </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
-                    </div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
@@ -218,7 +223,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
             {
