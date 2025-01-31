@@ -210,13 +210,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         setIsEdited(true);
         let file = await addNewDocument(e.target.files[0]);
         if (tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] === undefined) {
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName
             tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['mandatory'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.required
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] = [{ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true }]
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] = [{ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true }]
         } else {
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName
             tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['mandatory'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.required
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'].push({ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true })
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'].push({ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true })
         }
         console.log(tempValue, e.target.files[0])
     }
@@ -294,12 +294,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
                     if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -359,7 +359,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         //     });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = value === 'Profile Picture' ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
+            temp[index].requirement = value === 'Profile Picture' ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === value)?.[0]?.required ? 'Required' : 'Recommended';
         }
         console.log(temp)
         await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}`, temp[index])
@@ -377,14 +377,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         let value = [];
         basicForm?.documentsRequired?.map(data => {
             if (data?.multiFile) {
-                console.log(data?.document?.name)
-                value.push(data?.document?.name)
-            } else if (type === data?.document?.name) {
-                value.push(data?.document?.name)
+                console.log(data?.document?.shortName)
+                value.push(data?.document?.shortName)
+            } else if (type === data?.document?.shortName) {
+                value.push(data?.document?.shortName)
             } else {
-                if (tempValue?.table?.filter(singleFileData => singleFileData?.documentType === data?.document?.name)?.length === 0) {
-                    value.push(data?.document?.name)
-                    console.log(data?.document?.name, tempValue?.table, data)
+                if (tempValue?.table?.filter(singleFileData => singleFileData?.documentType === data?.document?.shortName)?.length === 0) {
+                    value.push(data?.document?.shortName)
+                    console.log(data?.document?.shortName, tempValue?.table, data)
                 }
             }
         })
@@ -467,7 +467,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 });
             }           
         })
-        console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.name))
+        console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.shortName))
         return temp;
     }
 
@@ -531,7 +531,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: getMissingDocs()?.map(data => data?.document?.name),
+                unFilledFields: getMissingDocs()?.map(data => data?.document?.shortName),
                 acknowledged: skip === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -577,14 +577,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const getMissingDocs = () => {
         let temp = []
         basicForm?.documentsRequired?.map((data, index) => {
-            if ((tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
+            if (((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 && data?.required)) {
                 temp.push(data)
             }
         })
         return temp;
     }
 
-    console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name), getMissingDocs())
+    console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName), getMissingDocs())
 
     return (
         <div>
@@ -681,7 +681,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             tempValue?.table?.filter(
                                                 (tableData) =>
                                                     tableData?.documentType ===
-                                                    data?.document?.name
+                                                    data?.document?.shortName
                                             )?.length === 0 &&
                                             data?.required
                                             ? style.redBorder
@@ -697,7 +697,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         <div
                                             className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                         >
-                                            {data?.document?.name}
+                                            {data?.document?.shortName}
                                         </div>
                                         {/* <InfoOutlinedIcon
                                             sx={{ fontSize: 14, marginLeft: "10px" }}
@@ -707,7 +707,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                     >
-                                        {data?.document?.name === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
                                     </div>
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
@@ -1045,7 +1045,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         <div
                                             className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                         >
-                                            {data?.document?.name}
+                                            {data?.document?.shortName}
                                         </div>
                                         <InfoOutlinedIcon
                                             sx={{ fontSize: 14, marginLeft: "10px" }}
@@ -1055,7 +1055,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                     >
-                                        {data?.document?.name === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
                                     </div>
                                 </div>
                             </div>
