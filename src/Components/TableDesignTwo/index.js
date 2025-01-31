@@ -317,7 +317,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         </div>
                                     )
                                         : tableData?.type === "checkbox" ? (
-                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.responsive}`}>
+                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.responsive}`}>
                                                 <CommonCheckBox
                                                     checked={checkedIds?.includes(data?.id || data?.medicalDirective?.id)}
                                                     onChange={() => handleCheckboxClick(data?.id, data)}

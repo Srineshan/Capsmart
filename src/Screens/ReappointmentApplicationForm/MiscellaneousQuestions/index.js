@@ -752,6 +752,25 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             />
                           </div>
                         )}
+                        {obstetricsProviderType === "Department / Specialty Group" && (
+                          // <TextArea
+                          //   value={obstetricsCovererName}
+                          //   className={`${style.fullWidth} ${style.marginTop10}`}
+                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
+                          //   placeholder={"Enter Here"}
+                          //   rows={4}
+                          // />
+                          <div className={style.fieldWrapper}>
+                            <CommonTextField
+                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
+                              onChange={() => { }}
+                              readOnly={true}
+                              className={style.fullWidth}
+                              label={"Name the Provider Groups to cover you"}
+                              required={true}
+                            />
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -968,6 +987,26 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                   )}
                               />
                             </div>
+                          </div>
+                        )}
+
+                        {providerType === "Department / Specialty Group" && (
+                          // <TextArea
+                          //   value={obstetricsCovererName}
+                          //   className={`${style.fullWidth} ${style.marginTop10}`}
+                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
+                          //   placeholder={"Enter Here"}
+                          //   rows={4}
+                          // />
+                          <div className={style.fieldWrapper}>
+                            <CommonTextField
+                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
+                              onChange={() => { }}
+                              readOnly={true}
+                              className={style.fullWidth}
+                              label={"Name the Provider Groups to cover you"}
+                              required={true}
+                            />
                           </div>
                         )}
                       </>
