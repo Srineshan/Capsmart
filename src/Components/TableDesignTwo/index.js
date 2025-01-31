@@ -214,36 +214,34 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const classes = useStyles();
 
     function checkRoleVisibility(actionsData, workModeType) {
-        if (!actionsData.hideForRoles &&
-            !actionsData.hideForRoles2 &&
-            !actionsData.hideForRoles3 &&
-            !actionsData.showForRoles &&
-            // !actionsData.hideData &&
-            !actionsData.showForRoles2) {
+
+        if (!actionsData?.hideForRoles &&
+            !actionsData?.hideForRoles2 &&
+            !actionsData?.hideForRoles3 &&
+            !actionsData?.showForRoles &&
+            !actionsData?.showForRoles2) {
             return true;
         }
-        if (actionsData.hideForRoles?.includes(workModeType)) {
+        if (actionsData?.hideForRoles?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideForRoles2?.includes(workModeType)) {
+        if (actionsData?.hideForRoles2?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideForRoles3?.includes(workModeType)) {
+        if (actionsData?.hideForRoles3?.includes(workModeType)) {
             return false;
         }
-        // if (actionsData.hideData[index] === false) {
-        //     return false;
-        // }
-        if (actionsData.showForRoles && actionsData.showForRoles.includes(workModeType)) {
+        if (actionsData?.showForRoles && actionsData?.showForRoles.includes(workModeType)) {
             return true;
         }
-        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(workModeType)) {
+        if (actionsData?.showForRoles2 && actionsData?.showForRoles2.includes(workModeType)) {
             return true;
         }
-        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
+        if (actionsData?.showForRoles || actionsData?.showForRoles2 || actionsData?.showForRoles3) {
             return false;
         }
         return true;
+        
     }
 
     const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, workModeType));
@@ -425,7 +423,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#06617A",
+                                                                        backgroundColor: "#737575",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -453,7 +451,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     aria-haspopup="true">
                                                     <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
-                                                        <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
+                                                        <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
                                                             <Popover
                                                                 id={'mouse-over-popover'}
@@ -481,7 +479,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         position: "relative",
                                                                         mt: "10px",
                                                                         "&::before": {
-                                                                            backgroundColor: "#06617A",
+                                                                            backgroundColor: "#737575",
                                                                             content: '""',
                                                                             display: "block",
                                                                             position: "absolute",
@@ -664,15 +662,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                             anchorEl={anchorEl}
                                                             onClose={handleClose}
                                                             anchorOrigin={{
-                                                                vertical: 'top',
+                                                                vertical: 'bottom',
                                                                 horizontal: 'left',
                                                             }}
-                                                            transformOrigin={{
-                                                                vertical: 'top',
-                                                                horizontal: 'left',
-                                                            }}
-                                                            anchorReference="anchorPosition"
-                                                            anchorPosition={{ top: (anchorEl?.getBoundingClientRect().bottom || 0) + 20, left: 1370 }}
+                                                            // transformOrigin={{
+                                                            //     vertical: 'top',
+                                                            //     horizontal: 'left',
+                                                            // }}
+                                                            // anchorReference="anchorPosition"
+                                                            // anchorPosition={{ top: (anchorEl?.getBoundingClientRect().bottom || 0) + 20, left: 1370 }}
                                                         >
                                                             <div className={style.actionsCard} ref={menuRef}>
                                                                 {visibleActions?.map((actionsData, actionsIndex) => {
@@ -686,7 +684,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
                                                                         eval(actionsData?.conditionToShow) && (
                                                                             <div
-                                                                                className={`${style.tableDataFontStyle1} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
+                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                                 onClick={() => {
                                                                                     actionsData?.onClick(data);
                                                                                     handleClose();

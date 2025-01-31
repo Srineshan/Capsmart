@@ -27,6 +27,7 @@ import { GET, PUT, POST, TenantID } from "../dataSaver";
 import CircleIcon from "@mui/icons-material/Circle";
 import { SuccessToaster } from "../../utils/toaster";
 import { ErrorToaster } from "../../utils/toaster";
+import Tooltip from "@mui/material/Tooltip";
 
 const ActiveStaffList = ({
   isLoading,
@@ -986,6 +987,7 @@ const ActiveStaffList = ({
                   }}
                 />
               </div>
+              <Tooltip title="Fill Historical Data" arrow>
               <div
                 className={`${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight20}`}
@@ -993,6 +995,7 @@ const ActiveStaffList = ({
               >
               <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
               </div>
+              </Tooltip>
               <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight}`}

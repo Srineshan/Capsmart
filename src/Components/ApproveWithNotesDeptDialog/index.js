@@ -410,10 +410,10 @@ useEffect(() => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
       
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate);
     }
   };
 
@@ -782,7 +782,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               </div>
             </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Provide notes, if any, for the Department Head regarding this application*
+            Provide notes, if any, for the Department Head regarding this application(Optional)
             </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -922,10 +922,16 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                         ? `${primaryTitle} & ${secondaryTitle}` 
                         : primaryTitle;
                       // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name;
-                        // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
-                        //   department => department?.departmentName?.name
-                        // ).join(', ');
-                      return `${data?.name?.firstName} ${data?.name?.lastName} ${combinedTitle}`;
+                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                          department => department?.departmentName?.name
+                        ).join(', ');
+                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+  
+                        if (departmentName) {
+                          label += `- ${departmentName}`;
+                        }
+      
+                        return label;
                     })}
                     disabledList={false}
                     required={false}
@@ -982,7 +988,16 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                       const combinedTitle = secondaryTitle 
                         ? `${primaryTitle} & ${secondaryTitle}` 
                         : primaryTitle;
-                      return `${data?.name?.firstName} ${data?.name?.lastName} ${combinedTitle}`;
+                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                          department => department?.departmentName?.name
+                        ).join(', ');
+                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+  
+                        if (departmentName) {
+                          label += `- ${departmentName}`;
+                        }
+      
+                        return label;
                     })}
                     disabledList={false}
                     required={false}
