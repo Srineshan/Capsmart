@@ -18,16 +18,16 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
     getPreApplication();
   }, []);
 
-   useEffect(() => {
-          setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
-      }, [basicForm, step])
+  useEffect(() => {
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
+  }, [basicForm, step])
 
   useEffect(() => {
     const profilePicData = basicForm?.forms?.[formIndex]?.data?.table?.find(doc => doc?.documentType === 'Profile Picture');
     setProfilePic(
       (profilePicData !== null && profilePicData !== undefined) ? profilePicData?.fileURL : ""
     );
-  }, [basicForm, step])
+  }, [basicForm, formIndex])
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(

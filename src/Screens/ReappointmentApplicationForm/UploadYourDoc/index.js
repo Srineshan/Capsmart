@@ -292,12 +292,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[index]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[index]?.documentType?.shortName)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
                     if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.shortName}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[triggerIndex]?.documentType?.shortName)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -315,17 +315,17 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     };
 
-     const getDocument = async (rowId) => {
-            const { data: response } = await GET(
-                `document-management-service/document/${rowId}`
-            );
-            console.log(response);
-            setFields(response?.fields);
-            setFile(response?.file);
-            setFileMetadata(response?.metaData);
-            setApplicationDocumentId(response?.id);
-            setIsLoadingDocs(false);
-            console.log("fields", fields)
+    const getDocument = async (rowId) => {
+        const { data: response } = await GET(
+            `document-management-service/document/${rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setFile(response?.file);
+        setFileMetadata(response?.metaData);
+        setApplicationDocumentId(response?.id);
+        setIsLoadingDocs(false);
+        console.log("fields", fields)
     }
 
     const handleChange = async (value, index) => {
@@ -397,12 +397,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData => { const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
-                        (<Tooltip title="Click to Open" arrow>
-                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-                        ) : innerData?.fileType?.startsWith("image/") ?
-                        ( <Tooltip title="Click to Open" arrow>
-                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip> ): ( <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)}), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData => {
+                        const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
+                            (<Tooltip title="Click to Open" arrow>
+                                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                            ) : innerData?.fileType?.startsWith("image/") ?
+                                (<Tooltip title="Click to Open" arrow>
+                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
+                    }), 'isShowHoverText': false
                 });
             } else {
                 if (data === "documentType") {
@@ -426,16 +428,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     temp.push({
                         "type": "text",
                         "value": array?.map(innerData => {
-                           const rowId = innerData?.rowId;
-                           return  innerData[data] && (
+                            const rowId = innerData?.rowId;
+                            return innerData[data] && (
                                 <Tooltip title="Click to Open" arrow>
-                                <span
-                                    onClick={() => {
-                                        setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
-                                    }}
-                                >
-                                    {innerData[data]}
-                                </span>
+                                    <span
+                                        onClick={() => {
+                                            setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
+                                        }}
+                                    >
+                                        {innerData[data]}
+                                    </span>
                                 </Tooltip>
                             );
                         })
@@ -588,7 +590,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     </div>
                 </div>
             )}
-             {isLoadingDocs && (
+            {isLoadingDocs && (
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
                 >
