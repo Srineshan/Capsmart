@@ -404,8 +404,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         }
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.title), 'onClickFunction': handleEdit });
         temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.mdID), 'onClickFunction': handleEdit });
-        // temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
-        // temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
+        if (medicalDirectivesStatus === 'completed') {
+            temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => innerData?.medicalDirective?.creationType), 'onClickFunction': handleEdit });
+            temp.push({ "type": "text", "value": selectedMedicalDirectiveList?.map(innerData => format(new Date(innerData?.dueDate), 'dd/MM/yyyy')), 'onClickFunction': handleEdit });
+        }
         if (medicalDirectivesStatus !== 'completed') {
             // temp.push({
             //     "type": "icon", "icon": selectedMedicalDirectiveList?.map(innerData =>
