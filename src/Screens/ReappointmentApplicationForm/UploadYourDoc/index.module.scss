@@ -402,7 +402,7 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
+    grid-template-columns: 3% 24% 32% 16% 8% 6% 3% 3%;
     gap: 1%;
 }
 
@@ -481,6 +481,13 @@
     height: 20px;
     width: auto;
     object-fit: contain;
+}
+
+.docTypeEditImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    color: $primarycolor
 }
 
 .fileLoadingStyle {
