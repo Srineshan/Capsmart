@@ -32,7 +32,7 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { fileLoadingURL, getValueByPath } from '../../../utils/formatting';
+import { fileLoadingURL, getValueByPath, dataLoadingGIF } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
@@ -70,6 +70,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [applicationDocumentId, setApplicationDocumentId] = useState('');
     const [selectedFile, setselectedFile] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingDocs, setIsLoadingDocs] = useState(false);
     const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
     const [formIndex, setFormIndex] = useState();
     let eSignTitle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.title`);
@@ -314,17 +315,17 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     };
 
-    const getDocument = async (rowId) => {
-        const { data: response } = await GET(
-            `document-management-service/document/${rowId}`
-        );
-        console.log(response);
-        setFields(response?.fields);
-        setFile(response?.file);
-        setFileMetadata(response?.metaData);
-        setApplicationDocumentId(response?.id);
-        setIsLoading(false);
-        console.log("fields", fields)
+     const getDocument = async (rowId) => {
+            const { data: response } = await GET(
+                `document-management-service/document/${rowId}`
+            );
+            console.log(response);
+            setFields(response?.fields);
+            setFile(response?.file);
+            setFileMetadata(response?.metaData);
+            setApplicationDocumentId(response?.id);
+            setIsLoadingDocs(false);
+            console.log("fields", fields)
     }
 
     const handleChange = async (value, index) => {
@@ -396,14 +397,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData => {
-                        const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
-                            (<Tooltip title="Click to Open">
-                                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoading(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-                            ) : innerData?.fileType?.startsWith("image/") ?
-                                (<Tooltip title="Click to Open">
-                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoading(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
-                    }), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData => { const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
+                        (<Tooltip title="Click to Open" arrow>
+                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                        ) : innerData?.fileType?.startsWith("image/") ?
+                        ( <Tooltip title="Click to Open" arrow>
+                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip> ): ( <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)}), 'isShowHoverText': false
                 });
             } else {
                 if (data === "documentType") {
@@ -427,16 +426,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     temp.push({
                         "type": "text",
                         "value": array?.map(innerData => {
-                            const rowId = innerData?.rowId;
-                            return innerData[data] && (
-                                <Tooltip title="Click to Open">
-                                    <span
-                                        onClick={() => {
-                                            setIsLoading(true); setShowFileWithFields(true); getDocument(rowId)
-                                        }}
-                                    >
-                                        {innerData[data]}
-                                    </span>
+                           const rowId = innerData?.rowId;
+                           return  innerData[data] && (
+                                <Tooltip title="Click to Open" arrow>
+                                <span
+                                    onClick={() => {
+                                        setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
+                                    }}
+                                >
+                                    {innerData[data]}
+                                </span>
                                 </Tooltip>
                             );
                         })
@@ -489,6 +488,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 ErrorToaster("Unexpected Error Deleting File");
             });
         handleSubmitApplicationReq(temp)
+        getPreApplication();
     }
 
     const isEqual = (obj1, obj2) => {
@@ -586,6 +586,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             ))}
                         </div> */}
                     </div>
+                </div>
+            )}
+             {isLoadingDocs && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyleCapLogo} />
                 </div>
             )}
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}

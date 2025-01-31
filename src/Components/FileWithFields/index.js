@@ -153,7 +153,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     }
 
     const handleContinue = async () => {
-        await PUT(`application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&schemaId=${schemaId}`, changedData)
+        await PUT(`application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}`, changedData)
             .then(response => {
                 console.log(response)
                 getPreApplication()

@@ -67,7 +67,7 @@ const ApplicationReferenceDocuments = () => {
                 key={index}
               >
                 <div className={style.fullWidth}> 
-                <Tooltip title="Click to Open">  
+                <Tooltip title="Click to Open" arrow>  
                   <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(document)}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       {docIcon && (                       
@@ -100,7 +100,7 @@ const ApplicationReferenceDocuments = () => {
             >
               
               <div className={style.fullWidth}>
-              <Tooltip title="Click to Open">
+              <Tooltip title="Click to Open" arrow>
                 <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`}  onClick={() => openDialog(basicForm?.payment?.invoice)}>            
                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <img
