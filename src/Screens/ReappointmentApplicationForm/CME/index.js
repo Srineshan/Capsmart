@@ -102,12 +102,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     }, [formSchema])
 
     useEffect(() => {
-        if (yesOrNoCME !== '' && yesOrNoCMETranscript !== '') {
+        if (yesOrNoCMETranscript !== '') {
             setIsContinueEnabled(true);
         } else {
             setIsContinueEnabled(false);
         }
-    }, [yesOrNoCME, yesOrNoCMETranscript])
+    }, [yesOrNoCMETranscript])
 
     useEffect(() => {
         if (fileMetadata) {
@@ -632,7 +632,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             </div>
                         )}
                     </div>
-                    <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
+                    {/* <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         <div>
                             <div className={style.cardTitle}>
                                 Do you have any other CME / CEU Certificates you have obtained in the past year?
@@ -681,7 +681,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 )}
                             </>
                         )}
-                    </div>
+                    </div> */}
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>

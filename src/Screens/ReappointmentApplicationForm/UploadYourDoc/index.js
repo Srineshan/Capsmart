@@ -520,6 +520,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         basicForm?.documentsRequired?.map((data, index) => {
             if ((basicForm?.forms?.[formIndex]?.data !== null && tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
                 temp.push(data)
+            } else {
+                if (data?.required) {
+                    temp.push(data)
+                }
             }
         })
         return temp;
