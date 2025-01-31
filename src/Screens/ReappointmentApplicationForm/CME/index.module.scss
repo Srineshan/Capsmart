@@ -397,8 +397,8 @@
 
 .cmeCreditsGrid {
     display: grid;
-    grid-template-columns: 40% 60%;
-    gap: 20px;
+    grid-template-columns: 40% 58%;
+    gap: 2%;
 
     @media (max-width: 1150px) {
         grid-template-columns: 1fr;

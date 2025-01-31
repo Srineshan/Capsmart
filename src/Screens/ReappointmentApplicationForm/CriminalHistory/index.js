@@ -114,6 +114,16 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {

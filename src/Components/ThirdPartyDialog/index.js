@@ -363,7 +363,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 }}
               />
             </div>
-            {paymentStatus && <p>{paymentStatus}</p>}
+            {paymentStatus && <p className={style.paymentFailedText}>{paymentStatus}</p>}
             <div className={`${style.continue} ${style.marginLeft} ${style.marginTop10}`} onClick={() => { submitPayment(); }} >PAY</div>
           </div>
         ) : (
