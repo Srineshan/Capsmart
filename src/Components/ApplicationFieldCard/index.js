@@ -15,6 +15,7 @@ import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import CheckIcon from "@mui/icons-material/Check";
 import VerifiedImage from "../../images/verifiedImage.png";
 import ToBeVerifiedImage from "../../images/toBeVerifiedImage.png";
+import NotVerifiedImage from "../../images/notVerifiedImage.png";
 import DeleteIcon from "../../images/deleteHcRow.png";
 import style from "./index.module.scss";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -2428,7 +2429,7 @@ const ApplicationFieldCard = ({
                       />
                     ) : (
                       <img
-                        src={ToBeVerifiedImage}
+                        src={NotVerifiedImage}
                         alt=""
                         className={style.imgIcon}
                       />
@@ -2445,7 +2446,7 @@ const ApplicationFieldCard = ({
                             : false)
                       )
                         ? "Required"
-                        : "Recommended"
+                        : "Optional"
                         })`}
                     </div>
                     <div>

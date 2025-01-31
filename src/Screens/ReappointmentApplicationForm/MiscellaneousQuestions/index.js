@@ -64,7 +64,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [showAddButton, setShowAddButton] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-
+  const [departmentList, setDepartmentList] = useState([]);
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -96,8 +96,12 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           ? basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsCovererName
           : ""
       );
-      setObstetricsCovererNameList(basicForm?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.id))
-      setCovererNameList(basicForm?.coverageDetails?.providerDetails?.map(data => data?.id))
+      if (basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType !== undefined) {
+        setObstetricsCovererNameList(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.obstetricsProviderType === 'Group' ? basicForm?.coverageDetails?.obstetricsGroupDetails : basicForm?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.id))
+      }
+      if (basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType !== undefined) {
+        setCovererNameList(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType === 'Group' ? basicForm?.coverageDetails?.groupDetails : basicForm?.coverageDetails?.providerDetails?.map(data => data?.id))
+      }
       setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       console.log(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName, obstetricsCovererName, covererName, 'coverername', basicForm?.forms?.[formIndex]?.data?.coverageDetails)
     }
@@ -175,6 +179,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   useEffect(() => {
     getCoverageGroups();
+    getDepartmentList();
   }, []);
 
   // useEffect(() => {
@@ -222,6 +227,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     );
     setGroupOptions(data)
   }
+
+  const getDepartmentList = async () => {
+    const { data: department } = await GET(`entity-service/department`);
+    setDepartmentList(department);
+  };
 
   const getaddCoverageGroups = async () => {
     const payload = [{ name: covererName || 'N/A' }];
@@ -300,6 +310,21 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   };
 
+  const getDeptItems = (data) => {
+    let temp = [];
+    data?.map((data) => {
+      // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === "")) {
+      temp.push({ departmentId: data?.id, departmentSpecialtyName: data?.departmentName?.name, departmentName: data?.departmentName?.name, serviceAreaId: null, serviceAreaName: null });
+      // }
+      data?.serviceAreas?.map((specialityData => {
+        // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
+        temp.push({ departmentId: data?.id, departmentSpecialtyName: `${data?.departmentName?.name} - ${specialityData?.name}`, serviceAreaId: specialityData?.id, departmentName: data?.departmentName?.name, serviceAreaName: specialityData?.name });
+        // }
+      }))
+    });
+    return temp;
+  };
+
   console.log(covererName, providerType, basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName)
 
   const getMissingFields = () => {
@@ -359,27 +384,25 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     // }
     let temp = {
       providerType: providerType,
-      providerDetails: providerType === 'Group'
-        ? groupOptions.filter(obj => covererNameList.includes(obj.id))
-        : selectApplicant
-          .filter(obj => covererNameList.includes(obj.id))
-          .map(obj => ({
-            id: obj.id,
-            name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
-              .filter(Boolean) // Remove any empty or falsy values
-              .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
-          })),
+      providerDetails: providerType === 'Group' ? [] : selectApplicant
+        .filter(obj => covererNameList.includes(obj.id))
+        .map(obj => ({
+          id: obj.id,
+          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+            .filter(Boolean) // Remove any empty or falsy values
+            .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
+        })),
+      groupDetails: providerType === 'Group' ? covererNameList : [],
       obstetricsProviderType: obstetricsProviderType,
-      obstetricsProviderDetails: obstetricsProviderType === 'Group'
-        ? groupOptions.filter(obj => obstetricsCovererNameList.includes(obj.id))
-        : selectApplicantObstetrics
-          .filter(obj => obstetricsCovererNameList.includes(obj.id))
-          .map(obj => ({
-            id: obj.id,
-            name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
-              .filter(Boolean) // Remove any empty or falsy values
-              .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
-          })),
+      obstetricsProviderDetails: obstetricsProviderType === 'Group' ? [] : selectApplicantObstetrics
+        .filter(obj => obstetricsCovererNameList.includes(obj.id))
+        .map(obj => ({
+          id: obj.id,
+          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+            .filter(Boolean) // Remove any empty or falsy values
+            .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
+        })),
+      obstetricsGroupDetails: obstetricsProviderType === 'Group' ? obstetricsCovererNameList : [],
     };
     await PUT(`application-management-service/application/${applicationId}/coverageDetails`, temp)
       .then(response => {
@@ -658,7 +681,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           //   rows={4}
                           // />
                           <div className={style.fieldWrapper}>
-                            <div className={`${style.lableStyle}`}>
+                            {/* <div className={`${style.lableStyle}`}>
                               {'Name the Provider Groups to cover you*'}
                             </div>
                             <div className={`${style.displayInRow}`}>
@@ -707,7 +730,45 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                   Add
                                 </button>
                               )}
-                            </div>
+                            </div> */}
+                            <CommonSelectField
+                              // value={covererName}
+                              onChange={(e) => setObstetricsCovererNameList(prevCheckedIds => {
+                                return (prevCheckedIds || [])?.map(data => data?.departmentSpecialtyName)?.includes(e.target.value?.departmentSpecialtyName) ? prevCheckedIds?.filter(data => data?.departmentSpecialtyName !== e.target.value.departmentSpecialtyName) : [...prevCheckedIds, e.target.value];
+                              })}
+                              className={style.fullWidth}
+                              valueList={getDeptItems(departmentList)?.map(data => data)}
+                              labelList={getDeptItems(departmentList)?.map(data => data?.departmentSpecialtyName)}
+                              disabledList={getDeptItems(departmentList)?.map(data => false)}
+                              disabledSelect={false}
+                              error={!obstetricsCovererNameList}
+                              label={"Name the Provider Groups to cover you"}
+                              required={true}
+                              warning={warningFields
+                                ?.map((data) => data?.label)
+                                ?.includes(
+                                  `Who covers your hospital patients when you are not available?`
+                                )}
+                            />
+                          </div>
+                        )}
+                        {obstetricsProviderType === "Department / Specialty Group" && (
+                          // <TextArea
+                          //   value={obstetricsCovererName}
+                          //   className={`${style.fullWidth} ${style.marginTop10}`}
+                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
+                          //   placeholder={"Enter Here"}
+                          //   rows={4}
+                          // />
+                          <div className={style.fieldWrapper}>
+                            <CommonTextField
+                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
+                              onChange={() => { }}
+                              readOnly={true}
+                              className={style.fullWidth}
+                              label={"Name the Provider Groups to cover you"}
+                              required={true}
+                            />
                           </div>
                         )}
                       </>
@@ -731,9 +792,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             console.log("grouplevel", obstetricsCovererNameList)
                             return (
                               <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                                <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div>
+                                <div>{data?.departmentSpecialtyName}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                  onClick={() => setObstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => innerData !== data))}
+                                  onClick={() => setObstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => data?.departmentSpecialtyName !== innerData?.departmentSpecialtyName))}
                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                             )
                           })
@@ -826,7 +887,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               }}
                               className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                               maxLength={50}
-                              placeholder={'Enter the Provider Group to select'}
+                              placeholder={'Enter the Provider to select'}
                               value={covererName}
                               required={true}
                               error={!covererName}
@@ -859,10 +920,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               )}
                           /> */}
                             <div>
-                              <div className={`${style.lableStyle}`}>
+                              {/* <div className={`${style.lableStyle}`}>
                                 {'Name the Provider Groups to cover you*'}
-                              </div>
-                              <div className={`${style.displayInRow}`}>
+                              </div> */}
+                              {/* <div className={`${style.displayInRow}`}>
                                 <DatalistInput
                                   items={getItems(groupOptions) || []}
                                   onSelect={(item) => {
@@ -905,8 +966,47 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                                     Add
                                   </button>
                                 )}
-                              </div>
+                              </div> */}
+                              <CommonSelectField
+                                // value={covererName}
+                                onChange={(e) => setCovererNameList(prevCheckedIds => {
+                                  return (prevCheckedIds || [])?.map(data => data?.departmentSpecialtyName)?.includes(e.target.value?.departmentSpecialtyName) ? prevCheckedIds?.filter(data => data?.departmentSpecialtyName !== e.target.value.departmentSpecialtyName) : [...prevCheckedIds, e.target.value];
+                                })}
+                                className={style.fullWidth}
+                                valueList={getDeptItems(departmentList)?.map(data => data)}
+                                labelList={getDeptItems(departmentList)?.map(data => data?.departmentSpecialtyName)}
+                                disabledList={getDeptItems(departmentList)?.map(data => false)}
+                                disabledSelect={false}
+                                error={!covererNameList}
+                                label={"Name the Provider Groups to cover you"}
+                                required={true}
+                                warning={warningFields
+                                  ?.map((data) => data?.label)
+                                  ?.includes(
+                                    `Who covers your hospital patients when you are not available?`
+                                  )}
+                              />
                             </div>
+                          </div>
+                        )}
+
+                        {providerType === "Department / Specialty Group" && (
+                          // <TextArea
+                          //   value={obstetricsCovererName}
+                          //   className={`${style.fullWidth} ${style.marginTop10}`}
+                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
+                          //   placeholder={"Enter Here"}
+                          //   rows={4}
+                          // />
+                          <div className={style.fieldWrapper}>
+                            <CommonTextField
+                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
+                              onChange={() => { }}
+                              readOnly={true}
+                              className={style.fullWidth}
+                              label={"Name the Provider Groups to cover you"}
+                              required={true}
+                            />
                           </div>
                         )}
                       </>
@@ -920,9 +1020,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           console.log("grouplevel", covererNameList)
                           return (
                             <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                              <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div>
+                              <div>{data?.departmentSpecialtyName}</div>
                               <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                onClick={() => setCovererNameList(covererNameList?.filter(innerData => innerData !== data))}
+                                onClick={() => setCovererNameList(covererNameList?.filter(innerData => data?.departmentSpecialtyName !== innerData?.departmentSpecialtyName))}
                               ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                           )
                         })

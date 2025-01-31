@@ -402,7 +402,7 @@
 
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 24% 32% 16% 10% 6% 2%;
+    grid-template-columns: 3% 24% 32% 14% 9% 7% 3% 3%;
     gap: 1%;
 }
 
@@ -483,6 +483,13 @@
     object-fit: contain;
 }
 
+.docTypeEditImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    color: $primarycolor
+}
+
 .fileLoadingStyle {
     height: auto;
     width: 60%;
@@ -492,6 +499,13 @@
         width: 20%;
     }
 }
+
+.fileLoadingStyleCapLogo {
+    height: 200px;
+    width: 40%;
+    object-fit: contain;
+}
+
 
 .uploadContainer {
     background-color: #FFF;

@@ -105,6 +105,13 @@
   animation: fadeIn 0.5s ease-in-out;
 }
 
+.paymentFailedText {
+  text-align: left;
+  font: normal normal bold 15px/25px proxima-nova;
+  color: $statusred;
+  text-transform: capitalize;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {
