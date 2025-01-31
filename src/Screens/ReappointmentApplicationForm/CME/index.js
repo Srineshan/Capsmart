@@ -3,7 +3,7 @@ import ProgressCard from '../../../Components/ProgressCard';
 import ApplicationUserCard from '../../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../../Components/ApplicationAssistanceCard';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
-import { GET, POST, PUT } from '../../dataSaver';
+import { GET, POST, PUT, DELETE } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
@@ -85,7 +85,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : (basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== undefined) ? 'Yes' : 'No');
             }
             if (basicForm?.forms[formIndex]?.data !== null) {
-                setYesOrNoCMETranscript(basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : 'No');
+                setYesOrNoCMETranscript(basicForm?.forms?.[formIndex]?.data?.cmeTranscripts !== undefined ? 'Yes' : basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCMETranscript : 'No');
             }
         }
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
@@ -265,6 +265,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     }
 
     const handleCMETranscriptDelete = async () => {
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId]}`, [basicForm?.forms?.[formIndex]?.data?.cmeTranscripts])
+            .then((response) => {
+                SuccessToaster("File Deleted Successfully");
+            })
+            .catch((error) => {
+                ErrorToaster("Unexpected Error Deleting File");
+            });
         let tempData = basicForm?.forms?.[formIndex]?.data;
         delete tempData.cmeTranscripts;
         let temp = {
@@ -399,8 +406,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 <div>
                     <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
-                        <WelcomeCard title={<strong>For Professional Staff, the CME requirement is 40 hours of college approved education hours.</strong>}
-                            description={'Please include a print out of your continuing education transcripts or certificates for the past 12 months, including any peer review / evaluations you have had.'} />
+                        <WelcomeCard title={<strong>For Professional Staff, the CME requirement by CMH is to have the required qualified hours of their respective college approved education hours or credits.</strong>}
+                            description={'You can submit a print out of your current continuing education credit summary or other valid college documents from the past 12 months, including any peer review / evaluations you have had.'} />
                     </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {/* {formSchema !== undefined && 'cmeTranscripts' in formSchema?.properties && (
@@ -411,7 +418,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )} */}
                         <div>
                             <div className={style.cardTitle}>
-                                Do you have any CME / CEU Transcript from your College or Membership Organization?
+                                Do you have any CME / CEU Credit Summary document from your Professional College or Membership Organization?
                             </div>
                             {yesOrNoCMETranscript === '' ? (
                                 <div
@@ -450,7 +457,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                             <>
                                 {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
                                     <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
-                                        <div><strong>CME / CEU Transcript</strong></div>
+                                        <div><strong>CME / CEU Credit Summary</strong></div>
                                         <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                                         <Tooltip title={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? "Valid File" : "Not Valid"} arrow>
                                             <img
