@@ -304,10 +304,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
-            setFields(response?.data?.[0]?.fields);
-            setFile(response?.data?.[0]?.file);
-            setFileMetadata(response?.data?.[0]?.metaData);
-            setApplicationDocumentId(response?.data?.[0]?.id)
+            // setFields(response?.data?.[0]?.fields);
+            // setFile(response?.data?.[0]?.file);
+            // setFileMetadata(response?.data?.[0]?.metaData);
+            // setApplicationDocumentId(response?.data?.[0]?.id)
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
                     if (response?.data[triggerIndex]?.documentType !== null) {
