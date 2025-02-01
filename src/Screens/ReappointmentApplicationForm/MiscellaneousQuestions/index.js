@@ -853,7 +853,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                         {providerType === "Individual" && (
                           <div className={`${style.fieldWrapper}`}>
                             <div className={`${style.lableStyle}`}>
-                              {'Select Named Covering Providers*'}
+                              {'Select Provider(s) From Your Department / Specialty'}
                             </div>
                             {/* <CommonSelectField
                               value={covererName}

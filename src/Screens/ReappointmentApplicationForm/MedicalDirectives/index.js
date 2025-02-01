@@ -506,7 +506,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     ) : (
                                         <TableTwo
                                             tableHeaderValues={[
-                                                <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={(e) => setSelectedIds(selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}>Select All</div>,
+                                                <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={(e) => setSelectedIds(medicalDirectives?.length === selectedIds.length ? [] : selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}>{medicalDirectives?.length === selectedIds.length ? 'Remove All' : 'Select All'}</div>,
                                                 // <CommonCheckBox
                                                 //     size="medium"
                                                 //     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}
@@ -516,7 +516,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                                 "MD ID",
                                                 // "Type",
                                                 // "Attestation Due Date",
-                                                "",
+                                                "Action",
                                             ]}
                                             tableDataValues={getMedicalDirectiveTable()}
                                             tableData={selectedMedicalDirectiveList}
