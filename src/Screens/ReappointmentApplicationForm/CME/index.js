@@ -477,7 +477,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div className={` ${style.marginTop}`}>
                                         {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName === undefined ? (
                                             <div>
-                                                <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                                                <div className={style.lableStyle}>Indicate why you were not able to provide the CME / CEU Credit Summary document*</div>
                                                 <div className={style.marginTop10}>
                                                     <CKEditor
                                                         editor={ClassicEditor}

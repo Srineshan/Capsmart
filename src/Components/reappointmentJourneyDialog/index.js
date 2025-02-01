@@ -10,6 +10,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import { useNavigate, useParams } from 'react-router-dom';
 import ApplicationSubmitDialog from '../../Components/ApplicationSubmitDialog';
 import { useDescope } from '@descope/react-sdk';
+import { Tooltip } from '@mui/material';
 
 const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, img, continueClick }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -128,7 +129,13 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
                                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
-                                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
+                                            <Tooltip
+                                                title="To submit you have to correct all errors and issues identified."
+                                                arrow
+                                                {...(basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length === 0 && { open: false })}
+                                            >
+                                                <div className={`${style.continue} ${style.marginLeft} ${basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length !== 0 ? style.disabledButton : ''}`} onClick={basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length !== 0 ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
+                                            </Tooltip>
                                         </div>
                                     )}
                                 </div>

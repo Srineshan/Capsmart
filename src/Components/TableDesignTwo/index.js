@@ -630,7 +630,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                             : (
-                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                                <Tooltip title={'Click to take action'} arrow>
+                                                                    <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                                </Tooltip>
                                                             )
                                                         : visibleActions?.length === 1 ? (
                                                             <span className={`${style.singleActionText}`}
@@ -642,7 +644,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 {visibleActions[0]?.data}
                                                             </span>
                                                         ) : (
-                                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                            <Tooltip title={'Click to take action'} arrow>
+                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                            </Tooltip>
                                                         )
                                                     }
                                                     {showOptions && index === selectedMenuIndex && visibleActions?.length > 1 && (
