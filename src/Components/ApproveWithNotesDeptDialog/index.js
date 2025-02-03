@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT, POST } from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -62,6 +62,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [documentTitle, setDocumentTitle] = useState("");
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
    const [isApproveEnabled, setIsApproveEnabled] = useState(false);
+   const [entity, setEntity] = useState([]);
   const dropzoneStyle = {
       width: "100%",
       height: "auto",
@@ -71,7 +72,11 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
       borderRadius: 5,
     };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
-  const workModeType = sessionStorage.getItem('workModeType')
+  const workModeType = sessionStorage.getItem('workModeType');
+  const [applicationType, setApplicationType] = useState(() => 
+      sessionStorage.getItem('applicationCreationType') || 'NEW'
+    );
+  const [logDetails, setLogDetails] = useState([]);
   // const isApproveEnabled = 
   //   // userRoleComments.trim() !== '' && 
   // selectedDateForDept !== null && 
@@ -132,6 +137,13 @@ useEffect(() => {
     setMiddleNameDept(middleName || '');
   }
 }, [userSelectRole,userSelectRoleDept, selectedRoleCred,selectedRoleDept]);
+
+  useEffect(() => {
+    sessionStorage.setItem("fromSummary", false);
+    getApplication();
+    getApplicationEntity();
+    getLog();
+  }, [applicationType]);
 
 
   const setTodayDate = () => {
@@ -241,6 +253,18 @@ useEffect(() => {
   //   }
   // };
 
+    const getApplicationEntity = async () => {
+      const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
+      setEntity(basicFormEntity);
+    };
+
+    const getLog = async () => {
+        const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+        setLogDetails(basicLog);
+        console.log("basicLog" +JSON.stringify(basicLog));
+        
+      };
+
   const getApplicationUserRole = async () => {
     try {
     const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
@@ -323,7 +347,7 @@ useEffect(() => {
         });
       });
   
-      console.log("filteredRoles", filteredRoles);
+      console.log("filteredRolessss", filteredRoles);
       console.log("applicantName",applicantfirstName)
       console.log("applicantName",applicantlastName)
       const deptDataMember = filteredRoles.filter(
@@ -386,10 +410,10 @@ useEffect(() => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
       
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidComments && hasValidMember && hasValidMemberDept  && hasValidDate);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate);
     }
   };
 
@@ -635,6 +659,11 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   //   return null;
   // }
 
+   const lastModifiedDate = formDetails?.lastModifiedDate;
+    const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+    const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+    const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+    const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   return (
     <>
     {isLoadingImageDocs && (
@@ -676,8 +705,84 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             </div>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
+          <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                  <span className={style.rejectionHeadingTextStyle}>
+                  {/* {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                  : ""}{", "} */}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                </span>
+                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+                </div>
+                <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
+                  </div>
+                {/* </div>
+              </div> */}
+              {/* <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
+                  </div>
+                  {/* <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
+                  </div> */}
+                  {
+                    entity?.multiSiteEntity && (
+                        <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>
+                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                        </span>
+                        </div>
+                    )
+                    }
+                {/* </div>
+              </div>
+              <div className={style.marginTop5}>
+                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
+                    {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
+                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                  </div>
+                  <div className={`${style.twoColumnGridInner}`}>
+                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                    <span className={`${style.rejectionTextStyle1}`}>
+                      {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Provide notes, if any, for the Department Head regarding this application*
+            Provide notes, if any, for the Department Head regarding this application(Optional)
             </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -798,7 +903,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                   ))}
                 </div>
               )}
-            <div className={`${style.threeColumnGrid} ${style.marginTop10}`}>
+            <div className={`${style.threeColumnGridRole} ${style.marginTop10}`}>
             <div>
               <CommonSelectField
                     value={selectedRoleDept}
@@ -809,7 +914,25 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     // valueList={["HIGH", "NO"]}
                     // labelList={['High Priority', 'No Priority']}
                     valueList={userSelectRoleDept?.map(data => data?.id)}
-                    labelList={userSelectRoleDept?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
+                    // labelList={userSelectRoleDept?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`)}
+                    labelList={userSelectRoleDept?.map(data => {
+                      const primaryTitle = data?.title?.title || ""; 
+                      const secondaryTitle = data?.secondaryTitle?.title || ""; 
+                      const combinedTitle = secondaryTitle 
+                        ? `${primaryTitle} & ${secondaryTitle}` 
+                        : primaryTitle;
+                      // const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.departmentName?.name;
+                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                          department => department?.departmentName?.name
+                        ).join(', ');
+                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+  
+                        if (departmentName) {
+                          label += `- ${departmentName}`;
+                        }
+      
+                        return label;
+                    })}
                     disabledList={false}
                     required={false}
                     label="Assign a Department Head to Review & Approve*"
@@ -852,13 +975,30 @@ const handleCheckboxChange = (checkboxName) => (event) => {
               <CommonSelectField
                     value={selectedRoleCred}
                     onChange={(e) => setSelectedRoleCred(e.target.value)}
-                    className={style.fullWidth1}
+                    className={style.fullWidth2}
                     firstOptionLabel={''}
                     firstOptionValue={''}
                     // valueList={["HIGH", "NO"]}
                     // labelList={['High Priority', 'No Priority']}
                     valueList={userSelectRole?.map(data => data?.id)}
-                    labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
+                    // labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
+                    labelList={userSelectRole?.map(data => {
+                      const primaryTitle = data?.title?.title || ""; 
+                      const secondaryTitle = data?.secondaryTitle?.title || ""; 
+                      const combinedTitle = secondaryTitle 
+                        ? `${primaryTitle} & ${secondaryTitle}` 
+                        : primaryTitle;
+                        const departmentName = data?.sites?.sites?.[0]?.departmentList?.departments?.map(
+                          department => department?.departmentName?.name
+                        ).join(', ');
+                        let label = `${data?.name?.firstName} ${data?.name?.lastName}, ${combinedTitle}`;
+  
+                        if (departmentName) {
+                          label += `- ${departmentName}`;
+                        }
+      
+                        return label;
+                    })}
                     disabledList={false}
                     required={false}
                     label="Assign a Credentialing Committee Member to Review & Approve*"

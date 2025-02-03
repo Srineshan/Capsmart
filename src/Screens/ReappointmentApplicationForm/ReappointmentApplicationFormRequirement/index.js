@@ -72,6 +72,7 @@ const ReappointmentApplicationFormRequirement = () => {
     useEffect(() => {
         // getBasicForm();
         getPreApplication()
+        sessionStorage.setItem('fromSummary', false);
         console.log('entered')
     }, [])
 

@@ -27,6 +27,7 @@ import { GET, PUT, POST, TenantID } from "../dataSaver";
 import CircleIcon from "@mui/icons-material/Circle";
 import { SuccessToaster } from "../../utils/toaster";
 import { ErrorToaster } from "../../utils/toaster";
+import Tooltip from "@mui/material/Tooltip";
 
 const ActiveStaffList = ({
   isLoading,
@@ -340,9 +341,8 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
+        " "
       );
       // applicantId.push(data?.displayId || "123");
       applicantId.push(data?.staffId || "123");
@@ -487,7 +487,7 @@ const ActiveStaffList = ({
             : "grey"
       );
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
         " "
       );
       // applicantType.push(data?.providerType.serviceProviderType);
@@ -587,9 +587,8 @@ const ActiveStaffList = ({
 
     tableData?.map((data) => {
       applicantName.push(
-        `${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-        data?.applicant?.name?.firstName.slice(1).toLowerCase()
-        },  ${data?.applicant?.name?.lastName.toUpperCase()}` || " "
+        `  ${data?.applicant?.name?.firstName} ${data?.applicant?.name?.lastName.toLowerCase()}` ||
+        " "
       );
       applicantId.push(data?.staffId || "123");
       applicantType.push(data?.basicDetailReferences?.applicantType?.serviceProviderType || "Doctor");
@@ -988,6 +987,15 @@ const ActiveStaffList = ({
                   }}
                 />
               </div>
+              <Tooltip title="Fill Historical Data" arrow>
+              <div
+                className={`${style.alignCenter
+                  } ${style.cursorPointer} ${style.marginRight20}`}
+                  onClick={() => navigate("/historicalData")}
+              >
+              <AddCircleOutlineIcon sx={{ fontSize: 25, color: '#06617A' }} />
+              </div>
+              </Tooltip>
               <div
                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight}`}

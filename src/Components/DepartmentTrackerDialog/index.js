@@ -97,8 +97,8 @@ const headerValues = [
     {
       data: "View",
       requiredValue: "boolean",
-      onClick: onClickViewFunction,
-      // onClick: "",
+      // onClick: onClickViewFunction,
+      onClick: "",
     },
     // {
     //   data: "Request For Clarification",

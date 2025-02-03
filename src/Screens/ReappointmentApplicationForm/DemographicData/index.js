@@ -48,7 +48,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [yesOrNoDemographic, setYesOrNoDemographic] = useState('YES');
     const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
     const [showInfo, setShowInfo] = useState(false);
-
+    const [applicantProfile, setApplicantProfile] = useState();
 
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -61,6 +61,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
 
     }, [basicForm, formIndex])
+
+    useEffect(() => {
+        getApplicantProfile()
+    }, [applicationId])
 
     // useEffect(() => {
     //     if (formIndex !== undefined) {
@@ -78,33 +82,33 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     useEffect(() => {
         if (formSchema) {
-          const updatedSchema = { ...formSchema }; 
-      
-          
-          const contactAddress2 = updatedSchema?.properties?.contactAddress2;
-          const mailingAddressEnum =
-            contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
-      
-          
-          if (mailingAddressEnum) {
-            if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
-              contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
-                mailingAddressEnum.filter(
-                  (option) => option !== "Same as Business Address"
-                );
-            } else {
-              if (!mailingAddressEnum.includes("Same as Business Address")) {
-                contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = [
-                  ...mailingAddressEnum,
-                  "Same as Business Address",
-                ];
-              }
+            const updatedSchema = { ...formSchema };
+
+
+            const contactAddress2 = updatedSchema?.properties?.contactAddress2;
+            const mailingAddressEnum =
+                contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
+
+
+            if (mailingAddressEnum) {
+                if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
+                    contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
+                        mailingAddressEnum.filter(
+                            (option) => option !== "Same as Business Address"
+                        );
+                } else {
+                    if (!mailingAddressEnum.includes("Same as Business Address")) {
+                        contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = [
+                            ...mailingAddressEnum,
+                            "Same as Business Address",
+                        ];
+                    }
+                }
             }
-          }
-      
-          setFormSchema(updatedSchema); // Update the state with the modified schema
+
+            setFormSchema(updatedSchema); // Update the state with the modified schema
         }
-      }, [formSchema, basicForm, formIndex]); 
+    }, [formSchema, basicForm, formIndex]);
 
     const getIsOpen = (value) => {
         setIsOpen(value);
@@ -147,6 +151,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
         return array;
     };
+
+    const getApplicantProfile = async () => {
+        const { data: profile } = await GET(
+            `application-management-service/application/${applicationId}/profile`
+        );
+        setApplicantProfile(profile)
+    }
 
     const getAllLabelsContactAddress = (data) => {
         let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
@@ -451,21 +462,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 setBasicForm(response?.data)
                 SuccessToaster("Application Updated Successfully");
                 getPreApplication()
+                updateProfileAddress();
             })
             .catch((error) => {
                 console.log(error)
                 ErrorToaster("Unexpected Error Updating Application");
             });
-        // let addressData = applicantProfile;
-        // addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
-        // addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
-        // await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
-        //     .then(response => {
-        //         console.log(response)
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //     });
+    }
+
+    const updateProfileAddress = async () => {
+        let addressData = applicantProfile;
+        addressData.contactAddress1 = basicForm?.forms?.[formIndex]?.data.contactAddress1 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress1 : null
+        addressData.contactAddress2 = basicForm?.forms?.[formIndex]?.data.contactAddress2 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress2 : null
+        addressData.contactAddress3 = basicForm?.forms?.[formIndex]?.data.contactAddress3 !== undefined ? basicForm?.forms?.[formIndex]?.data.contactAddress3 : null
+        await PUT(`application-management-service/application/${applicationId}/profile`, addressData)
+            .then(response => {
+                console.log(response)
+            })
+            .catch((error) => {
+                console.log(error)
+            });
     }
 
     const handleYesOrNo = async (skip) => {

@@ -6,10 +6,11 @@ import html2pdf from "html2pdf.js";
 import style from "./index.module.scss";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { TextField } from "@mui/material";
-import { formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
+import { dataLoadingGIF, formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
 import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import CAPManager from './../../images/capSmartTransparent.png';
 import CambridgeHospital from './../../images/cambridgeHospital.png';
 import PoweredHapiCare from './../../images/PoweredHapiCare.png';
@@ -29,6 +30,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const targetRef = useRef();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +56,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
   }
 
   const submitPayment = async () => {
+    setIsLoading(true);
+    setPaymentStatus('');
     const API_URL = "https://api.na.bambora.com/v1/payments";
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
 
@@ -84,6 +88,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       setPaymentStatus(
         `Payment Failed!`
       );
+      setIsLoading(false);
     }
   };
 
@@ -112,7 +117,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
-      "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      // "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
       "cardNumber": data?.card?.last_four,
       "receiptId": data?.order_number,
@@ -124,6 +130,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       handleDownload(data)
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   }
 
@@ -161,6 +168,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
         `Payment Failed! Error: ${error.response?.data?.message || error.message
         }`
       );
+      setIsLoading(false);
     }
 
   };
@@ -190,6 +198,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
         uploadedFile = response?.data;
       } catch (error) {
         console.error(error);
+        setIsLoading(false);
         return null;
       }
 
@@ -230,7 +239,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
-      "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      // "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
       "cardNumber": data?.card?.last_four,
       "receiptId": data?.order_number,
@@ -243,9 +253,11 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       await PUT(`application-management-service/application/${applicationId}/payment`, temp)
         .then(response => {
           handleSendReceipt()
+          setIsLoading(false);
         })
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
     continueClick(true);
   }
@@ -289,6 +301,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       canEscapeKeyClose={false}
     >
       <div>
+        {isLoading && (
+          <div
+            className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+          >
+            <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+          </div>
+        )}
         {!showReceipt ? (
 
           <div className={`${style.container} ${style.displayInCol}`}>
@@ -363,7 +382,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 }}
               />
             </div>
-            {paymentStatus && <p className={style.paymentFailedText}>{paymentStatus}</p>}
+            {paymentStatus && <p className={paymentStatus?.includes("Successful") ? style.paymentSuccessText : style.paymentFailedText}>{paymentStatus}</p>}
             <div className={`${style.continue} ${style.marginLeft} ${style.marginTop10}`} onClick={() => { submitPayment(); }} >PAY</div>
           </div>
         ) : (
@@ -440,7 +459,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                       Payment Date:
                     </div>
                     <div className={style.detailsText}>
-                      {format(new Date(paymentInfo?.created || new Date()), "MMM dd, yyyy HH:mm")}
+                      {format(new Date(), "MMM dd, yyyy HH:mm a")}
                     </div>
                   </div>
                   <div className={style.marginTop10}>

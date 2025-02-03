@@ -218,6 +218,14 @@ const NewActiveApplication = ({
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [fileArray, setFileArray] = useState([]);
   const [expandedIcon, setExpandedIcon] = useState(false);
+  const [isApproverDept, setIsApproverDept] = useState(false);
+  const [isApproverCred, setIsApproverCred] = useState(false);
+  const [userFirstName, setUserFirstName] = useState('');
+  const [userLastName, setUserLastName] = useState('');
+  // const userData = JSON.parse(sessionStorage.getItem('user'));
+  // const userFirstName = userData?.name?.firstName || "No First Name";
+  // const userLastName = userData?.name?.lastName || "No Last Name";
+  const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -464,6 +472,8 @@ const NewActiveApplication = ({
 
       if (staffManagerWorkflow?.allFormsApproved) {
         setIsApproved(true);
+      } else {
+        setIsApproved(false); 
       }
     }
   }, [form]);
@@ -566,15 +576,64 @@ const NewActiveApplication = ({
   }, []);
 
   useEffect(() => {
+    console.log("Updated firstnameuser", userFirstName);
+  
+    const departmentHeadApproverDetails = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Department Head"
+    );
+  
+    const firstName = departmentHeadApproverDetails?.approverDetail?.name?.firstName || "";
+    const lastName = departmentHeadApproverDetails?.approverDetail?.name?.lastName || "";
+  
+    console.log(`Approver dept: ${firstName} ${lastName}`);
+  
+    if (firstName === userFirstName && lastName === userLastName) {
+      setIsApproverDept(true);
+    } else {
+      setIsApproverDept(false);
+    }
+  }, [userFirstName, userLastName, form]);
+  
+  useEffect(() => {
+    console.log("Updated firstnameuser", userFirstName);
+  
+    const credApproverDetails = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Credentialing Committee"
+    );
+  
+    const firstName = credApproverDetails?.approverDetail?.name?.firstName || "";
+    const lastName = credApproverDetails?.approverDetail?.name?.lastName || "";
+  
+    console.log(`Approver dept: ${firstName} ${lastName}`);
+  
+    if (firstName === userFirstName && lastName === userLastName) {
+      setIsApproverCred(true);
+    } else {
+      setIsApproverCred(false);
+    }
+  }, [userFirstName, userLastName, form]);
+  
+  console.log("Is Approver:", isApproverDept);
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
   const setUserDetails = async () => {
-    const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
-    console.log("userdataaaa" + JSON.stringify(userData))
-    sessionStorage.setItem('user', JSON.stringify(userData))
-    setUserRole(userData?.roles?.map((data) => data?.roleName));
-  }
+    try {
+      const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+      console.log("userdataaaa", JSON.stringify(userData));
+  
+      if (userData) {
+        sessionStorage.setItem('user', JSON.stringify(userData));
+        setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+        setUserFirstName(`${userData?.name?.firstName}`);
+        setUserLastName(`${userData?.name?.lastName}`);
+      }
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
   const isLableEmpty = (data) => {
     if (data === "" || data === null) {
@@ -1804,7 +1863,8 @@ const NewActiveApplication = ({
   let daysDifference;
   if (submissionDate) {
     // Calculate the difference in days
-    daysDifference = differenceInDays(currentDatenow, submissionDate);
+    daysDifference = differenceInDays(currentDatenow, submissionDate) + 1;
+
   } else {
     daysDifference = "-";
   }
@@ -2498,6 +2558,7 @@ const NewActiveApplication = ({
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
     switch (data?.schemaCategory) {
       case "UploadYourDoc":
+        console.log("UploadYourDoc Table Data:", form?.forms?.[formIndex]?.data?.table);
         return (
           <>
             {form?.forms?.[formIndex]?.data?.table?.length !== 0 && (
@@ -2520,6 +2581,7 @@ const NewActiveApplication = ({
                 tableSortValues={[]}
                 heading={"There are no Record for you to manage"}
                 onClickFunction={() => { }}
+                isUploadYourDocTable={isUploadYourDoc}
               />
             )}
           </>
@@ -3386,6 +3448,8 @@ const NewActiveApplication = ({
                 tableSortValues={[]}
                 heading={"There are no Record for you to manage"}
                 onClickFunction={() => { }}
+                isUploadYourDocTable={isUploadYourDoc}
+                hasVerificationAttempted={hasVerificationAttempted}
               />
             )}
           </>
@@ -4384,7 +4448,7 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle}`}>
 
                             <img
                               src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -4489,7 +4553,7 @@ const NewActiveApplication = ({
                         </div>
                         <div className={style.cursorPointer}> Transaction ID:{" "}
                           <Tooltip title="View Transaction Details" arrow>
-                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={onClickPaymentFunction}>{form?.payment?.receiptId || "-"}</span>
+                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
                           </Tooltip>
                         </div>
                       </div>
@@ -4505,7 +4569,7 @@ const NewActiveApplication = ({
                       <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                         <div className={style.flex}>
                           {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                          <div className={`${style.photoBorderStyle}`}>
 
                             <img
                               src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -4514,7 +4578,7 @@ const NewActiveApplication = ({
                             />
 
                           </div>
-                          <div className={`${style.twoColumnGrid2} ${style.textAlignLeft}`}>
+                          <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
@@ -4523,13 +4587,14 @@ const NewActiveApplication = ({
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
                                   : ""}{", "} */}
+                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
                                 {/* {form?.displayId || ""} */}
                                 {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
                               </span>
                             </div>
-                            <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
+                            <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                               <span className={style.rightAlignTextStyle}>
                                 Reappointment Date:
                               </span>
@@ -4547,7 +4612,7 @@ const NewActiveApplication = ({
                                 ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
                                 : ""}
                             </div>
-                            <div className={`${style.twoColumnGridInner1}`}>
+                            <div className={`${style.twoColumnGridInner2}`}>
                               <span className={style.rightAlignTextStyle}>
                                 Application Submitted:
                               </span>
@@ -5031,7 +5096,7 @@ const NewActiveApplication = ({
                                       </>
                                     </div>
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeft30}`}
+                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                     >
                                       <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
                                         {data?.title}
@@ -5627,7 +5692,7 @@ const NewActiveApplication = ({
                                                         )
                                                       )
                                                   )}
-                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                  {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
                                                     //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     //     <Tooltip title="Click To Revert Verification">
@@ -5673,8 +5738,8 @@ const NewActiveApplication = ({
                                                         </div>
                                                       )
                                                     )
-                                                  ) : null}
-                                                </div>
+                                                  ): null} */}
+                                             </div>
                                               );
                                             })()
                                           )}
@@ -7082,7 +7147,7 @@ const NewActiveApplication = ({
                   <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
                     <div className={style.spaceBetween}>
                       <div className={style.displayInRow}>
-                        <div className={`${style.photoBorderStyle} ${style.marginLeftRight10}`}>
+                        <div className={`${style.photoBorderStyle}`}>
 
                           <img
                             src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
@@ -9934,6 +9999,20 @@ const NewActiveApplication = ({
                     <div className={`${style.marginTop20}`}>
                       <div
                         // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                        className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                        style={{ opacity: isApproved ? 1 : 0.5 }}>
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          // onClick={onClickApprovalDeptFunction}
+                          onClick={isApproved ? onClose : undefined}
+                        >
+                          Verified, send later to Department Head
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${style.marginTop20}`}>
+                      <div
+                        // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                         className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                         style={{ opacity: isApproved ? 1 : 0.5 }}>
                         <div
@@ -10148,7 +10227,63 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (
+                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === true) ? (
+                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
+                    {/* <div className={`${style.twoColumnGrid}`}> */}
+                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                        onClick={() => {
+                          onClose();
+                        }}
+                      >
+                        SAVE IN PROGRESS
+                      </div>
+                    </div>
+                    <div
+                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                    >
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                        // onClick={() => {
+                        //   setShowApplicationDeclineDialog(true);
+                        // }}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED
+                      </div>
+                    </div>
+                    {/* </div> */}
+                    <div className={`${style.marginTop20}`}>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                          // onClick={onClickApproveFunction}
+                          onClick={() => {
+                            onClickApprovalFunction();
+                          }}
+                        >
+                          RECOMMENDED WITH COMMENTS
+                        </div>
+                      </div>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                          onClick={onClickApprovalwithoutnotesFunction}
+                        >
+                          RECOMMEND
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (" ")}
+                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === true) ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
                     <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11071,7 +11206,7 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                         </div> */}
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                           <div
                             className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -11135,7 +11270,7 @@ const NewActiveApplication = ({
                         </div>
 
                         <div className={style.marginBottom20}></div>
-                      </div>
+                      </div> */}
                     </>
                   ) : (" ")}
 
@@ -11532,6 +11667,8 @@ const NewActiveApplication = ({
             selectedRowTableName={selectedRowTableName}
             selectedFormId={selectedFormId}
             setForm={setForm}
+            handleStepsVerify={handleStepsVerify}
+            setHasVerificationAttempted={setHasVerificationAttempted}
           />
         )}
         {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>

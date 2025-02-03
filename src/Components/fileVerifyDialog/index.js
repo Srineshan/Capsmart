@@ -9,8 +9,9 @@ import ReactToPrint, { useReactToPrint } from "react-to-print";
 import style from './index.module.scss';
 import LoadingScreen from "../LoadingScreen";
 import Tooltip from "@mui/material/Tooltip";
+import CommonTextField from '../CommonFields/CommonTextField';
 
-const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm }) => {
+const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm, handleStepsVerify, setHasVerificationAttempted }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -18,6 +19,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const PDFRef = createRef();
     const [applicationId, setApplicationId] = useState(sessionStorage.getItem("applicationId"));
     const [isLoading, setIsLoading] = useState(false);
+    const [fields, setFields] = useState([]);
+    const [metaData, setMetaData] = useState({});
 
     useEffect(() => {
         if (file?.fileURL) {
@@ -38,6 +41,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         console.log("filesssssssssssssssss6", selectedFormId);
         console.log("filesssssssssssssssss7", setForm);
     }, []);
+
+    useEffect(() => {
+        getDocument();
+    }, [file]);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -63,17 +70,17 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
     const handlePrevious = () => {
         if (selectedFileIndex > 0) {
-            setIsLoading(true); 
+            setIsLoading(true);
             setSelectedFileIndex(selectedFileIndex - 1);
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 
     const handleNext = () => {
         if (selectedFileIndex < fileArray.length - 1) {
-            setIsLoading(true); 
+            setIsLoading(true);
             setSelectedFileIndex(selectedFileIndex + 1);
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 
@@ -96,6 +103,17 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     //     removeAfterPrint: true,
     // });
 
+
+    const getDocument = async () => {
+        const { data: response } = await GET(
+            `document-management-service/document/${file?.rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setMetaData(response?.metaData)
+    }
+
+
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
         setForm(basicForm);
@@ -103,49 +121,60 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
     const handleDocVerify = async () => {
         let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
-    
+
         let temp = {
             formId: selectedFormId,
             contentToVerify: "DATA",
             tableName: selectedRowTableName,
             rowId: file?.rowId,
         };
-    
+
         await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${verificationStatus}`, temp)
             .then((response) => {
                 console.log("success");
-    
+
                 // Update the fileArray with the correct verified status
                 const updatedFileArray = fileArray.map((record, index) => {
                     if (index === selectedFileIndex) {
-                        return { ...record, isVerified: !file?.isVerified }; 
+                        return { ...record, isVerified: !file?.isVerified };
                     }
                     return record;
                 });
-    
+
                 setFileArray(updatedFileArray);
+
+                const allVerified = updatedFileArray.every(file => file.isVerified);
+
+                if (allVerified) {
+                    console.log("All files are verified, calling handleStepsVerify...");
+                    handleStepsVerify(selectedFormId);
+                }
+
+                setHasVerificationAttempted(true)
             })
             .catch((error) => {
                 console.log(error);
             });
-    
+
         getPreApplication();
     };
 
+
+
     return (
         <>
-         {isLoading && (
-            <div className={style.loadingOverlay}>
-                <LoadingScreen />
-            </div>
-        )}
-        <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false} ref={PDFRef}>
-            <div>
-                <div className={Classes.DIALOG_BODY}>
-                    <div className={style.spaceBetween}>
-                        <div className={style.heading}>Verification of Data & Documents</div>
-                        <div className={style.displayInRow}>
-                            {/* <div
+            {isLoading && (
+                <div className={style.loadingOverlay}>
+                    <LoadingScreen />
+                </div>
+            )}
+            <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false} ref={PDFRef}>
+                <div>
+                    <div className={Classes.DIALOG_BODY}>
+                        <div className={style.spaceBetween}>
+                            <div className={style.heading}>Verification of Data & Documents</div>
+                            <div className={style.displayInRow}>
+                                {/* <div
                                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
                             >
                                 <PrintOutlinedIcon
@@ -156,32 +185,20 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     onClick={handlePrintClick}
                                 />
                             </div> */}
-                            <img
-                                src={CrossPink}
-                                alt="cross"
-                                className={`${style.crossStyle} ${style.cursorPointer}`}
-                                onClick={() => { getIsOpen(false) }}
-                            />
-                        </div>
-                    </div>
-                    <div className={`${style.textStyle}`}>Verification of this section requires you to verify the associated Data & Documents ({fileArray.length})</div>
-                    <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <div className={`${style.purpleButton} ${selectedFileIndex === 0 ? style.disabledButton : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
-                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                PREVIOUS
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer}`}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
                             </div>
                         </div>
-                        <div className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`} onClick={handleNext}>
-                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                NEXT
-                            </div>
+                        <div className={`${style.textStyle}`}>Your required to verify the {fileArray.length} associated Documents that are part of this application </div>
+                        <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
+                            <div className={`${style.heading}`}>{file?.documentType}</div>
+                            <div className={`${style.heading}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
                         </div>
-                    </div>
-                    <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
-                        <div className={`${style.heading}`}>{file?.documentType}</div>
-                        <div className={`${style.heading}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
-                    </div>
-                        {!isLoading && (
+                        {/* {!isLoading && (
                     <div className={style.marginTop}>
                         {file?.fileType === 'application/pdf' ? (
                             <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="300px" onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }}></iframe>
@@ -235,10 +252,88 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 </div>
                             </div>
                         )}
+                        </div> */}
+                        <div className={style.gridContainer}>
+                            <div className={style.fileColumn}>
+                                {!isLoading && (
+                                    <div className={style.height}>
+                                        {file?.fileType === 'application/pdf' ? (
+                                            <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                        ) : file?.fileType?.startsWith("image/") ? (
+                                            <img src={file?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                        ) : <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                    </div>
+                                )}
+                            </div>
+                            <div className={`${style.detailsColumn} ${fields.length > 6 ? style.expanded : ""}`}>
+                                <div className={style.extractedFields}>
+                                    <div className={`${style.twoCol}`}>
+                                        {fields.map((field, index) => (
+                                            <CommonTextField
+                                                key={index}
+                                                value={metaData[field.name] !== undefined ? metaData[field.name] : ""}
+                                                className={style.fullWidth}
+                                                maxLength={50}
+                                                readOnly={true}
+                                                label={field.label}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className={style.buttonContainer}>
+                                    <div className={`${style.purpleButton} ${selectedFileIndex === 0 ? style.disabledButton : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            PREVIOUS
+                                        </div>
+                                    </div>
+                                    <div
+                                        className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`}
+                                        onClick={handleNext}
+                                    >
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            NEXT
+                                        </div>
+                                    </div>
+                                    {file?.isVerified ? (
+                                        <Tooltip title="Click To Revert Verification">
+                                            <div
+                                                className={`${style.greenButtonVerify}`}
+                                                onClick={handleDocVerify}
+                                            >
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    VERIFIED
+                                                </div>
+                                            </div>
+                                        </Tooltip>) : (
+                                        <Tooltip title="Click To Verify">
+                                            <div
+                                                className={`${style.purpleButtonVerify}`}
+                                                onClick={() => {
+                                                    handleDocVerify();
+                                                    if (selectedFileIndex === fileArray.length - 1) {
+                                                        setTimeout(() => getIsOpen(false), 500);
+                                                    } else {
+                                                        handleNext();
+                                                    }
+                                                }}
+                                            >
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    VERIFY
+                                                </div>
+                                            </div>
+                                        </Tooltip>)}
+                                    <div className={`${style.CloseButton} ${style.cursorPointer}`} onClick={() => { getIsOpen(false); }}>
+                                        <div className={`${style.closeTextStyle} ${style.alignCenter}`}>
+                                            CLOSE
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
+                    </div>
                 </div>
-            </div>
-        </Dialog>
+            </Dialog>
         </>
     );
 };
