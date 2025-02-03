@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds,isUploadYourDocTable,hasVerificationAttempted }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -214,32 +214,34 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const classes = useStyles();
 
     function checkRoleVisibility(actionsData, workModeType) {
-        if (!actionsData.hideForRoles &&
-            !actionsData.hideForRoles2 &&
-            !actionsData.hideForRoles3 &&
-            !actionsData.showForRoles &&
-            !actionsData.showForRoles2) {
+
+        if (!actionsData?.hideForRoles &&
+            !actionsData?.hideForRoles2 &&
+            !actionsData?.hideForRoles3 &&
+            !actionsData?.showForRoles &&
+            !actionsData?.showForRoles2) {
             return true;
         }
-        if (actionsData.hideForRoles?.includes(workModeType)) {
+        if (actionsData?.hideForRoles?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideForRoles2?.includes(workModeType)) {
+        if (actionsData?.hideForRoles2?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.hideForRoles3?.includes(workModeType)) {
+        if (actionsData?.hideForRoles3?.includes(workModeType)) {
             return false;
         }
-        if (actionsData.showForRoles && actionsData.showForRoles.includes(workModeType)) {
+        if (actionsData?.showForRoles && actionsData?.showForRoles.includes(workModeType)) {
             return true;
         }
-        if (actionsData.showForRoles2 && actionsData.showForRoles2.includes(workModeType)) {
+        if (actionsData?.showForRoles2 && actionsData?.showForRoles2.includes(workModeType)) {
             return true;
         }
-        if (actionsData.showForRoles || actionsData.showForRoles2 || actionsData.showForRoles3) {
+        if (actionsData?.showForRoles || actionsData?.showForRoles2 || actionsData?.showForRoles3) {
             return false;
         }
         return true;
+        
     }
 
     const visibleActions = actions?.filter(actionData => checkRoleVisibility(actionData, workModeType));
@@ -307,7 +309,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}`} key={index}>
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}
+                            ${isUploadYourDocTable && hasVerificationAttempted && ( data?.isVerified === false || data?.isVerified === null || data?.isVerified === undefined || data?.isVerified == null) ? style.redBorder : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
@@ -421,7 +424,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#06617A",
+                                                                        backgroundColor: "#737575",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",
@@ -449,7 +452,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     aria-haspopup="true">
                                                     <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
-                                                        <p className={`${style.tableDataFontStyle} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
+                                                        <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
                                                             <Popover
                                                                 id={'mouse-over-popover'}
@@ -477,7 +480,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         position: "relative",
                                                                         mt: "10px",
                                                                         "&::before": {
-                                                                            backgroundColor: "#06617A",
+                                                                            backgroundColor: "#737575",
                                                                             content: '""',
                                                                             display: "block",
                                                                             position: "absolute",
@@ -674,7 +677,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     ) : actionsData?.conditionToShow !== undefined ? (
                                                                         eval(actionsData?.conditionToShow) && (
                                                                             <div
-                                                                                className={`${style.tableDataFontStyle1} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
+                                                                                className={`${style.specificActionCard} ${style.cursorPointer} ${actionsData?.isIndent ? style.marginLeft30 : ''}`}
                                                                                 onClick={() => {
                                                                                     actionsData?.onClick(data);
                                                                                     handleClose();

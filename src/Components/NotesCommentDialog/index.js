@@ -680,6 +680,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
+   const [isApproverDept, setIsApproverDept] = useState(false);
+    const [isApproverCred, setIsApproverCred] = useState(false);
+    const [userFirstName, setUserFirstName] = useState('');
+    const [userLastName, setUserLastName] = useState('');
   // useEffect(() => {
   //   if (dateFormat) {
   //     setCurrentDate(format(new Date(), dateFormat));
@@ -690,6 +694,42 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         getApplicationEntity();
         getLog();;
       }, [applicationType]);
+
+      useEffect(() => {
+        console.log("Updated firstnameuserssssss", userFirstName);
+      
+        let approverDetails;
+        
+        if (workModeType === "Department Head") {
+          approverDetails = formDetails?.completedWorkflows?.find(
+            (workflow) => workflow?.role === "Department Head"
+          );
+        } else if (workModeType === "Credentialing Committee") {
+          approverDetails = formDetails?.completedWorkflows?.find(
+            (workflow) => workflow?.role === "Credentialing Committee"
+          );
+        }
+      
+        const firstName = approverDetails?.approverDetail?.name?.firstName || "";
+        const lastName = approverDetails?.approverDetail?.name?.lastName || "";
+      
+        console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName}`);
+      
+        if (firstName === userFirstName && lastName === userLastName) {
+          if (workModeType === "Department Head") {
+            setIsApproverDept(true);
+          } else if (workModeType === "Credentialing Committee") {
+            setIsApproverCred(true);
+          }
+        } else {
+          if (workModeType === "Department Head") {
+            setIsApproverDept(false);
+          } else if (workModeType === "Credentialing Committee") {
+            setIsApproverCred(false);
+          }
+        }
+        console.log("approvebydept",isApproverDept)
+      }, [userFirstName, userLastName, formDetails, workModeType]);
 
 
   const onClicksignFunction = () => {
@@ -783,6 +823,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     sessionStorage.setItem('user', JSON.stringify(userData))
     setUserRole(userData?.roles?.map((data) => data?.roleName));
     setName(`${userData?.name?.firstName} ${userData?.name?.lastName}`);
+    setUserFirstName(`${userData?.name?.firstName}`);
+    setUserLastName(`${userData?.name?.lastName}`);
   }
 
   const getApplicationEntity = async () => {
@@ -1122,7 +1164,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   return null;
   // }
 
-  if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
+  if (!(workModeType === 'Credentialing Committee' && isApproverCred === true) && !(workModeType === 'Department Head' && isApproverDept === true )) {
     return null;
   }
 

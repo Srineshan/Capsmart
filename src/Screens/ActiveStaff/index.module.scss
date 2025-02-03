@@ -424,7 +424,7 @@ body::-webkit-scrollbar {
 }
 
 .bigCardStyle {
-  height: calc(100vh - 255px);
+  height: calc(100vh - 225px);
   overflow: scroll;
   background: #ffffff 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #c4c8d066;
@@ -817,7 +817,7 @@ body::-webkit-scrollbar {
 
 .poweredBy {
   text-align: left;
-  font: normal normal normal 11px/14px proxima-nova;
+  font: normal normal normal 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: $primarycolor;
   opacity: 1;
@@ -2628,7 +2628,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-  height: calc(100vh - 420px);
+  height: calc(100vh - 315px);
   overflow: scroll;
 }
 
@@ -2839,10 +2839,10 @@ input[type="number"] {
 }
 
 .footerIconStyle {
-  height: 20px;
+  height: 30px;
   width: 100px;
   object-fit: contain;
-  margin-top: 5px;
+  margin-right: 10px;
 }
 
 .multipleServiceProviderGrid {
