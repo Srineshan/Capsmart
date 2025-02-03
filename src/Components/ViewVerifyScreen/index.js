@@ -218,6 +218,7 @@ const NewActiveApplication = ({
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [fileArray, setFileArray] = useState([]);
   const [expandedIcon, setExpandedIcon] = useState(false);
+  const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -2498,6 +2499,7 @@ const NewActiveApplication = ({
     let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
     switch (data?.schemaCategory) {
       case "UploadYourDoc":
+        console.log("UploadYourDoc Table Data:", form?.forms?.[formIndex]?.data?.table);
         return (
           <>
             {form?.forms?.[formIndex]?.data?.table?.length !== 0 && (
@@ -2520,6 +2522,7 @@ const NewActiveApplication = ({
                 tableSortValues={[]}
                 heading={"There are no Record for you to manage"}
                 onClickFunction={() => { }}
+                isUploadYourDocTable={isUploadYourDoc}
               />
             )}
           </>
@@ -3386,6 +3389,8 @@ const NewActiveApplication = ({
                 tableSortValues={[]}
                 heading={"There are no Record for you to manage"}
                 onClickFunction={() => { }}
+                isUploadYourDocTable={isUploadYourDoc}
+                hasVerificationAttempted={hasVerificationAttempted}
               />
             )}
           </>
@@ -5520,7 +5525,7 @@ const NewActiveApplication = ({
                                                       )
                                                     )
                                                   )}
-                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                  {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
                                                     //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     //     <Tooltip title="Click To Revert Verification">
@@ -5567,7 +5572,7 @@ const NewActiveApplication = ({
                                                         </div>
                                                       )
                                                     )
-                                                  ): null}
+                                                  ): null} */}
                                              </div>
                                               );
                                             })()
@@ -11426,6 +11431,8 @@ const NewActiveApplication = ({
             selectedRowTableName={selectedRowTableName}
             selectedFormId={selectedFormId}
             setForm={setForm}
+            handleStepsVerify={handleStepsVerify}
+            setHasVerificationAttempted={setHasVerificationAttempted}
           />
         )}
         {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
