@@ -20,7 +20,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     const [isPrintClicked, setIsPrintClicked] = useState(false);
     const componentRef = useRef(null);
     const PDFRef = createRef();
-    const { applicationId } = useParams()
+    const { applicationId, section, step } = useParams()
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
     useEffect(() => {
@@ -153,7 +153,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     }
 
     const handleContinue = async () => {
-        await PUT(`application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}`, changedData)
+        let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}`;
+        let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
+        await PUT(url, changedData)
             .then(response => {
                 console.log(response)
                 getPreApplication()
