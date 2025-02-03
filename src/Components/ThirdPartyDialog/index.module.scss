@@ -105,6 +105,20 @@
   animation: fadeIn 0.5s ease-in-out;
 }
 
+.paymentFailedText {
+  text-align: left;
+  font: normal normal bold 15px/25px proxima-nova;
+  color: $statusred;
+  text-transform: capitalize;
+}
+
+.paymentSuccessText {
+  text-align: left;
+  font: normal normal bold 15px/25px proxima-nova;
+  color: $statusgreen;
+  text-transform: capitalize;
+}
+
 /* Animation */
 @keyframes fadeIn {
   from {
@@ -274,6 +288,36 @@
   letter-spacing: 0px;
   color: #454747;
   opacity: 0.6;
+}
+
+.fileLoadingStyle {
+  height: 200px;
+  width: 40%;
+  object-fit: contain;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 @media print {

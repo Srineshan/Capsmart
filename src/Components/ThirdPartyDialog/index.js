@@ -6,7 +6,7 @@ import html2pdf from "html2pdf.js";
 import style from "./index.module.scss";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { TextField } from "@mui/material";
-import { formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
+import { dataLoadingGIF, formatCreditCardNumber, formatCVC, formatExpirationDate } from "../../utils/formatting";
 import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
@@ -29,6 +29,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [showReceipt, setShowReceipt] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const targetRef = useRef();
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -54,6 +55,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
   }
 
   const submitPayment = async () => {
+    setIsLoading(true);
+    setPaymentStatus('');
     const API_URL = "https://api.na.bambora.com/v1/payments";
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
 
@@ -84,6 +87,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       setPaymentStatus(
         `Payment Failed!`
       );
+      setIsLoading(false);
     }
   };
 
@@ -124,6 +128,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       handleDownload(data)
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   }
 
@@ -161,6 +166,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
         `Payment Failed! Error: ${error.response?.data?.message || error.message
         }`
       );
+      setIsLoading(false);
     }
 
   };
@@ -190,6 +196,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
         uploadedFile = response?.data;
       } catch (error) {
         console.error(error);
+        setIsLoading(false);
         return null;
       }
 
@@ -243,9 +250,11 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       await PUT(`application-management-service/application/${applicationId}/payment`, temp)
         .then(response => {
           handleSendReceipt()
+          setIsLoading(false);
         })
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
     continueClick(true);
   }
@@ -289,6 +298,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       canEscapeKeyClose={false}
     >
       <div>
+        {isLoading && (
+          <div
+            className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+          >
+            <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
+          </div>
+        )}
         {!showReceipt ? (
 
           <div className={`${style.container} ${style.displayInCol}`}>
@@ -302,7 +318,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 focused={state.focus}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="tel"
                 name="number"
@@ -310,13 +326,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.number}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={` ${style.fullWidth}`}
                 inputProps={{
                   pattern: "[\\d| ]{16,22}",
                 }}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="text"
                 name="amount"
@@ -325,10 +341,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 // onChange={handleInputChange}
                 disabled={true}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={` ${style.fullWidth}`}
               />
             </div>
-            <div className={`${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="text"
                 name="name"
@@ -336,10 +352,10 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.name}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={`${style.marginTop} ${style.fullWidth}`}
+                className={`${style.fullWidth}`}
               />
             </div>
-            <div className={`${style.cvvGrid} ${style.marginTop} ${style.fullWidth}`}>
+            <div className={`${style.cvvGrid} ${style.marginTop10} ${style.fullWidth}`}>
               <TextField
                 type="tel"
                 name="expiry"
@@ -347,7 +363,6 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.expiry}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={style.marginTop}
                 inputProps={{
                   pattern: "\d\d/\d\d",
                 }}
@@ -359,14 +374,13 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                 value={state.cvc}
                 onChange={handleInputChange}
                 onFocus={handleInputFocus}
-                className={style.marginTop}
                 inputProps={{
                   pattern: "\d{3,4}",
                 }}
               />
             </div>
-            {paymentStatus && <p>{paymentStatus}</p>}
-            <div className={`${style.continue} ${style.marginLeft} ${style.marginTop}`} onClick={() => { submitPayment(); }} >PAY</div>
+            {paymentStatus && <p className={paymentStatus?.includes("Successful") ? style.paymentSuccessText : style.paymentFailedText}>{paymentStatus}</p>}
+            <div className={`${style.continue} ${style.marginLeft} ${style.marginTop10}`} onClick={() => { submitPayment(); }} >PAY</div>
           </div>
         ) : (
           <div className={`${style.receiptContainer}`} ref={targetRef}>

@@ -179,15 +179,15 @@
 
 .loginGrid {
     display: grid;
-    grid-template-columns: 40% 58%;
+    grid-template-columns: 49% 49%;
     gap: 2%
 }
 
 .descriptionContainer {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
+    // background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 16px;
-    width: 80%;
-    padding: 80px 60px;
+    width: 100%;
+    padding: 20px;
 }
 
 .helpText {

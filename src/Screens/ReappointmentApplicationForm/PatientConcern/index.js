@@ -122,7 +122,11 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                 missingKeys.push(data)
             }
         })
-
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsText`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {

@@ -4807,9 +4807,9 @@ input[type="number"] {
 
 .markedAsText {
   text-align: left;
-  font: italic normal medium $tabledatatext2 proxima-nova;
+  font: italic normal normal 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #1D2437;
+  color: $textsecondary;
 }
 
 .yesText {
@@ -4831,9 +4831,9 @@ input[type="number"] {
 
 .lableReadOnlyStyleInPOD {
   text-align: left;
-  font: normal normal normal $tabledatatext1 proxima-nova;
+  font: normal normal normal 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #2C2C2C;
+  color: $textsecondary;
   // text-transform: capitalize;
   opacity: 1;
   margin-top: 10px;
@@ -4894,6 +4894,13 @@ input[type="number"] {
 .fileDisplay {
   padding: 0 10px;
   background-color: $secondarycolor;
+}
+
+.fileDisplayCME {
+  background: $tableheadbg 0% 0% no-repeat padding-box;
+  border: 0.4000000059604645px solid $tableheadhover;
+  border-radius: 4px;
+  padding: 10px;
 }
 
 .fileDisplayText {
@@ -5410,4 +5417,25 @@ input[type="number"] {
   color: #06617A;
   text-transform: capitalize;
   opacity: 1;
+}
+
+.disabledButton {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.disabled {
+  cursor: not-allowed !important;
+  opacity: 0.5;
+}
+
+.lableStyle {
+  text-align: left;
+  font: normal normal 500 15px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #FF5555;
+  text-transform: capitalize;
+  opacity: 1;
+  margin-top: 5px;
+  max-width: 85%;
 }

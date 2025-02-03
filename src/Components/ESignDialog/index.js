@@ -23,7 +23,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     let eSignImg = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.file`);
     let eSignTypeContent = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.text`);
     let eSignTypeContentStyle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.type.style`);
-    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'calgary-script-ot');
+    const [selectedESignTypeStyle, setSelectedESignTypeStyle] = useState(eSignTypeContentStyle !== undefined ? eSignTypeContentStyle : 'fave-script-pro');
     const [eSignType, setESignType] = useState(eSignTypeContent !== undefined ? eSignTypeContent : '');
     const [eSignImgState, setESignImgState] = useState(eSignImg !== undefined ? eSignImg : '');
     const [signatureData, setSignatureData] = useState(null);

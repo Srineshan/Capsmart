@@ -72,6 +72,7 @@ const ReappointmentApplicationFormRequirement = () => {
     useEffect(() => {
         // getBasicForm();
         getPreApplication()
+        sessionStorage.setItem('fromSummary', false);
         console.log('entered')
     }, [])
 
@@ -190,10 +191,10 @@ const ReappointmentApplicationFormRequirement = () => {
                                             <div>
                                                 <div className={`${style.requiredDocumentCard} ${style.tableGrid} ${index % 2 === 0 ? style.requiredDocumentCardAlternativeColor : ''}  ${style.marginTop5}`}>
                                                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.name}</div>
+                                                        <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
                                                         {/* <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} /> */}
                                                     </div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.required ? 'Required' : 'Recommended'}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName === "Profile Picture" ? "Optional" : data?.required ? 'Required' : 'Recommended'}</div>
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                                 </div>
                                             </div>
@@ -248,18 +249,18 @@ const ReappointmentApplicationFormRequirement = () => {
                                 </div>
                             </div>
                             <div className={style.marginTop10}>
-                <div className={`${style.footerContainer}`}>
-    <img
-        src={HapiCare}
-        alt="footer"
-        className={style.footerIconStyle}
-    />
-    <p className={style.poweredBy}>
-        © {new Date().getFullYear()} HapiCare, Inc
-    </p>
-</div>
-                   
-                </div>
+                                <div className={`${style.footerContainer}`}>
+                                    <img
+                                        src={HapiCare}
+                                        alt="footer"
+                                        className={style.footerIconStyle}
+                                    />
+                                    <p className={style.poweredBy}>
+                                        © {new Date().getFullYear()} HapiCare, Inc
+                                    </p>
+                                </div>
+
+                            </div>
                         </div>
                         {isDoItLaterOpen && (
                             <DoItLaterDialog getIsOpen={getIsDoItLaterOpen} />

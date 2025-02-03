@@ -19,22 +19,31 @@ const ApplicationUserCard = ({ user, applyingFor }) => {
   }, []);
 
   useEffect(() => {
-    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === step))
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
   }, [basicForm, step])
+
+  useEffect(() => {
+    const profilePicData = basicForm?.forms?.[formIndex]?.data?.table?.find(doc => doc?.documentType === 'Profile Picture');
+    setProfilePic(
+      (profilePicData !== null && profilePicData !== undefined) ? profilePicData?.fileURL : ""
+    );
+  }, [basicForm, formIndex])
 
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
       `application-management-service/application/${applicationId}`
     );
     setBasicForm(basicForm);
-    let profilePicData =
-      basicForm?.applicant?.profilePicture !== null && basicForm !== undefined
-        ? basicForm?.applicant?.profilePicture
-        : null;
-    setProfilePic(
-      (profilePicData !== null && profilePicData !== undefined) ? profilePicData?.fileURL : ""
-    );
-    console.log(profilePicData, "pic");
+    setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
+    // let profilePicData =
+    //   basicForm?.forms?.[formIndex]?.data?.table !== null && basicForm !== undefined
+    //     ? basicForm?.applicant?.profilePicture
+    //     : null;
+    // const profilePicData = basicForm?.forms?.[formIndex]?.data?.table?.find(doc => doc?.documentType === 'profile picture');
+    // setProfilePic(
+    //   (profilePicData !== null && profilePicData !== undefined) ? profilePicData?.fileURL : ""
+    // );
+    // console.log(profilePicData, "pic");
   };
   return (
     <div className={`${style.applicationUserCard} ${style.profileGrid} ${style.rowSpaceBetween}`}>
