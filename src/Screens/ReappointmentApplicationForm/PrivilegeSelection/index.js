@@ -2621,7 +2621,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div className={style.privilegeHeading}>
                         {departmentChangeYesOrNo === "No" ? (
                           <div className={style.privilegeHeading}>
-                            Same as Before
+                            {basicForm?.basicDetails?.departmentSpecialty?.department}
                           </div>
                         ) : (
                           <div className={style.privilegeHeading}>

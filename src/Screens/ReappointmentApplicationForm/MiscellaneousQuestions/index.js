@@ -125,8 +125,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         console.log("appselect", selectApplicant)
         const options = filteredStaffs.map((staff) => ({
           id: `${staff.id}`,
-          value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
-          label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName}`,
+          value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+          label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
         }));
         setApplicantOptions(options);
         console.log(options)
@@ -305,7 +305,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     data?.map((data) => {
       temp.push({ id: data?.id, label: data?.label, value: data?.value });
     });
-    console.log("getItems", temp)
+    console.log("getItems", temp, data)
     return temp;
 
   };

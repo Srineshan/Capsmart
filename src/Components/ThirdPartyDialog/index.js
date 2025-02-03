@@ -10,6 +10,7 @@ import { dataLoadingGIF, formatCreditCardNumber, formatCVC, formatExpirationDate
 import { PUT, POST } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
+import { utcToZonedTime } from "date-fns-tz";
 import CAPManager from './../../images/capSmartTransparent.png';
 import CambridgeHospital from './../../images/cambridgeHospital.png';
 import PoweredHapiCare from './../../images/PoweredHapiCare.png';
@@ -116,7 +117,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
-      "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      // "paidDateTime": format(new Date(data?.created), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
       "cardNumber": data?.card?.last_four,
       "receiptId": data?.order_number,
@@ -237,7 +239,8 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       "currency": paymentListData?.currencyType,
       "quantity": 1,
       "product": "Reappointment Application Fee",
-      "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      // "paidDateTime": format(new Date(data?.created || new Date()), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"),
+      "paidDateTime": new Date().toISOString(),
       "paymentMethod": data?.payment_method,
       "cardNumber": data?.card?.last_four,
       "receiptId": data?.order_number,
@@ -456,7 +459,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
                       Payment Date:
                     </div>
                     <div className={style.detailsText}>
-                      {format(new Date(paymentInfo?.created || new Date()), "MMM dd, yyyy HH:mm")}
+                      {format(new Date(), "MMM dd, yyyy HH:mm a")}
                     </div>
                   </div>
                   <div className={style.marginTop10}>
