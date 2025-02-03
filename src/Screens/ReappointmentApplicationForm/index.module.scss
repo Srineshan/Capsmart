@@ -275,22 +275,28 @@
 
 .footerContainer {
     display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center; /* Centers vertically */
-    flex-direction: row; /* Ensures items are in a single row */
-    padding: 0 20px; /* Optional padding */
+    justify-content: center;
+    /* Centers horizontally */
+    align-items: center;
+    /* Centers vertically */
+    flex-direction: row;
+    /* Ensures items are in a single row */
+    padding: 0 20px;
+    /* Optional padding */
 }
 
 .footerIconStyle {
     height: 30px;
     width: 80px;
     object-fit: contain;
-    margin-right: 10px; /* Adds spacing between image and text */
+    margin-right: 10px;
+    /* Adds spacing between image and text */
 }
 
 .poweredBy {
     text-align: center;
     font: normal normal normal 14px/20px proxima-nova;
     color: $primarycolor;
-    margin: 0; /* Removes any default margins for alignment */
+    margin: 0;
+    /* Removes any default margins for alignment */
 }

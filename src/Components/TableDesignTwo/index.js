@@ -319,7 +319,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         </div>
                                     )
                                         : tableData?.type === "checkbox" ? (
-                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.responsive}`}>
+                                            <div key={data.id} className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.justifyCenter} ${style.responsive}`}>
                                                 <CommonCheckBox
                                                     checked={checkedIds?.includes(data?.id || data?.medicalDirective?.id)}
                                                     onChange={() => handleCheckboxClick(data?.id, data)}
@@ -632,11 +632,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                             : (
-                                                                <>
-                                                                <Tooltip title="Click to take action">
-                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                                <Tooltip title={'Click to take action'} arrow>
+                                                                    <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                                 </Tooltip>
-                                                                </>
                                                             )
                                                         : visibleActions?.length === 1 ? (
                                                             <span className={`${style.singleActionText}`}
@@ -648,11 +646,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 {visibleActions[0]?.data}
                                                             </span>
                                                         ) : (
-                                                            <>
-                                                            <Tooltip title="Click to take action">
-                                                            <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
+                                                            <Tooltip title={'Click to take action'} arrow>
+                                                                <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                             </Tooltip>
-                                                            </>
                                                         )
                                                     }
                                                     {showOptions && index === selectedMenuIndex && visibleActions?.length > 1 && (
@@ -665,12 +661,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 vertical: 'bottom',
                                                                 horizontal: 'left',
                                                             }}
-                                                            // transformOrigin={{
-                                                            //     vertical: 'top',
-                                                            //     horizontal: 'left',
-                                                            // }}
-                                                            // anchorReference="anchorPosition"
-                                                            // anchorPosition={{ top: (anchorEl?.getBoundingClientRect().bottom || 0) + 20, left: 1370 }}
+                                                        // anchorReference="anchorPosition"
+                                                        // anchorPosition={{ top: anchorEl?.getBoundingClientRect().bottom, left: 1120 }}
                                                         >
                                                             <div className={style.actionsCard} ref={menuRef}>
                                                                 {visibleActions?.map((actionsData, actionsIndex) => {
