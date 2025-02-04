@@ -31,6 +31,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     useEffect(() => {
@@ -38,7 +39,8 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -166,6 +168,10 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
@@ -187,7 +193,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                 </div>
@@ -218,7 +224,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                         </div>

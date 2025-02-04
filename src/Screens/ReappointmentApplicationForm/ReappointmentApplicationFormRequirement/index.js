@@ -243,7 +243,9 @@ const ReappointmentApplicationFormRequirement = () => {
                                         </div>
                                     </div>
                                     <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
-                                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
+                                        <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>Interactive Step-by-Step Training Guide</div>
+                                        {/* <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>PDF Step-by-Step Training Guide</div> */}
+                                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
                                     </div>
                                 </div>

@@ -227,7 +227,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             <CommonTextField
                                 value={changedData?.[data?.name]}
                                 className={style.fullWidth}
-                                onChange={(e) => setChangedData({ ...changedData, [data.name]: (data.name === "creditOrHours" || data.name === "credits") ? parseFloat(e.target.value) : e.target.value })}
+                                onChange={(e) => setChangedData({ ...changedData, [data.name]: (data.name === "creditOrHours" || data.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
                                 maxLength={50}
                                 placeholder={''}
                                 label={data.label}
