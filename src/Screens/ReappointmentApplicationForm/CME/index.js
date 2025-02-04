@@ -49,6 +49,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     const navigate = useNavigate()
     const [isChecked, setIsChecked] = useState(false);
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [isEdited, setIsEdited] = useState(false);
     const [isSigned, setIsSigned] = useState(false);
     const [formContent, setFormContent] = useState();
@@ -80,7 +81,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
             if (basicForm?.forms[formIndex]?.data !== null) {
                 setYesOrNoCME(basicForm?.forms[formIndex]?.data?.yesOrNoCME !== undefined ? basicForm?.forms[formIndex]?.data?.yesOrNoCME : (basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== 0 && basicForm?.forms?.[formIndex]?.data?.cmeCertificates?.length !== undefined) ? 'Yes' : 'No');
             }
@@ -387,6 +389,10 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
+
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
 
     // const getIsEdited = (value) => {
     //     setIsEdited(value)
@@ -773,7 +779,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
                     </div>
                 </div>
@@ -804,7 +810,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>
                         </div>
                     </div>

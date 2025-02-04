@@ -41,6 +41,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -51,6 +52,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
         setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+        setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -167,6 +169,10 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         }
     }
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const handleSubmitApplicationReq = async () => {
         setIsLoading(true)
         if (isSigned) {
@@ -198,11 +204,11 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         }
         else {
             setIsLoading(false)
-            // if (sessionStorage.getItem('fromSummary') === 'true') {
-            //     navigate(-1);
-            // } else {
-            //     navigate('/applicationForm/section1/acknowledgementStep2')
-            // }
+            if (sessionStorage.getItem('fromSummary') === 'true') {
+                navigate(-1);
+            } else {
+                navigate(navigateURL)
+            }
         }
     }
     return (
@@ -277,10 +283,11 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq()}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq() }} >CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div>
                         </div>
                     </div>
                     <div className={style.marginTop}>

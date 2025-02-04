@@ -84,6 +84,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -97,7 +98,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -453,7 +455,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
                     ), 'isShowHoverText': false
                 });
-            } 
+            }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
@@ -461,13 +463,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         const rowId = innerData?.rowId;
                         return (
                             <Tooltip title="Click to Edit" arrow>
-                            <ModeEditOutlinedIcon  alt="" className={style.docTypeEditImgStyle} onClick={() => {setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }}/>
+                                <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
                             </Tooltip>
                         );
                     }),
                     isShowHoverText: false
                 });
-            }           
+            }
         })
         console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.shortName))
         return temp;
@@ -566,6 +568,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             }
             setIsLoading(false);
         }
+    }
+
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
     }
 
     // if (isLoading) {
@@ -855,7 +861,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={style.threeColForButton}>
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
@@ -915,7 +921,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => navigate(-1)}
+                                onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>
