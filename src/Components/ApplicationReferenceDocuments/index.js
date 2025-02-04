@@ -66,29 +66,29 @@ const ApplicationReferenceDocuments = () => {
                 className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 key={index}
               >
-                <div className={style.fullWidth}> 
-                <Tooltip title="Click to Open" arrow>  
-                  <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(document)}>
-                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                      {docIcon && (                       
-                        <img
-                          src={docIcon}
-                          alt="Document Type Icon"
-                          className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
-                        />                        
-                      )}              
-                      <div
-                        className={style.documentNameStyle}
-                      >
-                        {document?.documentType}
-                      </div>                     
-                    </div>
-                    <div
+                <div className={style.fullWidth}>
+                  <Tooltip title="Click to Open" arrow>
+                    <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(document)}>
+                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                        {docIcon && (
+                          <img
+                            src={docIcon}
+                            alt="Document Type Icon"
+                            className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
+                          />
+                        )}
+                        <div
+                          className={style.documentNameStyle}
+                        >
+                          {document?.documentType}
+                        </div>
+                      </div>
+                      {/* <div
                       className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                     >
                       <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
+                    </div> */}
                     </div>
-                  </div>
                   </Tooltip>
                 </div>
               </div>
@@ -98,28 +98,28 @@ const ApplicationReferenceDocuments = () => {
             <div
               className={`${style.referenceDocumentCard} ${style.verticalAlignCenter} ${style.marginTop10}`}
             >
-              
+
               <div className={style.fullWidth}>
-              <Tooltip title="Click to Open" arrow>
-                <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`}  onClick={() => openDialog(basicForm?.payment?.invoice)}>            
-                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
-                    <img
-                      src={PDFDocs}
-                      alt="Document Type Icon"
-                      className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
-                    />
-                    <div
-                      className={style.documentNameStyle}
+                <Tooltip title="Click to Open" arrow>
+                  <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(basicForm?.payment?.invoice)}>
+                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
+                      <img
+                        src={PDFDocs}
+                        alt="Document Type Icon"
+                        className={`${style.docTypeImgStyle} ${style.cursorPointer}`}
+                      />
+                      <div
+                        className={style.documentNameStyle}
+                      >
+                        Payment Receipt
+                      </div>
+                    </div>
+                    {/* <div
+                      className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                     >
-                      Payment Receipt
-                    </div>       
-                  </div>               
-                  <div
-                    className={`${style.checkBackground} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                  >
-                    <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
+                      <CheckIcon sx={{ fontSize: 14, color: "#fff" }} />
+                    </div> */}
                   </div>
-                </div>
                 </Tooltip>
               </div>
             </div>

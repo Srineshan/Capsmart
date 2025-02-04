@@ -43,6 +43,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isContactInfoEdited, setIsContactInfoEdited] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [updateFrom, setUpdateFrom] = useState('');
     const [yesOrNoDemographic, setYesOrNoDemographic] = useState('YES');
@@ -56,7 +57,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
         if (basicForm !== undefined && formIndex !== undefined) {
             getMissingFieldsContact();
-            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
 
 
@@ -529,6 +531,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const handleContinue = () => {
         handleYesOrNo()
         if (sessionStorage.getItem('fromSummary') === "true") {
@@ -739,7 +745,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     <div className={style.threeColForButton}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
@@ -792,7 +798,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => navigate(-1)}
+                                onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>

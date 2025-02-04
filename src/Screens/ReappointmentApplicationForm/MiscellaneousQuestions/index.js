@@ -37,6 +37,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [formIndex, setFormIndex] = useState();
   const { applicationId, section, step } = useParams();
   const [navigateURL, setNavigateURL] = useState();
+  const [navigateBackURL, setNavigateBackURL] = useState();
   const [yesOrNoLMS, setYesOrNoLMS] = useState('');
   const [updatedDateLMS, setUpdatedDateLMS] = useState('');
   const [yesOrNoSuboxone, setYesOrNoSuboxone] = useState('');
@@ -102,7 +103,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       if (basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType !== undefined) {
         setCovererNameList(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.providerType === 'Group' ? basicForm?.coverageDetails?.groupDetails : basicForm?.coverageDetails?.providerDetails?.map(data => data?.id))
       }
-      setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+      setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+      setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
       console.log(basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName, obstetricsCovererName, covererName, 'coverername', basicForm?.forms?.[formIndex]?.data?.coverageDetails)
     }
   }, [basicForm, formIndex])
@@ -460,6 +462,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     console.log(path, keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm), basicForm, 'if')
     return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
   };
+
+  const handleBackClick = async () => {
+    navigate(navigateBackURL)
+  }
 
   const getIsEdited = (value) => {
     setIsEdited(value)
@@ -1060,7 +1066,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
           <div className={style.threeColForButton}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-            <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
             <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
               && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
               : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
@@ -1095,7 +1101,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
             <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={style.twoColForButton}>
-              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+              <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
               <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
