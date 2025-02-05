@@ -271,7 +271,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         {fields.map((field, index) => (
                                             <CommonTextField
                                                 key={index}
-                                                value={metaData[field.name] !== undefined ? metaData[field.name] : ""}
+                                                value={metaData !== null ? metaData[field.name] !== undefined ? metaData[field.name] : "" : ""}
                                                 className={style.fullWidth}
                                                 maxLength={50}
                                                 readOnly={true}

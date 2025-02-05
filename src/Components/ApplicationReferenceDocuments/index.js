@@ -7,7 +7,7 @@ import PDFDocs from './../../images/PDFDocs.png';
 import imgDocs from './../../images/imgDocs.png';
 import { Tooltip } from "@mui/material";
 
-const ApplicationReferenceDocuments = () => {
+const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
   const [basicForm, setBasicForm] = useState({});
   const applicationId = sessionStorage.getItem("applicationId");
   const [formIndex, setFormIndex] = useState();
@@ -16,14 +16,16 @@ const ApplicationReferenceDocuments = () => {
 
   // Fetch application data
   useEffect(() => {
-    const fetchApplicationData = async () => {
-      const { data: newBasicForm } = await GET(
-        `application-management-service/application/${applicationId}`
-      );
-      setBasicForm({ ...newBasicForm });
-    };
     fetchApplicationData();
   }, [applicationId]);
+
+  useEffect(() => {
+    if (refetchRefDoc) {
+      console.log('Delete Refetch')
+      fetchApplicationData();
+      getResetRefetch();
+    }
+  }, [refetchRefDoc]);
 
   // Find the index of the form with schemaCategory "UploadYourDoc"
   useEffect(() => {
@@ -35,6 +37,13 @@ const ApplicationReferenceDocuments = () => {
       );
     }
   }, [basicForm]);
+
+  const fetchApplicationData = async () => {
+    const { data: newBasicForm } = await GET(
+      `application-management-service/application/${applicationId}`
+    );
+    setBasicForm(newBasicForm);
+  };
 
   const openDialog = (file) => {
     setSelectedFile(file);
