@@ -47,6 +47,7 @@ import Close from './../../../images/close.png';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { Tooltip } from '@mui/material';
 import FileWithFields from '../../../Components/FileWithFields';
+import DeleteConfirmation from '../../../Components/DeleteConfirmation';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -93,6 +94,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     const [showInfo, setShowInfo] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteData, setDeleteData] = useState();
+    const [refetchRefDoc, setRefetchRefDoc] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
@@ -166,6 +170,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
+    }
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            handleDelete()
+        }
+    }
+
+    const getResetRefetch = () => {
+        setRefetchRefDoc(false);
     }
 
     const getIsOpenESignConfirmation = (value) => {
@@ -257,8 +275,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
+                setRefetchRefDoc(true);
                 console.log(response)
                 setBasicForm(response?.data)
+                getPreApplication();
                 SuccessToaster("Application Updated Successfully");
             })
             .catch((error) => {
@@ -452,7 +472,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
                     ), 'isShowHoverText': false
                 });
             }
@@ -496,19 +516,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         handleSubmitApplicationReq(temp)
     };
 
-    const handleDelete = async (data) => {
+    const handleDelete = async () => {
         let temp = tempValue?.table;
-        temp = temp.filter(obj => !isEqual(obj, data))
-        console.log(temp, data)
-        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[data?.rowId]}`, [data])
+        temp = temp.filter(obj => !isEqual(obj, deleteData))
+        console.log(temp, deleteData)
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[deleteData?.rowId]}`, [deleteData])
             .then((response) => {
                 SuccessToaster("File Deleted Successfully");
+                handleSubmitApplicationReq(temp)
+                getPreApplication();
+                setRefetchRefDoc(true);
             })
             .catch((error) => {
                 ErrorToaster("Unexpected Error Deleting File");
             });
-        handleSubmitApplicationReq(temp)
-        getPreApplication();
     }
 
     const isEqual = (obj1, obj2) => {
@@ -892,7 +913,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 />
                             </div>
                             <div className={style.marginTop}>
-                                <ApplicationReferenceDocuments />
+                                <ApplicationReferenceDocuments refetchRefDoc={refetchRefDoc} getResetRefetch={getResetRefetch} />
                             </div>
                         </div>
 
@@ -1093,6 +1114,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             {
                 isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+            {
+                showDeleteConfirmation && (
+                    <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
+                        getDeleteConfirmation={getDeleteConfirmation}
+                        confirmationText="Do you want to delete this document?" />
                 )
             }
         </div>

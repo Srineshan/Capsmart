@@ -427,22 +427,18 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}><strong>How Would You Like To Get Started?</strong></div>
           <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>Select Your Preferred Guide for a Seamless Reappointment Application</div>
           <div className={style.userGuideGrid}>
-            <div className={style.verticalAlignCenter}>
-              <a href="https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen" target="_blank" className={style.cursorPointer}>
-                <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
-                  alt="Interactive Guide" className={style.iconStyleUserGuide} />
-              </a>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
+                alt="Interactive Guide" className={style.iconStyleUserGuide} />
             </div>
-            <div>
-              <a href="https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen" target="_blank" className={`${style.cursorPointer} ${style.textDecorationNone}`}>
-                <p className={`${style.descriptionStyle} ${style.marginTop}`}>
-                  <strong>Go through this Interactive Step-by-Step Training Guide</strong>
-                </p>
-                <p className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  This guide highlights all of the steps, allowing you to interact with the screens,
-                  that you need to complete in order to successfully submit your Reappointment Application.
-                </p>
-              </a>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Go through this Interactive Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps, allowing you to interact with the screens,
+                that you need to complete in order to successfully submit your Reappointment Application.
+              </p>
             </div>
           </div>
           <div className={style.spaceBetween}>
