@@ -185,6 +185,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       `entity-service/applicantType`
     );
     setApplicantType(applicant);
+    if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
+      setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
+    } else {
+      setSelectedApplicantType(applicant?.[0]?.id);
+    }
   }
 
   const getSelectedPage = (value) => {
@@ -302,6 +307,29 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
+                  Staff Type
+                </div>
+              </div>
+              <div className={style.marginTop10}>
+
+
+                <CommonSelectField
+                  value={selectedApplicantType}
+                  onChange={(e) => setSelectedApplicantType(e.target.value)}
+                  className={style.fullWidth}
+                  firstOptionLabel={'All'}
+                  firstOptionValue={''}
+                  valueList={applicantType?.map(data => data?.id)}
+                  labelList={applicantType?.map(data => data?.applicantType)}
+                  disabledList={applicantType?.map(data => false)}
+                  required={false}
+                />
+
+              </div>
+            </div>
+            <div>
+              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
+                <div className={`${style.filterType}`}>
                   Privilege Category
                 </div>
 
@@ -318,29 +346,6 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                   valueList={privilegeCategories?.map(data => data?.id)}
                   labelList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? `${data?.category} (Current Privilege Category)` : data?.category)}
                   disabledList={privilegeCategories?.map(data => data?.category === basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory ? true : false)}
-                  required={false}
-                />
-
-              </div>
-            </div>
-            <div>
-              <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                <div className={`${style.filterType}`}>
-                  Staff Type
-                </div>
-              </div>
-              <div className={style.marginTop10}>
-
-
-                <CommonSelectField
-                  value={selectedApplicantType}
-                  onChange={(e) => setSelectedApplicantType(e.target.value)}
-                  className={style.fullWidth}
-                  firstOptionLabel={'All'}
-                  firstOptionValue={''}
-                  valueList={applicantType?.map(data => data?.id)}
-                  labelList={applicantType?.map(data => data?.applicantType)}
-                  disabledList={applicantType?.map(data => false)}
                   required={false}
                 />
 

@@ -58,6 +58,23 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
   const submitPayment = async () => {
     setIsLoading(true);
     setPaymentStatus('');
+    if (state.number.trim() === "") {
+      setIsLoading(false);
+      setPaymentStatus('Please Enter the Card Number');
+      return;
+    } else if (state.name.trim() === "") {
+      setIsLoading(false);
+      setPaymentStatus('Please Enter the Name on Card');
+      return;
+    } else if (state.expiry.trim() === "") {
+      setIsLoading(false);
+      setPaymentStatus('Please Enter the Valid Thru');
+      return;
+    } else if (state.cvc.trim() === "") {
+      setIsLoading(false);
+      setPaymentStatus('Please Enter the CVC');
+      return;
+    }
     const API_URL = "https://api.na.bambora.com/v1/payments";
     const API_KEY = base64ApiKey; // Replace with your Base64-encoded API key
 
@@ -86,7 +103,7 @@ const ThirdPartyDialog = ({ getIsOpen, continueClick, paymentListData, applicant
       );
     } catch (error) {
       setPaymentStatus(
-        `Payment Failed!`
+        `Payment Failed! Please Check the Card Details and try again.`
       );
       setIsLoading(false);
     }

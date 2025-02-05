@@ -585,3 +585,7 @@
     opacity: 0.5 !important;
     cursor: not-allowed !important;
 }
+
+.hoverText:hover {
+    color: $primarycolor !important;
+}

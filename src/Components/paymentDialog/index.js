@@ -74,7 +74,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                                 />
                             </div>
                         </div>
-                        <p className={`${style.description} ${style.marginTop}`}>{`For the Privilege category you have selected for your reappointment there is an application processing fee of ${paymentListData?.currencyType}${paymentListData?.fee}.`}</p>
+                        <p className={`${style.description} ${style.marginTop}`}>{`For your reappointment application there is a processing fee of ${paymentListData?.currencyType}${paymentListData?.fee} that is applicable.`}</p>
                         <p className={`${style.description} ${style.marginTop}`}>Payment is required before you can complete the rest of your application.</p>
                         <div className={style.paymentGrid}>
                             <div className={`${style.description} ${style.marginTop}`}>Your Purchase</div>
