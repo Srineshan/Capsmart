@@ -287,6 +287,10 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalDashboard = React.lazy(() =>
+  import("./Screens/ApplicantDashboard")
+);
+
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
@@ -714,7 +718,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -754,7 +758,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1283,6 +1287,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/ApplicantDashboard"
+                  element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
 

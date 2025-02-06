@@ -1390,7 +1390,8 @@ const StaffApplicationList = ({
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
-        type: "countWithHover",
+        // type: "countWithHover",
+        type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -1571,7 +1572,7 @@ const StaffApplicationList = ({
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
-        type: "countWithHover",
+        type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -1918,7 +1919,7 @@ const StaffApplicationList = ({
       // { type: "dot", value: ceoStatus },
 
       {
-        type: "countWithHover",
+        type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -2174,7 +2175,7 @@ const StaffApplicationList = ({
         icon: docsIcon,
       },
       {
-        type: "countWithHover",
+        type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -2427,7 +2428,7 @@ const StaffApplicationList = ({
         icon: docsIcon,
       },
       {
-        type: "countWithHover",
+        type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
