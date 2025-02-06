@@ -47,6 +47,7 @@ import Close from './../../../images/close.png';
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import { Tooltip } from '@mui/material';
 import FileWithFields from '../../../Components/FileWithFields';
+import DeleteConfirmation from '../../../Components/DeleteConfirmation';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -84,6 +85,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
@@ -92,12 +94,16 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
     const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
     const [showInfo, setShowInfo] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteData, setDeleteData] = useState();
+    const [refetchRefDoc, setRefetchRefDoc] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -164,6 +170,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
+    }
+
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            handleDelete()
+        }
+    }
+
+    const getResetRefetch = () => {
+        setRefetchRefDoc(false);
     }
 
     const getIsOpenESignConfirmation = (value) => {
@@ -255,8 +275,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
+                setRefetchRefDoc(true);
                 console.log(response)
                 setBasicForm(response?.data)
+                getPreApplication();
                 SuccessToaster("Application Updated Successfully");
             })
             .catch((error) => {
@@ -450,10 +472,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
                     ), 'isShowHoverText': false
                 });
-            } 
+            }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
@@ -461,13 +483,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         const rowId = innerData?.rowId;
                         return (
                             <Tooltip title="Click to Edit" arrow>
-                            <ModeEditOutlinedIcon  alt="" className={style.docTypeEditImgStyle} onClick={() => {setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }}/>
+                                <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
                             </Tooltip>
                         );
                     }),
                     isShowHoverText: false
                 });
-            }           
+            }
         })
         console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.shortName))
         return temp;
@@ -494,19 +516,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         handleSubmitApplicationReq(temp)
     };
 
-    const handleDelete = async (data) => {
+    const handleDelete = async () => {
         let temp = tempValue?.table;
-        temp = temp.filter(obj => !isEqual(obj, data))
-        console.log(temp, data)
-        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[data?.rowId]}`, [data])
+        temp = temp.filter(obj => !isEqual(obj, deleteData))
+        console.log(temp, deleteData)
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[deleteData?.rowId]}`, [deleteData])
             .then((response) => {
                 SuccessToaster("File Deleted Successfully");
+                handleSubmitApplicationReq(temp)
+                getPreApplication();
+                setRefetchRefDoc(true);
             })
             .catch((error) => {
                 ErrorToaster("Unexpected Error Deleting File");
             });
-        handleSubmitApplicationReq(temp)
-        getPreApplication();
     }
 
     const isEqual = (obj1, obj2) => {
@@ -566,6 +589,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             }
             setIsLoading(false);
         }
+    }
+
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
     }
 
     // if (isLoading) {
@@ -855,7 +882,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={style.threeColForButton}>
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
@@ -886,7 +913,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 />
                             </div>
                             <div className={style.marginTop}>
-                                <ApplicationReferenceDocuments />
+                                <ApplicationReferenceDocuments refetchRefDoc={refetchRefDoc} getResetRefetch={getResetRefetch} />
                             </div>
                         </div>
 
@@ -915,7 +942,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => navigate(-1)}
+                                onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>
@@ -1087,6 +1114,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             {
                 isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+            {
+                showDeleteConfirmation && (
+                    <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
+                        getDeleteConfirmation={getDeleteConfirmation}
+                        confirmationText="Do you want to delete this document?" />
                 )
             }
         </div>

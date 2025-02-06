@@ -533,12 +533,12 @@ const StaffApplicationList = ({
     setCheckedIds([]);
   }, [sortField, sortValue]);
 
-//Debug for allformapproved
+  //Debug for allformapproved
   useEffect(() => {
     console.log("Debug: tableData", JSON.stringify(tableData));
-  
+
     const newApprovedStatus = [];
-  
+
     tableData?.forEach((item, index) => {
       console.log(`Debug: Processing item at index ${index}`, item);
       const staffManagerWorkflow = item?.completedWorkflows?.find(
@@ -552,8 +552,8 @@ const StaffApplicationList = ({
         console.log(`Debug: staffManagerWorkflow.allFormsApproved is false or undefined for item at index ${index}`);
         newApprovedStatus[index] = false;
       }
-    });  
-    setIsApproved(newApprovedStatus); 
+    });
+    setIsApproved(newApprovedStatus);
   }, [tableData]);
 
   useEffect(() => {
@@ -1331,7 +1331,7 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesHoverTextArray = validNotes?.length > 0
-        ? validNotes.map((note,index) => {
+        ? validNotes.map((note, index) => {
           const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
@@ -1518,21 +1518,21 @@ const StaffApplicationList = ({
       //   }).reverse()
       //   : ["-"];
       const notesHoverTextArray = validNotes?.length > 0
-      ? validNotes.map((note,index) => {
-        const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
-        const firstName = note?.user?.name?.firstName || '';
-        const title = note?.title;
-        const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-        const noteContent = `(${firstName}) ${title} ${createdDate}`;
-        return (
-          <div key={index}>
-            {noteContent}
-            <div>{text}</div>
-            {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
-          </div>
-        );
-      }).reverse()
-      : ["-"];
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {noteContent}
+              <div>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // if (data?.tasks?.completedCount === 0) {
       //   taskListDotColor.push(<CircleIcon style={{ fontSize: 14, color: `#94979A` }} />);
@@ -1827,21 +1827,21 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesHoverTextArray = validNotes?.length > 0
-      ? validNotes.map((note,index) => {
-        const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
-        const firstName = note?.user?.name?.firstName || '';
-        const title = note?.title;
-        const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-        const noteContent = `(${firstName}) ${title} ${createdDate}`;
-        return (
-          <div key={index}>
-            {noteContent}
-            <div>{text}</div>
-            {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
-          </div>
-        );
-      }).reverse()
-      : ["-"];
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {noteContent}
+              <div>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
@@ -2099,21 +2099,21 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesHoverTextArray = validNotes?.length > 0
-      ? validNotes.map((note,index) => {
-        const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
-        const firstName = note?.user?.name?.firstName || '';
-        const title = note?.title;
-        const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-        const noteContent = `(${firstName}) ${title} ${createdDate}`;
-        return (
-          <div key={index}>
-            {noteContent}
-            <div>{text}</div>
-            {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
-          </div>
-        );
-      }).reverse()
-      : ["-"];
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {noteContent}
+              <div>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -2341,21 +2341,21 @@ const StaffApplicationList = ({
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
       );
       const notesHoverTextArray = validNotes?.length > 0
-      ? validNotes.map((note,index) => {
-        const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
-        const firstName = note?.user?.name?.firstName || '';
-        const title = note?.title;
-        const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-        const noteContent = `(${firstName}) ${title} ${createdDate}`;
-        return (
-          <div key={index}>
-            {noteContent}
-            <div>{text}</div>
-            {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
-          </div>
-        );
-      }).reverse()
-      : ["-"];
+        ? validNotes.map((note, index) => {
+          const text = note?.notes?.notes ? note?.notes?.notes.replace(/<[^>]*>/g, '') : '-';
+          const firstName = note?.user?.name?.firstName || '';
+          const title = note?.title;
+          const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
+          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          return (
+            <div key={index}>
+              {noteContent}
+              <div>{text}</div>
+              {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+            </div>
+          );
+        }).reverse()
+        : ["-"];
       notesHoverText.push(notesHoverTextArray);
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
@@ -2690,7 +2690,7 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
-  ] :  [
+  ] : [
     {
       data: "View & Verify",
       requiredValue: "boolean",
@@ -2733,7 +2733,7 @@ const StaffApplicationList = ({
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager",hideForRoles2: "Chief Of Staff" },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff" },
     // {
     //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
     //   requiredValue: "boolean",
@@ -2834,7 +2834,7 @@ const StaffApplicationList = ({
     //   onClick: onClickMoveToNextFunction,
     // },
     { data: (workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Chief Of Staff") ? "View" : "Review to Recommend", requiredValue: "boolean", onClick: onClickViewAndVerifyLevelFunction },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Department Head", hideForRoles3: "Chief Of Staff" },
     // { data: "Go to Task List", requiredValue: "boolean", onClick: "",hideForRoles: "Staff Manager", hideForRoles2: "Department Head"},
     // { data: "Move to MAC", requiredValue: "boolean", onClick: "" },
     // {
@@ -3159,7 +3159,7 @@ const StaffApplicationList = ({
                   </div>
                 ) : null}
 
-                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                {/* {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                   <div
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
@@ -3174,7 +3174,7 @@ const StaffApplicationList = ({
                       </div>
                     )}
                   </div>
-                ) : null}
+                ) : null} */}
                 {/* <div className={`${style.searchContainer}`}>
                   <SearchOutlinedIcon className={`${style.searchIcon}`} 
                     sx={{
@@ -3302,7 +3302,7 @@ const StaffApplicationList = ({
                                       {/* {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
                                       {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                         status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"} */}
-                                        
+
                                       {status?.basicDetail?.applicant?.name?.firstName}{" "} {status?.basicDetail?.applicant?.name?.lastName.toLowerCase()}
                                     </div>
                                   </div>

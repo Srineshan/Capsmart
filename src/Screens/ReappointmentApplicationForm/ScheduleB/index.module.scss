@@ -36,12 +36,12 @@
         bottom: 0;
         left: auto;
         right: auto;
-        width: auto; 
-        padding: 0px 20px 20px 20px; 
-        margin: 0 auto; 
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
         box-sizing: border-box;
     }
- }
+}
 
 .hiddenStickyContainer {
     opacity: 0;
@@ -138,7 +138,7 @@
     gap: 20px;
 
     @media (max-width: 900px) {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
     }
 }
 
@@ -252,6 +252,11 @@
 
 .disabled {
     cursor: not-allowed;
+}
+
+.disabledButton {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }
 
 .cardTitle {

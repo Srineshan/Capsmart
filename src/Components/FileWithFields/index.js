@@ -13,6 +13,7 @@ import CommonDateField from '../CommonFields/CommonDateField';
 import { TextField } from '@mui/material';
 import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
+import { format } from 'date-fns';
 
 const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -53,9 +54,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                 return (
                     <div key={index}>
                         <CommonTextField
-                            value={metadata[field?.name]}
+                            value={changedData?.[field?.name]}
                             className={style.fullWidth}
-                            onChange={(e) => { }}
+                            onChange={(e) => setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
@@ -73,9 +74,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             {field.label}
                         </div>
                         <TextArea
-                            value={metadata[field?.name]}
+                            value={changedData?.[field?.name]}
                             className={`${style.fullWidth} ${style.marginTop10}`}
-                            onChange={(e) => { }}
+                            onChange={(e) => setChangedData({ ...changedData, [field.name]: e.target.value })}
                             maxLength={50}
                             placeholder={''}
                             rows={4}
@@ -85,9 +86,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
             case "cellNumber":
                 return (
                     <CommonPhoneField
-                        value={metadata[field?.name]}
+                        value={changedData?.[field?.name]}
                         className={style.fullWidth}
-                        onChange={(e) => { }}
+                        onChange={(e) => setChangedData({ ...changedData, [field.name]: e.target.value })}
                         placeholder={''}
                         label={field.label}
                         required={false}
@@ -101,8 +102,10 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         open={calendarStart}
                         onOpen={() => setCalendarStart(true)}
                         onClose={() => setCalendarStart(false)}
-                        value={metadata[field?.name]}
-                        onChange={(newValue) => { }}
+                        value={changedData?.[field?.name]}
+                        onChange={(newValue) => {
+                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") })
+                        }}
                         InputProps={{
                             style: {
                                 fontSize: 14,
@@ -118,7 +121,6 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 }}
                                 color={""}
                                 fullWidth
-                                focused={true}
                             />
                         )}
                         label={field.label}
@@ -126,12 +128,13 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     />
                 );
             default:
+                console.log('field', field)
                 return (
                     <div key={index}>
                         <CommonTextField
-                            value={metadata[field?.name]}
+                            value={changedData?.[field?.name]}
                             className={style.fullWidth}
-                            onChange={(e) => { }}
+                            onChange={(e) => setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
@@ -220,14 +223,15 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
                         ) : <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>}
                     </div>
-                    {/* {fields?.map((field, index) => { renderFields(field, index) }
-                    )} */}
                     <div className={`${style.twoCol} ${style.marginTop}`}>
+                        {fields?.map((field, index) => renderFields(field, index))}
+                    </div>
+                    {/* <div className={`${style.twoCol} ${style.marginTop}`}>
                         {fields?.map(data => (
                             <CommonTextField
                                 value={changedData?.[data?.name]}
                                 className={style.fullWidth}
-                                onChange={(e) => setChangedData({ ...changedData, [data.name]: (data.name === "creditOrHours" || data.name === "credits") ? parseFloat(e.target.value) : e.target.value })}
+                                onChange={(e) => setChangedData({ ...changedData, [data.name]: (data.name === "creditOrHours" || data.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
                                 maxLength={50}
                                 placeholder={''}
                                 label={data.label}
@@ -237,7 +241,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
 
                             />
                         ))}
-                    </div>
+                    </div> */}
                     <div className={`${style.justifyRight} ${style.displayInRow} ${style.marginTop}`}>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleContinue(); }}>CONTINUE</div>
                     </div>
