@@ -346,18 +346,18 @@ const App = ({ props }) => {
     }
   }, [userFromCookie])
 
-  useEffect(() => {
-    if (sessionToken !== undefined) {
-      cookie.set('authorization', sessionToken, {
-        path: '/'
-      });
-    }
-  }, [sessionToken])
+  // useEffect(() => {
+  //   if (sessionToken !== undefined) {
+  //     cookie.set('authorization', sessionToken, {
+  //       path: '/'
+  //     });
+  //   }
+  // }, [sessionToken])
 
   useEffect(() => {
-    if (sessionToken && cookie.get("authorization") !== undefined) {
-      let token = sessionToken
-      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
+    if (cookie.get("authorization") !== undefined) {
+      let token = cookie.get("authorization")
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(cookie.get("authorization")), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(cookie.get("authorization").split('.')[1])))
       if (typeof token !== 'string') {
         // If the token is not a string, make sure to convert it into a string
         token = JSON.stringify(token);
@@ -369,7 +369,7 @@ const App = ({ props }) => {
         logout()
       }
       const decodedToken = jwt(cookie.get("authorization"));
-      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, sessionToken)
+      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, cookie.get("authorization"))
       if (Date.now() > decodedToken.exp * 1000) {
         console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
         cookie.remove("authorization", { path: "/" });
@@ -692,10 +692,10 @@ const App = ({ props }) => {
     console.log('entered')
     const currentTime = Date.now() / 1000; // Current time in seconds
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', cookie.get("authorization"))
 
     // Schedule the refresh 1 minute before expiration
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
+    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', cookie.get("authorization"))
     setTimeout(() => {
       refreshToken();
     }, (timeToExpiry - 60) * 1000);
@@ -776,8 +776,8 @@ const App = ({ props }) => {
         });
       });
     console.log('entered')
-    if (sessionToken) {
-      scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+    if (cookie.get("authorization")) {
+      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
     }
     return true;
   };

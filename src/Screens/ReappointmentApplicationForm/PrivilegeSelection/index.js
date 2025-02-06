@@ -183,6 +183,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     },
   });
   const prevDepartment = applicationData?.basicDetailReferences?.department?.id;
+  const prevSpeciality = applicationData?.basicDetailReferences?.specialty?.id;
   useEffect(() => {
     getApplication();
     getDepartmentList();
@@ -199,7 +200,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     if (basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory === ('Courtesy Staff With Admitting Privileges' || 'Courtesy Staff Without Admitting Privileges') && privilegeChangeYesOrNo !== '' && privilegeAtOtherHospitalYesOrNo === 'Yes' && departmentChangeYesOrNo !== '') {
       setIsContinueEnabled(true);
     }
-    // handleSubmitAcknowledgement();
   }, [privilegeChangeYesOrNo, privilegeSetChangeYesOrNo, additionalPrivilegeChangeYesOrNo, privilegeAtOtherHospitalYesOrNo, departmentChangeYesOrNo])
 
   useEffect(() => {
@@ -209,11 +209,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     }
   }, [isSubmit])
 
-  useEffect(() => {
-    if (departmentChangeYesOrNo !== '') {
-      handleSubmitAcknowledgement();
-    }
-  }, [departmentChangeYesOrNo])
+  // useEffect(() => {
+  //   if (departmentChangeYesOrNo !== '') {
+  //     handleSubmitAcknowledgement();
+  //   }
+  // }, [departmentChangeYesOrNo])
 
   useEffect(() => {
     getFields();
@@ -591,9 +591,156 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       .catch((error) => {
         console.log(error);
       });
-    // handleSubmitAcknowledgement();
     fetchPaymentListData()
   };
+
+  const handleSubmitPrivilegeCategory = async (isUpdated) => {
+    let data = basicForm;
+    if (isUpdated) {
+      if ((data?.basicDetails?.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) && !basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated) {
+        data.basicDetails.priorPrivilegeCategory = data?.basicDetailReferences?.credentialingAndPrivilegingCategory;
+      }
+      if (selectedPrivilegeCategory !== "") {
+        data.basicDetails.credentialingPrivilegeCategory.credentialingCategory =
+          privilegeCategories?.filter(
+            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
+          )?.[0]?.privilegeCategory?.category;
+      }
+      await PUT(
+        `application-management-service/application/${applicationId}`,
+        data
+      )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      if (!basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated) {
+        data.basicDetails.priorPrivilegeCategory = data?.basicDetailReferences?.credentialingAndPrivilegingCategory;
+      } else {
+        if (data?.basicDetails?.priorPrivilegeCategory?.name !== null && data?.basicDetails?.priorPrivilegeCategory?.name !== undefined) {
+          data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = data?.basicDetails?.priorPrivilegeCategory?.name;
+        }
+      }
+      await PUT(
+        `application-management-service/application/${applicationId}`,
+        data
+      )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: {
+        privilegeChangeYesOrNo: isUpdated ? privilegeChangeYesOrNo : 'Yes',
+        departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
+        additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
+        privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
+        privilegeChangeUpdated: true,
+        departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
+        privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
+        additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
+        privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
+      },
+      unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+      acknowledged: true,
+    };
+    await PUT(
+      `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
+      temp
+    )
+      .then((response) => {
+        console.log(response);
+        setBasicForm(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  const handleSubmitDepartment = async (isUpdated) => {
+    let data = basicForm;
+    if (isUpdated) {
+      if (data?.basicDetails?.priorDepartmentSpecialty === null && !basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated) {
+        data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+      }
+      data.basicDetails.departmentSpecialty.department = departmentList?.filter(
+        (data) => data?.id === selectedDepartment
+      )?.[0]?.departmentName?.name;
+      data.basicDetails.departmentSpecialty.specialty = departmentList?.filter(
+        (data) => data?.id === selectedDepartment
+      )?.[0]?.serviceAreas?.filter(data => data?.id === selectedSpeciality)?.[0]?.name;
+      if (!data?.basicDetails?.regionalCallResponsibilities) {
+        data.basicDetails.regionalCallResponsibilities = {};
+      }
+      data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || 'NA';
+      console.log(data);
+      await PUT(
+        `application-management-service/application/${applicationId}`,
+        data
+      )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      if (!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated) {
+        data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty;
+      } else {
+        if (data?.basicDetails?.priorDepartmentSpecialty !== null && data?.basicDetails?.priorDepartmentSpecialty?.department !== undefined) {
+          data.basicDetails.departmentSpecialty = data?.basicDetails?.priorDepartmentSpecialty;
+        }
+      }
+      await PUT(
+        `application-management-service/application/${applicationId}`,
+        data
+      )
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: {
+        privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo : '',
+        departmentChangeYesOrNo: isUpdated ? 'No' : 'Yes',
+        privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
+        additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
+        privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
+        privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
+        departmentChangeUpdated: true,
+        privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
+        additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
+        privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
+      },
+      unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+      acknowledged: true,
+    };
+    await PUT(
+      `application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`,
+      temp
+    )
+      .then((response) => {
+        console.log(response);
+        setBasicForm(response?.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    fetchPaymentListData()
+  }
 
   const handleSubmit = async () => {
     let mergedArray = [
@@ -789,7 +936,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         departmentChangeYesOrNo: departmentChangeYesOrNo,
         privilegeSetChangeYesOrNo: privilegeSetChangeYesOrNo,
         additionalPrivilegeChangeYesOrNo: additionalPrivilegeChangeYesOrNo,
-        privilegeAtOtherHospitalYesOrNo: privilegeAtOtherHospitalYesOrNo
+        privilegeAtOtherHospitalYesOrNo: privilegeAtOtherHospitalYesOrNo,
+        privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
+        departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
+        privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
+        additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
+        privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
       },
       unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
@@ -2574,7 +2726,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           ?.credentialingCategory}
                     </div>
                   </div>
-                  {privilegeChangeYesOrNo !== '' && (
+                  {basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated && (
                     <div
                       className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}
                     >
@@ -2839,7 +2991,6 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             <div className={`${style.cardTitle} ${style.marginTop10}`}>
               Do you want to keep your current Privilege Category?
             </div>
-            {/* {!isPrivilegeCategoryChanging && ( */}
             <>
               {privilegeChangeYesOrNo === '' ? (
                 <div
@@ -2847,7 +2998,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 >
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
-                    onClick={() => { setIsEdit(false); setPrivilegeChangeYesOrNo('Yes'); setIsPrivilegeCategoryChanging(false) }}
+                    onClick={() => { setPrivilegeChangeYesOrNo('Yes'); handleSubmitPrivilegeCategory() }}
                   >
                     YES
                   </div>
@@ -2874,7 +3025,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         <div
                           className={`${style.reappointmentButtonEdit}`}
-                          onClick={() => { setIsEdit(true); setPrivilegeChangeYesOrNo('') }}
+                          onClick={() => { setPrivilegeChangeYesOrNo('') }}
                         >
                           VIEW TO MODIFY
                         </div>
@@ -2925,273 +3076,26 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   )}
                   {selectedPrivilegeCategory !== "" && (
                     <>
-                      {/* <div className={style.marginTop}>
-                        <CommonSelectField
-                          value={selectedDepartment}
-                          onChange={(e) => setSelectedDepartment(e.target.value)}
-                          className={style.fullWidth}
-                          valueList={departmentList?.map((data) => data?.id)}
-                          labelList={departmentList?.map(
-                            (data) => data?.departmentName?.name
-                          )}
-                          disabledList={departmentList?.map((data) => false)}
-                          label={"Department / Division or Specialty"}
-                          required={false}
-                        />
-                      </div> */}
                       {privilegeCategories?.filter(
                         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                      )[0]?.privilegeCategory?.category !== "Courtesy Staff With Admitting Privileges" ? (
-                        <>
-                          {/* {staffPrivilege?.map((data, index) => (
-                            <>
-                              <div
-                                className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
-                                onClick={() => {
-                                  setShowPrivileges(true);
-                                  handleChange(data?.id);
-                                }}
-                              >
-                                {selectedPrivilegesForDisplayMultiple
-                                  ?.map((data) => data?.id)
-                                  ?.includes(data?.id) ? (
-                                  <div
-                                    className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                                  >
-                                    <CheckCircleOutlineIcon
-                                      sx={{ fontSize: 15, color: "#FFFFFF" }}
-                                    />
-                                  </div>
-                                ) : (
-                                  <div
-                                    className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                                  >
-                                    <WarningAmberIcon
-                                      sx={{ fontSize: 15, color: "#FFFFFF" }}
-                                    />
-                                  </div>
-                                )}
-                                <div className={style.privilegeHeading}>
-                                  {data?.privilegeSetTitle}
-                                </div>
-                                {selectedPrivilegesForDisplayMultiple
-                                  ?.map((data) => data?.id)
-                                  ?.includes(data?.id) ? (
-                                  <Tooltip title="Click To Remove">
-                                    <img
-                                      src={DeleteIcon}
-                                      alt=""
-                                      className={`${style.docTypeImgStyle} ${style.marginLeft}`}
-                                      onClick={() => {
-                                        handleDeleteSelectedPrrivilege(data?.id);
-                                      }}
-                                    />
-                                  </Tooltip>
-                                ) : (
-                                  <Tooltip title="Click To Request">
-                                    <button
-                                      className={`${style.addButton} ${style.marginLeft}`}
-                                      onClick={() => {
-                                        setShowPrivileges(true);
-                                        handleChange(data?.id);
-                                      }}
-                                    >  SELECT
-                                    </button>
-                                  </Tooltip>
-                                )}
-                              </div>
-                              {index !== staffPrivilege?.length - 1 && (
-                                <CommonDivider />
-                              )}
-                            </>
-                          ))} */}
-                        </>
-                      ) : (
-                        <div className={style.marginTop}>
-                          <div className={`${style.lableStyle}`}>
-                            List the Privileges you would like to request*
+                      )[0]?.privilegeCategory?.category === "Courtesy Staff With Admitting Privileges" && (
+                          <div className={style.marginTop}>
+                            <div className={`${style.lableStyle}`}>
+                              List the Privileges you would like to request*
+                            </div>
+                            <TextArea
+                              value={selectedPrivilegesForCourtesy}
+                              className={`${style.fullWidth} ${style.marginTop10}`}
+                              onChange={(e) =>
+                                setSelectedPrivilegesForCourtesy(e.target.value)
+                              }
+                              placeholder={"Enter here"}
+                              rows={4}
+                            />
                           </div>
-                          <TextArea
-                            value={selectedPrivilegesForCourtesy}
-                            className={`${style.fullWidth} ${style.marginTop10}`}
-                            onChange={(e) =>
-                              setSelectedPrivilegesForCourtesy(e.target.value)
-                            }
-                            placeholder={"Enter here"}
-                            rows={4}
-                          />
-                        </div>
-                      )}
+                        )}
                     </>
                   )}
-                  {/* {privilegeCategories?.filter(
-                    (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                  )[0]?.privilegeCategory?.category === "Courtesy Staff With Admitting Privileges" && (
-                      <>
-                        <div className={`${style.twoCol} ${style.marginTop}`}>
-                          <div>
-                            <div className={`${style.cardTitle}`}>
-                              Do you maintain Privileges at any Other Hospital(s)?
-                            </div>
-                            <div className={style.leftAlign}>
-                              <ThemeProvider theme={theme}>
-                                <FormControl>
-                                  <RadioGroup
-                                    row
-                                    className={style.leftAlign}
-                                    value={doYouHavePrivilegeAtAnyOtherHospital}
-                                    onChange={(e) =>
-                                      setDoYouHavePrivilegeAtAnyOtherHospital(
-                                        e.target.value
-                                      )
-                                    }
-                                    sx={{ color: "#2C2C2C" }}
-                                  >
-                                    <FormControlLabel
-                                      value={"No"}
-                                      control={
-                                        <Radio
-                                          sx={{
-                                            color: "#B3B8BD",
-                                            "&.Mui-checked": { color: "#FF5555" },
-                                          }}
-                                          size="medium"
-                                        />
-                                      }
-                                      label={"No"}
-                                      componentsProps={{
-                                        typography: { variant: "subtitle1" },
-                                      }}
-                                    />
-                                    <FormControlLabel
-                                      value={"Yes"}
-                                      control={
-                                        <Radio
-                                          sx={{
-                                            color: "#B3B8BD",
-                                            "&.Mui-checked": { color: "#1C8F00" },
-                                          }}
-                                          size="medium"
-                                        />
-                                      }
-                                      label={"Yes"}
-                                      componentsProps={{
-                                        typography: { variant: "subtitle1" },
-                                      }}
-                                    />
-                                  </RadioGroup>
-                                </FormControl>
-                              </ThemeProvider>
-                            </div>
-                          </div>
-                          <div>
-                            {doYouHavePrivilegeAtAnyOtherHospital === "No" && (
-                              <div className={`${style.privilegeWarningPart}`}>
-                                <div className={style.privilegeWarningText}>
-                                  You cannot hold courtesy privileges at {title}{" "}
-                                  without having privileges at another
-                                  hospital.
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        {doYouHavePrivilegeAtAnyOtherHospital === "Yes" && (
-                          <>
-                            <div className={style.marginTop}>
-                              <CommonTextField
-                                value={prevHospitalName}
-                                className={style.fullWidth}
-                                onChange={(e) =>
-                                  setPrevHospitalName(e.target.value)
-                                }
-                                maxLength={50}
-                                placeholder={"Enter Hospital Name"}
-                                label={"Name of the other hospital"}
-                                required={true}
-                              />
-                            </div>
-                            <div className={style.marginTop}>
-                              <CommonSelectField
-                                value={selectedPrivilegeCategoryAtPrevHospital}
-                                onChange={(e) =>
-                                  setSelectedPrivilegeCategoryAtPrevHospital(
-                                    e.target.value
-                                  )
-                                }
-                                className={style.fullWidth}
-                                valueList={privilegeCategories
-                                  ?.filter(
-                                    (data) =>
-                                      ![
-                                        "Courtesy Staff With Admitting Privileges",
-                                        "Courtesy Staff Without Admitting Privileges",
-                                      ]?.includes(data?.privilegeCategory?.category)
-                                  )
-                                  ?.map((data) => data?.privilegeCategory?.id)}
-                                labelList={privilegeCategories
-                                  ?.filter(
-                                    (data) =>
-                                      ![
-                                        "Courtesy Staff With Admitting Privileges",
-                                        "Courtesy Staff Without Admitting Privileges",
-                                      ]?.includes(data?.privilegeCategory?.category)
-                                  )
-                                  ?.map((data) => data?.privilegeCategory?.category)}
-                                disabledList={privilegeCategories
-                                  ?.filter(
-                                    (data) =>
-                                      ![
-                                        "Courtesy Staff With Admitting Privileges",
-                                        "Courtesy Staff Without Admitting Privileges",
-                                      ]?.includes(data?.privilegeCategory?.category)
-                                  )
-                                  ?.map((data) => false)}
-                                label={
-                                  "Privilege Category you have at the other hospital"
-                                }
-                                required={false}
-                              />
-                            </div>
-                          </>
-                        )}
-                      </>
-                    )} */}
-                  {/* {privilegeCategories?.filter(
-                    (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-                  )[0]?.category === "Courtesy Staff With Admitting Privileges" ? (
-                    <div
-                      className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
-                    >
-                      <div
-                        className={`${style.reappointmentButton} ${style.marginLeft
-                          } ${selectedPrivilegeCategoryAtPrevHospital !== "" &&
-                            prevHospitalName !== ""
-                            ? ""
-                            : style.disabledButton
-                          }`}
-                        onClick={
-                          selectedPrivilegeCategoryAtPrevHospital !== "" &&
-                            prevHospitalName !== ""
-                            ? () => {
-                              setPrivilegeSetChangeYesOrNo('No');
-                              setIsPrivilegeCategoryChanging(false);
-                              handleSubmit();
-                              setIsEdit(false);
-                            }
-                            : () => { }
-                        }
-                      >
-                        UPDATE
-                      </div>
-                      <div
-                        className={`${style.reappointmentButtonOutlined}`}
-                        onClick={() => { setIsPrivilegeCategoryChanging(false); setPrivilegeChangeYesOrNo('') }}
-                      >
-                        CANCEL
-                      </div>
-                    </div>
-                  ) : ( */}
                   <div
                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                   >
@@ -3200,7 +3104,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       onClick={() => {
                         setPrivilegeSetChangeYesOrNo('No');
                         setIsPrivilegeCategoryChanging(false);
-                        handleSubmit();
+                        handleSubmitPrivilegeCategory(true);
                         setIsEdit(false);
                       }}
                     >
@@ -3213,16 +3117,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       CANCEL
                     </div>
                   </div>
-                  {/* )} */}
                 </div>
               )}
             </>
-            {/* )} */}
             <>
               <div className={`${style.cardTitle} ${style.marginTop}`}>
                 Confirm your Department / Division or Specialty for this Reappointment?
               </div>
-              {(departmentChangeYesOrNo === '' || departmentChangeYesOrNo === undefined) ? (
+              {(departmentChangeYesOrNo === '' || !basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated) ? (
                 // <div
                 //   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 // >
@@ -3293,40 +3195,44 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
                         onClick={() => {
-                          setDepartmentChangeYesOrNo(selectedDepartment === prevDepartment ? 'Yes' : 'No');
+                          setDepartmentChangeYesOrNo((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined))) ? 'Yes' : 'No');
                           setIsDepartmentChanging(false);
-                          handleDeptSubmit();
+                          if ((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined)))) {
+                            handleSubmitDepartment()
+                          } else {
+                            handleSubmitDepartment(true)
+                          }
                         }}
                       >
-                        {selectedDepartment === prevDepartment ? 'CONFIRM' : 'UPDATE'}
+                        {(!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined))) ? 'CONFIRM' : 'UPDATE'}
                       </div>
                     </div>
                   </div>
                 </>
               ) : (
                 <>
-                  {!isDepartmentChanging ? (
-                    <>
+                  {/* {!isDepartmentChanging ? ( */}
+                  <>
+                    <div
+                      className={`${style.markedAsText} ${style.marginTop10}`}
+                    >
+                      <strong>
+                        Marked as{" "}
+                        <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo === 'Yes' ? 'Same as Before' : 'Changed'}</span>
+                      </strong>{" "}
+                    </div>
+                    <div
+                      className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
+                    >
                       <div
-                        className={`${style.markedAsText} ${style.marginTop10}`}
+                        className={`${style.reappointmentButtonEdit}`}
+                        onClick={() => setDepartmentChangeYesOrNo('')}
                       >
-                        <strong>
-                          Marked as{" "}
-                          <span className={departmentChangeYesOrNo === 'Yes' ? style.yesText : style.noText}>{departmentChangeYesOrNo === 'Yes' ? 'Same as Before' : 'Changed'}</span>
-                        </strong>{" "}
+                        VIEW TO MODIFY
                       </div>
-                      <div
-                        className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                      >
-                        <div
-                          className={`${style.reappointmentButtonEdit}`}
-                          onClick={() => setDepartmentChangeYesOrNo('')}
-                        >
-                          VIEW TO MODIFY
-                        </div>
-                      </div>
-                    </>
-                  ) : (
+                    </div>
+                  </>
+                  {/* ) : (
                     <>
                       <div
                         className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
@@ -3390,7 +3296,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         </div>
                       </div>
                     </>
-                  )}
+                  )} */}
                 </>
               )}
             </>
