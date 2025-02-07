@@ -41,6 +41,7 @@ const Navbar = () => {
   const { logout } = useDescope();
   const [showMenu, setShowMenu] = useState(false);
   const [screenCapture, setScreenCapture] = useState("");
+  
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showReportsMenu, setShowReportsMenu] = useState(false);
   const [isContractManager, setIsContractManager] = useState(false);
@@ -58,6 +59,7 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const openTools = Boolean(anchorElTools);
   const popoverAnchorTools = useRef(null);
+  const [hospitalLogo,setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
     useState(false);
@@ -138,6 +140,24 @@ const Navbar = () => {
   useEffect(() => {
     setLogo(sessionStorage?.getItem("logo"));
   }, [sessionStorage?.getItem("logo")]);
+
+
+  useEffect(() => {
+    const getLogo = async () => {
+        try {
+            const { data } = await GET(`entity-service/entity/${TenantID}`);
+            if (data && data.logo?.file?.fileURL) {
+                setHospitalLogo(data.logo.file.fileURL);
+            }
+        } catch (error) {
+            console.error("Error fetching logo:", error);
+        }
+    };
+
+    if (TenantID) {
+        getLogo();
+    }
+}, [TenantID]);
 
   // const menuRef = useRef(null);
   // const toolsMenuRef = useRef(null);
@@ -312,9 +332,7 @@ const Navbar = () => {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
           <img
-            src={
-              "https://dev-application-management-service.s3.amazonaws.com/CMH/cmh_logo.jpg"
-            }
+            src={hospitalLogo}
             alt="Hospital Logo"
             className={style.sanmateoLogo}
           />

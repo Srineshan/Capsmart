@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
-import logo from "./../../images/cambridgeHospital.png";
+// import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import ReappointmentLandingImage from "../../images/reappointmentLandingImage.png";
 import style from "./index.module.scss";
@@ -17,7 +17,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT, TenantID } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 
@@ -30,6 +30,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState("");
+  const [logo, setLogo] = useState(null);
   const [mobile, setMobile] = useState('');
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const [isPasswordStrong, setIsPasswordStrong] = useState(true);
@@ -71,6 +72,24 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
       getApplication()
     }
   }, [applicationId])
+
+    
+      useEffect(() => {
+          const getLogo = async () => {
+              try {
+                  const { data } = await GET(`entity-service/entity/${TenantID}`);
+                  if (data && data.logo?.file?.fileURL) {
+                      setLogo(data.logo.file.fileURL);
+                  } 
+              } catch (error) {
+                  console.error("Error fetching logo:", error);
+              }
+          };
+  
+          if (TenantID) {
+              getLogo();
+          }
+      }, [TenantID]);
 
   const getApplication = async () => {
     const { data: basicForm } = await GET(
