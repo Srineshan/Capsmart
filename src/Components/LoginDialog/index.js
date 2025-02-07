@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
-import logo from "./../../images/cambridgeHospital.png";
+// import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import style from "./index.module.scss";
 import { InputAdornment, IconButton } from "@material-ui/core";
@@ -14,6 +14,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import "./login.css";
+import { GET, TenantID } from "../../Screens/dataSaver";
+import Cookies from "universal-cookie";
 
 const LoginDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
@@ -34,6 +36,24 @@ const LoginDialog = ({ getIsOpen, days }) => {
   const [passcode, setPasscode] = useState(["0", "0", "0", "0", "0", "0"]);
   const [isPassCode, setIsPassCode] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [logo, setLogo] = useState(null);
+  let cookie = new Cookies();
+  useEffect(() => {
+    const getLogo = async () => {
+      try {
+        const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+        if (data && data.logo?.file?.fileURL) {
+          setLogo(data.logo.file.fileURL);
+        }
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+
+    if (cookie.get('entityId')) {
+      getLogo();
+    }
+  }, [cookie.get('entityId')]);
 
   const settings = {
     dots: true,

@@ -287,6 +287,10 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalDashboard = React.lazy(() =>
+  import("./Screens/ApplicantDashboard")
+);
+
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
@@ -1283,6 +1287,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/ApplicantDashboard"
+                  element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
 
