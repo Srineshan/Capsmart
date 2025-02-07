@@ -265,9 +265,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       setSelectedAdditionalPrivilegeForDisplay(
         basicForm?.privileges?.additionalPrivileges
       );
-      // setSelectedPrivilegesForDisplayMultiple(
-      //   basicForm?.privileges?.obligatedPrivileges
-      // );
+      setSelectedPrivilegesForDisplayMultiple(
+        basicForm?.privileges?.obligatedPrivileges
+      );
       if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
         setSelectedAdditionalPrivilegesForDisplayMultiple(
           basicForm?.privileges?.additionalPrivileges
@@ -616,6 +616,18 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         .catch((error) => {
           console.log(error);
         });
+      if (showPrivilegeResetError) {
+        let temp = {
+          obligatedPrivileges: [],
+          additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+          priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+          priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges,
+        };
+        await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+          .then((response) => {
+            getPreApplication();
+          })
+      }
     } else {
       if (!basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated) {
         data.basicDetails.priorPrivilegeCategory = data?.basicDetailReferences?.credentialingAndPrivilegingCategory;
@@ -658,7 +670,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     )
       .then((response) => {
         console.log(response);
-        setBasicForm(response?.data);
+        getPreApplication();
       })
       .catch((error) => {
         console.log(error);
@@ -734,7 +746,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     )
       .then((response) => {
         console.log(response);
-        setBasicForm(response?.data);
+        getPreApplication();
       })
       .catch((error) => {
         console.log(error);
@@ -742,112 +754,243 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     fetchPaymentListData()
   }
 
-  const handleSubmit = async () => {
-    let mergedArray = [
-      ...basicForm?.privileges?.obligatedPrivileges,
-      ...selectedPrivilegesForDisplayMultiple,
-    ].reduce((unique, current) => {
-      console.log(unique, current, 'unique')
-      // Check if the current ID is already in the unique array
-      if (!unique.some((obj) => obj.id === current.id)) {
-        unique.push(current);
-      }
-      console.log(unique, 'unique')
-      return unique;
-    }, []);
+  const handleSubmitPrivilegeSet = async (isUpdated, privileges, isDelete) => {
+    if (isUpdated) {
+      let mergedArray = [
+        ...basicForm?.privileges?.obligatedPrivileges,
+        ...privileges,
+      ].reduce((unique, current) => {
+        console.log(unique, current, 'unique')
+        if (!unique.some((obj) => obj.id === current.id)) {
+          unique.push(current);
+        }
+        console.log(unique, 'unique')
+        return unique;
+      }, []);
 
-    let temp = {
-      obligatedPrivileges: isPrivilegeSetChanging ? (showPrivilegeResetError || privilegeSetChangeYesOrNo === 'No') ? selectedPrivilegesForDisplayMultiple : mergedArray : basicForm?.privileges?.obligatedPrivileges,
-      additionalPrivileges: isAdditionalPrivilegeCategoryChanging ? selectedAdditionalPrivilegeForDisplay : basicForm?.privileges?.additionalPrivileges,
-      priorAdditionalPrivileges:
-        basicForm?.privileges?.priorAdditionalPrivileges?.length === 0
-          ? basicForm?.privileges?.additionalPrivileges !== null ? basicForm?.privileges?.additionalPrivileges : []
-          : basicForm?.privileges?.priorAdditionalPrivileges !== null ? basicForm?.privileges?.priorAdditionalPrivileges : [],
-      priorObligatedPrivileges:
-        basicForm?.privileges?.priorObligatedPrivileges?.length === 0
-          ? basicForm?.privileges?.obligatedPrivileges !== null ? basicForm?.privileges?.obligatedPrivileges : []
-          : basicForm?.privileges?.priorObligatedPrivileges !== null ? basicForm?.privileges?.priorObligatedPrivileges : [],
-    };
-    console.log("data", temp);
-    setIsPrivilegeSetChanging(false);
-    setIsAdditionalPrivilegeCategoryChanging(false);
-    await POST(
-      `application-management-service/application/${applicationId}/privileges`,
-      temp
-    )
-      .then((response) => {
-        SuccessToaster("Application Updated Successfully");
-      })
-      .catch((error) => {
-        ErrorToaster("Unexpected Error Updating Application");
-      });
-    if (isPrivilegeCategoryChanging) {
-      let data = basicForm;
-      if (data?.basicDetails?.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) {
-        data.basicDetails.priorPrivilegeCategory = {
-          id: privilegeCategories?.filter(
-            (data) =>
-              data?.privilegeCategory?.category ===
-              basicForm?.basicDetails?.credentialingPrivilegeCategory
-                ?.credentialingCategory
-          )?.[0]?.privilegeCategory?.id,
-          name: basicForm?.basicDetails?.credentialingPrivilegeCategory
-            ?.credentialingCategory,
-          type: privilegeCategories?.filter(
-            (data) =>
-              data?.privilegeCategory?.category ===
-              basicForm?.basicDetails?.credentialingPrivilegeCategory
-                ?.credentialingCategory
-          )?.[0]?.privilegeCategory?.type,
-        };
-      }
-      if (selectedPrivilegeCategory !== "") {
-        data.basicDetails.credentialingPrivilegeCategory.credentialingCategory =
-          privilegeCategories?.filter(
-            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
-          )?.[0]?.privilegeCategory?.category;
-      }
-      data.basicDetails.departmentSpecialty.department = departmentList?.filter(
-        (data) => data?.id === selectedDepartment
-      )?.[0]?.departmentName?.name;
-      data.basicDetails.existingCredentialingPrivilegeCategory = {
-        hasExistingPrivilege:
-          privilegeAtOtherHospitalYesOrNo === "Yes" ? true : false,
-        credentialingPrivilegeCategory: {
-          id: selectedPrivilegeCategoryAtPrevHospital,
-          name: privilegeCategories?.filter(
-            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
-          )?.[0]?.privilegeCategory?.category,
-          type: privilegeCategories?.filter(
-            (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
-          )?.[0]?.privilegeCategory?.type,
-        },
-        hospitalName:
-          privilegeAtOtherHospitalYesOrNo === "Yes"
-            ? prevHospitalName
-            : false,
-        privileges:
-          privilegeAtOtherHospitalYesOrNo === "Yes"
-            ? selectedPrivilegesForCourtesy
-            : false,
-        hospitalPrivileges: data?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges,
-        priorHospitalPrivileges: data?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges
+      let temp = {
+        obligatedPrivileges: isDelete ? privileges : mergedArray,
+        additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+        priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+        priorObligatedPrivileges: !basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated ? basicForm?.privileges?.obligatedPrivileges : basicForm?.privileges?.priorObligatedPrivileges
       };
-      console.log(data);
-      await PUT(
-        `application-management-service/application/${applicationId}`,
-        data
-      )
-        .then((response) => {
-          console.log(response);
-          // setBasicForm(response?.data);
-          SuccessToaster("Staff Member Application Updated Successfully");
-        })
-        .catch((error) => {
-          console.log(error);
-          ErrorToaster("Unexpected Error Updating Staff Member Application");
-        });
+      console.log("data", temp);
+      await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+    } else {
+      if (!basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated) {
+        let temp = {
+          obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+          additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+          priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+          priorObligatedPrivileges: basicForm?.privileges?.obligatedPrivileges
+        };
+        console.log("data", temp);
+        await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+      } else {
+        let temp = {
+          obligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges,
+          additionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+          priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+          priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
+        };
+        console.log("data", temp);
+        await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+      }
     }
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: {
+        privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        privilegeSetChangeYesOrNo: isUpdated ? privilegeSetChangeYesOrNo : 'Yes',
+        additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
+        privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
+        privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
+        departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
+        privilegeSetChangeUpdated: true,
+        additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
+        privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
+      },
+      unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+      acknowledged: true,
+    };
+    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+      .then((response) => {
+        getPreApplication();
+      })
+  }
+
+  const handleSubmitAdditionalPrivilegeSet = async (isUpdated, privileges, isDelete) => {
+    if (isUpdated) {
+      let mergedArray = [
+        ...basicForm?.privileges?.additionalPrivileges,
+        ...privileges,
+      ].reduce((unique, current) => {
+        console.log(unique, current, 'unique')
+        if (!unique.some((obj) => obj.id === current.id)) {
+          unique.push(current);
+        }
+        console.log(unique, 'unique')
+        return unique;
+      }, []);
+
+      let temp = {
+        obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+        additionalPrivileges: isDelete ? privileges : mergedArray,
+        priorAdditionalPrivileges: !basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated ? basicForm?.privileges?.additionalPrivileges : basicForm?.privileges?.priorAdditionalPrivileges,
+        priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
+      };
+      console.log("data", temp);
+      await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+    } else {
+      if (!basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated) {
+        let temp = {
+          obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+          additionalPrivileges: [],
+          priorAdditionalPrivileges: basicForm?.privileges?.additionalPrivileges,
+          priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
+        };
+        console.log("data", temp);
+        await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+      } else {
+        let temp = {
+          obligatedPrivileges: basicForm?.privileges?.obligatedPrivileges,
+          additionalPrivileges: [],
+          priorAdditionalPrivileges: basicForm?.privileges?.priorAdditionalPrivileges,
+          priorObligatedPrivileges: basicForm?.privileges?.priorObligatedPrivileges
+        };
+        console.log("data", temp);
+        await POST(`application-management-service/application/${applicationId}/privileges`, temp)
+      }
+    }
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: {
+        privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
+        additionalPrivilegeChangeYesOrNo: isUpdated ? additionalPrivilegeChangeYesOrNo : 'No',
+        privilegeAtOtherHospitalYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo : '',
+        privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
+        departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
+        privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
+        additionalPrivilegeChangeUpdated: true,
+        privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
+      },
+      unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+      acknowledged: true,
+    };
+    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+      .then((response) => {
+        getPreApplication();
+      })
+  }
+
+  const handleSubmit = async () => {
+    // let mergedArray = [
+    //   ...basicForm?.privileges?.obligatedPrivileges,
+    //   ...selectedPrivilegesForDisplayMultiple,
+    // ].reduce((unique, current) => {
+    //   console.log(unique, current, 'unique')
+    //   if (!unique.some((obj) => obj.id === current.id)) {
+    //     unique.push(current);
+    //   }
+    //   console.log(unique, 'unique')
+    //   return unique;
+    // }, []);
+
+    // let temp = {
+    //   obligatedPrivileges: isPrivilegeSetChanging ? (showPrivilegeResetError || privilegeSetChangeYesOrNo === 'No') ? selectedPrivilegesForDisplayMultiple : mergedArray : basicForm?.privileges?.obligatedPrivileges,
+    //   additionalPrivileges: isAdditionalPrivilegeCategoryChanging ? selectedAdditionalPrivilegeForDisplay : basicForm?.privileges?.additionalPrivileges,
+    //   priorAdditionalPrivileges:
+    //     basicForm?.privileges?.priorAdditionalPrivileges?.length === 0
+    //       ? basicForm?.privileges?.additionalPrivileges !== null ? basicForm?.privileges?.additionalPrivileges : []
+    //       : basicForm?.privileges?.priorAdditionalPrivileges !== null ? basicForm?.privileges?.priorAdditionalPrivileges : [],
+    //   priorObligatedPrivileges:
+    //     basicForm?.privileges?.priorObligatedPrivileges?.length === 0
+    //       ? basicForm?.privileges?.obligatedPrivileges !== null ? basicForm?.privileges?.obligatedPrivileges : []
+    //       : basicForm?.privileges?.priorObligatedPrivileges !== null ? basicForm?.privileges?.priorObligatedPrivileges : [],
+    // };
+    // console.log("data", temp);
+    // setIsPrivilegeSetChanging(false);
+    // setIsAdditionalPrivilegeCategoryChanging(false);
+    // await POST(
+    //   `application-management-service/application/${applicationId}/privileges`,
+    //   temp
+    // )
+    //   .then((response) => {
+    //     SuccessToaster("Application Updated Successfully");
+    //   })
+    //   .catch((error) => {
+    //     ErrorToaster("Unexpected Error Updating Application");
+    //   });
+    // if (isPrivilegeCategoryChanging) {
+    //   let data = basicForm;
+    //   if (data?.basicDetails?.priorPrivilegeCategory === null || data.basicDetails.priorPrivilegeCategory.name === null || data.basicDetails.priorPrivilegeCategory.name === undefined) {
+    //     data.basicDetails.priorPrivilegeCategory = {
+    //       id: privilegeCategories?.filter(
+    //         (data) =>
+    //           data?.privilegeCategory?.category ===
+    //           basicForm?.basicDetails?.credentialingPrivilegeCategory
+    //             ?.credentialingCategory
+    //       )?.[0]?.privilegeCategory?.id,
+    //       name: basicForm?.basicDetails?.credentialingPrivilegeCategory
+    //         ?.credentialingCategory,
+    //       type: privilegeCategories?.filter(
+    //         (data) =>
+    //           data?.privilegeCategory?.category ===
+    //           basicForm?.basicDetails?.credentialingPrivilegeCategory
+    //             ?.credentialingCategory
+    //       )?.[0]?.privilegeCategory?.type,
+    //     };
+    //   }
+    //   if (selectedPrivilegeCategory !== "") {
+    //     data.basicDetails.credentialingPrivilegeCategory.credentialingCategory =
+    //       privilegeCategories?.filter(
+    //         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory
+    //       )?.[0]?.privilegeCategory?.category;
+    //   }
+    //   data.basicDetails.departmentSpecialty.department = departmentList?.filter(
+    //     (data) => data?.id === selectedDepartment
+    //   )?.[0]?.departmentName?.name;
+    //   data.basicDetails.existingCredentialingPrivilegeCategory = {
+    //     hasExistingPrivilege:
+    //       privilegeAtOtherHospitalYesOrNo === "Yes" ? true : false,
+    //     credentialingPrivilegeCategory: {
+    //       id: selectedPrivilegeCategoryAtPrevHospital,
+    //       name: privilegeCategories?.filter(
+    //         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
+    //       )?.[0]?.privilegeCategory?.category,
+    //       type: privilegeCategories?.filter(
+    //         (data) => data?.privilegeCategory?.id === selectedPrivilegeCategoryAtPrevHospital
+    //       )?.[0]?.privilegeCategory?.type,
+    //     },
+    //     hospitalName:
+    //       privilegeAtOtherHospitalYesOrNo === "Yes"
+    //         ? prevHospitalName
+    //         : false,
+    //     privileges:
+    //       privilegeAtOtherHospitalYesOrNo === "Yes"
+    //         ? selectedPrivilegesForCourtesy
+    //         : false,
+    //     hospitalPrivileges: data?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges,
+    //     priorHospitalPrivileges: data?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges
+    //   };
+    //   console.log(data);
+    //   await PUT(
+    //     `application-management-service/application/${applicationId}`,
+    //     data
+    //   )
+    //     .then((response) => {
+    //       console.log(response);
+    //       // setBasicForm(response?.data);
+    //       SuccessToaster("Staff Member Application Updated Successfully");
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //       ErrorToaster("Unexpected Error Updating Staff Member Application");
+    //     });
+    // }
     if (privilegesMaintainedInOtherHositals) {
       let tempHospitalPrivilegeSet;
       if (privilegeAtOtherHospitalIndex !== undefined && isPrivilegeAtOtherHospitalEdited) {
@@ -1430,6 +1573,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       (data) => data?.id !== id
     );
     setSelectedPrivilegesForDisplayMultiple(filteredData);
+    handleSubmitPrivilegeSet(true, filteredData, true)
   };
 
   const handleDeleteSelectedAdditionalPrrivilege = (id) => {
@@ -1437,6 +1581,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       (data) => data?.id !== id
     );
     setSelectedAdditionalPrivilegesForDisplayMultiple(filteredData);
+    handleSubmitAdditionalPrivilegeSet(true, filteredData, true)
   };
 
   const handleCollapse = (value, index) => {
@@ -2620,12 +2765,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     let temp = selectedPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedPrivilegesForDisplayMultiple(temp);
+    handleSubmitPrivilegeSet(true, temp)
   };
 
   const handleSelectedAdditionalPrivilegesForDisplayMultiple = (data) => {
     let temp = selectedAdditionalPrivilegesForDisplayMultiple;
     temp.push(data);
     setSelectedAdditionalPrivilegesForDisplayMultiple(temp);
+    handleSubmitAdditionalPrivilegeSet(true, temp)
   };
 
   const getItems = (data) => {
@@ -3405,7 +3552,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         <div
                           className={`${style.reappointmentButtonOutlined}`}
-                          onClick={() => handleKeepYourPrivilegeYes()}
+                          onClick={() => handleSubmitPrivilegeSet()}
                         >
                           YES
                         </div>
@@ -3448,7 +3595,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           What would you like to change your current Privilege Set
                           to?
                         </div>
-                        {basicForm?.basicDetails?.credentialingPrivilegeCategory
+                        {/* {basicForm?.basicDetails?.credentialingPrivilegeCategory
                           ?.credentialingCategory === "Courtesy Staff With Admitting Privileges" ? (
                           <div
                             className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
@@ -3497,129 +3644,114 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                               </div>
                             </div>
                           </div>
-                        ) : (
-                          <div
-                            className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
-                          >
-                            {/* <CommonSelectField
-                        value={selectedDepartment}
-                        onChange={(e) =>
-                          setSelectedDepartment(e.target.value)
-                        }
-                        className={style.fullWidth}
-                        valueList={departmentList?.map((data) => data?.id)}
-                        labelList={departmentList?.map(
-                          (data) => data?.departmentName?.name
-                        )}
-                        disabledList={departmentList?.map((data) => false)}
-                        label={"Department / Division or Specialty"}
-                        required={false}
-                      /> */}
-                            <div className={style.displayInRow}>
-                              <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
-                              <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
-                            </div>
-                            {/* {selectedDepartment !== "" && ( */}
-                            <>
-                              {staffPrivilege?.map((data, index) => (
-                                <>
-                                  <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
-                                    <div
-                                      className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
-                                      onClick={selectedPrivilegesForDisplayMultiple
-                                        ?.map((data) => data?.id)
-                                        ?.includes(data?.id) ? () => {
-                                          handleDeleteSelectedPrrivilege(data?.id)
-                                        } : () => {
-                                          setShowPrivileges(true);
-                                          handleChange(data?.id);
-                                        }}
-                                    >
-                                      {selectedPrivilegesForDisplayMultiple
-                                        ?.map((data) => data?.id)
-                                        ?.includes(data?.id) ? (
-                                        <div
-                                          className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}
-                                        >
-                                          <CheckCircleOutlineIcon
-                                            sx={{ fontSize: 15, color: "#FFFFFF" }}
-                                          />
-                                        </div>
-                                      ) : (
-                                        <div>
-                                          {/* <div
+                        ) : ( */}
+                        <div
+                          className={`${style.privilegeCardWithBorder} ${style.marginTop10}`}
+                        >
+                          <div className={style.displayInRow}>
+                            <div className={style.lableStyle}>Your Department / Division or Speciality : </div>
+                            <div className={`${style.lableStyle} ${style.marginLeft}`}><strong>{`${departmentList?.filter((data) => data?.id === selectedDepartment)?.[0]?.departmentName?.name} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? '-' : ''} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== "" && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined && basicForm?.basicDetails?.departmentSpecialty?.specialty !== null) ? basicForm?.basicDetails?.departmentSpecialty?.specialty : ''}`}</strong></div>
+                          </div>
+                          <>
+                            {staffPrivilege?.map((data, index) => (
+                              <>
+                                <Tooltip title={selectedPrivilegesForDisplayMultiple?.map((data) => data?.id)?.includes(data?.id) ? "Click to Remove" : "Click to Request and Sign"} arrow>
+                                  <div
+                                    className={`${style.privilegeConfirmationGrid} ${style.marginTop}`}
+                                    onClick={selectedPrivilegesForDisplayMultiple
+                                      ?.map((data) => data?.id)
+                                      ?.includes(data?.id) ? () => {
+                                        handleDeleteSelectedPrrivilege(data?.id)
+                                      } : () => {
+                                        setShowPrivileges(true);
+                                        handleChange(data?.id);
+                                      }}
+                                  >
+                                    {selectedPrivilegesForDisplayMultiple
+                                      ?.map((data) => data?.id)
+                                      ?.includes(data?.id) ? (
+                                      <div
+                                        className={`${style.iconBackgroundColorSelected} ${style.verticalAlignCenter} ${style.justifyCenter}`}
+                                      >
+                                        <CheckCircleOutlineIcon
+                                          sx={{ fontSize: 15, color: "#FFFFFF" }}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div>
+                                        {/* <div
                                   className={`${style.iconBackgroundColor} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                                 >
                                   <WarningAmberIcon
                                     sx={{ fontSize: 15, color: "#FFFFFF" }}
                                   />
                                 </div> */}
-                                        </div>
-                                      )}
-                                      <div className={style.privilegeHeading}>
-                                        {data?.privilegeSetTitle}
                                       </div>
-                                      {selectedPrivilegesForDisplayMultiple
-                                        ?.map((data) => data?.id)
-                                        ?.includes(data?.id) ? (
-                                        // <Tooltip title="Click To Remove">
-                                        <div className={`${style.displayInRow} ${style.floatRight}`}>
-                                          <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
-                                          <div>
-                                            <img
-                                              src={DeleteIcon}
-                                              alt=""
-                                              className={`${style.docTypeImgStyle} ${style.marginLeft} ${style.floatRight}`}
-                                            />
-                                          </div>
-                                        </div>
-                                        // </Tooltip>
-                                      ) : (
-                                        // <Tooltip title="Click To Request">
-                                        <button
-                                          className={`${style.addButton} ${style.marginLeft}`}
-                                        // onClick={() => {
-                                        //   setShowPrivileges(true);
-                                        //   handleChange(data?.id);
-                                        // }}
-                                        >  SELECT
-                                        </button>
-                                        // </Tooltip>
-                                      )}
+                                    )}
+                                    <div className={style.privilegeHeading}>
+                                      {data?.privilegeSetTitle}
                                     </div>
-                                  </Tooltip>
-                                  {index !== staffPrivilege?.length - 1 && (
-                                    <CommonDivider />
-                                  )}
-                                </>
-                              ))}
-                            </>
-                            {/* )} */}
+                                    {selectedPrivilegesForDisplayMultiple
+                                      ?.map((data) => data?.id)
+                                      ?.includes(data?.id) ? (
+                                      // <Tooltip title="Click To Remove">
+                                      <div className={`${style.displayInRow} ${style.floatRight}`}>
+                                        <span className={style.signedOnText}>signed on {selectedPrivilegesForDisplayMultiple?.filter((privilegeSet) => privilegeSet?.id === data?.id)?.[0]?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>
+                                        <div>
+                                          <img
+                                            src={DeleteIcon}
+                                            alt=""
+                                            className={`${style.docTypeImgStyle} ${style.marginLeft} ${style.floatRight}`}
+                                          />
+                                        </div>
+                                      </div>
+                                      // </Tooltip>
+                                    ) : (
+                                      // <Tooltip title="Click To Request">
+                                      <button
+                                        className={`${style.addButton} ${style.marginLeft}`}
+                                      // onClick={() => {
+                                      //   setShowPrivileges(true);
+                                      //   handleChange(data?.id);
+                                      // }}
+                                      >  SELECT
+                                      </button>
+                                      // </Tooltip>
+                                    )}
+                                  </div>
+                                </Tooltip>
+                                {index !== staffPrivilege?.length - 1 && (
+                                  <CommonDivider />
+                                )}
+                              </>
+                            ))}
+                          </>
+                          {/* )} */}
 
-                            <div
-                              className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
+                          <div
+                            className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
+                          >
+                            {/* <div
+                              className={`${style.reappointmentButton} ${style.marginLeft}`}
+                              onClick={() => {
+                                setIsPrivilegeSetChanging(false);
+                                handleSubmit();
+                                setIsEditPrivilege(false);
+                                setIsUpdateClicked(true);
+                                setPrivilegeSetChangeYesOrNo('Yes')
+                              }}
                             >
-                              <div
-                                className={`${style.reappointmentButton} ${style.marginLeft}`}
-                                onClick={() => {
-                                  setIsPrivilegeSetChanging(false);
-                                  handleSubmit();
-                                  setIsEditPrivilege(false);
-                                  setIsUpdateClicked(true);
-                                  setPrivilegeSetChangeYesOrNo('Yes')
-                                }}
-                              >
-                                SAVE
-                              </div>
-                              <div
-                                className={`${style.reappointmentButtonOutlined}`}
-                                onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
-                              >
-                                CANCEL
-                              </div>
+                              SAVE
+                            </div> */}
+                            <div
+                              className={`${style.reappointmentButtonOutlined}`}
+                              onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
+                            >
+                              CANCEL
                             </div>
                           </div>
-                        )}
+                        </div>
+                        {/* )} */}
                       </>
                     )}
                   </>
@@ -3639,7 +3771,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                     <div
                       className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                      onClick={() => { setIsEditAdditionalPrivileges(false); setAdditionalPrivilegeChangeYesOrNo('No'); setIsAdditionalPrivilegeCategoryChanging(false); }}
+                      onClick={() => { handleSubmitAdditionalPrivilegeSet() }}
                     >
                       NO
                     </div>
@@ -3754,15 +3886,15 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div
                       className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
-                      <div
+                      {/* <div
                         className={`${style.reappointmentButton} ${style.marginLeft}`}
                         onClick={() => { handleSubmit() }}
                       >
                         SAVE
-                      </div>
+                      </div> */}
                       <div
                         className={`${style.reappointmentButtonOutlined}`}
-                        onClick={() => { setAdditionalPrivilegeChangeYesOrNo('') }}
+                        onClick={() => { setAdditionalPrivilegeChangeYesOrNo(''); setIsAdditionalPrivilegeCategoryChanging(false); }}
                       >
                         CANCEL
                       </div>
