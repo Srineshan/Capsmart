@@ -629,155 +629,243 @@ const ApplicationFieldCard = ({
   //   }
   // }, [isMailingAddressSameAsHomeAddress]);
 
+  // useEffect(() => {
+  //   if (
+  //     isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined &&
+  //     isBusinessAddressSameAsHomeAddressOrMailingAddress !== null &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     setBasicForm((prevData) => {
+  //       let tempContactAddress3 = { ...prevData };
+  //       if (
+  //         tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
+  //           ?.business === undefined
+  //       ) {
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business = {};
+  //       }
+  //       if (
+  //         tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
+  //           ?.business?.businessAddress === undefined
+  //       ) {
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress = {};
+  //       }
+  //       if (
+  //         isBusinessAddressSameAsHomeAddressOrMailingAddress ===
+  //         "Same as Home Address"
+  //       ) {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.streetName !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.streetName
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.pinCode !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.pinCode
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.city !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.city
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.province !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.province
+  //             : "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       } else if (
+  //         isBusinessAddressSameAsHomeAddressOrMailingAddress ===
+  //         "Same as Mailing Address"
+  //       ) {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.streetName !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.streetName
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.pinCode !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.pinCode
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.city !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.city
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.province !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.province
+  //             : "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       } else {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province = "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       }
+  //       return tempContactAddress3;
+  //     });
+      
+  //   }
+  // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
+
+  useEffect(() => {
+    if (
+      isMailingAddressSameAsHomeAddress !== undefined &&
+      isMailingAddressSameAsHomeAddress !== null &&
+      !isPOD &&
+      ["contactAddress1", "contactAddress2", "contactAddress3"].includes(baseKey?.split(".")[0])
+    ) {
+      setBasicForm((prevData) => {
+        let tempData = { ...prevData };
+        let formRef = tempData.forms[addressPageIndex].data;
+  
+        if (!formRef.contactAddress2) {
+          formRef.contactAddress2 = { mailingAddress: {} };
+        }
+        if (!formRef.contactAddress2.mailingAddress) {
+          formRef.contactAddress2.mailingAddress = {};
+        }
+  
+        if (isMailingAddressSameAsHomeAddress === "Same as Home Address") {
+          if (formRef.contactAddress1?.homeAddress) {
+            formRef.contactAddress2.mailingAddress = {
+              streetName: formRef.contactAddress1.homeAddress.streetName,
+              pinCode: formRef.contactAddress1.homeAddress.pinCode,
+              city: formRef.contactAddress1.homeAddress.city,
+              province: formRef.contactAddress1.homeAddress.province,
+            };
+          }
+        } else if (isMailingAddressSameAsHomeAddress === "Same as Business Address") {
+          if (formRef.contactAddress3?.business?.businessAddress) {
+            formRef.contactAddress2.mailingAddress = {
+              streetName: formRef.contactAddress3.business.businessAddress.streetName,
+              pinCode: formRef.contactAddress3.business.businessAddress.pinCode,
+              city: formRef.contactAddress3.business.businessAddress.city,
+              province: formRef.contactAddress3.business.businessAddress.province,
+            };
+          }
+        }
+  
+        return tempData;
+      });
+    }
+  }, [isMailingAddressSameAsHomeAddress]);
+
   useEffect(() => {
     if (
       isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined &&
       isBusinessAddressSameAsHomeAddressOrMailingAddress !== null &&
       !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
+      ["contactAddress1", "contactAddress2", "contactAddress3"].includes(baseKey?.split(".")[0])
     ) {
       setBasicForm((prevData) => {
-        let tempContactAddress3 = { ...prevData };
-        if (
-          tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
-            ?.business === undefined
-        ) {
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business = {};
+        let tempData = { ...prevData };
+        let formRef = tempData.forms[addressPageIndex].data;
+  
+        if (!formRef.contactAddress3) {
+          formRef.contactAddress3 = { business: { businessAddress: {} } };
         }
-        if (
-          tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
-            ?.business?.businessAddress === undefined
-        ) {
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress = {};
+        if (!formRef.contactAddress3.business) {
+          formRef.contactAddress3.business = { businessAddress: {} };
         }
-        if (
-          isBusinessAddressSameAsHomeAddressOrMailingAddress ===
-          "Same as Home Address"
-        ) {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.streetName !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.streetName
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.pinCode !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.pinCode
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.city !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.city
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.province !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.province
-              : "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
-        } else if (
-          isBusinessAddressSameAsHomeAddressOrMailingAddress ===
-          "Same as Mailing Address"
-        ) {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.streetName !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.streetName
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.pinCode !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.pinCode
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.city !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.city
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.province !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.province
-              : "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
-        } else {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province = "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
+        if (!formRef.contactAddress3.business.businessAddress) {
+          formRef.contactAddress3.business.businessAddress = {};
         }
-        return tempContactAddress3;
+  
+        if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Home Address") {
+          if (formRef.contactAddress1?.homeAddress) {
+            formRef.contactAddress3.business.businessAddress = {
+              streetName: formRef.contactAddress1.homeAddress.streetName,
+              pinCode: formRef.contactAddress1.homeAddress.pinCode,
+              city: formRef.contactAddress1.homeAddress.city,
+              province: formRef.contactAddress1.homeAddress.province,
+            };
+          }
+        } else if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Mailing Address") {
+          if (formRef.contactAddress2?.mailingAddress) {
+            formRef.contactAddress3.business.businessAddress = {
+              streetName: formRef.contactAddress2.mailingAddress.streetName,
+              pinCode: formRef.contactAddress2.mailingAddress.pinCode,
+              city: formRef.contactAddress2.mailingAddress.city,
+              province: formRef.contactAddress2.mailingAddress.province,
+            };
+          }
+        }
+        return tempData;
       });
-      
     }
   }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
-
 
   useEffect(() => {
     if (
@@ -882,145 +970,145 @@ const ApplicationFieldCard = ({
     }
   }, [department, formSchema]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`
-  //       );
-  //       let data = response.data;
-  //       console.log(data);
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress1 = { ...prevData };
-  //         tempContactAddress1.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress1.homeAddress.city = data?.standard?.city || "";
-  //         tempContactAddress1.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress1.homeAddress.province =
-  //           data?.standard?.prov || "";
-  //         return tempContactAddress1;
-  //       });
-  //     } catch (error) {
-  //       console.log("Error fetching data");
-  //     }
-  //   };
-  //   if (
-  //     isHomeAddressPincodeEntered !== undefined &&
-  //     isHomeAddressPincodeEntered !== null &&
-  //     isHomeAddressPincodeEntered?.length >= 7 &&
-  //     !isPOD &&
-  //     (baseKey?.split(".")[0] === "contactAddress1" ||
-  //       baseKey?.split(".")[0] === "contactAddress2" ||
-  //       baseKey?.split(".")[0] === "contactAddress3")
-  //   ) {
-  //     if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
-  //       fetchData();
-  //     } else {
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress1 = { ...prevData };
-  //         tempContactAddress1.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress1.homeAddress.pinCode = "";
-  //         return tempContactAddress1;
-  //       });
-  //     }
-  //   }
-  // }, [isHomeAddressPincodeEntered]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://geocoder.ca/${isHomeAddressPincodeEntered}?json=1`
+        );
+        let data = response.data;
+        console.log(data);
+        setBasicForm((prevData) => {
+          let tempContactAddress1 = { ...prevData };
+          tempContactAddress1.forms[
+            addressPageIndex
+          ].data.contactAddress1.homeAddress.city = data?.standard?.city || "";
+          tempContactAddress1.forms[
+            addressPageIndex
+          ].data.contactAddress1.homeAddress.province =
+            data?.standard?.prov || "";
+          return tempContactAddress1;
+        });
+      } catch (error) {
+        console.log("Error fetching data");
+      }
+    };
+    if (
+      isHomeAddressPincodeEntered !== undefined &&
+      isHomeAddressPincodeEntered !== null &&
+      isHomeAddressPincodeEntered?.length >= 7 &&
+      !isPOD &&
+      (baseKey?.split(".")[0] === "contactAddress1" ||
+        baseKey?.split(".")[0] === "contactAddress2" ||
+        baseKey?.split(".")[0] === "contactAddress3")
+    ) {
+      if (validateCanadianPostalCode(isHomeAddressPincodeEntered)) {
+        fetchData();
+      } else {
+        setBasicForm((prevData) => {
+          let tempContactAddress1 = { ...prevData };
+          tempContactAddress1.forms[
+            addressPageIndex
+          ].data.contactAddress1.homeAddress.pinCode = "";
+          return tempContactAddress1;
+        });
+      }
+    }
+  }, [isHomeAddressPincodeEntered]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://geocoder.ca/${isMailingAddressPincodeEntered}?json=1`
-  //       );
-  //       let data = response.data;
-  //       console.log(data);
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress2 = { ...prevData };
-  //         tempContactAddress2.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress2.mailingAddress.city =
-  //           data?.standard?.city || "";
-  //         tempContactAddress2.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress2.mailingAddress.province =
-  //           data?.standard?.prov || "";
-  //         return tempContactAddress2;
-  //       });
-  //     } catch (error) {
-  //       console.log("Error fetching data");
-  //     }
-  //   };
-  //   if (
-  //     isMailingAddressPincodeEntered !== undefined &&
-  //     isMailingAddressPincodeEntered !== null &&
-  //     isMailingAddressPincodeEntered?.length >= 7 &&
-  //     !isPOD &&
-  //     (baseKey?.split(".")[0] === "contactAddress1" ||
-  //       baseKey?.split(".")[0] === "contactAddress2" ||
-  //       baseKey?.split(".")[0] === "contactAddress3")
-  //   ) {
-  //     if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
-  //       fetchData();
-  //     } else {
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress2 = { ...prevData };
-  //         tempContactAddress2.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress2.mailingAddress.pinCode = "";
-  //         return tempContactAddress2;
-  //       });
-  //     }
-  //   }
-  // }, [isMailingAddressPincodeEntered]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://geocoder.ca/${isMailingAddressPincodeEntered}?json=1`
+        );
+        let data = response.data;
+        console.log(data);
+        setBasicForm((prevData) => {
+          let tempContactAddress2 = { ...prevData };
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.city =
+            data?.standard?.city || "";
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.province =
+            data?.standard?.prov || "";
+          return tempContactAddress2;
+        });
+      } catch (error) {
+        console.log("Error fetching data");
+      }
+    };
+    if (
+      isMailingAddressPincodeEntered !== undefined &&
+      isMailingAddressPincodeEntered !== null &&
+      isMailingAddressPincodeEntered?.length >= 7 &&
+      !isPOD &&
+      (baseKey?.split(".")[0] === "contactAddress1" ||
+        baseKey?.split(".")[0] === "contactAddress2" ||
+        baseKey?.split(".")[0] === "contactAddress3")
+    ) {
+      if (validateCanadianPostalCode(isMailingAddressPincodeEntered)) {
+        fetchData();
+      } else {
+        setBasicForm((prevData) => {
+          let tempContactAddress2 = { ...prevData };
+          tempContactAddress2.forms[
+            addressPageIndex
+          ].data.contactAddress2.mailingAddress.pinCode = "";
+          return tempContactAddress2;
+        });
+      }
+    }
+  }, [isMailingAddressPincodeEntered]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://geocoder.ca/${isBusinessAddressPincodeEntered}?json=1`
-  //       );
-  //       let data = response.data;
-  //       console.log(data);
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress3 = { ...prevData };
-  //         tempContactAddress3.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress3.business.businessAddress.city =
-  //           data?.standard?.city || "";
-  //         tempContactAddress3.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress3.business.businessAddress.province =
-  //           data?.standard?.prov || "";
-  //         return tempContactAddress3;
-  //       });
-  //     } catch (error) {
-  //       console.log("Error fetching data");
-  //     }
-  //   };
-  //   if (
-  //     isBusinessAddressPincodeEntered !== undefined &&
-  //     isBusinessAddressPincodeEntered !== null &&
-  //     isBusinessAddressPincodeEntered?.length >= 7 &&
-  //     !isPOD &&
-  //     (baseKey?.split(".")[0] === "contactAddress1" ||
-  //       baseKey?.split(".")[0] === "contactAddress2" ||
-  //       baseKey?.split(".")[0] === "contactAddress3")
-  //   ) {
-  //     if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
-  //       fetchData();
-  //     } else {
-  //       setBasicForm((prevData) => {
-  //         let tempContactAddress3 = { ...prevData };
-  //         tempContactAddress3.forms[
-  //           addressPageIndex
-  //         ].data.contactAddress3.business.businessAddress.pinCode = "";
-  //         return tempContactAddress3;
-  //       });
-  //     }
-  //   }
-  // }, [isBusinessAddressPincodeEntered]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://geocoder.ca/${isBusinessAddressPincodeEntered}?json=1`
+        );
+        let data = response.data;
+        console.log(data);
+        setBasicForm((prevData) => {
+          let tempContactAddress3 = { ...prevData };
+          tempContactAddress3.forms[
+            addressPageIndex
+          ].data.contactAddress3.business.businessAddress.city =
+            data?.standard?.city || "";
+          tempContactAddress3.forms[
+            addressPageIndex
+          ].data.contactAddress3.business.businessAddress.province =
+            data?.standard?.prov || "";
+          return tempContactAddress3;
+        });
+      } catch (error) {
+        console.log("Error fetching data");
+      }
+    };
+    if (
+      isBusinessAddressPincodeEntered !== undefined &&
+      isBusinessAddressPincodeEntered !== null &&
+      isBusinessAddressPincodeEntered?.length >= 7 &&
+      !isPOD &&
+      (baseKey?.split(".")[0] === "contactAddress1" ||
+        baseKey?.split(".")[0] === "contactAddress2" ||
+        baseKey?.split(".")[0] === "contactAddress3")
+    ) {
+      if (validateCanadianPostalCode(isBusinessAddressPincodeEntered)) {
+        fetchData();
+      } else {
+        setBasicForm((prevData) => {
+          let tempContactAddress3 = { ...prevData };
+          tempContactAddress3.forms[
+            addressPageIndex
+          ].data.contactAddress3.business.businessAddress.pinCode = "";
+          return tempContactAddress3;
+        });
+      }
+    }
+  }, [isBusinessAddressPincodeEntered]);
 
   const getItems = (data) => {
     let temp = [];
