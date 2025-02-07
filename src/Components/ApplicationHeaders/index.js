@@ -5,6 +5,7 @@ import { useDescope } from '@descope/react-sdk';
 import CloseIcon from '@mui/icons-material/Close';
 import style from './index.module.scss';
 import { GET, TenantID } from '../../Screens/dataSaver';
+import Cookies from 'universal-cookie';
 
 const ApplicationHeaders = ({ title, close, closeClick }) => {
     // const { logout } = useDescope();
@@ -12,30 +13,33 @@ const ApplicationHeaders = ({ title, close, closeClick }) => {
     //     logout()
     // }
 
+    let cookie = new Cookies();
+    const [logo, setLogo] = useState(null);
 
-      const [logo, setLogo] = useState(null);
-
-        useEffect(() => {
-            const getLogo = async () => {
-                try {
-                    const { data } = await GET(`entity-service/entity/${TenantID}`);
-                    if (data && data.logo?.file?.fileURL) {
-                        setLogo(data.logo.file.fileURL);
-                    }
-                } catch (error) {
-                    console.error("Error fetching logo:", error);
+    useEffect(() => {
+        const getLogo = async () => {
+            try {
+                const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+                if (data && data.logo?.file?.fileURL) {
+                    setLogo(data.logo.file.fileURL);
                 }
-            };
-    
-            if (TenantID) {
-                getLogo();
+            } catch (error) {
+                console.error("Error fetching logo:", error);
             }
-        }, [TenantID]);
+        };
+
+        if (cookie.get('entityId')) {
+            getLogo();
+        }
+    }, [cookie.get('entityId')]);
 
     return (
         <div className={`${style.headerCard}`}>
             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                {logo !== null ? (
+                    <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                ) : (<div></div>)
+                }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
                 <div></div>
                 {close && (

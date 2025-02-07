@@ -41,7 +41,7 @@ const Navbar = () => {
   const { logout } = useDescope();
   const [showMenu, setShowMenu] = useState(false);
   const [screenCapture, setScreenCapture] = useState("");
-  
+  let cookie = new Cookies();
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const [showReportsMenu, setShowReportsMenu] = useState(false);
   const [isContractManager, setIsContractManager] = useState(false);
@@ -59,7 +59,7 @@ const Navbar = () => {
   const [anchorElTools, setAnchorElTools] = useState(null);
   const openTools = Boolean(anchorElTools);
   const popoverAnchorTools = useRef(null);
-  const [hospitalLogo,setHospitalLogo] = useState(null);
+  const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
     useState(false);
@@ -144,20 +144,20 @@ const Navbar = () => {
 
   useEffect(() => {
     const getLogo = async () => {
-        try {
-            const { data } = await GET(`entity-service/entity/${TenantID}`);
-            if (data && data.logo?.file?.fileURL) {
-                setHospitalLogo(data.logo.file.fileURL);
-            }
-        } catch (error) {
-            console.error("Error fetching logo:", error);
+      try {
+        const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+        if (data && data.logo?.file?.fileURL) {
+          setHospitalLogo(data.logo.file.fileURL);
         }
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
     };
 
-    if (TenantID) {
-        getLogo();
+    if (cookie.get('entityId')) {
+      getLogo();
     }
-}, [TenantID]);
+  }, [cookie.get('entityId')]);
 
   // const menuRef = useRef(null);
   // const toolsMenuRef = useRef(null);
@@ -248,7 +248,6 @@ const Navbar = () => {
   // };
 
   useEffect(() => {
-    var cookie = new Cookies();
     var accessToken = cookie.get("user");
     if (accessToken !== undefined) {
       let roles = jwt(accessToken)?.roles?.split(",");
@@ -269,10 +268,9 @@ const Navbar = () => {
   const classes = useStyles();
 
   const handleLogout = () => {
-    var cookies = new Cookies();
-    cookies.remove("user", { path: "/" });
-    cookies.remove("entityId", { path: "/" });
-    cookies.remove("authorization", { path: "/" });
+    cookie.remove("user", { path: "/" });
+    cookie.remove("entityId", { path: "/" });
+    cookie.remove("authorization", { path: "/" });
     logout()
     navigate('/')
   }
@@ -331,11 +329,17 @@ const Navbar = () => {
           {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
-          <img
-            src={hospitalLogo}
-            alt="Hospital Logo"
-            className={style.sanmateoLogo}
-          />
+          <div>
+            {hospitalLogo !== null ? (
+              <img
+                src={hospitalLogo}
+                alt="Hospital Logo"
+                className={style.sanmateoLogo}
+              />
+            ) : (
+              <div></div>
+            )}
+          </div>
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&
               style.activeMenuColor

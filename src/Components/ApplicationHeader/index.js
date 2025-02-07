@@ -4,18 +4,20 @@ import CrossPink from "../../images/crossPink.png";
 import { useDescope } from '@descope/react-sdk';
 import CloseIcon from '@mui/icons-material/Close';
 import style from './index.module.scss';
-import { TenantID,GET } from '../../Screens/dataSaver';
+import { TenantID, GET } from '../../Screens/dataSaver';
+import Cookies from 'universal-cookie';
 
 const ApplicationHeader = ({ title, close, closeClick }) => {
     // const { logout } = useDescope();
     // const handleSignOut = () => {
     //     logout()
     // }
+    let cookie = new Cookies();
     const [logo, setLogo] = useState(null);
     useEffect(() => {
         const getLogo = async () => {
             try {
-                const { data } = await GET(`entity-service/entity/${TenantID}`);
+                const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
                 if (data && data.logo?.file?.fileURL) {
                     setLogo(data.logo.file.fileURL);
                 }
@@ -24,15 +26,18 @@ const ApplicationHeader = ({ title, close, closeClick }) => {
             }
         };
 
-        if (TenantID) {
+        if (cookie.get('entityId')) {
             getLogo();
         }
-    }, [TenantID]);
+    }, [cookie.get('entityId')]);
 
     return (
         <div className={`${style.headerCard}`}>
             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                {logo !== null ? (
+                    <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+                ) : (<div></div>)
+                }
                 <div className={`${style.titleText} ${style.verticalAlignCenter}`}>{title}</div>
                 <div></div>
                 {close && (
