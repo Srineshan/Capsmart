@@ -43,6 +43,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -51,6 +52,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
+        if (basicForm !== undefined && formIndex !== undefined) {
+            setNavigateBackURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
+        }
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
     }, [basicForm, formIndex])
 
@@ -168,6 +172,10 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         }
     }
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const handleSubmitApplicationReq = async () => {
         setIsLoading(true)
         if (isSigned) {
@@ -269,7 +277,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <div className={style.threeColForButton}>
                         <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
                     </div>
                 </div>
@@ -299,7 +307,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
                         </div>
                     </div>

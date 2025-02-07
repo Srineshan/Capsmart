@@ -41,6 +41,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   const [passcode, setPasscode] = useState(["0", "0", "0", "0", "0", "0"]);
   const [isPassCode, setIsPassCode] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [showUserGuide, setShowUserGuide] = useState(false);
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [processReappointment, setProcessReappointment] = useState('');
   const { applicationId, section, step } = useParams();
@@ -129,6 +130,10 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
     if (processReappointment === 'No') {
       setShowAlert(true);
     }
+  }
+
+  const handleOpenUserGuide = () => {
+    setShowUserGuide(true);
   }
 
   const handleChange = (e, index) => {
@@ -338,14 +343,26 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                     </FormControl>
                   </ThemeProvider>
                 </div>
-                <div >
-                  <div
-                    className={`${style.continue} ${style.marginTop} ${processReappointment !== '' ? '' : style.disable}`}
-                    onClick={processReappointment !== '' ? () => {
-                      handleContinue();
-                    } : () => { }}
-                  >
-                    CONTINUE
+                <div className={style.displayInRow}>
+                  <div>
+                    <div
+                      className={`${style.userGuideButton} ${style.marginTop}`}
+                      onClick={() => {
+                        handleOpenUserGuide();
+                      }}
+                    >
+                      USER GUIDES & TUTORIALS
+                    </div>
+                  </div>
+                  <div>
+                    <div
+                      className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
+                      onClick={processReappointment !== '' ? () => {
+                        handleContinue();
+                      } : () => { }}
+                    >
+                      CONTINUE
+                    </div>
                   </div>
                 </div>
               </div>
@@ -391,6 +408,46 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
             >
               OKAY & EXIT
+            </div>
+          </div>
+
+        </div>
+      </Dialog>
+      <Dialog
+        isOpen={showUserGuide}
+        onClose={() => getIsOpen(false)}
+        className={style.customWidthUserGuide}
+        canOutsideClickClose={false}
+        canEscapeKeyClose={false}
+      >
+        <div className={style.dialogContent}>
+          <div className={style.heading}>
+            Step-By-Step Guides and Tutorials
+          </div>
+          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}><strong>How Would You Like To Get Started?</strong></div>
+          <div className={`${style.descriptionStyle} ${style.justifyCenter} ${style.marginTop}`}>Select Your Preferred Guide for a Seamless Reappointment Application</div>
+          <div className={style.userGuideGrid}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Interactive+guide.png"
+                alt="Interactive Guide" className={style.iconStyleUserGuide} />
+            </div>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Go through this Interactive Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps, allowing you to interact with the screens,
+                that you need to complete in order to successfully submit your Reappointment Application.
+              </p>
+            </div>
+          </div>
+          <div className={style.spaceBetween}>
+            <div></div>
+            <div
+              className={`${style.saveInProgress} ${style.marginTop}`}
+              onClick={() => setShowUserGuide(false)}
+            >
+              CLOSE
             </div>
           </div>
 

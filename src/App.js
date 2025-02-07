@@ -347,6 +347,14 @@ const App = ({ props }) => {
   }, [userFromCookie])
 
   useEffect(() => {
+    if (sessionToken !== undefined) {
+      cookie.set('authorization', sessionToken, {
+        path: '/'
+      });
+    }
+  }, [sessionToken])
+
+  useEffect(() => {
     if (sessionToken && cookie.get("authorization") !== undefined) {
       let token = sessionToken
       console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
