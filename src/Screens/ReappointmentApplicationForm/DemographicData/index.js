@@ -63,7 +63,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        getApplicantProfile()
+        if (applicationId)
+         {getApplicantProfile()} 
     }, [applicationId])
 
     // useEffect(() => {
@@ -80,35 +81,67 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
     }, [basicForm, step])
 
+    // useEffect(() => {
+    //     if (formSchema) {
+    //         const updatedSchema = { ...formSchema };
+
+
+    //         const contactAddress2 = updatedSchema?.properties?.contactAddress2;
+    //         const mailingAddressEnum =
+    //             contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
+
+
+    //         if (mailingAddressEnum) {
+    //             if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
+    //                 contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
+    //                     mailingAddressEnum.filter(
+    //                         (option) => option !== "Same as Business Address"
+    //                     );
+    //             } else {
+    //                 if (!mailingAddressEnum.includes("Same as Business Address")) {
+    //                     contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = [
+    //                         ...mailingAddressEnum,
+    //                         "Same as Business Address",
+    //                     ];
+    //                 }
+    //             }
+    //         }
+
+    //         setFormSchema(updatedSchema); 
+    //     }
+    // }, [basicForm, formIndex]);
+
+
+
     useEffect(() => {
-        if (formSchema) {
-            const updatedSchema = { ...formSchema };
-
-
+        setFormSchema((prevSchema) => {
+            if (!prevSchema) return prevSchema;
+    
+            const updatedSchema = { ...prevSchema };
             const contactAddress2 = updatedSchema?.properties?.contactAddress2;
             const mailingAddressEnum =
                 contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
-
-
+    
             if (mailingAddressEnum) {
-                if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)) {
-                    contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum =
-                        mailingAddressEnum.filter(
-                            (option) => option !== "Same as Business Address"
-                        );
-                } else {
-                    if (!mailingAddressEnum.includes("Same as Business Address")) {
-                        contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = [
-                            ...mailingAddressEnum,
-                            "Same as Business Address",
-                        ];
-                    }
+                const isBusinessAddressRegistered = getValueByPath(
+                    basicForm,
+                    `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
+                );
+    
+                const newEnum = isBusinessAddressRegistered
+                    ? mailingAddressEnum
+                    : mailingAddressEnum.filter((option) => option !== "Same as Business Address");
+    
+                if (JSON.stringify(mailingAddressEnum) !== JSON.stringify(newEnum)) {
+                    contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = newEnum;
+                    return updatedSchema;
                 }
             }
+            return prevSchema;
+        });
+    }, [basicForm, formIndex]);
+    
 
-            setFormSchema(updatedSchema); // Update the state with the modified schema
-        }
-    }, [formSchema, basicForm, formIndex]);
 
     const getIsOpen = (value) => {
         setIsOpen(value);
