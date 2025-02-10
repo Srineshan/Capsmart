@@ -34,7 +34,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
     const [warningFieldsContact, setWarningFieldsContact] = useState([]);
-    const [allWarningFields,setAllWarningFields] = useState([]);
+    const [allWarningFields, setAllWarningFields] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [showDemographicInfo, setShowDemographicInfo] = useState(true);
     const [showContactInfo, setShowContactInfo] = useState(true);
@@ -66,8 +66,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        if (applicationId)
-         {getApplicantProfile()} 
+        if (applicationId) { getApplicantProfile() }
     }, [applicationId])
 
     // useEffect(() => {
@@ -110,7 +109,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 }
             }
 
-            setFormSchema(updatedSchema); 
+            setFormSchema(updatedSchema);
         }
     }, [basicForm, formIndex]);
 
@@ -119,22 +118,22 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     // useEffect(() => {
     //     setFormSchema((prevSchema) => {
     //         if (!prevSchema) return prevSchema;
-    
+
     //         const updatedSchema = { ...prevSchema };
     //         const contactAddress2 = updatedSchema?.properties?.contactAddress2;
     //         const mailingAddressEnum =
     //             contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
-    
+
     //         if (mailingAddressEnum) {
     //             const isBusinessAddressRegistered = getValueByPath(
     //                 basicForm,
     //                 `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
     //             );
-    
+
     //             const newEnum = isBusinessAddressRegistered
     //                 ? mailingAddressEnum
     //                 : mailingAddressEnum.filter((option) => option !== "Same as Business Address");
-    
+
     //             if (JSON.stringify(mailingAddressEnum) !== JSON.stringify(newEnum)) {
     //                 contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = newEnum;
     //                 return updatedSchema;
@@ -143,7 +142,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     //         return prevSchema;
     //     });
     // }, [basicForm, formIndex]);
-    
+
 
 
     const getIsOpen = (value) => {
@@ -252,7 +251,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 data?.value === "" ||
                 data?.value === null ||
                 data?.value === undefined ||
-                data?.value === 0 
+                data?.value === 0
             ) {
                 // if (
                 //     data.key === "basicDetails.applicant.email.officialEmail" &&
@@ -463,7 +462,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (phoneValue && !phoneRegex.test(phoneValue)) {
             missingKeys.push({ key: phonePath, label: "Business Phone (Invalid Canadian Format)" });
         }
-        
+
         setWarningFieldsContact(missingKeys)
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
@@ -592,12 +591,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getAllMissingFields = () => {
         setUpdateFrom("Continue"); // Track the source of the action
-    
+
         let allMissingKeys = [];
         let keyValuePair = [];
-    
+
         // Collect metadata-based missing fields (Basic Info & Contact Info)
-        metadata?.forEach((data,index) => {
+        metadata?.forEach((data, index) => {
             keyValuePair.push({
                 key: data,
                 value: getValueByPath(basicForm, data),
@@ -605,25 +604,25 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 label: labels[index] || uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label
             });
         });
-    
+
         // Validation rules
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
         const validateBusinessPhone = (phone) => /^[0-9]{10}$/.test(phone);
         const validateBusinessWebsite = (website) => /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/.test(website);
-    
+
         // Identify missing or invalid fields
         keyValuePair.forEach((data) => {
             if (
-                data?.value === "" || 
-                data?.value === null || 
-                data?.value === undefined || 
-                data?.value === 0 
+                data?.value === "" ||
+                data?.value === null ||
+                data?.value === undefined ||
+                data?.value === 0
             ) {
                 allMissingKeys.push(data);
             }
         });
-    
+
         // Business Address validations
         const businessAddressKeys = [
             `forms[${formIndex}].data.contactAddress3.business.businessName`,
@@ -634,13 +633,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             `forms[${formIndex}].data.contactAddress3.business.businessPhone`,
             `forms[${formIndex}].data.contactAddress3.business.businessWebsite`,
         ];
-    
+
         if (
             !getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)
         ) {
             allMissingKeys = allMissingKeys.filter(data => !businessAddressKeys.includes(data?.key));
         }
-    
+
         // Validate business phone format
         const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
         const phoneValue = getValueByPath(basicForm, phonePath);
@@ -660,21 +659,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         ) {
             allMissingKeys = allMissingKeys.filter(data => data?.key !== "basicDetails.departmentSpecialty.specialty");
         }
-    
+
         console.log("All Missing Keys:", allMissingKeys);
-    
+
         // Set all warning fields in state
-        
-    
+
+
         // Display validation dialog if there are missing fields
         if (allMissingKeys.length > 0) {
             setAllWarningFields(allMissingKeys);
             setShowValidationDialog(true);
         } else {
             handleYesOrNo();
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            } else {
+                navigate(navigateURL)
+            }
         }
     };
-    
+
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -954,22 +958,22 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
             )}
             {showValidationDialog && (
-    <ValidationDialog
-        getIsOpen={getIsValidationDialogOpen}
-        labelList={updateFrom === "Continue" 
-            ? allWarningFields  
-            : updateFrom === "contact" 
-                ? warningFieldsContact 
-                : warningFields
-        }
-        getSkipClicked={updateFrom === "Continue" 
-            ? handleYesOrNo 
-            : updateFrom === "contact" 
-                ? getContactSkipClicked 
-                : getSkipClicked
-        }
-    />
-)}
+                <ValidationDialog
+                    getIsOpen={getIsValidationDialogOpen}
+                    labelList={updateFrom === "Continue"
+                        ? allWarningFields
+                        : updateFrom === "contact"
+                            ? warningFieldsContact
+                            : warningFields
+                    }
+                    getSkipClicked={updateFrom === "Continue"
+                        ? handleYesOrNo
+                        : updateFrom === "contact"
+                            ? getContactSkipClicked
+                            : getSkipClicked
+                    }
+                />
+            )}
 
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={getAllMissingFields} />

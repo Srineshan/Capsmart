@@ -464,6 +464,21 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               </p>
             </div>
           </div>
+          <div className={`${style.userGuideGrid}`}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/User+guide.png"
+                alt="PDF Guide" className={style.iconStyleUserGuide} />
+            </div>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Download a PDF Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps that you need to complete in order to
+                successfully submit your Reappointment Application.
+              </p>
+            </div>
+          </div>
           <div className={style.spaceBetween}>
             <div></div>
             <div
