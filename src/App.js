@@ -287,6 +287,10 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalDashboard = React.lazy(() =>
+  import("./Screens/ApplicantDashboard")
+);
+
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
@@ -939,9 +943,9 @@ const App = ({ props }) => {
     return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
   };
 
-  // if (isSessionLoading) {
-  //   return <Loader />;
-  // }
+  if (isSessionLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -1009,7 +1013,7 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ApplicationSummary /></ProtectedRoute>}
                 />
                 <Route path="/historicalData"
-                  element={<HistoricalData />
+                  element={<ProtectedRoute><HistoricalData /></ProtectedRoute>
                   } />
                 <Route path="/applicationSubmitted"
                   element={<ProtectedRoute><ApplicationSubmitted /></ProtectedRoute>
@@ -1291,6 +1295,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/ApplicantDashboard"
+                  element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
 

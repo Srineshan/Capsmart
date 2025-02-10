@@ -473,7 +473,7 @@ const NewActiveApplication = ({
       if (staffManagerWorkflow?.allFormsApproved) {
         setIsApproved(true);
       } else {
-        setIsApproved(false); 
+        setIsApproved(false);
       }
     }
   }, [form]);
@@ -577,42 +577,42 @@ const NewActiveApplication = ({
 
   useEffect(() => {
     console.log("Updated firstnameuser", userFirstName);
-  
+
     const departmentHeadApproverDetails = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Department Head"
     );
-  
+
     const firstName = departmentHeadApproverDetails?.approverDetail?.name?.firstName || "";
     const lastName = departmentHeadApproverDetails?.approverDetail?.name?.lastName || "";
-  
+
     console.log(`Approver dept: ${firstName} ${lastName}`);
-  
+
     if (firstName === userFirstName && lastName === userLastName) {
       setIsApproverDept(true);
     } else {
       setIsApproverDept(false);
     }
   }, [userFirstName, userLastName, form]);
-  
+
   useEffect(() => {
     console.log("Updated firstnameuser", userFirstName);
-  
+
     const credApproverDetails = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Credentialing Committee"
     );
-  
+
     const firstName = credApproverDetails?.approverDetail?.name?.firstName || "";
     const lastName = credApproverDetails?.approverDetail?.name?.lastName || "";
-  
+
     console.log(`Approver dept: ${firstName} ${lastName}`);
-  
+
     if (firstName === userFirstName && lastName === userLastName) {
       setIsApproverCred(true);
     } else {
       setIsApproverCred(false);
     }
   }, [userFirstName, userLastName, form]);
-  
+
   console.log("Is Approver:", isApproverDept);
 
   useEffect(() => {
@@ -623,7 +623,7 @@ const NewActiveApplication = ({
     try {
       const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
       console.log("userdataaaa", JSON.stringify(userData));
-  
+
       if (userData) {
         sessionStorage.setItem('user', JSON.stringify(userData));
         setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
@@ -3665,14 +3665,14 @@ const NewActiveApplication = ({
                 <div className={style.cardTitle}>24 hours coverage of hospital patients, including those in the ER, is a requirement of Professional Staff responsibilities. The physician must provide an acceptable method to respond to hospital calls.</div>
               </div>
               <div className={style.marginTop20}>
-                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.providerType !== undefined ? form?.coverageDetails?.providerType : ''} : {form?.coverageDetails?.providerDetails?.length !== 0 ? form?.coverageDetails?.providerDetails?.map(data => data?.name)?.join(', ') : ''}</strong></div>
+                <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.providerType !== undefined ? form?.coverageDetails?.providerType : ''} : {form?.coverageDetails?.providerType !== "Department / Specialty Group" ? form?.coverageDetails?.providerDetails?.length !== 0 ? form?.coverageDetails?.providerDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
               </div>
               {(form?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && form?.basicDetails?.departmentSpecialty?.specialty === 'Obstetrics & Gynecology') && (
                 <div className={style.marginTop20}>
                   <div className={`${style.cardTitle}`}>
                     {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
                   </div>
-                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.obstetricsProviderType !== undefined ? form?.coverageDetails?.obstetricsProviderType : ''} : {form?.coverageDetails?.obstetricsProviderDetails?.length !== 0 ? form?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.name)?.join(', ') : ''}</strong></div>
+                  <div className={style.lableReadOnlyStyleInPOD}><strong>{form?.coverageDetails?.obstetricsProviderType !== undefined ? form?.coverageDetails?.obstetricsProviderType : ''} : {form?.coverageDetails?.obstetricsProviderType !== "Department / Specialty Group" ? form?.coverageDetails?.obstetricsProviderDetails?.length !== 0 ? form?.coverageDetails?.obstetricsProviderDetails?.map(data => data?.name)?.join(', ') : '' : `${form?.basicDetails?.departmentSpecialty?.department} ${(form?.basicDetails?.departmentSpecialty?.specialty !== null && form?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${form?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</strong></div>
                 </div>
               )}
             </div>
@@ -5739,7 +5739,7 @@ const NewActiveApplication = ({
                                                       )
                                                     )
                                                   ): null} */}
-                                             </div>
+                                                </div>
                                               );
                                             })()
                                           )}

@@ -265,13 +265,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     </div>
                                 )}
                             </div>
-                            <div className={`${style.detailsColumn} ${fields.length > 6 ? style.expanded : ""}`}>
+                            <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
                                 <div className={style.extractedFields}>
                                     <div className={`${style.twoCol}`}>
-                                        {fields.map((field, index) => (
+                                        {fields?.map((field, index) => (
                                             <CommonTextField
                                                 key={index}
-                                                value={metaData !== null ? metaData[field.name] !== undefined ? metaData[field.name] : "" : ""}
+                                                value={metaData !== null ? metaData[field?.name] !== undefined ? metaData[field?.name] : "" : ""}
                                                 className={style.fullWidth}
                                                 maxLength={50}
                                                 readOnly={true}
@@ -287,7 +287,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         </div>
                                     </div>
                                     <div
-                                        className={`${style.purpleButton} ${selectedFileIndex === fileArray.length - 1 ? style.disabledButton : style.cursorPointer}`}
+                                        className={`${style.purpleButton} ${selectedFileIndex === fileArray?.length - 1 ? style.disabledButton : style.cursorPointer}`}
                                         onClick={handleNext}
                                     >
                                         <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
@@ -310,7 +310,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 className={`${style.purpleButtonVerify}`}
                                                 onClick={() => {
                                                     handleDocVerify();
-                                                    if (selectedFileIndex === fileArray.length - 1) {
+                                                    if (selectedFileIndex === fileArray?.length - 1) {
                                                         setTimeout(() => getIsOpen(false), 500);
                                                     } else {
                                                         handleNext();
