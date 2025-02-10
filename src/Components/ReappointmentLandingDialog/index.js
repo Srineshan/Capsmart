@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dialog, Classes, Icon, Intent } from "@blueprintjs/core";
-import logo from "./../../images/cambridgeHospital.png";
+// import logo from "./../../images/cambridgeHospital.png";
 import CrossPink from "../../images/crossPink.png";
 import ReappointmentLandingImage from "../../images/reappointmentLandingImage.png";
 import style from "./index.module.scss";
@@ -17,12 +17,14 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControl from '@mui/material/FormControl';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CommonRadio from "../CommonFields/CommonRadio";
-import { GET, PUT } from "../../Screens/dataSaver";
+import { GET, PUT, TenantID } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
+import Cookies from "universal-cookie";
 
 const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
+  let cookie = new Cookies();
   const descopeSdk = useDescope();
   const { logout } = useDescope();
   const [isContinue, setIsContinue] = useState(false);
@@ -30,6 +32,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState("");
+  const [logo, setLogo] = useState(null);
   const [mobile, setMobile] = useState('');
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const [isPasswordStrong, setIsPasswordStrong] = useState(true);
@@ -71,6 +74,24 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
       getApplication()
     }
   }, [applicationId])
+
+
+  useEffect(() => {
+    const getLogo = async () => {
+      try {
+        const { data } = await GET(`entity-service/entity/${cookie.get('entityId')}`);
+        if (data && data.logo?.file?.fileURL) {
+          setLogo(data.logo.file.fileURL);
+        }
+      } catch (error) {
+        console.error("Error fetching logo:", error);
+      }
+    };
+
+    if (cookie.get('entityId')) {
+      getLogo();
+    }
+  }, [cookie.get('entityId')]);
 
   const getApplication = async () => {
     const { data: basicForm } = await GET(
@@ -264,7 +285,9 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             </p>
           </div> */}
             <div className={`${style.logoStyle} ${style.spaceBetween}`}>
-              <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              {logo !== null ? (
+                <img src={logo} alt="Hospital Logo" className={`${style.logo}`} />
+              ) : ''}
               <img src={'https://capmanager-dev.s3.us-east-1.amazonaws.com/CAP_Manager.png'} alt="CAPManager Logo" className={`${style.CAPSmartLogo}`} />
             </div>
             <div
@@ -438,6 +461,21 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
               <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
                 This guide highlights all of the steps, allowing you to interact with the screens,
                 that you need to complete in order to successfully submit your Reappointment Application.
+              </p>
+            </div>
+          </div>
+          <div className={`${style.userGuideGrid}`}>
+            <div className={`${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <img src="https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/User+guide.png"
+                alt="PDF Guide" className={style.iconStyleUserGuide} />
+            </div>
+            <div className={`${style.cursorPointer} ${style.marginTop}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>
+              <p className={`${style.descriptionStyle} ${style.hoverText}`}>
+                <strong>Download a PDF Step-by-Step Training Guide</strong>
+              </p>
+              <p className={`${style.descriptionStyle} ${style.marginTop10} ${style.hoverText}`}>
+                This guide highlights all of the steps that you need to complete in order to
+                successfully submit your Reappointment Application.
               </p>
             </div>
           </div>
