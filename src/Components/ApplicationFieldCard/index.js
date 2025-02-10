@@ -417,214 +417,407 @@ const ApplicationFieldCard = ({
     isMailingAddressSameAsHomeAddress,
     isBusinessAddressSameAsHomeAddressOrMailingAddress
   );
-  useEffect(() => {
-    if (
-      isMailingAddressSameAsHomeAddress !== undefined &&
-      isMailingAddressSameAsHomeAddress !== null &&
-      !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
-    ) {
-      setBasicForm((prevData) => {
-        let tempBasicForm = { ...prevData };
-        if (
-          tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress2
-            ?.mailingAddress === undefined
-        ) {
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress = {};
-        }
-        tempBasicForm.contactAddress2 = { mailingAddress: {} };
-        if (isMailingAddressSameAsHomeAddress) {
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.streetName =
-            tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.streetName !== undefined
-              ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.streetName
-              : "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode =
-            tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.pinCode !== undefined
-              ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.pinCode
-              : "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city =
-            tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.city !== undefined
-              ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.city
-              : "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province =
-            tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.province !== undefined
-              ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.province
-              : "";
-        } else {
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.streetName = "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode = "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city = "";
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province = "";
-        }
-        tempBasicForm.contactAddress2.mailingAddress =
-          tempBasicForm.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress;
-        return tempBasicForm;
-      });
-    }
-  }, [isMailingAddressSameAsHomeAddress]);
+  // useEffect(() => {
+  //   if (
+  //     isMailingAddressSameAsHomeAddress !== undefined &&
+  //     isMailingAddressSameAsHomeAddress !== null &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     setBasicForm((prevData) => {
+  //       let tempBasicForm = { ...prevData };
+  //       if (
+  //         tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress2
+  //           ?.mailingAddress === undefined
+  //       ) {
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress = {};
+  //       }
+  //       tempBasicForm.contactAddress2 = { mailingAddress: {} };
+  //       if (isMailingAddressSameAsHomeAddress) {
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.streetName =
+  //           tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.streetName !== undefined
+  //             ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.streetName
+  //             : "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode =
+  //           tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.pinCode !== undefined
+  //             ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.pinCode
+  //             : "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city =
+  //           tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.city !== undefined
+  //             ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.city
+  //             : "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province =
+  //           tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.province !== undefined
+  //             ? tempBasicForm?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.province
+  //             : "";
+  //       } else {
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.streetName = "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode = "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city = "";
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province = "";
+  //       }
+  //       tempBasicForm.contactAddress2.mailingAddress =
+  //         tempBasicForm.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress;
+  //       return tempBasicForm;
+  //     });
+  //   }
+  // }, [isMailingAddressSameAsHomeAddress]);
+
+  // useEffect(() => {
+  //   if (
+  //     isMailingAddressSameAsHomeAddress !== undefined &&
+  //     isMailingAddressSameAsHomeAddress !== null &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     console.log("isMailingAddress:", isMailingAddressSameAsHomeAddress);
+  //     setBasicForm((prevData) => {
+  //       let tempContactAddress2 = { ...prevData };
+  //       if (
+  //         tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress2
+  //           ?.mailingAddress === undefined
+  //       ) {
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress = {};
+  //       }
+
+  //       if (
+  //         isMailingAddressSameAsHomeAddress ===
+  //         "Same as Home Address"
+  //       ) {
+  //         tempContactAddress2.contactAddress2 = { mailingAddress: {} };
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.streetName =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.streetName !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.streetName
+  //             : ""
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.pinCode !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.pinCode
+  //             : "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.city !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.city
+  //             : "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.province !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
+  //               ?.homeAddress?.province
+  //             : "";
+  //         tempContactAddress2.contactAddress2 = {
+  //           mailingAddress:
+  //             tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+  //               .mailingAddress,
+  //         };
+  //       } else if (
+  //         isMailingAddressSameAsHomeAddress ===
+  //         "Same as Business Address"
+  //       ) {
+  //         tempContactAddress2.contactAddress2 = { mailingAddress: {} };
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.streetName =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //             ?.business?.businessAddress?.streetName !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //               ?.business?.businessAddress?.streetName
+  //             : "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //             ?.business?.businessAddress?.pinCode !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //               ?.business?.businessAddress?.pinCode
+  //             : "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //             ?.business?.businessAddress?.city !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //               ?.business?.businessAddress?.city
+  //             : "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province =
+  //           tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //             ?.business?.businessAddress?.province !== undefined
+  //             ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
+  //               ?.business?.businessAddress?.province
+  //             : "";
+  //         tempContactAddress2.contactAddress2 = {
+
+  //           mailingAddress:
+  //             tempContactAddress2.forms[addressPageIndex].data.contactAddress2
+  //               .mailingAddress,
+
+  //         };
+  //       } else {
+  //         tempContactAddress2.contactAddress2 = {
+  //           mailingAddress: {}
+  //         };
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.streetName = "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.pinCode = "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.city = "";
+  //         tempContactAddress2.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress2.mailingAddress.province = "";
+  //         tempContactAddress2.contactAddress2 = {
+
+  //           mailingAddress:
+  //             tempContactAddress2.forms[addressPageIndex].data.contactAddress3
+  //               .mailingAddress,
+
+  //         };
+  //       }
+  //       return tempContactAddress2;
+  //     });
+  //   }
+  // }, [isMailingAddressSameAsHomeAddress]);
+
+  // useEffect(() => {
+  //   if (
+  //     isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined &&
+  //     isBusinessAddressSameAsHomeAddressOrMailingAddress !== null &&
+  //     !isPOD &&
+  //     (baseKey?.split(".")[0] === "contactAddress1" ||
+  //       baseKey?.split(".")[0] === "contactAddress2" ||
+  //       baseKey?.split(".")[0] === "contactAddress3")
+  //   ) {
+  //     setBasicForm((prevData) => {
+  //       let tempContactAddress3 = { ...prevData };
+  //       if (
+  //         tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
+  //           ?.business === undefined
+  //       ) {
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business = {};
+  //       }
+  //       if (
+  //         tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
+  //           ?.business?.businessAddress === undefined
+  //       ) {
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress = {};
+  //       }
+  //       if (
+  //         isBusinessAddressSameAsHomeAddressOrMailingAddress ===
+  //         "Same as Home Address"
+  //       ) {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.streetName !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.streetName
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.pinCode !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.pinCode
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.city !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.city
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
+  //             ?.homeAddress?.province !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               ?.contactAddress1?.homeAddress?.province
+  //             : "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       } else if (
+  //         isBusinessAddressSameAsHomeAddressOrMailingAddress ===
+  //         "Same as Mailing Address"
+  //       ) {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.streetName !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.streetName
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.pinCode !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.pinCode
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.city !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.city
+  //             : "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province =
+  //           tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
+  //             ?.mailingAddress?.province !== undefined
+  //             ? tempContactAddress3?.forms[addressPageIndex]?.data
+  //               .contactAddress2?.mailingAddress?.province
+  //             : "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       } else {
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: { businessAddress: {} },
+  //         };
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.streetName = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.pinCode = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.city = "";
+  //         tempContactAddress3.forms[
+  //           addressPageIndex
+  //         ].data.contactAddress3.business.businessAddress.province = "";
+  //         tempContactAddress3.contactAddress3 = {
+  //           business: {
+  //             businessAddress:
+  //               tempContactAddress3.forms[addressPageIndex].data.contactAddress3
+  //                 .business.businessAddress,
+  //           },
+  //         };
+  //       }
+  //       return tempContactAddress3;
+  //     });
+      
+  //   }
+  // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
 
   useEffect(() => {
     if (
       isMailingAddressSameAsHomeAddress !== undefined &&
       isMailingAddressSameAsHomeAddress !== null &&
       !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
+      ["contactAddress1", "contactAddress2", "contactAddress3"].includes(baseKey?.split(".")[0])
     ) {
-      console.log("isMailingAddress:", isMailingAddressSameAsHomeAddress);
       setBasicForm((prevData) => {
-        let tempContactAddress2 = { ...prevData };
-        if (
-          tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress2
-            ?.mailingAddress === undefined
-        ) {
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress = {};
+        let tempData = { ...prevData };
+        let formRef = tempData.forms[addressPageIndex].data;
+  
+        if (!formRef.contactAddress2) {
+          formRef.contactAddress2 = { mailingAddress: {} };
         }
-
-        if (
-          isMailingAddressSameAsHomeAddress ===
-          "Same as Home Address"
-        ) {
-          tempContactAddress2.contactAddress2 = { mailingAddress: {} };
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.streetName =
-            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.streetName !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.streetName
-              : ""
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode =
-            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.pinCode !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.pinCode
-              : "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city =
-            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.city !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.city
-              : "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province =
-            tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.province !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data?.contactAddress1
-                ?.homeAddress?.province
-              : "";
-          tempContactAddress2.contactAddress2 = {
-            mailingAddress:
-              tempContactAddress2.forms[addressPageIndex].data.contactAddress2
-                .mailingAddress,
-          };
-        } else if (
-          isMailingAddressSameAsHomeAddress ===
-          "Same as Business Address"
-        ) {
-          tempContactAddress2.contactAddress2 = { mailingAddress: {} };
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.streetName =
-            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.streetName !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-                ?.business?.businessAddress?.streetName
-              : "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode =
-            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.pinCode !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-                ?.business?.businessAddress?.pinCode
-              : "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city =
-            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.city !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-                ?.business?.businessAddress?.city
-              : "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province =
-            tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-              ?.business?.businessAddress?.province !== undefined
-              ? tempContactAddress2?.forms[addressPageIndex]?.data.contactAddress3
-                ?.business?.businessAddress?.province
-              : "";
-          tempContactAddress2.contactAddress2 = {
-
-            mailingAddress:
-              tempContactAddress2.forms[addressPageIndex].data.contactAddress2
-                .mailingAddress,
-
-          };
-        } else {
-          tempContactAddress2.contactAddress2 = {
-            mailingAddress: {}
-          };
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.streetName = "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.pinCode = "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.city = "";
-          tempContactAddress2.forms[
-            addressPageIndex
-          ].data.contactAddress2.mailingAddress.province = "";
-          tempContactAddress2.contactAddress2 = {
-
-            mailingAddress:
-              tempContactAddress2.forms[addressPageIndex].data.contactAddress3
-                .mailingAddress,
-
-          };
+        if (!formRef.contactAddress2.mailingAddress) {
+          formRef.contactAddress2.mailingAddress = {};
         }
-        return tempContactAddress2;
+  
+        if (isMailingAddressSameAsHomeAddress === "Same as Home Address") {
+          if (formRef.contactAddress1?.homeAddress) {
+            formRef.contactAddress2.mailingAddress = {
+              streetName: formRef.contactAddress1.homeAddress.streetName,
+              pinCode: formRef.contactAddress1.homeAddress.pinCode,
+              city: formRef.contactAddress1.homeAddress.city,
+              province: formRef.contactAddress1.homeAddress.province,
+            };
+          }
+        } else if (isMailingAddressSameAsHomeAddress === "Same as Business Address") {
+          if (formRef.contactAddress3?.business?.businessAddress) {
+            formRef.contactAddress2.mailingAddress = {
+              streetName: formRef.contactAddress3.business.businessAddress.streetName,
+              pinCode: formRef.contactAddress3.business.businessAddress.pinCode,
+              city: formRef.contactAddress3.business.businessAddress.city,
+              province: formRef.contactAddress3.business.businessAddress.province,
+            };
+          }
+        }
+  
+        return tempData;
       });
     }
   }, [isMailingAddressSameAsHomeAddress]);
@@ -634,145 +827,42 @@ const ApplicationFieldCard = ({
       isBusinessAddressSameAsHomeAddressOrMailingAddress !== undefined &&
       isBusinessAddressSameAsHomeAddressOrMailingAddress !== null &&
       !isPOD &&
-      (baseKey?.split(".")[0] === "contactAddress1" ||
-        baseKey?.split(".")[0] === "contactAddress2" ||
-        baseKey?.split(".")[0] === "contactAddress3")
+      ["contactAddress1", "contactAddress2", "contactAddress3"].includes(baseKey?.split(".")[0])
     ) {
       setBasicForm((prevData) => {
-        let tempContactAddress3 = { ...prevData };
-        if (
-          tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
-            ?.business === undefined
-        ) {
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business = {};
+        let tempData = { ...prevData };
+        let formRef = tempData.forms[addressPageIndex].data;
+  
+        if (!formRef.contactAddress3) {
+          formRef.contactAddress3 = { business: { businessAddress: {} } };
         }
-        if (
-          tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress3
-            ?.business?.businessAddress === undefined
-        ) {
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress = {};
+        if (!formRef.contactAddress3.business) {
+          formRef.contactAddress3.business = { businessAddress: {} };
         }
-        if (
-          isBusinessAddressSameAsHomeAddressOrMailingAddress ===
-          "Same as Home Address"
-        ) {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.streetName !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.streetName
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.pinCode !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.pinCode
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.city !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.city
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            tempContactAddress3?.forms[addressPageIndex]?.data?.contactAddress1
-              ?.homeAddress?.province !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                ?.contactAddress1?.homeAddress?.province
-              : "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
-        } else if (
-          isBusinessAddressSameAsHomeAddressOrMailingAddress ===
-          "Same as Mailing Address"
-        ) {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.streetName !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.streetName
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.pinCode !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.pinCode
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.city !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.city
-              : "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            tempContactAddress3?.forms[addressPageIndex]?.data.contactAddress2
-              ?.mailingAddress?.province !== undefined
-              ? tempContactAddress3?.forms[addressPageIndex]?.data
-                .contactAddress2?.mailingAddress?.province
-              : "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
-        } else {
-          tempContactAddress3.contactAddress3 = {
-            business: { businessAddress: {} },
-          };
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.streetName = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.pinCode = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city = "";
-          tempContactAddress3.forms[
-            addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province = "";
-          tempContactAddress3.contactAddress3 = {
-            business: {
-              businessAddress:
-                tempContactAddress3.forms[addressPageIndex].data.contactAddress3
-                  .business.businessAddress,
-            },
-          };
+        if (!formRef.contactAddress3.business.businessAddress) {
+          formRef.contactAddress3.business.businessAddress = {};
         }
-        return tempContactAddress3;
+  
+        if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Home Address") {
+          if (formRef.contactAddress1?.homeAddress) {
+            formRef.contactAddress3.business.businessAddress = {
+              streetName: formRef.contactAddress1.homeAddress.streetName,
+              pinCode: formRef.contactAddress1.homeAddress.pinCode,
+              city: formRef.contactAddress1.homeAddress.city,
+              province: formRef.contactAddress1.homeAddress.province,
+            };
+          }
+        } else if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Mailing Address") {
+          if (formRef.contactAddress2?.mailingAddress) {
+            formRef.contactAddress3.business.businessAddress = {
+              streetName: formRef.contactAddress2.mailingAddress.streetName,
+              pinCode: formRef.contactAddress2.mailingAddress.pinCode,
+              city: formRef.contactAddress2.mailingAddress.city,
+              province: formRef.contactAddress2.mailingAddress.province,
+            };
+          }
+        }
+        return tempData;
       });
     }
   }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
@@ -1548,7 +1638,7 @@ const ApplicationFieldCard = ({
                                 : e.target.value.slice(0, fieldData.maxLength)
                               : e.target.value,
                         baseKey
-                      )
+                      ) 
                     }
                     maxLength={TEXTFIELDLEN50}
                     placeholder={
@@ -2088,7 +2178,13 @@ const ApplicationFieldCard = ({
             }
           }
           const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
-          console.log("currentValue1", currentValue)
+          console.log("currentValue1", currentValue);
+          const additionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)?.[0]?.then?.required || [];
+    
+    // Identify CKEditor and File Upload fields dynamically
+    const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
+    const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
+
           return (
             <div
               className={`${style.disclosureGrid} ${style.verticalAlignCenter}`}
@@ -2132,11 +2228,22 @@ const ApplicationFieldCard = ({
                       `${basicpath}.${baseKey}.${fieldKey}`
                     ) || null
                   }
-                  onChange={
-                    isPOD
-                      ? () => { }
-                      : (e) => handleChange(fieldKey, e.target.value, baseKey)
-                  }
+                  onChange={isPOD ? () => {} : (e) => {
+                    const newValue = e.target.value;
+                    handleChange(fieldKey, newValue, baseKey);
+
+                    if (currentValue !== newValue) {
+                        console.log("Disclosure toggled! Resetting CKEditor and File Upload...");
+
+                        ckEditorFields.forEach((ckField) => {
+                            handleChange(ckField, "", baseKey);
+                        });
+
+                        fileUploadFields.forEach((fileField) => {
+                            handleChange(fileField, null, baseKey);
+                        });
+                    }
+                }}
                   radioValue={fieldData.enum}
                   label={fieldData.enum}
                   required={
@@ -2386,6 +2493,33 @@ const ApplicationFieldCard = ({
                     </div>
                   </div>
                 </div>
+                {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" && fileValid && (
+                        <div className={style.uploadButton2}>
+                          <div className={style.uploadGrid2}>
+                            
+                            <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                <span
+                    className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                    onClick={() => {
+                        setShowFileDisplayDialog(true);
+                          setselectedFile(
+                            fileURL
+                          );
+                        
+                    }}
+                >
+                    {fieldValue?.fileName}
+                </span>
+            </Tooltip>
+                            <img
+                                src={DeleteIcon}
+                                alt="Delete"
+                                className={`${style.imgIcon} ${style.cursorPointer}`}
+                                onClick={() => handleChange(fieldKey, null, baseKey)}
+                            />
+                            </div>
+                        </div>
+                    )}
               </div>;
             }
           } else {
@@ -2467,6 +2601,35 @@ const ApplicationFieldCard = ({
                     handleChange(fieldKey, e.target.files[0], baseKey);
                   }}
                 />
+                 {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
+                    getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
+                        <div className={style.uploadButton2}>
+                          <div className={style.uploadGrid2}>
+                          <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                <span
+                    className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                    onClick={() =>
+                      window.open(
+                        getValueByPath(
+                          basicForm,
+                          `${basicpath}.${baseKey}.${fieldKey}`
+                        )?.fileURL,
+                        "_blank"
+                      )
+                    }
+                >
+                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                </span>
+            </Tooltip>
+                            <img
+                                src={DeleteIcon}
+                                alt="Delete"
+                                className={`${style.imgIcon} ${style.cursorPointer}`}
+                                onClick={() => handleChange(fieldKey, null, baseKey)}
+                            />
+                            </div>
+                        </div>
+                    )}
               </div>
             );
           }

@@ -65,7 +65,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     }, [basicForm, formIndex])
 
     useEffect(() => {
-        getApplicantProfile()
+        if (applicationId)
+         {getApplicantProfile()} 
     }, [applicationId])
 
     // useEffect(() => {
@@ -108,9 +109,41 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 }
             }
 
-            setFormSchema(updatedSchema); // Update the state with the modified schema
+            setFormSchema(updatedSchema); 
         }
-    }, [formSchema, basicForm, formIndex]);
+    }, [basicForm, formIndex]);
+
+
+
+    // useEffect(() => {
+    //     setFormSchema((prevSchema) => {
+    //         if (!prevSchema) return prevSchema;
+    
+    //         const updatedSchema = { ...prevSchema };
+    //         const contactAddress2 = updatedSchema?.properties?.contactAddress2;
+    //         const mailingAddressEnum =
+    //             contactAddress2?.properties?.isMailingAddressSameAsHomeAddress?.enum;
+    
+    //         if (mailingAddressEnum) {
+    //             const isBusinessAddressRegistered = getValueByPath(
+    //                 basicForm,
+    //                 `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`
+    //             );
+    
+    //             const newEnum = isBusinessAddressRegistered
+    //                 ? mailingAddressEnum
+    //                 : mailingAddressEnum.filter((option) => option !== "Same as Business Address");
+    
+    //             if (JSON.stringify(mailingAddressEnum) !== JSON.stringify(newEnum)) {
+    //                 contactAddress2.properties.isMailingAddressSameAsHomeAddress.enum = newEnum;
+    //                 return updatedSchema;
+    //             }
+    //         }
+    //         return prevSchema;
+    //     });
+    // }, [basicForm, formIndex]);
+    
+
 
     const getIsOpen = (value) => {
         setIsOpen(value);
