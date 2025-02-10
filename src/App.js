@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
@@ -287,6 +287,10 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalDashboard = React.lazy(() =>
+  import("./Screens/ApplicantDashboard")
+);
+
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
@@ -310,7 +314,7 @@ const App = ({ props }) => {
   let errorInfo = sessionStorage.getItem('errorInfo');
   console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
   const [showDialog, setShowDialog] = useState(false);
-
+  const refreshTimeoutRef = useRef(null);
   // useEffect(() => {
   //   const handleVisibilityChange = () => {
   //     setVisibilityState(document.visibilityState); // Update state on visibility change
@@ -346,18 +350,18 @@ const App = ({ props }) => {
     }
   }, [userFromCookie])
 
-  useEffect(() => {
-    if (sessionToken !== undefined) {
-      cookie.set('authorization', sessionToken, {
-        path: '/'
-      });
-    }
-  }, [sessionToken])
+  // useEffect(() => {
+  //   if (sessionToken !== undefined) {
+  //     cookie.set('authorization', sessionToken, {
+  //       path: '/'
+  //     });
+  //   }
+  // }, [sessionToken])
 
   useEffect(() => {
-    if (sessionToken && cookie.get("authorization") !== undefined) {
-      let token = sessionToken
-      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(sessionToken), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(sessionToken.split('.')[1])))
+    if (cookie.get("authorization") !== undefined) {
+      let token = cookie.get("authorization")
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(cookie.get("authorization")), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(cookie.get("authorization").split('.')[1])))
       if (typeof token !== 'string') {
         // If the token is not a string, make sure to convert it into a string
         token = JSON.stringify(token);
@@ -369,7 +373,7 @@ const App = ({ props }) => {
         logout()
       }
       const decodedToken = jwt(cookie.get("authorization"));
-      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, sessionToken)
+      console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, cookie.get("authorization"))
       if (Date.now() > decodedToken.exp * 1000) {
         console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000)
         cookie.remove("authorization", { path: "/" });
@@ -433,6 +437,18 @@ const App = ({ props }) => {
         ?.map((data) => data)?.[0]?.timeZone?.id
     );
   }, [entityDetails, currentUserDetails]);
+
+  useEffect(() => {
+    if (isAuthenticated && cookie.get("authorization")) {
+      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
+    }
+
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current); // Cleanup on unmount
+      }
+    };
+  }, [isAuthenticated, cookie.get("authorization")]);
 
   axios.interceptors.request.use(
     (request) => {
@@ -689,16 +705,29 @@ const App = ({ props }) => {
   };
 
   const scheduleTokenRefresh = (decodedToken) => {
-    console.log('entered')
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+    console.log('Token refresh scheduled...')
     const currentTime = Date.now() / 1000; // Current time in seconds
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
+    console.log(`Token expires in: ${timeToExpiry} seconds (Expiry: ${decodedToken.exp}, Now: ${currentTime})`)
 
-    // Schedule the refresh 1 minute before expiration
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', sessionToken)
-    setTimeout(() => {
-      refreshToken();
-    }, (timeToExpiry - 60) * 1000);
+    // setTimeout(() => {
+    //   refreshToken();
+    // }, (timeToExpiry - 60) * 1000);
+    if (((timeToExpiry - 60) * 1000) > 60) {
+      refreshTimeoutRef.current = setTimeout(async () => {
+        try {
+          await refreshToken(); // Refresh token
+          if (cookie.get("authorization")) {
+            scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1]))); // Re-run after successful refresh
+          }
+        } catch (err) {
+          console.error("Token refresh failed", err);
+        }
+      }, ((timeToExpiry - 60) * 1000));
+    }
   };
 
   const setUserDetails = async () => {
@@ -776,8 +805,8 @@ const App = ({ props }) => {
         });
       });
     console.log('entered')
-    if (sessionToken) {
-      scheduleTokenRefresh(JSON.parse(atob(sessionToken.split('.')[1])))
+    if (cookie.get("authorization")) {
+      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
     }
     return true;
   };
@@ -939,9 +968,9 @@ const App = ({ props }) => {
     return (isAuthenticated && cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined') ? <Navigate to="/" /> : children;
   };
 
-  // if (isSessionLoading) {
-  //   return <Loader />;
-  // }
+  if (isSessionLoading) {
+    return <Loader />;
+  }
 
   return (
     <>
@@ -1009,7 +1038,7 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><ApplicationSummary /></ProtectedRoute>}
                 />
                 <Route path="/historicalData"
-                  element={<HistoricalData />
+                  element={<ProtectedRoute><HistoricalData /></ProtectedRoute>
                   } />
                 <Route path="/applicationSubmitted"
                   element={<ProtectedRoute><ApplicationSubmitted /></ProtectedRoute>
@@ -1291,6 +1320,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/ApplicantDashboard"
+                  element={<ProtectedRoute><ApplicantPortalDashboard /></ProtectedRoute>}
                 />
                 <Route path="*" element={<DescopeLoginDialog />} {...props} exact={true} />
 
