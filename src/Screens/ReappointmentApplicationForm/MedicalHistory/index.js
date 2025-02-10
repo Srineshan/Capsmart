@@ -116,6 +116,27 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
             missingKeys = temp;
         }
+      
+    const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
+    const emailValue = getValueByPath(basicForm, emailPath);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (emailValue && !emailRegex.test(emailValue)) {
+        missingKeys.push({ key: emailPath, label: "Email Id (Invalid Format)" });
+    }
+
+    
+    const phonePath = `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`;
+    const phoneValue = getValueByPath(basicForm, phonePath);
+    const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+    if (phoneValue && !phoneRegex.test(phoneValue)) {
+        missingKeys.push({ key: phonePath, label: "Cell Phone (Invalid Canadian Format)" });
+    }
+
+    
+    console.log("Email Value:", emailValue);
+    console.log("Phone Value:", phoneValue);
+    console.log("Missing Fields:", missingKeys);
+
         if (missingKeys?.length !== 0) {
             setShowValidationDialog(true)
         } else {
