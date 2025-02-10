@@ -34,6 +34,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [labels, setLabels] = useState([]);
     const [warningFields, setWarningFields] = useState([]);
     const [warningFieldsContact, setWarningFieldsContact] = useState([]);
+    const [allWarningFields,setAllWarningFields] = useState([]);
     const [showValidationDialog, setShowValidationDialog] = useState(false);
     const [showDemographicInfo, setShowDemographicInfo] = useState(true);
     const [showContactInfo, setShowContactInfo] = useState(true);
@@ -251,28 +252,26 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 data?.value === "" ||
                 data?.value === null ||
                 data?.value === undefined ||
-                data?.value === 0 ||
-                (data?.key === "basicDetails.applicant.email.officialEmail" &&
-                    !emailRegex.test(data?.value))
+                data?.value === 0 
             ) {
-                if (
-                    data.key === "basicDetails.applicant.email.officialEmail" &&
-                    !emailRegex.test(data.value)
-                ) {
-                    setBasicForm((prevForm) => ({
-                        ...prevForm,
-                        basicDetails: {
-                            ...prevForm.basicDetails,
-                            applicant: {
-                                ...prevForm.basicDetails.applicant,
-                                email: {
-                                    ...prevForm.basicDetails.applicant.email,
-                                    officialEmail: "",
-                                },
-                            },
-                        },
-                    }));
-                }
+                // if (
+                //     data.key === "basicDetails.applicant.email.officialEmail" &&
+                //     !emailRegex.test(data.value)
+                // ) {
+                //     setBasicForm((prevForm) => ({
+                //         ...prevForm,
+                //         basicDetails: {
+                //             ...prevForm.basicDetails,
+                //             applicant: {
+                //                 ...prevForm.basicDetails.applicant,
+                //                 email: {
+                //                     ...prevForm.basicDetails.applicant.email,
+                //                     officialEmail: "",
+                //                 },
+                //             },
+                //         },
+                //     }));
+                // }
                 // if (
                 //     basicForm.basicDetails.applicant.cellPhone &&
                 //     !phoneRegex.test(basicForm.basicDetails.applicant.cellPhone)
@@ -311,6 +310,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                     !["basicDetails.departmentSpecialty.specialty"]?.includes(data?.key)
             );
             missingKeys = temp;
+        }
+        const emailPath = `forms[${formIndex}].data.applicant.email.officialEmail`;
+        const emailValue = getValueByPath(basicForm, emailPath);
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailValue && !emailRegex.test(emailValue)) {
+            missingKeys.push({ key: emailPath, label: "Email (Invalid email Format)" });
         }
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true);
@@ -451,6 +456,14 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
             missingKeys = temp;
         }
+
+        const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
+        const phoneValue = getValueByPath(basicForm, phonePath);
+        const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+        if (phoneValue && !phoneRegex.test(phoneValue)) {
+            missingKeys.push({ key: phonePath, label: "Business Phone (Invalid Canadian Format)" });
+        }
+        
         setWarningFieldsContact(missingKeys)
         if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
             setShowValidationDialog(true)
@@ -568,14 +581,100 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         navigate(navigateBackURL)
     }
 
-    const handleContinue = () => {
-        handleYesOrNo()
-        if (sessionStorage.getItem('fromSummary') === "true") {
-            navigate(-1);
-        } else {
-            navigate(navigateURL)
+    // const handleContinue = () => {
+    //     handleYesOrNo()
+    //     if (sessionStorage.getItem('fromSummary') === "true") {
+    //         navigate(-1);
+    //     } else {
+    //         navigate(navigateURL)
+    //     }
+    // }
+
+    const getAllMissingFields = () => {
+        setUpdateFrom("Continue"); // Track the source of the action
+    
+        let allMissingKeys = [];
+        let keyValuePair = [];
+    
+        // Collect metadata-based missing fields (Basic Info & Contact Info)
+        metadata?.forEach((data,index) => {
+            keyValuePair.push({
+                key: data,
+                value: getValueByPath(basicForm, data),
+                // Assign correct label from either Basic Info or Contact Info labels
+                label: labels[index] || uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label
+            });
+        });
+    
+        // Validation rules
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+        const validateBusinessPhone = (phone) => /^[0-9]{10}$/.test(phone);
+        const validateBusinessWebsite = (website) => /^(https?:\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}([\/\w .-]*)*\/?$/.test(website);
+    
+        // Identify missing or invalid fields
+        keyValuePair.forEach((data) => {
+            if (
+                data?.value === "" || 
+                data?.value === null || 
+                data?.value === undefined || 
+                data?.value === 0 
+            ) {
+                allMissingKeys.push(data);
+            }
+        });
+    
+        // Business Address validations
+        const businessAddressKeys = [
+            `forms[${formIndex}].data.contactAddress3.business.businessName`,
+            `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`,
+            `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`,
+            `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`,
+            `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`,
+            `forms[${formIndex}].data.contactAddress3.business.businessPhone`,
+            `forms[${formIndex}].data.contactAddress3.business.businessWebsite`,
+        ];
+    
+        if (
+            !getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`)
+        ) {
+            allMissingKeys = allMissingKeys.filter(data => !businessAddressKeys.includes(data?.key));
         }
-    }
+    
+        // Validate business phone format
+        const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
+        const phoneValue = getValueByPath(basicForm, phonePath);
+        if (phoneValue && !phoneRegex.test(phoneValue)) {
+            allMissingKeys.push({ key: phonePath, label: "Business Phone (Invalid Canadian Format)" });
+        }
+        const emailPath = `forms[${formIndex}].data.applicant.email.officialEmail`;
+        const emailValue = getValueByPath(basicForm, emailPath);
+        if (emailValue && !emailRegex.test(emailValue)) {
+            allMissingKeys.push({ key: emailPath, label: "Business Phone (Invalid Canadian Format)" });
+        }
+        // Validate specialty selection based on department
+        if (
+            !formSchemaWholeObject?.schema?.properties?.departmentSpecialty?.dependencies?.department?.oneOf
+                ?.map((data) => data?.properties?.department?.enum[0])
+                ?.includes(getValueByPath(basicForm, "basicDetails.departmentSpecialty.department"))
+        ) {
+            allMissingKeys = allMissingKeys.filter(data => data?.key !== "basicDetails.departmentSpecialty.specialty");
+        }
+    
+        console.log("All Missing Keys:", allMissingKeys);
+    
+        // Set all warning fields in state
+        
+    
+        // Display validation dialog if there are missing fields
+        if (allMissingKeys.length > 0) {
+            setAllWarningFields(allMissingKeys);
+            setShowValidationDialog(true);
+        } else {
+            handleYesOrNo();
+        }
+    };
+    
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -779,7 +878,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div>
                     </div>
                 </div>
 
@@ -841,7 +940,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         >
                             CONTINUE
                         </div> */}
-                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && handleContinue()}>CONTINUE</div>
+                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && getAllMissingFields()}>CONTINUE</div>
                         </div>
 
                     </div>
@@ -855,14 +954,25 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
             )}
             {showValidationDialog && (
-                <ValidationDialog
-                    getIsOpen={getIsValidationDialogOpen}
-                    labelList={updateFrom === 'contact' ? warningFieldsContact : warningFields}
-                    getSkipClicked={updateFrom === 'contact' ? getContactSkipClicked : getSkipClicked}
-                />
-            )}
+    <ValidationDialog
+        getIsOpen={getIsValidationDialogOpen}
+        labelList={updateFrom === "Continue" 
+            ? allWarningFields  
+            : updateFrom === "contact" 
+                ? warningFieldsContact 
+                : warningFields
+        }
+        getSkipClicked={updateFrom === "Continue" 
+            ? handleYesOrNo 
+            : updateFrom === "contact" 
+                ? getContactSkipClicked 
+                : getSkipClicked
+        }
+    />
+)}
+
             {showJourneyDialog && (
-                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
+                <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Start! You're On Your Way.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={getAllMissingFields} />
             )}
         </div>
     );
