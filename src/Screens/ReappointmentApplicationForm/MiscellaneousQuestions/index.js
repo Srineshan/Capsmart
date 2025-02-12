@@ -758,14 +758,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                             />
                           </div>
                         )}
-                        {obstetricsProviderType === "Department / Specialty Group" && (
-                          // <TextArea
-                          //   value={obstetricsCovererName}
-                          //   className={`${style.fullWidth} ${style.marginTop10}`}
-                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
-                          //   placeholder={"Enter Here"}
-                          //   rows={4}
-                          // />
+                        {/* {obstetricsProviderType === "Department / Specialty Group" && (
                           <div className={style.fieldWrapper}>
                             <CommonTextField
                               value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
@@ -776,10 +769,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               required={true}
                             />
                           </div>
-                        )}
+                        )} */}
                       </>
                     )}
                   </div>
+                  {(obstetricsProviderType === "Department / Specialty Group") && (
+                    <div className={`${style.cardTitle} ${style.marginTop}`}>{`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</div>
+                  )}
                   <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                     {/* {obstetricsCovererNameList?.map ? (
                     obstetricsCovererNameList?.map(data => {
@@ -996,7 +992,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                           </div>
                         )}
 
-                        {providerType === "Department / Specialty Group" && (
+                        {/* {providerType === "Department / Specialty Group" && (
                           // <TextArea
                           //   value={obstetricsCovererName}
                           //   className={`${style.fullWidth} ${style.marginTop10}`}
@@ -1014,10 +1010,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                               required={true}
                             />
                           </div>
-                        )}
+                        )} */}
                       </>
                     )}
                   </div>
+                  {(providerType === "Department / Specialty Group") && (
+                    <div className={`${style.cardTitle} ${style.marginTop}`}>{`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</div>
+                  )}
 
                   {providerType === "Group" && (
                     <div className={`${style.chipsContainer} ${style.marginTop10}`}>

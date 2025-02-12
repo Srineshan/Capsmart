@@ -125,16 +125,9 @@ const ReappointmentApplicationFormRequirement = () => {
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        // await PUT(`application-management-service/application/${applicationId}`, basicForm)
-        //     .then(response => {
-        //         console.log(response)
-        //         navigate('/applicationForm/section1/step1')
-        //         SuccessToaster("Application Updated Successfully");
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //         ErrorToaster("Unexpected Error Updating Application");
-        //     });
+        if ((sessionStorage.getItem('taskId') !== undefined && sessionStorage.getItem('taskId') !== 'undefined') && (sessionStorage.getItem('taskStatus') !== undefined && sessionStorage.getItem('taskStatus') !== 'undefined' && sessionStorage.getItem('taskStatus') === "NOT_STARTED")) {
+            await PUT(`task-management-service/task/${sessionStorage.getItem('taskId')}/updateStatus?status=ON_GOING`)
+        }
         navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
     }
 
