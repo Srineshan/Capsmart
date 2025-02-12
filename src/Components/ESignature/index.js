@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import style from "./index.module.scss";
-import { getValueByPath } from "../../utils/formatting";
+import { corsUrl, getValueByPath } from "../../utils/formatting";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 
@@ -71,7 +71,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
               </span>
             ) : eSignImg ? (
               <img
-                src={eSignImg?.fileURL}
+                src={`${corsUrl}/${eSignImg?.fileURL}`}
                 alt="Signature"
                 className={style.eSignImg}
               />

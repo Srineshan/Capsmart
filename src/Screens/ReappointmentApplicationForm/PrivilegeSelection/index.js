@@ -204,7 +204,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   useEffect(() => {
     if (isSubmit) {
-      handleSubmit();
+      handleSubmitPrivilegesAtOtherHospital(true);
       setIsSubmit(false);
     }
   }, [isSubmit])
@@ -876,6 +876,85 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
         additionalPrivilegeChangeUpdated: true,
         privilegeAtOtherHospitalUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated : false,
+      },
+      unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
+      acknowledged: true,
+    };
+    await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+      .then((response) => {
+        getPreApplication();
+      })
+  }
+
+  const handleSubmitPrivilegesAtOtherHospital = async (isUpdated) => {
+    let data = basicForm;
+    if (isUpdated) {
+      let tempHospitalPrivilegeSet;
+      if (privilegeAtOtherHospitalIndex !== undefined && isPrivilegeAtOtherHospitalEdited) {
+        tempHospitalPrivilegeSet = hospitalPrivilegeSet;
+        tempHospitalPrivilegeSet[privilegeAtOtherHospitalIndex] = { hospitalName: hospitalName, privileges: hospitalPrivilege, privilegeCategory: hospitalPrivilegeCategory };
+      } else {
+        if (hospitalName !== "") {
+          tempHospitalPrivilegeSet = [...(hospitalPrivilegeSet || []), { hospitalName: hospitalName, privileges: hospitalPrivilege, privilegeCategory: hospitalPrivilegeCategory }];
+        } else {
+          console.log('updatedP', hospitalPrivilegeSet)
+          tempHospitalPrivilegeSet = hospitalPrivilegeSet;
+        }
+      }
+      setHospitalName('');
+      setHospitalPrivilege('');
+      setHospitalPrivilegeCategory('')
+      setIsPrivilegeAtOtherHospitalEdited(false);
+      setPrivilegeAtOtherHospitalIndex();
+      data.basicDetails.existingCredentialingPrivilegeCategory = {
+        hasExistingPrivilege: data.basicDetails.existingCredentialingPrivilegeCategory?.hasExistingPrivilege,
+        credentialingPrivilegeCategory: data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.id !== "" ? data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory : null,
+        hospitalName: data.basicDetails.existingCredentialingPrivilegeCategory?.hospitalName,
+        privileges: data.basicDetails.existingCredentialingPrivilegeCategory?.privileges,
+        hospitalPrivileges: tempHospitalPrivilegeSet,
+        priorHospitalPrivileges: !basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated ? data?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges : data?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges
+      };
+      console.log(data);
+      await PUT(
+        `application-management-service/application/${applicationId}`,
+        data
+      )
+    } else {
+      if (!basicForm?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalUpdated) {
+        data.basicDetails.existingCredentialingPrivilegeCategory = {
+          hasExistingPrivilege: data.basicDetails.existingCredentialingPrivilegeCategory?.hasExistingPrivilege,
+          credentialingPrivilegeCategory: data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.id !== "" ? data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory : null,
+          hospitalName: data.basicDetails.existingCredentialingPrivilegeCategory?.hospitalName,
+          privileges: data.basicDetails.existingCredentialingPrivilegeCategory?.privileges,
+          hospitalPrivileges: [],
+          priorHospitalPrivileges: data.basicDetails.existingCredentialingPrivilegeCategory?.hospitalPrivileges
+        };
+        await PUT(`application-management-service/application/${applicationId}`, data)
+      } else {
+        data.basicDetails.existingCredentialingPrivilegeCategory = {
+          hasExistingPrivilege: data.basicDetails.existingCredentialingPrivilegeCategory?.hasExistingPrivilege,
+          credentialingPrivilegeCategory: data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory?.id !== "" ? data.basicDetails.existingCredentialingPrivilegeCategory?.credentialingPrivilegeCategory : null,
+          hospitalName: data.basicDetails.existingCredentialingPrivilegeCategory?.hospitalName,
+          privileges: data.basicDetails.existingCredentialingPrivilegeCategory?.privileges,
+          hospitalPrivileges: [],
+          priorHospitalPrivileges: data.basicDetails.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges
+        };
+        await PUT(`application-management-service/application/${applicationId}`, data)
+      }
+    }
+    let temp = {
+      schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+      data: {
+        privilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        departmentChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeYesOrNo : '',
+        privilegeSetChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo : '',
+        additionalPrivilegeChangeYesOrNo: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo : '',
+        privilegeAtOtherHospitalYesOrNo: isUpdated ? 'Yes' : 'No',
+        privilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeChangeUpdated : false,
+        departmentChangeUpdated: basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated : false,
+        privilegeSetChangeUpdated: basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated : false,
+        additionalPrivilegeChangeUpdated: basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated !== undefined ? basicForm?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated : false,
+        privilegeAtOtherHospitalUpdated: true,
       },
       unFilledFields: basicForm?.forms?.[formIndex]?.unFilledFields,
       acknowledged: true,
@@ -3922,7 +4001,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         </div>
                         <div
                           className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                          onClick={() => { setIsEditPrivilegeAtOtherHospitals(false); setPrivilegeAtOtherHospitalYesOrNo('No') }}
+                          onClick={() => { setIsEditPrivilegeAtOtherHospitals(false); setPrivilegeAtOtherHospitalYesOrNo('No'); handleSubmitPrivilegesAtOtherHospital() }}
                         >
                           NO
                         </div>
@@ -4054,7 +4133,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             setIsEditPrivilegeAtOtherHospitals(true);
                             setPrivilegesMaintainedInOtherHositals(false)
                             setIsUpdateClicked(true);
-                            handleSubmit()
+                            handleSubmitPrivilegesAtOtherHospital(true)
                           }
                       }
                       disabled={hospitalName === "" || hospitalPrivilege === ""}
@@ -4074,7 +4153,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             setIsPrivilegeSetChanging(false);
                             setIsEditPrivilegeAtOtherHospitals(false);
                             setIsUpdateClicked(true);
-                            handleSubmit()
+                            handleSubmitPrivilegesAtOtherHospital(true)
                           }
                       }
                       disabled={hospitalName === "" || hospitalPrivilege === ""}

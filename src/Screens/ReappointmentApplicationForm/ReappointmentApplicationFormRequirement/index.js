@@ -125,16 +125,9 @@ const ReappointmentApplicationFormRequirement = () => {
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        // await PUT(`application-management-service/application/${applicationId}`, basicForm)
-        //     .then(response => {
-        //         console.log(response)
-        //         navigate('/applicationForm/section1/step1')
-        //         SuccessToaster("Application Updated Successfully");
-        //     })
-        //     .catch((error) => {
-        //         console.log(error)
-        //         ErrorToaster("Unexpected Error Updating Application");
-        //     });
+        if ((sessionStorage.getItem('taskId') !== undefined && sessionStorage.getItem('taskId') !== 'undefined') && (sessionStorage.getItem('taskStatus') !== undefined && sessionStorage.getItem('taskStatus') !== 'undefined' && sessionStorage.getItem('taskStatus') === "NOT_STARTED")) {
+            await PUT(`task-management-service/task/${sessionStorage.getItem('taskId')}/updateStatus?status=ON_GOING`)
+        }
         navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[0]?.formCategory}/${btoa(basicForm?.forms[0]?.schemaCategory)}`)
     }
 
@@ -244,7 +237,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                     </div>
                                     <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
                                         <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>Interactive Step-by-Step Training Guide</div>
-                                        {/* <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>PDF Step-by-Step Training Guide</div> */}
+                                        <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>PDF Step-by-Step Training Guide</div>
                                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div>
                                     </div>

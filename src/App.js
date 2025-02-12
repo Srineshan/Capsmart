@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import "./App.css";
 import history from "./routes/history";
@@ -314,7 +314,7 @@ const App = ({ props }) => {
   let errorInfo = sessionStorage.getItem('errorInfo');
   console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
   const [showDialog, setShowDialog] = useState(false);
-
+  const refreshTimeoutRef = useRef(null);
   // useEffect(() => {
   //   const handleVisibilityChange = () => {
   //     setVisibilityState(document.visibilityState); // Update state on visibility change
@@ -437,6 +437,18 @@ const App = ({ props }) => {
         ?.map((data) => data)?.[0]?.timeZone?.id
     );
   }, [entityDetails, currentUserDetails]);
+
+  useEffect(() => {
+    if (isAuthenticated && cookie.get("authorization")) {
+      scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
+    }
+
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current); // Cleanup on unmount
+      }
+    };
+  }, [isAuthenticated, cookie.get("authorization")]);
 
   axios.interceptors.request.use(
     (request) => {
@@ -693,16 +705,29 @@ const App = ({ props }) => {
   };
 
   const scheduleTokenRefresh = (decodedToken) => {
-    console.log('entered')
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
+    }
+    console.log('Token refresh scheduled...')
     const currentTime = Date.now() / 1000; // Current time in seconds
     const timeToExpiry = decodedToken.exp - currentTime; // Time left in seconds
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', cookie.get("authorization"))
+    console.log(`Token expires in: ${timeToExpiry} seconds (Expiry: ${decodedToken.exp}, Now: ${currentTime})`)
 
-    // Schedule the refresh 1 minute before expiration
-    console.log(timeToExpiry, currentTime, decodedToken.exp, 'exp', cookie.get("authorization"))
-    setTimeout(() => {
-      refreshToken();
-    }, (timeToExpiry - 60) * 1000);
+    // setTimeout(() => {
+    //   refreshToken();
+    // }, (timeToExpiry - 60) * 1000);
+    if (((timeToExpiry - 60) * 1000) > 60) {
+      refreshTimeoutRef.current = setTimeout(async () => {
+        try {
+          await refreshToken(); // Refresh token
+          if (cookie.get("authorization")) {
+            scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1]))); // Re-run after successful refresh
+          }
+        } catch (err) {
+          console.error("Token refresh failed", err);
+        }
+      }, ((timeToExpiry - 60) * 1000));
+    }
   };
 
   const setUserDetails = async () => {
