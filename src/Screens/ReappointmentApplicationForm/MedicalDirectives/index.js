@@ -179,6 +179,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
             setMedicalDirectives(temp)
             console.log(medicalDirectives, 'medicalDirectives')
+            console.log(...medicalDirectives?.completed, 'medicalDirectivesssss')
         } else {
             console.warn("Get Medical Directives Error");
         }

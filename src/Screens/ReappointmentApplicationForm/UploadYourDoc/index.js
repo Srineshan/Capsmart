@@ -606,7 +606,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const getMissingDocs = () => {
         let temp = []
         basicForm?.documentsRequired?.map((data, index) => {
-            if (((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 && data?.required)) {
+            if (((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0)) {
                 temp.push(data)
             }
         })
@@ -707,14 +707,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 <div
                                     className={`${style.requiredDocumentCard} ${style.tableGrid
                                         } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                                            tempValue?.table?.filter(
+                                            tempValue?.table?.some(
                                                 (tableData) =>
                                                     tableData?.documentType ===
                                                     data?.document?.shortName
-                                            )?.length === 0 &&
+                                            )? "" :
                                             data?.required
                                             ? style.redBorder
-                                            : ""
+                                            : style.yellowBorder
                                         } ${index % 2 === 0
                                             ? style.requiredDocumentCardAlternativeColor
                                             : ""

@@ -1,3 +1,5 @@
+// main applicationFieldCard
+
 import React, { useEffect, useState } from "react";
 import CommonPhoneField from "../../Components/CommonFields/CommonPhoneField";
 import CommonInputField from "../CommonFields/CommonInputField";
@@ -1353,12 +1355,12 @@ const ApplicationFieldCard = ({
           : true && fieldData.fieldType
     ) {
       if (
-        (isLableEmpty(fieldData.label)
-          ? false
-          : object.required?.includes(fieldKey) ||
-          (parentData !== null
-            ? parentData.required?.includes(fieldKey)
-            : false)) &&
+        // (isLableEmpty(fieldData.label)
+        //   ? false
+        //   : object.required?.includes(fieldKey) ||
+        //   (parentData !== null
+        //     ? parentData.required?.includes(fieldKey)
+        //     : false)) &&
         getAllPath &&
         getAllLabels &&
         fieldData.fieldType !== "switchbutton"
@@ -1375,7 +1377,11 @@ const ApplicationFieldCard = ({
           });
         } else {
           getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
-          getAllLabels(fieldData.label);
+          getAllLabels({
+            label: fieldData.label,
+            path: `${basicpath}.${baseKey}.${fieldKey}`,
+            mandatory: parentData.required?.includes(fieldKey),
+          });
         }
       }
       switch (fieldData.fieldType) {

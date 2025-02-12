@@ -34,6 +34,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -62,14 +63,17 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         setMetadata(temp);
     }
 
+
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();    
     }
+
 
     const getIsSaveInProgressOpen = (value) => {
         setIsSaveInProgressOpen(value);
@@ -89,15 +93,10 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getSkipClicked = (value) => {
-        if (value) {
-            handleSubmitApplicationReq("skipped")
-        }
-    }
-
-    const getMissingFields = () => {
+    const getSkipClicked = () => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -137,21 +136,85 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     console.log("Phone Value:", phoneValue);
     console.log("Missing Fields:", missingKeys);
 
-        if (missingKeys?.length !== 0) {
+    setWarningFields(missingKeys);
+    allMissingFields = missingKeys;
+    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        // if (hasMandatoryMissingFields) {
+        //     setShowValidationDialog(true)
+        // } else {
+            handleSubmitApplicationReq()
+        // }
+        // setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata1222', missingKeys, hasMandatoryMissingFields, allMissingFields)
+    }
+
+    const getMissingFields = () => {
+        let missingKeys = [];
+        let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
+        metadata?.map((data, index) => {
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+        })
+        keyValuePair?.map(data => {
+            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+                missingKeys.push(data)
+            }
+        })
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsFile`,`forms[${formIndex}].data.disclosures.medicalDisclosures.nameOfFacility`,`forms[${formIndex}].data.disclosures.medicalDisclosures.treatingPhysicianOrProvider`,`forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`,`forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
+            let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
+            let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+      
+    const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
+    const emailValue = getValueByPath(basicForm, emailPath);
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (emailValue && !emailRegex.test(emailValue)) {
+        missingKeys.push({ key: emailPath, label: "Email Id (Invalid Format)" });
+    }
+
+    
+    const phonePath = `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`;
+    const phoneValue = getValueByPath(basicForm, phonePath);
+    const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
+    if (phoneValue && !phoneRegex.test(phoneValue)) {
+        missingKeys.push({ key: phonePath, label: "Cell Phone (Invalid Canadian Format)" });
+    }
+
+    
+    console.log("Email Value:", emailValue);
+    console.log("Phone Value:", phoneValue);
+    console.log("Missing Fields:", missingKeys);
+
+    setWarningFields(missingKeys);
+    allMissingFields = missingKeys;
+    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (hasMandatoryMissingFields) {
             setShowValidationDialog(true)
         } else {
             handleSubmitApplicationReq()
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        // setWarningFields(missingKeys)
+        console.log(keyValuePair, 'Metadata1222', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
+            console.log("7777", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+                // unFilledFields: Array.isArray(warningFields) 
+                // ? warningFields.map(field => JSON.stringify(field))
+                // : [],
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -259,7 +322,9 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)}
+                getSkipClicked={getSkipClicked} />
             )}
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />
