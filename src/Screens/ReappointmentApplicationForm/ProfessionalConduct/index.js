@@ -94,52 +94,57 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         }
     }
 
-    const getSkipClicked = () => {
-        let missingKeys = [];
-        let keyValuePair = [];
-        let hasMandatoryMissingFields = [];
-        metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        })
-        keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-                missingKeys.push(data)
-            }
-        })
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        setWarningFields(missingKeys)
-        allMissingFields = missingKeys;
-        // hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+    // const getSkipClicked = () => {
+    //     let missingKeys = [];
+    //     let keyValuePair = [];
+    //     let hasMandatoryMissingFields = [];
+    //     metadata?.map((data, index) => {
+    //         keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
+    //     })
+    //     keyValuePair?.map(data => {
+    //         if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
+    //             missingKeys.push(data)
+    //         }
+    //     })
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyFile`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
+    //         let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
+    //         let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+    //         missingKeys = temp;
+    //     }
+    //     setWarningFields(missingKeys)
+    //     allMissingFields = missingKeys;
+    //     // hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        // if (hasMandatoryMissingFields) {
-        //     setShowValidationDialog(true)
-        // } else {
-            handleSubmitApplicationReq(" ", allMissingFields)
-        // }
-        console.log(keyValuePair, 'Metadata23456', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
-    }
+    //     // if (hasMandatoryMissingFields) {
+    //     //     setShowValidationDialog(true)
+    //     // } else {
+    //         handleSubmitApplicationReq(" ", allMissingFields)
+    //     // }
+    //     console.log(keyValuePair, 'Metadata23456', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
+    // }
 
+    const getSkipClicked = (value) => {
+        if (value) {
+            getMissingFields("skipped");
+        }
+    };
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
@@ -157,16 +162,16 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
             missingKeys = temp;
         }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOText`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOFile`,`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === undefined) {
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBody`) === 'Yes') {
             let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.formalComplaintToLicensingBodyResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === undefined) {
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSO`) === 'Yes') {
             let filterKeys = [`forms[${formIndex}].data.disclosures.professionalIssuesDisclosures.presentlyInvestigatedByCPSOResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
@@ -175,24 +180,31 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (hasMandatoryMissingFields) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (data === "skipped") {
+            handleSubmitApplicationReq();
         }
-        console.log(keyValuePair, 'Metadata23456', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
+
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        
+        console.log(keyValuePair, 'ProfessionalConductMetadata', missingKeys, isEdited , hasMandatoryMissingFields , allMissingFields)
 
     }
 
     const handleSubmitApplicationReq = async () => {
-        if (isEdited) {
-            console.log("55555", allMissingFields)
+        // if (isEdited) {
+            console.log("MissingProfessionalConduct", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
                 unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
                 // unFilledFields: warningFields?.map(data => data?.label),
-                acknowledged: true
+                acknowledged: true,
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -212,15 +224,15 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {
@@ -284,7 +296,7 @@ const ProfessionalConduct = ({ basicForm, setBasicForm, getPreApplication }) => 
                     </div>
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked()}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>

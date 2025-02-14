@@ -93,7 +93,13 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getSkipClicked = () => {
+    const getSkipClicked = (value) => {
+        if (value) {
+            getMissingFields("skipped");
+        }
+    };
+
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
@@ -106,7 +112,7 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsFile`,`forms[${formIndex}].data.disclosures.medicalDisclosures.nameOfFacility`,`forms[${formIndex}].data.disclosures.medicalDisclosures.treatingPhysicianOrProvider`,`forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`,`forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
@@ -115,62 +121,16 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
             missingKeys = temp;
         }
-      
-    const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
-    const emailValue = getValueByPath(basicForm, emailPath);
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (emailValue && !emailRegex.test(emailValue)) {
-        missingKeys.push({ key: emailPath, label: "Email Id (Invalid Format)" });
-    }
-
-    
-    const phonePath = `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`;
-    const phoneValue = getValueByPath(basicForm, phonePath);
-    const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-    if (phoneValue && !phoneRegex.test(phoneValue)) {
-        missingKeys.push({ key: phonePath, label: "Cell Phone (Invalid Canadian Format)" });
-    }
-
-    
-    console.log("Email Value:", emailValue);
-    console.log("Phone Value:", phoneValue);
-    console.log("Missing Fields:", missingKeys);
-
-    setWarningFields(missingKeys);
-    allMissingFields = missingKeys;
-    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
-
-        // if (hasMandatoryMissingFields) {
-        //     setShowValidationDialog(true)
-        // } else {
-            handleSubmitApplicationReq()
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        // if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'Yes') {
+        //     let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
+        //     let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
+        //     missingKeys = temp;
         // }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata1222', missingKeys, hasMandatoryMissingFields, allMissingFields)
-    }
-
-    const getMissingFields = () => {
-        let missingKeys = [];
-        let keyValuePair = [];
-        let hasMandatoryMissingFields = [];
-        metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        })
-        keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-                missingKeys.push(data)
-            }
-        })
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblems`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsText`,`forms[${formIndex}].data.disclosures.medicalDisclosures.anyHealthProblemsFile`,`forms[${formIndex}].data.disclosures.medicalDisclosures.nameOfFacility`,`forms[${formIndex}].data.disclosures.medicalDisclosures.treatingPhysicianOrProvider`,`forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`,`forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) === 'No' && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.impactingPractice.medicalHistory.abilityToPractice`) !== null) {
-            let medicalHistoryRequiredKeys = [`forms[${formIndex}].data.impactingPractice.medicalHistory.nameOfFacility`]
-            let temp = missingKeys?.filter(data => !medicalHistoryRequiredKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
       
     const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
     const emailValue = getValueByPath(basicForm, emailPath);
@@ -196,18 +156,23 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     allMissingFields = missingKeys;
     hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
+    if (data === "skipped") {
+        handleSubmitApplicationReq();
+    }
+
+    if(data !== "skipped"){
         if (hasMandatoryMissingFields) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
-        }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata1222', missingKeys, hasMandatoryMissingFields, allMissingFields)
+        setShowValidationDialog(true);
+      } else {
+        handleSubmitApplicationReq();
+      }
+    }
+        console.log(keyValuePair, 'medicalHistoryMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
-            console.log("7777", allMissingFields)
+        // if (isEdited) {
+            console.log("MissingmedicalHistory", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
@@ -235,15 +200,15 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {

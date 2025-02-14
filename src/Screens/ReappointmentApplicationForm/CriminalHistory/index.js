@@ -91,46 +91,11 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         setShowJourneyDialog(value);
     }
 
-    // const getSkipClicked = (value) => {
-    //     if (value) {
-    //         handleSubmitApplicationReq("skipped")
-    //     }
-    // }
-
-    const getSkipClicked = () => {
-        let missingKeys = [];
-        let keyValuePair = [];
-        let hasMandatoryMissingFields = [];
-        metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index]})
-        })
-        keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-                missingKeys.push(data)
-            }
-        })
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsFile`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
+    const getSkipClicked = (value) => {
+        if (value) {
+            getMissingFields("skipped");
         }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawFile`]
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-        setWarningFields(missingKeys);
-        allMissingFields = missingKeys;
-        // hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
-
-        // if (hasMandatoryMissingFields) {
-        //     setShowValidationDialog(true)
-        // } else {
-            handleSubmitApplicationReq()
-        // }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata111111', missingKeys, hasMandatoryMissingFields, allMissingFields)
-    }
+    };
 
     const handleContinue = async () => {
         if (sessionStorage.getItem('fromSummary') === "true") {
@@ -142,7 +107,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
@@ -155,12 +120,22 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsFile`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsFile`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawFile`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawText`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawFile`,`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActions`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.anyCivilOrCriminalActionsResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLaw`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.criminalCivilSuitDisclosure.defendantInAnyCivilLawResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
@@ -168,18 +143,23 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (hasMandatoryMissingFields) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (data === "skipped") {
+                handleSubmitApplicationReq();
         }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata111111', missingKeys, hasMandatoryMissingFields, allMissingFields)
+    
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        console.log(keyValuePair, 'MetadataCriminalHistory', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
-            console.log("6666", allMissingFields)
+        // if (isEdited) {
+            console.log("MissingCriminalHistory", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
@@ -187,7 +167,7 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                 // unFilledFields: Array.isArray(warningFields) 
                 // ? warningFields.map(field => JSON.stringify(field))
                 // : [],
-                acknowledged: data === "skipped" ? false : true
+                acknowledged: true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -207,15 +187,15 @@ const CriminalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
     const getValueByPath = (obj, path) => {

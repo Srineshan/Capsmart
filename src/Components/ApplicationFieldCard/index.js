@@ -1372,15 +1372,21 @@ const ApplicationFieldCard = ({
         ) {
           getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
           getAllLabels({
-            label: fieldData.label,
+            label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
+            mandatory:  (isLableEmpty(fieldData.label)
+              ? false
+              : object.required?.includes(fieldKey) ||
+              (parentData !== null
+                ? parentData?.required?.includes(fieldKey)
+                : false)),
           });
         } else {
           getAllPath(`${basicpath}.${baseKey}.${fieldKey}`);
           getAllLabels({
-            label: fieldData.label,
+            label: fieldData?.label,
             path: `${basicpath}.${baseKey}.${fieldKey}`,
-            mandatory: parentData.required?.includes(fieldKey),
+            mandatory: parentData?.required?.includes(fieldKey),
           });
         }
       }

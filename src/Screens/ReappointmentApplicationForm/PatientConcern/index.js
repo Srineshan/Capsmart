@@ -97,45 +97,11 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getSkipClicked = () => {
-        let missingKeys = [];
-        let keyValuePair = [];
-        let hasMandatoryMissingFields = [];
-        metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
-        })
-        keyValuePair?.map(data => {
-            if (data?.value === "" || data?.value === null || data?.value === undefined || data?.value === 0) {
-                missingKeys.push(data)
-            }
-        })
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === undefined) {
-            let filterKeys = [
-                `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsText`
-                , `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsFile`
-                , `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsResponse`
-              ];
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
+    const getSkipClicked = (value) => {
+        if (value) {
+            getMissingFields("skipped");
         }
-        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === 'Yes') {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsResponse`];
-            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
-            missingKeys = temp;
-        }
-
-        setWarningFields(missingKeys);
-        allMissingFields = missingKeys;
-        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
-
-        // if (hasMandatoryMissingFields) {
-        //     setShowValidationDialog(true);
-        // } else {
-            handleSubmitApplicationReq();
-        // }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata345', missingKeys, hasMandatoryMissingFields, allMissingFields)
-    }
+    };
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -152,7 +118,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         navigate(navigateBackURL)
     }
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
@@ -183,18 +149,23 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         allMissingFields = missingKeys;
         hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
-        if (hasMandatoryMissingFields) {
-            setShowValidationDialog(true);
-        } else {
+        if (data === "skipped") {
             handleSubmitApplicationReq();
         }
-        // setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata345', missingKeys, hasMandatoryMissingFields, allMissingFields)
+
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        console.log(keyValuePair, 'patientConcrenMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
-            console.log("8888", allMissingFields)
+        // if (isEdited) {
+            console.log("missingpatientConcren", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
@@ -222,15 +193,15 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
 
