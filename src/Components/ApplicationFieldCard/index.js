@@ -99,7 +99,7 @@ const ApplicationFieldCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [disclosureBaseKey, setDisclosureBaseKey] = useState('');
   const [disclosureFieldKey, setDisclosureFieldKey] = useState('');
-  const [disclosurSchema, setDisclosureSchema] = useState({});
+  const [disclosurSchema, setDisclosureSchema] = useState({});  
   const { setValue, value } = useComboboxControls({ initialValue: "" });
   const canadaData = JSON.parse(sessionStorage.getItem("canadaData")) || {};
   let user = JSON.parse(sessionStorage.getItem("user"));
@@ -108,7 +108,7 @@ const ApplicationFieldCard = ({
   useEffect(() => {
     renderObjectFields(object);
     console.log("entered");
-  }, [basicForm, isAddMore]);
+  }, [basicForm, isAddMore]); 
 
   useEffect(() => {
     if (step !== undefined && basicForm !== undefined) {
@@ -306,7 +306,31 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, baseKey, value);
         setNestedValue(newData, `${basicpath}.${baseKey}`, value);
       }
-
+         // **New Logic to Reset Address Fields**
+         if (path === "isMailingAddressSameAsHomeAddress") {
+          if (value === "Different Address") {
+            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress2.mailingAddress`, {
+              pinCode: "",
+              streetName: "",
+              city: "",
+              province: "",
+            });
+          }
+        }
+    
+        // Business Address Logic
+        if (path === "isBusinessAddressSameAsHomeAddressOrMailingAddress") {
+          if (value === "Different Address") {
+            setNestedValue(newData, `forms[${addressPageIndex}].data.contactAddress3.business.businessAddress`, {
+              pinCode: "",
+              streetName: "",
+              city: "",
+              province: "",
+            });
+          }
+        }
+  
+  
       return newData;
     });
   };
@@ -867,6 +891,135 @@ const ApplicationFieldCard = ({
     }
   }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
+  
+  // const updateMailingAddress = (prevData) => {
+  //   let tempData = { ...prevData };
+  //   let formRef = tempData.forms[addressPageIndex].data;
+  
+   
+  //   if (!formRef.contactAddress2) {
+  //     formRef.contactAddress2 = { mailingAddress: {} };
+  //   }
+  
+  //   switch (isMailingAddressSameAsHomeAddress) {
+  //     case "Same as Home Address":
+  //       if (formRef.contactAddress1?.homeAddress) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: formRef.contactAddress1.homeAddress.streetName || "",
+  //           pinCode: formRef.contactAddress1.homeAddress.pinCode || "",
+  //           city: formRef.contactAddress1.homeAddress.city || "",
+  //           province: formRef.contactAddress1.homeAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Same as Business Address":
+  //       if (formRef.contactAddress3?.business?.businessAddress) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: formRef.contactAddress3.business.businessAddress.streetName || "",
+  //           pinCode: formRef.contactAddress3.business.businessAddress.pinCode || "",
+  //           city: formRef.contactAddress3.business.businessAddress.city || "",
+  //           province: formRef.contactAddress3.business.businessAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Different Address":
+        
+  //       if (!isInitialLoad && isManualChange) {
+  //         formRef.contactAddress2.mailingAddress = {
+  //           streetName: "",
+  //           pinCode: "",
+  //           city: "",
+  //           province: "",
+  //         };
+  //       }
+  //       break;
+  
+  //     default:
+  //       break;
+  //   }
+  
+  //   return tempData;
+  // };
+  
+
+ 
+  // const updateBusinessAddress = (prevData) => {
+  //   let tempData = { ...prevData };
+  //   let formRef = tempData.forms[addressPageIndex].data;
+  
+   
+  //   if (!formRef.contactAddress3) {
+  //     formRef.contactAddress3 = { business: { businessAddress: {} } };
+  //   }
+  
+  //   switch (isBusinessAddressSameAsHomeAddressOrMailingAddress) {
+  //     case "Same as Home Address":
+  //       if (formRef.contactAddress1?.homeAddress) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: formRef.contactAddress1.homeAddress.streetName || "",
+  //           pinCode: formRef.contactAddress1.homeAddress.pinCode || "",
+  //           city: formRef.contactAddress1.homeAddress.city || "",
+  //           province: formRef.contactAddress1.homeAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Same as Mailing Address":
+  //       if (formRef.contactAddress2?.mailingAddress) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: formRef.contactAddress2.mailingAddress.streetName || "",
+  //           pinCode: formRef.contactAddress2.mailingAddress.pinCode || "",
+  //           city: formRef.contactAddress2.mailingAddress.city || "",
+  //           province: formRef.contactAddress2.mailingAddress.province || "",
+  //         };
+  //       }
+  //       break;
+  
+  //     case "Different Address":
+        
+  //       if (!isInitialLoad && isManualChange) {
+  //         formRef.contactAddress3.business.businessAddress = {
+  //           streetName: "",
+  //           pinCode: "",
+  //           city: "",
+  //           province: "",
+  //         };
+  //       }
+  //       break;
+  
+  //     default:
+  //       break;
+  //   }
+  
+  //   return tempData;
+  // };
+  
+
+  
+  // useEffect(() => {
+  //   if (isMailingAddressSameAsHomeAddress) {
+  //     setBasicForm((prevData) => updateMailingAddress(prevData));
+  //     setIsManualChange(false);
+  //   }
+  // }, [isMailingAddressSameAsHomeAddress]);
+
+
+  // useEffect(() => {
+  //   if (isBusinessAddressSameAsHomeAddressOrMailingAddress) {
+  //     setBasicForm((prevData) => updateBusinessAddress(prevData));
+  //     setIsManualChange(false);
+  //   }
+  // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
+
+  
+  // useEffect(() => {
+  //   setIsInitialLoad(false);
+  // }, []);
+
+  
+
   useEffect(() => {
     if (
       registeredBusinessAddress !== undefined &&
@@ -1024,23 +1177,24 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
+  
         setBasicForm((prevData) => {
           let tempContactAddress2 = { ...prevData };
           tempContactAddress2.forms[
             addressPageIndex
-          ].data.contactAddress2.mailingAddress.city =
-            data?.standard?.city || "";
+          ].data.contactAddress2.mailingAddress.city = data?.standard?.city || "";
           tempContactAddress2.forms[
             addressPageIndex
-          ].data.contactAddress2.mailingAddress.province =
-            data?.standard?.prov || "";
+          ].data.contactAddress2.mailingAddress.province = data?.standard?.prov || "";
           return tempContactAddress2;
         });
       } catch (error) {
         console.log("Error fetching data");
       }
     };
+  
     if (
+      isMailingAddressSameAsHomeAddress === "Different Address" && 
       isMailingAddressPincodeEntered !== undefined &&
       isMailingAddressPincodeEntered !== null &&
       isMailingAddressPincodeEntered?.length >= 7 &&
@@ -1061,7 +1215,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isMailingAddressPincodeEntered]);
+  }, [isMailingAddressPincodeEntered, isMailingAddressSameAsHomeAddress]); 
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -1071,23 +1226,24 @@ const ApplicationFieldCard = ({
         );
         let data = response.data;
         console.log(data);
+  
         setBasicForm((prevData) => {
           let tempContactAddress3 = { ...prevData };
           tempContactAddress3.forms[
             addressPageIndex
-          ].data.contactAddress3.business.businessAddress.city =
-            data?.standard?.city || "";
+          ].data.contactAddress3.business.businessAddress.city = data?.standard?.city || "";
           tempContactAddress3.forms[
             addressPageIndex
-          ].data.contactAddress3.business.businessAddress.province =
-            data?.standard?.prov || "";
+          ].data.contactAddress3.business.businessAddress.province = data?.standard?.prov || "";
           return tempContactAddress3;
         });
       } catch (error) {
         console.log("Error fetching data");
       }
     };
+  
     if (
+      isBusinessAddressSameAsHomeAddressOrMailingAddress === "Different Address" && 
       isBusinessAddressPincodeEntered !== undefined &&
       isBusinessAddressPincodeEntered !== null &&
       isBusinessAddressPincodeEntered?.length >= 7 &&
@@ -1108,7 +1264,8 @@ const ApplicationFieldCard = ({
         });
       }
     }
-  }, [isBusinessAddressPincodeEntered]);
+  }, [isBusinessAddressPincodeEntered, isBusinessAddressSameAsHomeAddressOrMailingAddress]); 
+  
 
   const getItems = (data) => {
     let temp = [];
