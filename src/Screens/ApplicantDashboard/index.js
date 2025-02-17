@@ -14,6 +14,10 @@ import { GET } from "../dataSaver";
 import { differenceInCalendarDays, format } from "date-fns";
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNavigate } from "react-router-dom";
+import { currentUser } from "../../utils/auth";
+import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import { Tooltip } from "@mui/material";
+import PrivilegeDisplayDialog from "../../Components/PrivilegeDisplayDialog";
 
 const tasks = [
   {
@@ -51,7 +55,15 @@ const ApplicantDashboard = () => {
   const [notStartedTasks, setNotStartedTasks] = useState([]);
   const [onGoingTasks, setOnGoingTasks] = useState([]);
   const [pastDueTasks, setPastDueTasks] = useState([]);
+  const [entityList, setEntityList] = useState([]);
+  const [applicationForm, setApplicationForms] = useState([]);
   const navigate = useNavigate()
+  const currentUserData = currentUser();
+  const [currentApplicationIndex, setCurrentApplicationIndex] = useState(0);
+  const [showFileDialog, setShowFileDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showPrivilegeDialog, setShowPrivilegeDialog] = useState(false);
+  const [selectedPrivilegeList, setSelectedPrivilegeList] = useState([]);
   const availableCategories = {
     REAPPOINTMENT_APPLICATION: 'REAPPOINTMENT APPLICATION',
     MEDICAL_DIRECTIVE_ATTESTATION: 'MEDICAL DIRECTIVE ATTESTATION',
@@ -69,10 +81,18 @@ const ApplicantDashboard = () => {
   }
 
   useEffect(() => {
+    getEntity();
     getDashboardContent();
+    getApplications();
     sessionStorage.removeItem('taskId')
     sessionStorage.removeItem('taskStatus')
   }, [])
+
+  useEffect(() => {
+    if (currentUserData?.id !== undefined) {
+      getApplications();
+    }
+  }, [currentUserData?.id])
 
   const getDashboardContent = async () => {
     const { data: content } = await GET(
@@ -85,15 +105,48 @@ const ApplicantDashboard = () => {
     setPastDueTasks(content?.pastDueTasks);
   }
 
+  const getEntity = async (id) => {
+    const { data: data } = await GET(`entity-service/entity`);
+    setEntityList(data);
+  }
+
+  const getApplications = async () => {
+    try {
+      const { data: application } = await GET(`application-management-service/application?applicantId=${currentUserData?.id}`);
+      setApplicationForms(application?.applications?.filter(filterData => filterData?.status !== "COMPLETED"));
+    } catch (error) {
+      console.error("Error fetching application data:", error);
+    }
+  }
+
   const handleOnCick = (task) => {
     sessionStorage.setItem('taskId', task?.id)
     sessionStorage.setItem('taskStatus', task?.status)
     if (task?.category === 'REAPPOINTMENT_APPLICATION') {
-      navigate(`/reappointmentApplicationForm/${task?.details?.application?.application?.id}`);
+      if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
+        console.log(task?.details?.application?.lastSavedSection)
+        navigate(`/reappointmentApplicationForm/${task?.details?.application?.application?.id}/${task?.details?.application?.lastSavedSection}`);
+      } else {
+        navigate(`/reappointmentApplicationForm/${task?.details?.application?.application?.id}`);
+      }
     }
     if (task.category === 'INITIAL_APPLICATION') {
-      navigate(`/applicationForm/${task?.details?.application?.application?.id}`);
+      if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
+        navigate(`/applicationForm/${task?.details?.application?.application?.id}/${task?.details?.application?.lastSavedSection}`);
+      } else {
+        navigate(`/applicationForm/${task?.details?.application?.application?.id}`);
+      }
     }
+  }
+
+  const handleShowFileDialog = (file) => {
+    setSelectedFile(file);
+    setShowFileDialog(true);
+  };
+
+  const handleShowPrivilegeDialog = (privilegeList) => {
+    setSelectedPrivilegeList(privilegeList);
+    setShowPrivilegeDialog(true);
   }
 
   return (
@@ -141,19 +194,19 @@ const ApplicantDashboard = () => {
               >
                 <div className={`${style.spaceBetween} ${style.alignItem}`}>
                   <div className={`${activeSection === "Current" ? style.titleStyleActive : style.titleStyle}`}>Current Applications</div>
-                  <div className={`${style.count} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
+                  <div className={`${style.count} ${activeSection === "Current" ? style.marginRight10 : ""}`}>{applicationForm?.length || 0}</div>
                 </div>
-                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                {/* <div className={`${style.spaceBetween} ${style.alignItem}`}>
                   <div className={`${style.sidebarWidgetText}`}>Open RFC</div>
                   <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
                 </div>
                 <div className={`${style.spaceBetween} ${style.alignItem}`}>
                   <div className={`${style.sidebarWidgetText}`}>Document Followups</div>
                   <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
-                </div>
+                </div> */}
               </div>
 
-              <div
+              {/* <div
                 className={`${style.sidebarItem} ${activeSection === "Privileged" ? style.active : style.backgroundSideBarCard}`}
                 onClick={() => setActiveSection("Privileged")}
               >
@@ -169,7 +222,7 @@ const ApplicantDashboard = () => {
                   <div className={`${style.sidebarWidgetText}`}>Open Tasks</div>
                   <div className={`${style.sidebarWidgetNumber} ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {activeSection === "tasks" ? (
@@ -192,7 +245,7 @@ const ApplicantDashboard = () => {
                               </div>
                               <div>
                                 {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
-                                  <img src={HapiCare} className={`${style.smallLogo}`} />
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
                                 )}
                               </div>
                             </div>
@@ -243,7 +296,7 @@ const ApplicantDashboard = () => {
                               </div>
                               <div>
                                 {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
-                                  <img src={HapiCare} className={`${style.smallLogo}`} />
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
                                 )}
                               </div>
                             </div>
@@ -294,7 +347,7 @@ const ApplicantDashboard = () => {
                               </div>
                               <div>
                                 {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
-                                  <img src={HapiCare} className={`${style.smallLogo}`} />
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
                                 )}
                               </div>
                             </div>
@@ -351,7 +404,7 @@ const ApplicantDashboard = () => {
                               </div>
                               <div>
                                 {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
-                                  <img src={HapiCare} className={`${style.smallLogo}`} />
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
                                 )}
                               </div>
                             </div>
@@ -394,104 +447,139 @@ const ApplicantDashboard = () => {
               <div className={style.taskBoardShadow}>
                 <div className={style.taskBoard}>
                   <div className={style.backgroundCurrent}>
-                    <div className={`${style.backgroundWhite} ${style.gridCol4}`}>
-                      {/* <div className={`${style.spaceBetween}`}> */}
-                      <img src={HapiCare} alt="HapiCare Logo" className={`${style.logo}`} />
-                      <div>
-                        <div className={style.taskTitle}>Credentialing & Privileging Reappointment Application</div>
-                        <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
-                          <div className={`${style.applicantType}`}>Physician</div>
-                          <div className={`${style.applicantType}`}>Active</div>
-                          <div className={`${style.departmentType}`}>Surgery - ENT</div>
-                        </div>
-                      </div>
-                      {/* </div> */}
-                      {/* <div className={`${style.spaceBetween}`}> */}
-                      <div>
-                        <div className={style.assignedBy}>MSO VERIFICATION IN PROGRESS</div>
-                        <div className={style.trackApplication1}>TRACK MY APPLICATION</div>
-                      </div>
-                      <div className={style.approvedDate}>LAST UPDATED: JAN 16, 2025</div>
-                      {/* </div> */}
-                    </div>
-                    <div className={`${style.backgroundWhite1}`}>
-                      <div className={`${style.gridCol1} ${style.alignItem}`}>
-                        <div className={`${style.DashboardTitle}`}>
-                          Open RFCs
-                        </div>
-                        <div>
-                          <div className={`${style.DashboardDescription}`}>
-                            RFC Subject ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                    {applicationForm?.map((task, index) => (
+                      <div className={index === 0 ? '' : style.marginTop10}>
+                        <div className={`${style.backgroundWhite} ${style.gridCol4} ${style.cursorPointer}`} onClick={() => setCurrentApplicationIndex(index)}>
+                          {/* <div className={`${style.spaceBetween}`}> */}
+                          <img src={entityList?.filter(data => data?.id === task?.tenant?.id)?.[0]?.logo?.file?.fileURL} alt="" className={`${style.logo}`} />
+                          <div>
+                            <div className={style.taskTitle}>{task?.creationType === 'REAPPOINTMENT' ? 'Credentialing & Privileging Reappointment Application' : 'Credentialing & Privileging Application'}</div>
+                            <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
+                              <div className={`${style.applicantType}`}>{task?.basicDetails?.applicant?.applicantType}</div>
+                              <div className={`${style.applicantType}`}>{task?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}</div>
+                              <div className={`${style.departmentType}`}>{`${task?.basicDetails?.departmentSpecialty?.department} ${(task?.basicDetails?.departmentSpecialty?.specialty !== null && task?.basicDetails?.departmentSpecialty?.specialty !== "") ? ` - ${task?.basicDetails?.departmentSpecialty?.specialty}` : ""}`}</div>
+                            </div>
                           </div>
-                          <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
-                            RFC Subject dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                          {/* </div> */}
+                          {/* <div className={`${style.spaceBetween}`}> */}
+                          <div>
+                            <div className={style.assignedBy}>MSO VERIFICATION IN PROGRESS</div>
+                            <div className={style.trackApplication1}>TRACK MY APPLICATION</div>
                           </div>
+                          <div className={style.approvedDate}>LAST UPDATED: {format(new Date(task?.lastModifiedDate), 'MMM dd, yyyy')}</div>
+                          {/* </div> */}
                         </div>
-                        <div>
-                          <div className={`${style.trackApplication}`}>
-                            GO TO RFC
-                          </div>
-                          <div className={`${style.trackApplication} ${style.marginTop5}`}>
-                            GO TO RFC
-                          </div>
-                        </div>
+                        {currentApplicationIndex === index && (
+                          <div>
+                            {/* <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  Open RFCs
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    RFC Subject ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                                  </div>
+                                  <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
+                                    RFC Subject dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    GO TO RFC
+                                  </div>
+                                  <div className={`${style.trackApplication} ${style.marginTop5}`}>
+                                    GO TO RFC
+                                  </div>
+                                </div>
 
-                      </div>
+                              </div>
 
-                    </div>
-                    <div className={`${style.backgroundWhite1}`}>
-                      <div className={`${style.gridCol1} ${style.alignItem}`}>
-                        <div className={`${style.DashboardTitle}`}>
-                          Document Follow-ups
-                        </div>
-                        <div>
-                          <div className={`${style.DashboardDescription}`}>
-                            CME Transcript - Document uploaded could not be Verified and / or Validated - Required Original Document will be needed prior to Application Approval.
-                          </div>
-                        </div>
-                        <div>
-                          <div className={`${style.trackApplication}`}>
-                            UPLOAD
-                          </div>
-                        </div>
+                            </div>
+                            <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  Document Follow-ups
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    CME Transcript - Document uploaded could not be Verified and / or Validated - Required Original Document will be needed prior to Application Approval.
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    UPLOAD
+                                  </div>
+                                </div>
 
-                      </div>
+                              </div>
 
-                    </div>
-                    <div className={`${style.backgroundWhite1}`}>
-                      <div className={`${style.gridCol1} ${style.alignItem}`}>
-                        <div className={`${style.DashboardTitle}`}>
-                          My Query
-                        </div>
-                        <div>
-                          <div className={`${style.DashboardDescription}`}>
-                            Section Title - Query Comments
+                            </div>
+                            <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  My Query
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    Section Title - Query Comments
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    View
+                                  </div>
+                                </div>
+                              </div>
+                            </div> */}
+                            {task?.payment?.paymentCompleted && (
+                              <div className={`${style.backgroundWhite1}`}>
+                                <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                  <div className={`${style.DashboardTitle}`}>
+                                    Payment
+                                  </div>
+                                  <div>
+                                    <div className={`${style.DashboardDescription}`}>
+                                      {`Amount: ${task?.payment?.currency} ${task?.payment?.fee} - Confirmation Code: ${task?.payment?.receiptId}`}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Tooltip title={'Click to view Receipt'} arrow>
+                                      <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowFileDialog(task?.payment?.invoice)}>
+                                        View Reciept
+                                      </div>
+                                    </Tooltip>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {task?.privileges?.obligatedPrivileges?.length !== 0 && (
+                              <div className={`${style.backgroundWhite1}`}>
+                                <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                  <div className={`${style.DashboardTitle}`}>
+                                    Requested Privileges
+                                  </div>
+                                  <div>
+                                    {task?.privileges?.obligatedPrivileges?.map((privilegeData, privilegeIndex) => (
+                                      <div className={`${style.DashboardDescription}`}>
+                                        <strong>{`${privilegeData?.privilegeSetTitle} - ${privilegeData?.privilegeDetails?.corePrivileges?.esign?.signedDate}`}</strong>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div>
+                                    <Tooltip title={'Click to view Privileges'} arrow>
+                                      <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowPrivilegeDialog(task?.privileges?.obligatedPrivileges)}>
+                                        View
+                                      </div>
+                                    </Tooltip>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <div>
-                          <div className={`${style.trackApplication}`}>
-                            View
-                          </div>
-                        </div>
+                        )}
                       </div>
-                    </div>
-                    <div className={`${style.backgroundWhite1}`}>
-                      <div className={`${style.gridCol1} ${style.alignItem}`}>
-                        <div className={`${style.DashboardTitle}`}>
-                          Payment
-                        </div>
-                        <div>
-                          <div className={`${style.DashboardDescription}`}>
-                            Amount - Confirmation Code
-                          </div>
-                        </div>
-                        <div>
-                          <div className={`${style.trackApplication}`}>
-                            View Reciept
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -501,7 +589,7 @@ const ApplicantDashboard = () => {
                   <div className={style.backgroundCurrent}>
                     <div className={`${style.backgroundWhite} ${style.gridCol3}`}>
                       {/* <div className={`${style.flex}`}> */}
-                      <img src={HapiCare} alt="HapiCare Logo" className={`${style.logo}`} />
+                      <img src={HapiCare} alt="" className={`${style.logo}`} />
                       <div>
                         <div className={`${style.flexGap10}`}>
                           <div className={style.taskTitle}>Privileged Staff</div>
@@ -725,6 +813,12 @@ const ApplicantDashboard = () => {
         </div> */}
         </div>
       </div>
+      {showFileDialog && (
+        <FileDisplayDialog getIsOpen={setShowFileDialog} file={selectedFile} />
+      )}
+      {showPrivilegeDialog && (
+        <PrivilegeDisplayDialog getIsOpen={setShowPrivilegeDialog} privilegeList={selectedPrivilegeList} />
+      )}
     </div >
   );
 };

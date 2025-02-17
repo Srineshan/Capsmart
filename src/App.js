@@ -294,6 +294,10 @@ const ApplicantPortalDashboard = React.lazy(() =>
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
+
+const MedicalDirectivesAttestRFC = React.lazy(() =>
+  import("./Screens/MedicalDirectiveAttestRFC")
+);
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -988,6 +992,7 @@ const App = ({ props }) => {
                 {/* Public Routes */}
                 <Route path="/" element={<LoginRoute />} />
                 <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
+                <Route path="/medicalDirectiveAttest" element={<MedicalDirectivesAttestRFC />} />
                 {/* <Route path="/loginPage" element={<DescopeLoginDialog />} /> */}
 
                 {/* Private Routes */}

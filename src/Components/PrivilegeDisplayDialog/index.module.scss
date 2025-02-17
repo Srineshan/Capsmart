@@ -1,0 +1,279 @@
+@import "../../index.scss";
+
+.heading {
+    text-align: left;
+    font: normal normal bold 20px/28px proxima-nova;
+    color: $primarycolor;
+    text-transform: capitalize;
+}
+
+.marginTop {
+    margin-top: 20px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.description {
+    text-align: left;
+    font: normal normal normal $tabledatatext2 proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+}
+
+.eSignDialog {
+    height: 75%;
+    width: 60% !important;
+}
+
+.eSignDialogBackground {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 40px 0px 40px;
+    border-radius: 20px !important;
+}
+
+.eSignDialogBackground1 {
+    background: #ffffff 0% 0% no-repeat padding-box;
+    padding: 20px 40px 0px 40px;
+    // border-radius: 20px !important;
+}
+
+.dialog {
+    background: #f6f7f9;
+    border-radius: 4px;
+    box-shadow: 0 0 0 1px rgba(17, 20, 24, 0.1), 0 2px 4px rgba(17, 20, 24, 0.2), 0 8px 24px rgba(17, 20, 24, 0.2);
+    display: flex;
+    flex-direction: column;
+    pointer-events: all;
+    -webkit-user-select: text;
+    user-select: text;
+    width: 500px;
+}
+
+.continue {
+    background: $primarycolor 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+}
+
+.saveInProgress {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+}
+
+.displayInRow {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
+}
+
+
+.crossStyle {
+    height: 20px;
+    width: 20px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.iconStyle {
+    height: 24px;
+    width: 24px;
+}
+
+.expandedDialog {
+    height: 100% !important;
+    width: 100% !important;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+// .objectFitContain {
+//     object-fit: contain;
+// }
+
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.padding {
+    padding: 20px;
+}
+
+.cardTitle {
+    text-align: left;
+    font: normal normal bold 20px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #454747;
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.itemLeft {
+    padding: 10px;
+    text-align: left;
+}
+
+.privilegeCodeGrid {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 10px;
+}
+
+
+.restrictedPrivilegeGrid {
+    display: grid;
+    grid-template-columns: 5% 75% 18%;
+    gap: 1%;
+}
+
+.restrictedPrivilegeGrid> :nth-child(4) {
+    grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(5) {
+    grid-column: 1 / -1;
+}
+
+.restrictedPrivilegeGrid> :nth-child(6) {
+    grid-column: 1 / -1;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.cardDescription {
+    text-align: left;
+    font: normal normal normal 18px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.floatRight {
+    float: right;
+}
+
+.uploadButton {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $primarycolor;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+.uploadText {
+    text-align: left !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.uploadTextButton {
+    display: inline-block !important;
+    font: normal normal bold 13px/20px proxima-nova;
+    color: #2C2C2C;
+    border: 1px solid #2C2C2C;
+    border-radius: 4px;
+    padding: 5px;
+    text-align: center !important;
+    cursor: pointer;
+}
+
+.imgIcon {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 3% 80% 15%;
+    gap: 1%;
+}
+
+.fileDisplay {
+    padding: 0 10px;
+    background-color: $secondarycolor;
+}
+
+.fileDisplayText {
+    font: normal normal normal $navbartext proxima-nova;
+    color: #2C2C2C;
+}
+
+.docTypeImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    cursor: pointer;
+}

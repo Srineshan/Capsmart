@@ -774,7 +774,7 @@ const ApplicationFieldCard = ({
   //       }
   //       return tempContactAddress3;
   //     });
-      
+
   //   }
   // }, [isBusinessAddressSameAsHomeAddressOrMailingAddress]);
 
@@ -789,14 +789,14 @@ const ApplicationFieldCard = ({
       setBasicForm((prevData) => {
         let tempData = { ...prevData };
         let formRef = tempData.forms[addressPageIndex].data;
-  
+
         if (!formRef.contactAddress2) {
           formRef.contactAddress2 = { mailingAddress: {} };
         }
         if (!formRef.contactAddress2.mailingAddress) {
           formRef.contactAddress2.mailingAddress = {};
         }
-  
+
         if (isMailingAddressSameAsHomeAddress === "Same as Home Address") {
           if (formRef.contactAddress1?.homeAddress) {
             formRef.contactAddress2.mailingAddress = {
@@ -816,7 +816,7 @@ const ApplicationFieldCard = ({
             };
           }
         }
-  
+
         return tempData;
       });
     }
@@ -832,7 +832,7 @@ const ApplicationFieldCard = ({
       setBasicForm((prevData) => {
         let tempData = { ...prevData };
         let formRef = tempData.forms[addressPageIndex].data;
-  
+
         if (!formRef.contactAddress3) {
           formRef.contactAddress3 = { business: { businessAddress: {} } };
         }
@@ -842,7 +842,7 @@ const ApplicationFieldCard = ({
         if (!formRef.contactAddress3.business.businessAddress) {
           formRef.contactAddress3.business.businessAddress = {};
         }
-  
+
         if (isBusinessAddressSameAsHomeAddressOrMailingAddress === "Same as Home Address") {
           if (formRef.contactAddress1?.homeAddress) {
             formRef.contactAddress3.business.businessAddress = {
@@ -1638,7 +1638,7 @@ const ApplicationFieldCard = ({
                                 : e.target.value.slice(0, fieldData.maxLength)
                               : e.target.value,
                         baseKey
-                      ) 
+                      )
                     }
                     maxLength={TEXTFIELDLEN50}
                     placeholder={
@@ -2180,10 +2180,10 @@ const ApplicationFieldCard = ({
           const currentValue = getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`);
           console.log("currentValue1", currentValue);
           const additionalFields = parentData?.allOf?.filter(data => fieldKey in data?.if?.properties)?.[0]?.then?.required || [];
-    
-    // Identify CKEditor and File Upload fields dynamically
-    const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
-    const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
+
+          // Identify CKEditor and File Upload fields dynamically
+          const ckEditorFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "ckeditor");
+          const fileUploadFields = additionalFields.filter(key => parentData?.properties?.[key]?.fieldType === "fileupload");
 
           return (
             <div
@@ -2228,22 +2228,22 @@ const ApplicationFieldCard = ({
                       `${basicpath}.${baseKey}.${fieldKey}`
                     ) || null
                   }
-                  onChange={isPOD ? () => {} : (e) => {
+                  onChange={isPOD ? () => { } : (e) => {
                     const newValue = e.target.value;
                     handleChange(fieldKey, newValue, baseKey);
 
                     if (currentValue !== newValue) {
-                        console.log("Disclosure toggled! Resetting CKEditor and File Upload...");
+                      console.log("Disclosure toggled! Resetting CKEditor and File Upload...");
 
-                        ckEditorFields.forEach((ckField) => {
-                            handleChange(ckField, "", baseKey);
-                        });
+                      ckEditorFields.forEach((ckField) => {
+                        handleChange(ckField, "", baseKey);
+                      });
 
-                        fileUploadFields.forEach((fileField) => {
-                            handleChange(fileField, null, baseKey);
-                        });
+                      fileUploadFields.forEach((fileField) => {
+                        handleChange(fileField, null, baseKey);
+                      });
                     }
-                }}
+                  }}
                   radioValue={fieldData.enum}
                   label={fieldData.enum}
                   required={
@@ -2494,32 +2494,32 @@ const ApplicationFieldCard = ({
                   </div>
                 </div>
                 {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" && fileValid && (
-                        <div className={style.uploadButton2}>
-                          <div className={style.uploadGrid2}>
-                            
-                            <Tooltip title="Click to View File" placement="bottom-start" followCursor>
-                <span
-                    className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                    onClick={() => {
-                        setShowFileDisplayDialog(true);
-                          setselectedFile(
-                            fileURL
-                          );
-                        
-                    }}
-                >
-                    {fieldValue?.fileName}
-                </span>
-            </Tooltip>
-                            <img
-                                src={DeleteIcon}
-                                alt="Delete"
-                                className={`${style.imgIcon} ${style.cursorPointer}`}
-                                onClick={() => handleChange(fieldKey, null, baseKey)}
-                            />
-                            </div>
-                        </div>
-                    )}
+                  <div className={style.uploadButton2}>
+                    <div className={style.uploadGrid2}>
+
+                      <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                        <span
+                          className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                          onClick={() => {
+                            setShowFileDisplayDialog(true);
+                            setselectedFile(
+                              fileURL
+                            );
+
+                          }}
+                        >
+                          {fieldValue?.fileName}
+                        </span>
+                      </Tooltip>
+                      <img
+                        src={DeleteIcon}
+                        alt="Delete"
+                        className={`${style.imgIcon} ${style.cursorPointer}`}
+                        onClick={() => handleChange(fieldKey, null, baseKey)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>;
             }
           } else {
@@ -2601,35 +2601,35 @@ const ApplicationFieldCard = ({
                     handleChange(fieldKey, e.target.files[0], baseKey);
                   }}
                 />
-                 {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
-                    getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
-                        <div className={style.uploadButton2}>
-                          <div className={style.uploadGrid2}>
-                          <Tooltip title="Click to View File" placement="bottom-start" followCursor>
-                <span
-                    className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                    onClick={() =>
-                      window.open(
-                        getValueByPath(
-                          basicForm,
-                          `${basicpath}.${baseKey}.${fieldKey}`
-                        )?.fileURL,
-                        "_blank"
-                      )
-                    }
-                >
-                    {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
-                </span>
-            </Tooltip>
-                            <img
-                                src={DeleteIcon}
-                                alt="Delete"
-                                className={`${style.imgIcon} ${style.cursorPointer}`}
-                                onClick={() => handleChange(fieldKey, null, baseKey)}
-                            />
-                            </div>
-                        </div>
-                    )}
+                {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
+                  getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
+                    <div className={style.uploadButton2}>
+                      <div className={style.uploadGrid2}>
+                        <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                          <span
+                            className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
+                            onClick={() =>
+                              window.open(
+                                getValueByPath(
+                                  basicForm,
+                                  `${basicpath}.${baseKey}.${fieldKey}`
+                                )?.fileURL,
+                                "_blank"
+                              )
+                            }
+                          >
+                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                          </span>
+                        </Tooltip>
+                        <img
+                          src={DeleteIcon}
+                          alt="Delete"
+                          className={`${style.imgIcon} ${style.cursorPointer}`}
+                          onClick={() => handleChange(fieldKey, null, baseKey)}
+                        />
+                      </div>
+                    </div>
+                  )}
               </div>
             );
           }
