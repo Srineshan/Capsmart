@@ -294,6 +294,33 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     }, [tempValue?.table]);
 
+    const getIsDocRequired = (shortName) => {
+        let documentData = basicForm?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
+        if (!documentData?.departmentSpecific) {
+            return documentData?.documentType?.shortName === "Profile Picture" ? "Optional" : documentData?.required ? 'Required' : 'Recommended';
+        } else {
+            if (documentData?.document?.shortName === "Profile Picture") {
+                return "Optional";
+            } else {
+                let isDepartmentMatching = documentData?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+                if (isDepartmentMatching) {
+                    if (documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+                        let isSpecialtyMatching = documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+                        if (isSpecialtyMatching) {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        } else {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        }
+                    } else {
+                        return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                    }
+                } else {
+                    return documentData?.required ? 'Required' : 'Recommended';
+                }
+            }
+        }
+    }
+
     const changeHandler = async (event) => {
         setIsLoading(true);
         setFiles(event);
@@ -316,12 +343,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[index]?.documentType?.shortName)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[index]?.documentType?.shortName) : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
                     if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.shortName}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName === "Profile Picture" ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === response?.data[triggerIndex]?.documentType?.shortName)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.shortName}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[triggerIndex]?.documentType?.shortName) : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -381,7 +408,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         //     });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = value === 'Profile Picture' ? 'Optional' : basicForm?.documentsRequired?.filter(data => data?.document?.shortName === value)?.[0]?.required ? 'Required' : 'Recommended';
+            temp[index].requirement = value === 'Profile Picture' ? 'Optional' : getIsDocRequired(value);
         }
         console.log(temp)
         await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}`, temp[index])
@@ -606,7 +633,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const getMissingDocs = () => {
         let temp = []
         basicForm?.documentsRequired?.map((data, index) => {
-            if (((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 && data?.required)) {
+            if (((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 && getIsDocRequired(data?.document?.shortName) === "Required")) {
                 temp.push(data)
             }
         })
@@ -712,7 +739,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                                     tableData?.documentType ===
                                                     data?.document?.shortName
                                             )?.length === 0 &&
-                                            data?.required
+                                            getIsDocRequired(data?.document?.shortName) === "Required"
                                             ? style.redBorder
                                             : ""
                                         } ${index % 2 === 0
@@ -736,7 +763,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                     >
-                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
                                     </div>
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
@@ -1084,7 +1111,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                     >
-                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : data?.required ? "Required" : "Recommended"}
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
                                     </div>
                                 </div>
                             </div>

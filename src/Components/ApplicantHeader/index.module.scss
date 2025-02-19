@@ -4,7 +4,7 @@
     height: clamp(60px, 8vh, 100px);
     background-color: none;
     box-shadow: 0px 6px 20px #22292929;
-    padding: 0px 20px;
+    padding: 10px 40px 20px 40px;
     box-shadow: none;
     // @media (max-width: 768px) {
     //     height: clamp(45px, 8vh, 100px);
@@ -34,8 +34,7 @@
 
 .gridCol {
     display: grid;
-    grid-template-columns: 60% 28% 8%;
-    gap: 2%;
+    grid-template-columns: 68% 24% 8%;
 }
 
 .logo {
@@ -45,9 +44,9 @@
     object-fit: contain;
 }
 
-.backgroundLogo{
-    height: 30px;
-    width: 30px;
+.backgroundLogo {
+    height: 40px;
+    width: 40px;
     background-color: rgba(255, 255, 255, 0.4);
     border-radius: 50%;
     align-content: center;
@@ -57,11 +56,11 @@
     display: flex;
     align-items: center;
     gap: 20px;
-  }
+}
 
 .avatar {
-    width: 30px !important;
-    height: 30px !important;
+    width: 40px !important;
+    height: 40px !important;
 }
 
 .marginLeft20 {
@@ -71,6 +70,21 @@
 .crossStyle {
     height: 18px;
     width: 18px;
+}
+
+.cursorPointer {
+    cursor: pointer;
+}
+
+.verticalAlignCenter {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.justifyCenter {
+    display: flex;
+    justify-content: center;
 }
 
 .cursorPointer {

@@ -200,6 +200,10 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
+            setSelectedApplicantsToShow(user?.recordAccessApplicantTypes?.map(data => data?.id))
+            setSelectedDepartmentsToShow(user?.recordAccessDepartments?.map(data => data?.id))
+            setSpecificDeptRecordsToAccess(user?.departmentSpecificRecordAccess)
+            setManageRecordTypeByApplicantType(user?.applicantTypeSpecificRecordAccess)
             // user?.sites?.sites?.map((data, index) => {
             //     if (data?.departmentList?.departments?.length !== 0) {
             //         setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
@@ -220,14 +224,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }
 
     const getUserCreatedDialog = async (value, sendInvite) => {
-
         if (sendInvite === 'OKAY' && createdUserDetails !== undefined) {
             if (createdUserDetails !== undefined) {
                 await POST(`user-management-service/user/${createdUserDetails}/sendInviteEmail`)
                 setShowUserCreatedDialog(value)
             }
         }
-
+        getManageUserDialog(false);
     }
 
     const handleAccessLevelChange = (value) => {
@@ -299,7 +302,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
             "title": siteTitle,
-            "ssoId": addUser?.ssoId,
+            "ssoId": addUser?.email,
             "email": {
                 "officialEmail": addUser?.email
             },
@@ -341,6 +344,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
+                    getManageUserDialog(false);
                     SuccessToaster('User Modified Successfully');
                 })
                 .catch(error => {
@@ -710,7 +714,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >{addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? 'NEXT' : isEdit ? 'UPDATE' : 'ADD'}</button>
                                     </div>
                                 </div>
                             </div>
@@ -782,7 +786,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep2()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep2()} >NEXT</button>
                                     </div>
                                 </div>
                             </div>
@@ -854,7 +858,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >SAVE</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >{isEdit ? "UPDATE" : 'SAVE'}</button>
                                     </div>
                                 </div>
                             </div>

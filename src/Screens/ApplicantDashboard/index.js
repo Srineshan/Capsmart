@@ -1,13 +1,23 @@
-import {React, useState} from "react";
+import { React, useEffect, useState } from "react";
 import style from "./index.module.scss";
 import AddIcon from '@mui/icons-material/Add';
 import HapiCare from "../../images/cambridgeHospital.png"
+import HourGlass from "../../images/hourglass.png"
+import HourGlassComplete from "../../images/hourglassComplete.png"
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import ApplicantHeader from "../../Components/ApplicantHeader";
 import { symbol } from "d3";
+import { GET } from "../dataSaver";
+import { differenceInCalendarDays, format } from "date-fns";
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import { useNavigate } from "react-router-dom";
+import { currentUser } from "../../utils/auth";
+import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import { Tooltip } from "@mui/material";
+import PrivilegeDisplayDialog from "../../Components/PrivilegeDisplayDialog";
 
 const tasks = [
   {
@@ -16,7 +26,7 @@ const tasks = [
     assignedBy: 'Mark K, Medical Staff Administrative Associate',
     date: 'March 21, 2025',
     status: 'past-due',
-    description:'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.',
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.',
     timeLeft: '30 Days to go',
     interactions: { comments: 1, shares: 0 }
   },
@@ -26,7 +36,7 @@ const tasks = [
     assignedBy: 'Mark K, Medical Staff Administrative Associate',
     date: 'March 21, 2025',
     status: 'ongoing',
-    description:'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.',
+    description: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy.',
     timeLeft: '30 Days to go',
     interactions: { comments: 0, shares: 0 }
   }
@@ -40,425 +50,615 @@ const sidebarItems = [
 
 const ApplicantDashboard = () => {
   const [activeSection, setActiveSection] = useState("tasks");
+  const [dashboardContent, setDashboardContent] = useState();
+  const [completedTasks, setCompletedTasks] = useState([]);
+  const [notStartedTasks, setNotStartedTasks] = useState([]);
+  const [onGoingTasks, setOnGoingTasks] = useState([]);
+  const [pastDueTasks, setPastDueTasks] = useState([]);
+  const [entityList, setEntityList] = useState([]);
+  const [applicationForm, setApplicationForms] = useState([]);
+  const navigate = useNavigate()
+  const currentUserData = currentUser();
+  const [currentApplicationIndex, setCurrentApplicationIndex] = useState(0);
+  const [showFileDialog, setShowFileDialog] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showPrivilegeDialog, setShowPrivilegeDialog] = useState(false);
+  const [selectedPrivilegeList, setSelectedPrivilegeList] = useState([]);
+  const availableCategories = {
+    REAPPOINTMENT_APPLICATION: 'REAPPOINTMENT APPLICATION',
+    MEDICAL_DIRECTIVE_ATTESTATION: 'MEDICAL DIRECTIVE ATTESTATION',
+    DOCUMENT_FOLLOW_UP: 'DOCUMENT FOLLOW UP',
+    INITIAL_APPLICATION: 'INITIAL APPLICATION',
+    REQUEST_FOR_CLARIFICATION: 'REQUEST FOR CLARIFICATION'
+  }
+
+  const availableCategoryWarnings = {
+    REAPPOINTMENT_APPLICATION: style.warningRed,
+    MEDICAL_DIRECTIVE_ATTESTATION: style.warningYellow,
+    DOCUMENT_FOLLOW_UP: style.warningOrange,
+    INITIAL_APPLICATION: style.warningRed,
+    REQUEST_FOR_CLARIFICATION: style.warningRed
+  }
+
+  useEffect(() => {
+    getEntity();
+    getDashboardContent();
+    getApplications();
+    sessionStorage.removeItem('taskId')
+    sessionStorage.removeItem('taskStatus')
+  }, [])
+
+  useEffect(() => {
+    if (currentUserData?.id !== undefined) {
+      getApplications();
+    }
+  }, [currentUserData?.id])
+
+  const getDashboardContent = async () => {
+    const { data: content } = await GET(
+      `task-management-service/task/dashboard`
+    );
+    setDashboardContent(content);
+    setCompletedTasks(content?.completedTasks);
+    setNotStartedTasks(content?.notStartedTasks);
+    setOnGoingTasks(content?.onGoingTasks);
+    setPastDueTasks(content?.pastDueTasks);
+  }
+
+  const getEntity = async (id) => {
+    const { data: data } = await GET(`entity-service/entity`);
+    setEntityList(data);
+  }
+
+  const getApplications = async () => {
+    try {
+      const { data: application } = await GET(`application-management-service/application?applicantId=${currentUserData?.id}`);
+      setApplicationForms(application?.applications?.filter(filterData => filterData?.status !== "COMPLETED"));
+    } catch (error) {
+      console.error("Error fetching application data:", error);
+    }
+  }
+
+  const handleOnCick = (task) => {
+    sessionStorage.setItem('taskId', task?.id)
+    sessionStorage.setItem('taskStatus', task?.status)
+    if (task?.category === 'REAPPOINTMENT_APPLICATION') {
+      if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
+        console.log(task?.details?.application?.lastSavedSection)
+        navigate(`/reappointmentApplicationForm/${task?.details?.application?.application?.id}/${task?.details?.application?.lastSavedSection}`);
+      } else {
+        navigate(`/reappointmentApplicationForm/${task?.details?.application?.application?.id}`);
+      }
+    }
+    if (task.category === 'INITIAL_APPLICATION') {
+      if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
+        navigate(`/applicationForm/${task?.details?.application?.application?.id}/${task?.details?.application?.lastSavedSection}`);
+      } else {
+        navigate(`/applicationForm/${task?.details?.application?.application?.id}`);
+      }
+    }
+  }
+
+  const handleShowFileDialog = (file) => {
+    setSelectedFile(file);
+    setShowFileDialog(true);
+  };
+
+  const handleShowPrivilegeDialog = (privilegeList) => {
+    setSelectedPrivilegeList(privilegeList);
+    setShowPrivilegeDialog(true);
+  }
+
   return (
     <div className={`${style.backgroundDashboard}`}>
       <ApplicantHeader />
-    <div className={`${style.flex}`}>
-      {/* <div className={`${style.sidebar}`}>
+      <div className={`${style.flex} ${style.marginTop20}`}>
+        {/* <div className={`${style.sidebar}`}>
         <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span>
         </div>
       </div> */}
-      <div className={style.mainContent}>
-        <div className={`${style.flex}`}>
-        <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div>
-          <div className={style.header}>
-            <div>
-              <KeyboardArrowUpOutlinedIcon sx={{ fontSize: 18, color: "#06617A"}} />
-            </div>
-            <div className={`${style.spaceBetween} ${style.padding10}`}>
-              <div className={style.flex}>
-              <div className={style.notificationNumber}>1/3</div>
-              <div className={style.notificationText}>You have a Request for Clarification for your reappointment that requires your attention!</div>
-              </div>
-              <div className={style.viewButton}>View</div>
-          </div>
-          <div>
-              <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A"}} />
-            </div>
-          </div>
-        </div>
-        <div className={`${style.flex}`}>
-        <div className={`${style.backgroundSideBar} ${style.marginTop20}`}>
-          <div 
-            className={`${style.sidebarItem} ${activeSection === "tasks" ? style.active : style.backgroundSideBarCard}  ${activeSection === "tasks" ? style.padding3side : style.padding}`}
-            onClick={() => setActiveSection("tasks")}
-          >
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-            <div className={` ${activeSection === "tasks" ? style.titleStyleActive : style.titleStyle}`}>My Tasks</div>
-            <div className={`${style.count} ${activeSection === "tasks" ? style.marginRight10 : ""}`}>5</div>
-            </div>
-          </div>
-
-          <div 
-            className={`${style.sidebarItem} ${activeSection === "Current" ? style.active : style.backgroundSideBarCard}`}
-            onClick={() => setActiveSection("Current")}
-          >
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-            <div className={`${activeSection === "Current" ? style.titleStyleActive : style.titleStyle}`}>Current Applications</div>
-            <div className={`${style.count} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-              <div className={`${style.sidebarWidgetText}`}>Open RFC</div>
-              <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-              <div className={`${style.sidebarWidgetText}`}>Document Followups</div>
-              <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-          </div>
-
-          <div 
-            className={`${style.sidebarItem} ${activeSection === "Privileged" ? style.active : style.backgroundSideBarCard}`}
-            onClick={() => setActiveSection("Privileged")}
-          >
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-            <div className={`${activeSection === "Privileged" ? style.titleStyleActive : style.titleStyle}`}>Privileged Staff Appointments</div>
-            <div className={`${style.count}  ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-              <div className={`${style.sidebarWidgetText}`}>Expiring Documents</div>
-              <div className={`${style.sidebarWidgetNumber} ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-            <div className={`${style.spaceBetween} ${style.alignItem}`}>
-              <div className={`${style.sidebarWidgetText}`}>Open Tasks</div>
-              <div className={`${style.sidebarWidgetNumber} ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
-            </div>
-          </div>
-        </div>
-
-          {activeSection === "tasks" ? (
-          <div className={style.taskBoardShadow}>
-          <div className={style.taskBoard}>
-         {/* <div className={`${style.addTask} ${style.alignItem}`}><AddIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> Add New Task</div> */}
-         <div className={`${style.flexGap} ${style.marginTop2}`}>
-          <div className={`${style.padding5} ${style.pastDue}`}>
-            <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-            <div className={`${style.redDotStyle}`}></div>
-            <div className={style.columnTitlePastDue}>Past Due</div>
-            </div>   
-            <div className={style.taskList}>
-              {tasks.map((task, index) => (
-                <div key={index} className={style.taskCardSingle}>
-                  <div className={style.taskType}>{task.type}</div>
-                  <div className={`${style.taskTitle} ${style.marginTop5}`}>{task.title}</div>
-                  <div className={`${style.assignedBy} ${style.marginTop10}`}>
-                   {task.description}
-                  </div>
-                  <div className={`${style.assignedBy} ${style.marginTop5}`}>
-                    Assigned by: {task.assignedBy}
-                  </div>
-                 
-                    <div className={style.date}>
-                      <span>{task.date}</span>
-                    </div>
-                      <div className={`${style.marginTop10}`}>
-                      <div className={style.interactions}>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.comments}</div>
-                        </div>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.shares}</div>
-                        </div>
-                        <span className={style.daysToGoStyle}>{task.timeLeft}</span>
-                        </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={`${style.padding5} ${style.ongoing}`}>
-            <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-            <div className={`${style.yellowDotStyle}`}></div>
-            <div className={style.columnTitleOngoing}>Ongoing</div>
-            </div>
-            <div className={style.taskList}>
-              {tasks.map((task, index) => (
-                <div key={index} className={style.taskCardSingle}>
-                  <div className={style.taskType}>{task.type}</div>
-                  <div className={`${style.taskTitle} ${style.marginTop5}`}>{task.title}</div>
-                  <div className={`${style.assignedBy} ${style.marginTop10}`}>
-                   {task.description}
-                  </div>
-                  <div className={`${style.assignedBy} ${style.marginTop5}`}>
-                    Assigned by: {task.assignedBy}
-                  </div>
-                 
-                    <div className={style.date}>
-                      <span>{task.date}</span>
-                    </div>
-                      <div className={`${style.marginTop10}`}>
-                      <div className={style.interactions}>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.comments}</div>
-                        </div>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.shares}</div>
-                        </div>
-                        <span className={style.daysToGoStyle}>{task.timeLeft}</span>
-                        </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={`${style.padding5} ${style.notStarted}`}>
-            <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-            <div className={`${style.greyDotStyle}`}></div>
-            <div className={style.columnTitleNotYet}>Not Yet Started</div>
-            </div>
-            <div className={style.taskList}>
-              {tasks.map((task, index) => (
-                <div key={index} className={style.taskCardSingle}>
-                  <div className={style.taskType}>{task.type}</div>
-                  <div className={`${style.taskTitle} ${style.marginTop5}`}>{task.title}</div>
-                  <div className={`${style.assignedBy} ${style.marginTop10}`}>
-                   {task.description}
-                  </div>
-                  <div className={`${style.assignedBy} ${style.marginTop5}`}>
-                    Assigned by: {task.assignedBy}
-                  </div>
-                 
-                    <div className={style.date}>
-                      <span>{task.date}</span>
-                    </div>
-                      <div className={` ${style.marginTop10}`}>
-                      <div className={style.interactions}>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.comments}</div>
-                        </div>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.shares}</div>
-                        </div>
-                        <span className={style.daysToGoStyle}>{task.timeLeft}</span>
-                        </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className={`${style.padding5} ${style.completed}`}>
-            <div className={`${style.spaceBetween} ${style.alignItem} ${style.marginBottom10}`}>
-              <div className={`${style.flex} ${style.alignItem}`}>
-                <div className={`${style.greenDotStyle}`}></div>
-                <div className={style.columnTitleCompleted}>Completed</div>
-              </div>
-              <div className={`${style.flex} ${style.alignItem}`}>
-              <div className={style.weekTextStyle}>This Week</div>
-                <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A"}} />
-              </div>
-            </div>
-            <div className={style.taskList}>
-              {tasks.map((task, index) => (
-                <div key={index} className={style.taskCardSingle}>
-                  <div className={style.taskType}>{task.type}</div>
-                  <div className={`${style.taskTitle} ${style.marginTop5}`}>{task.title}</div>
-                  <div className={`${style.assignedBy} ${style.marginTop10}`}>
-                   {task.description}
-                  </div>
-                  <div className={`${style.assignedBy} ${style.marginTop5}`}>
-                    Assigned by: {task.assignedBy}
-                  </div>
-                 
-                    <div className={style.date}>
-                      <span>{task.date}</span>
-                    </div>
-                      <div className={`${style.marginTop10}`}>
-                      <div className={style.interactions}>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.comments}</div>
-                        </div>
-                        <div className={`${style.flex} ${style.alignItem}`}>
-                          <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D"}}/></div>
-                          <div className={style.commentStyle}> {task.interactions.shares}</div>
-                        </div>
-                        <span className={style.daysToGoStyle}>{task.timeLeft}</span>
-                        </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        </div>
-        </div>
-        ) : activeSection === "Current" ? (
-          <div className={style.taskBoardShadow}>
-          <div className={style.taskBoard}>
-            <div className={style.backgroundCurrent}>
-              <div className={`${style.backgroundWhite} ${style.gridCol4}`}>
-                {/* <div className={`${style.spaceBetween}`}> */}
-                <img src={HapiCare} alt="HapiCare Logo" className={`${style.logo}`} />
-                <div>
-                  <div className={style.taskTitle}>Credentialing & Privileging Reappointment Application</div>
-                    <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
-                      <div className={`${style.applicantType}`}>Physician</div>
-                      <div className={`${style.applicantType}`}>Active</div>
-                      <div className={`${style.departmentType}`}>Surgery - ENT</div>
-                    </div>
-                </div>
-                {/* </div> */}
-                {/* <div className={`${style.spaceBetween}`}> */}
-                <div>
-                  <div className={style.assignedBy}>MSO VERIFICATION IN PROGRESS</div>
-                  <div  className={style.trackApplication1}>TRACK MY APPLICATION</div>
-                </div>
-                  <div className={style.approvedDate}>LAST UPDATED: JAN 16, 2025</div>
-                {/* </div> */}
-              </div>
-              <div className={`${style.backgroundWhite1}`}>
-                <div className={`${style.gridCol1} ${style.alignItem}`}>
-                  <div className={`${style.DashboardTitle}`}>
-                    Open RFCs
-                  </div>
-                  <div>
-                  <div className={`${style.DashboardDescription}`}>
-                  RFC Subject ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                  </div>
-                  <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
-                  RFC Subject dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
-                  </div>
-                  </div>
-                  <div>
-                  <div className={`${style.trackApplication}`}>
-                   GO TO RFC
-                  </div>
-                  <div className={`${style.trackApplication} ${style.marginTop5}`}>
-                   GO TO RFC
-                  </div>
-                  </div>
-                  
-                </div>
-
-              </div>
-              <div className={`${style.backgroundWhite1}`}>
-                <div className={`${style.gridCol1} ${style.alignItem}`}>
-                  <div className={`${style.DashboardTitle}`}>
-                  Document Follow-ups
-                  </div>
-                  <div>
-                  <div className={`${style.DashboardDescription}`}>
-                  CME Transcript - Document uploaded could not be Verified and / or Validated - Required Original Document will be needed prior to Application Approval.
-                  </div>
-                  </div>
-                  <div>
-                  <div className={`${style.trackApplication}`}>
-                  UPLOAD
-                  </div>
-                  </div>
-                  
-                </div>
-
-              </div>
-              <div className={`${style.backgroundWhite1}`}>
-                <div className={`${style.gridCol1} ${style.alignItem}`}>
-                  <div className={`${style.DashboardTitle}`}>
-                  My Query
-                  </div>
-                  <div>
-                  <div className={`${style.DashboardDescription}`}>
-                  Section Title - Query Comments
-                  </div>
-                  </div>
-                  <div>
-                  <div className={`${style.trackApplication}`}>
-                  View
-                  </div>
-                  </div> 
-                </div>
-              </div>
-              <div className={`${style.backgroundWhite1}`}>
-                <div className={`${style.gridCol1} ${style.alignItem}`}>
-                  <div className={`${style.DashboardTitle}`}>
-                 Payment
-                  </div>
-                  <div>
-                  <div className={`${style.DashboardDescription}`}>
-                 Amount - Confirmation Code
-                  </div>
-                  </div>
-                  <div>
-                  <div className={`${style.trackApplication}`}>
-                  View Reciept
-                  </div>
-                  </div>   
-                </div>
-              </div>
-            </div>
-          </div>
-          </div>
-        ) : activeSection === "Privileged" ? (
-          <div className={style.taskBoardShadow}>
-          <div className={style.taskBoard}>
-          <div className={style.backgroundCurrent}>
-            <div className={`${style.backgroundWhite} ${style.gridCol3}`}>
-              {/* <div className={`${style.flex}`}> */}
-              <img src={HapiCare} alt="HapiCare Logo" className={`${style.logo}`} />
+        <div className={style.mainContent}>
+          <div className={`${style.flex}`}>
+            <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div>
+            <div className={style.header}>
               <div>
-                <div className={`${style.flexGap10}`}>
-                <div className={style.taskTitle}>Privileged Staff</div>
-                <div className={style.taskTitle}>July 1, 2025 - June 30, 2026</div>
-                </div>
-                  <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
-                    <div className={`${style.applicantType}`}>Physician</div>
-                    <div className={`${style.applicantType}`}>Active</div>
-                    <div className={`${style.departmentType}`}>Surgery - ENT</div>
-                  </div>
+                <KeyboardArrowUpOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
               </div>
-              {/* </div> */}
-              {/* <div className={`${style.spaceBetween}`}> */}
+              <div className={`${style.spaceBetween} ${style.padding10}`}>
+                <div className={style.flex}>
+                  <div className={style.notificationNumber}>1/3</div>
+                  <div className={style.notificationText}>You have a Request for Clarification for your reappointment that requires your attention!</div>
+                </div>
+                <div className={style.viewButton}>View</div>
+              </div>
               <div>
-                <div className={style.approvedDate}>APPROVED DATE: APR 16, 2025</div>
-                <div className={`${style.spaceBetween} ${style.marginTop20}`}>
-                    <div className={`${style.recordTextStyle}`}>APPOINTMENT HISTORY</div>
-                    <div className={`${style.recordTextStyle}`}>VIEW MY RECORD</div>
-                  </div>
-                </div>
-              {/* </div> */}
-            </div>
-            <div className={`${style.backgroundWhite1}`}>
-              <div className={`${style.gridCol1} ${style.alignItem}`}>
-                <div className={`${style.DashboardTitle}`}>
-                Documents To Update
-                </div>
-                <div>
-                <div className={`${style.DashboardDescription}`}>
-                n95 Fit Test - date of expiry
-                </div>
-                <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
-                document type - date of expiry
-                </div>
-                </div>
-                <div>
-                <div className={`${style.trackApplication}`}>
-                UPLOAD
-                </div>
-                <div className={`${style.trackApplication} ${style.marginTop5}`}>
-                UPLOAD
-                </div>
-                </div>       
-              </div>
-            </div>
-            <div className={`${style.backgroundWhite1}`}>
-              <div className={`${style.gridCol1} ${style.alignItem}`}>
-                <div className={`${style.DashboardTitle}`}>
-                Grand Rounds
-                </div>
-                <div>
-                <div className={`${style.DashboardDescription}`}>
-                Grand Round Title - Location - Date
-                </div>
-                </div>
-                <div>
-                <div className={`${style.trackApplication}`}>
-                VIEW ATTENDANCE LOG
-                </div>
-                </div>       
+                <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
               </div>
             </div>
           </div>
-        </div>
-        </div>
-        ):("")}
-           {/* <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div> */}
-        </div>
-        {/* <div className={style.taskBoard}>
+          <div className={`${style.flex}`}>
+            <div className={`${style.backgroundSideBar} ${style.marginTop20}`}>
+              <div
+                className={`${style.sidebarItem} ${activeSection === "tasks" ? style.active : style.backgroundSideBarCard}  ${activeSection === "tasks" ? style.padding3side : style.padding}`}
+                onClick={() => setActiveSection("tasks")}
+              >
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={` ${activeSection === "tasks" ? style.titleStyleActive : style.titleStyle}`}>My Tasks</div>
+                  <div className={`${style.count} ${activeSection === "tasks" ? style.marginRight10 : ""}`}>{dashboardContent?.totalTasks || 0}</div>
+                </div>
+              </div>
+
+              <div
+                className={`${style.sidebarItem} ${activeSection === "Current" ? style.active : style.backgroundSideBarCard}`}
+                onClick={() => setActiveSection("Current")}
+              >
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${activeSection === "Current" ? style.titleStyleActive : style.titleStyle}`}>Current Applications</div>
+                  <div className={`${style.count} ${activeSection === "Current" ? style.marginRight10 : ""}`}>{applicationForm?.length || 0}</div>
+                </div>
+                {/* <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${style.sidebarWidgetText}`}>Open RFC</div>
+                  <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
+                </div>
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${style.sidebarWidgetText}`}>Document Followups</div>
+                  <div className={`${style.sidebarWidgetNumber} ${activeSection === "Current" ? style.marginRight10 : ""}`}>1</div>
+                </div> */}
+              </div>
+
+              {/* <div
+                className={`${style.sidebarItem} ${activeSection === "Privileged" ? style.active : style.backgroundSideBarCard}`}
+                onClick={() => setActiveSection("Privileged")}
+              >
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${activeSection === "Privileged" ? style.titleStyleActive : style.titleStyle}`}>Privileged Staff Appointments</div>
+                  <div className={`${style.count}  ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
+                </div>
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${style.sidebarWidgetText}`}>Expiring Documents</div>
+                  <div className={`${style.sidebarWidgetNumber} ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
+                </div>
+                <div className={`${style.spaceBetween} ${style.alignItem}`}>
+                  <div className={`${style.sidebarWidgetText}`}>Open Tasks</div>
+                  <div className={`${style.sidebarWidgetNumber} ${activeSection === "Privileged" ? style.marginRight10 : ""}`}>1</div>
+                </div>
+              </div> */}
+            </div>
+
+            {activeSection === "tasks" ? (
+              <div className={style.taskBoardShadow}>
+                <div className={style.taskBoard}>
+                  {/* <div className={`${style.addTask} ${style.alignItem}`}><AddIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> Add New Task</div> */}
+                  <div className={`${style.flexGap} ${style.marginTop2}`}>
+                    <div className={`${style.padding5} ${style.pastDue}`}>
+                      <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
+                        <div className={`${style.redDotStyle}`}></div>
+                        <div className={style.columnTitlePastDue}>Past Due</div>
+                      </div>
+                      <div className={style.taskList}>
+                        {pastDueTasks?.map((task, index) => (
+                          <div key={index} className={style.taskCardSingle}>
+                            <div className={style.spaceBetween}>
+                              <div className={`${style.flex} ${style.verticalAlignCenter}`}>
+                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
+                              </div>
+                              <div>
+                                {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
+                                )}
+                              </div>
+                            </div>
+                            <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
+                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                              {task?.description}
+                            </div>
+                            <div className={`${style.assignedBy} ${style.marginTop5}`}>
+                              Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
+                            </div>
+
+                            <div className={`${style.date} ${style.marginTop5}`}>
+                              <div className={style.flex}>
+                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
+                              </div>
+                            </div>
+
+                            <div className={` ${style.marginTop10}`}>
+                              <div className={style.interactions}>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={`${style.padding5} ${style.ongoing}`}>
+                      <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
+                        <div className={`${style.yellowDotStyle}`}></div>
+                        <div className={style.columnTitleOngoing}>Ongoing</div>
+                      </div>
+                      <div className={style.taskList}>
+                        {onGoingTasks?.map((task, index) => (
+                          <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
+                            <div className={style.spaceBetween}>
+                              <div className={`${style.flex} ${style.verticalAlignCenter}`}>
+                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
+                              </div>
+                              <div>
+                                {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
+                                )}
+                              </div>
+                            </div>
+                            <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
+                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                              {task?.description}
+                            </div>
+                            <div className={`${style.assignedBy} ${style.marginTop5}`}>
+                              Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
+                            </div>
+
+                            <div className={`${style.date} ${style.marginTop5}`}>
+                              <div className={style.flex}>
+                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
+                              </div>
+                            </div>
+
+                            <div className={` ${style.marginTop10}`}>
+                              <div className={style.interactions}>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={`${style.padding5} ${style.notStarted}`}>
+                      <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
+                        <div className={`${style.greyDotStyle}`}></div>
+                        <div className={style.columnTitleNotYet}>Not Yet Started</div>
+                      </div>
+                      <div className={style.taskList}>
+                        {notStartedTasks?.map((task, index) => (
+                          <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
+                            <div className={style.spaceBetween}>
+                              <div className={`${style.flex} ${style.verticalAlignCenter}`}>
+                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
+                              </div>
+                              <div>
+                                {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
+                                )}
+                              </div>
+                            </div>
+                            <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
+                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                              {task?.description}
+                            </div>
+                            <div className={`${style.assignedBy} ${style.marginTop5}`}>
+                              Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
+                            </div>
+
+                            <div className={`${style.date} ${style.marginTop5}`}>
+                              <div className={style.flex}>
+                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
+                              </div>
+                            </div>
+
+                            <div className={` ${style.marginTop10}`}>
+                              <div className={style.interactions}>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className={`${style.padding5} ${style.completed}`}>
+                      <div className={`${style.spaceBetween} ${style.alignItem} ${style.marginBottom10}`}>
+                        <div className={`${style.flex} ${style.alignItem}`}>
+                          <div className={`${style.greenDotStyle}`}></div>
+                          <div className={style.columnTitleCompleted}>Completed</div>
+                        </div>
+                        <div className={`${style.flex} ${style.alignItem}`}>
+                          <div className={style.weekTextStyle}>This Week</div>
+                          <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
+                        </div>
+                      </div>
+                      <div className={style.taskList}>
+                        {completedTasks?.map((task, index) => (
+                          <div key={index} className={style.taskCardSingle}>
+                            <div className={style.spaceBetween}>
+                              <div className={`${style.flex} ${style.verticalAlignCenter}`}>
+                                {/* <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div> */}
+                                <div className={`${style.taskType} `}>{availableCategories[task?.category]}</div>
+                              </div>
+                              <div>
+                                {(task?.category === 'REAPPOINTMENT_APPLICATION' || task.category === 'INITIAL_APPLICATION') && (
+                                  <img src={entityList?.filter(data => data?.id === task?.details?.application?.tenant?.id)?.[0]?.logo?.file?.fileURL} className={`${style.smallLogo}`} />
+                                )}
+                              </div>
+                            </div>
+                            <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
+                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                              {task?.description}
+                            </div>
+                            <div className={`${style.assignedBy} ${style.marginTop5}`}>
+                              Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
+                            </div>
+
+                            <div className={`${style.date} ${style.marginTop5}`}>
+                              <div className={style.flex}>
+                                <img src={HourGlassComplete} className={style.smallLogo} alt="" />
+                                <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
+                              </div>
+                            </div>
+
+                            <div className={` ${style.marginTop10}`}>
+                              <div className={style.interactions}>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><DescriptionOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <div className={`${style.flex} ${style.alignItem}`}>
+                                  <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
+                                  <div className={style.commentStyle}> {0}</div>
+                                </div>
+                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : activeSection === "Current" ? (
+              <div className={style.taskBoardShadow}>
+                <div className={style.taskBoard}>
+                  <div className={style.backgroundCurrent}>
+                    {applicationForm?.map((task, index) => (
+                      <div className={index === 0 ? '' : style.marginTop10}>
+                        <div className={`${style.backgroundWhite} ${style.gridCol4} ${style.cursorPointer}`} onClick={() => setCurrentApplicationIndex(index)}>
+                          {/* <div className={`${style.spaceBetween}`}> */}
+                          <img src={entityList?.filter(data => data?.id === task?.tenant?.id)?.[0]?.logo?.file?.fileURL} alt="" className={`${style.logo}`} />
+                          <div>
+                            <div className={style.taskTitle}>{task?.creationType === 'REAPPOINTMENT' ? 'Credentialing & Privileging Reappointment Application' : 'Credentialing & Privileging Application'}</div>
+                            <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
+                              <div className={`${style.applicantType}`}>{task?.basicDetails?.applicant?.applicantType}</div>
+                              <div className={`${style.applicantType}`}>{task?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}</div>
+                              <div className={`${style.departmentType}`}>{`${task?.basicDetails?.departmentSpecialty?.department} ${(task?.basicDetails?.departmentSpecialty?.specialty !== null && task?.basicDetails?.departmentSpecialty?.specialty !== "") ? ` - ${task?.basicDetails?.departmentSpecialty?.specialty}` : ""}`}</div>
+                            </div>
+                          </div>
+                          {/* </div> */}
+                          {/* <div className={`${style.spaceBetween}`}> */}
+                          <div>
+                            <div className={style.assignedBy}>MSO VERIFICATION IN PROGRESS</div>
+                            <div className={style.trackApplication1}>TRACK MY APPLICATION</div>
+                          </div>
+                          <div className={style.approvedDate}>LAST UPDATED: {format(new Date(task?.lastModifiedDate), 'MMM dd, yyyy')}</div>
+                          {/* </div> */}
+                        </div>
+                        {currentApplicationIndex === index && (
+                          <div>
+                            {/* <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  Open RFCs
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    RFC Subject ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                                  </div>
+                                  <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
+                                    RFC Subject dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    GO TO RFC
+                                  </div>
+                                  <div className={`${style.trackApplication} ${style.marginTop5}`}>
+                                    GO TO RFC
+                                  </div>
+                                </div>
+
+                              </div>
+
+                            </div>
+                            <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  Document Follow-ups
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    CME Transcript - Document uploaded could not be Verified and / or Validated - Required Original Document will be needed prior to Application Approval.
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    UPLOAD
+                                  </div>
+                                </div>
+
+                              </div>
+
+                            </div>
+                            <div className={`${style.backgroundWhite1}`}>
+                              <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                <div className={`${style.DashboardTitle}`}>
+                                  My Query
+                                </div>
+                                <div>
+                                  <div className={`${style.DashboardDescription}`}>
+                                    Section Title - Query Comments
+                                  </div>
+                                </div>
+                                <div>
+                                  <div className={`${style.trackApplication}`}>
+                                    View
+                                  </div>
+                                </div>
+                              </div>
+                            </div> */}
+                            {task?.payment?.paymentCompleted && (
+                              <div className={`${style.backgroundWhite1}`}>
+                                <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                  <div className={`${style.DashboardTitle}`}>
+                                    Payment
+                                  </div>
+                                  <div>
+                                    <div className={`${style.DashboardDescription}`}>
+                                      {`Amount: ${task?.payment?.currency} ${task?.payment?.fee} - Confirmation Code: ${task?.payment?.receiptId}`}
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <Tooltip title={'Click to view Receipt'} arrow>
+                                      <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowFileDialog(task?.payment?.invoice)}>
+                                        View Reciept
+                                      </div>
+                                    </Tooltip>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            {task?.privileges?.obligatedPrivileges?.length !== 0 && (
+                              <div className={`${style.backgroundWhite1}`}>
+                                <div className={`${style.gridCol1} ${style.alignItem}`}>
+                                  <div className={`${style.DashboardTitle}`}>
+                                    Requested Privileges
+                                  </div>
+                                  <div>
+                                    {task?.privileges?.obligatedPrivileges?.map((privilegeData, privilegeIndex) => (
+                                      <div className={`${style.DashboardDescription}`}>
+                                        <strong>{`${privilegeData?.privilegeSetTitle} - ${privilegeData?.privilegeDetails?.corePrivileges?.esign?.signedDate}`}</strong>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div>
+                                    <Tooltip title={'Click to view Privileges'} arrow>
+                                      <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowPrivilegeDialog(task?.privileges?.obligatedPrivileges)}>
+                                        View
+                                      </div>
+                                    </Tooltip>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : activeSection === "Privileged" ? (
+              <div className={style.taskBoardShadow}>
+                <div className={style.taskBoard}>
+                  <div className={style.backgroundCurrent}>
+                    <div className={`${style.backgroundWhite} ${style.gridCol3}`}>
+                      {/* <div className={`${style.flex}`}> */}
+                      <img src={HapiCare} alt="" className={`${style.logo}`} />
+                      <div>
+                        <div className={`${style.flexGap10}`}>
+                          <div className={style.taskTitle}>Privileged Staff</div>
+                          <div className={style.taskTitle}>July 1, 2025 - June 30, 2026</div>
+                        </div>
+                        <div className={`${style.flexGap10} ${style.marginTop20} ${style.alignItem}`}>
+                          <div className={`${style.applicantType}`}>Physician</div>
+                          <div className={`${style.applicantType}`}>Active</div>
+                          <div className={`${style.departmentType}`}>Surgery - ENT</div>
+                        </div>
+                      </div>
+                      {/* </div> */}
+                      {/* <div className={`${style.spaceBetween}`}> */}
+                      <div>
+                        <div className={style.approvedDate}>APPROVED DATE: APR 16, 2025</div>
+                        <div className={`${style.spaceBetween} ${style.marginTop20}`}>
+                          <div className={`${style.recordTextStyle}`}>APPOINTMENT HISTORY</div>
+                          <div className={`${style.recordTextStyle}`}>VIEW MY RECORD</div>
+                        </div>
+                      </div>
+                      {/* </div> */}
+                    </div>
+                    <div className={`${style.backgroundWhite1}`}>
+                      <div className={`${style.gridCol1} ${style.alignItem}`}>
+                        <div className={`${style.DashboardTitle}`}>
+                          Documents To Update
+                        </div>
+                        <div>
+                          <div className={`${style.DashboardDescription}`}>
+                            n95 Fit Test - date of expiry
+                          </div>
+                          <div className={`${style.DashboardDescription} ${style.marginTop5}`}>
+                            document type - date of expiry
+                          </div>
+                        </div>
+                        <div>
+                          <div className={`${style.trackApplication}`}>
+                            UPLOAD
+                          </div>
+                          <div className={`${style.trackApplication} ${style.marginTop5}`}>
+                            UPLOAD
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={`${style.backgroundWhite1}`}>
+                      <div className={`${style.gridCol1} ${style.alignItem}`}>
+                        <div className={`${style.DashboardTitle}`}>
+                          Grand Rounds
+                        </div>
+                        <div>
+                          <div className={`${style.DashboardDescription}`}>
+                            Grand Round Title - Location - Date
+                          </div>
+                        </div>
+                        <div>
+                          <div className={`${style.trackApplication}`}>
+                            VIEW ATTENDANCE LOG
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : ("")}
+            {/* <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div> */}
+          </div>
+          {/* <div className={style.taskBoard}>
          <div className={`${style.addTask} ${style.alignItem}`}><AddIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> Add New Task</div>
          <div className={`${style.flexGap} ${style.marginTop2}`}>
           <div className={`${style.padding5} ${style.pastDue}`}>
@@ -611,9 +811,15 @@ const ApplicantDashboard = () => {
           </div>
         </div>
         </div> */}
+        </div>
       </div>
-    </div>
-    </div>
+      {showFileDialog && (
+        <FileDisplayDialog getIsOpen={setShowFileDialog} file={selectedFile} />
+      )}
+      {showPrivilegeDialog && (
+        <PrivilegeDisplayDialog getIsOpen={setShowPrivilegeDialog} privilegeList={selectedPrivilegeList} />
+      )}
+    </div >
   );
 };
 

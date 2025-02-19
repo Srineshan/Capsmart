@@ -10,14 +10,14 @@ const ApplicationAssistanceCard = ({ user, designation, contactNumber, email }) 
     return (
         <div className={style.applicationAssistanceCard}>
             <div className={style.forAssistance}>For Assistance Contact:</div>
-            {/* <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}> Nina Grealy</span></div>
+            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}> Nina Grealy</span></div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Admin Asst, Medical Affairs & Chief of Staff Office</span> </div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> +1 (519) 621-2333 EXT 2305</span> </div>
-            <div className={`${style.displayInRow} ${style.marginTop} ${style.cursorPointer}`} onClick={() => window.location.href = "mailto:ngrealy@cmh.org"}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> ngrealy@cmh.org</span> </div> */}
-            <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}>Jane Doe</span></div>
+            <div className={`${style.displayInRow} ${style.marginTop} ${style.cursorPointer}`} onClick={() => window.location.href = "mailto:ngrealy@cmh.org"}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> ngrealy@cmh.org</span> </div>
+            {/* <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.nameStyle}>Jane Doe</span></div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><span className={style.contactStyle}> Admin Asst, Medical Affairs & Chief of Staff Office</span> </div>
             <div className={`${style.displayInRow} ${style.marginTop}`}><img src={PhoneIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft}`}> +1 (416) 555-5678</span> </div>
-            <div className={`${style.displayInRow} ${style.marginTop} ${style.cursorPointer}`} onClick={() => window.location.href = "mailto:ngrealy@cmh.org"}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> jane@test.cap</span> </div>
+            <div className={`${style.displayInRow} ${style.marginTop} ${style.cursorPointer}`} onClick={() => window.location.href = "mailto:ngrealy@cmh.org"}><img src={MailIcon} alt="" className={style.iconStyle} /><span className={`${style.contactStyle} ${style.marginLeft} ${style.purpleText}`}> jane@test.cap</span> </div> */}
             {/* <div className={`${style.divider} ${style.marginTop}`}></div>
             <div className={`${style.spaceBetween} ${style.marginTop}`}>
                 <div>

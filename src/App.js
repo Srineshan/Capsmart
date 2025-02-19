@@ -294,6 +294,10 @@ const ApplicantPortalDashboard = React.lazy(() =>
 const ApplicationSetup = React.lazy(() =>
   import("./Screens/ApplicationSetup/ApplicationConfiguration")
 );
+
+const MedicalDirectivesAttestRFC = React.lazy(() =>
+  import("./Screens/MedicalDirectiveAttestRFC")
+);
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -312,7 +316,7 @@ const App = ({ props }) => {
   let userFromCookie = cookie.get("user");
   let entityIdFromCookie = cookie.get('entityId');
   let errorInfo = sessionStorage.getItem('errorInfo');
-  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie)
+  console.log(authorization, 'authorization', TenantID, isAuthenticated, loggedInUser?.id, entityIdFromCookie, document.cookie, cookie.get("authorization") === 'undefined', cookie.get("authorization") !== undefined)
   const [showDialog, setShowDialog] = useState(false);
   const refreshTimeoutRef = useRef(null);
   // useEffect(() => {
@@ -359,9 +363,14 @@ const App = ({ props }) => {
   // }, [sessionToken])
 
   useEffect(() => {
+    if (cookie.get("authorization") === 'undefined') {
+      cookie.remove("authorization", { path: "/" });
+      cookie.remove("user", { path: "/" });
+      cookie.remove("entityId", { path: "/" });
+      logout()
+    }
     if (cookie.get("authorization") !== undefined) {
       let token = cookie.get("authorization")
-      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(cookie.get("authorization")), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(cookie.get("authorization").split('.')[1])))
       if (typeof token !== 'string') {
         // If the token is not a string, make sure to convert it into a string
         token = JSON.stringify(token);
@@ -372,6 +381,7 @@ const App = ({ props }) => {
         cookie.remove("entityId", { path: "/" });
         logout()
       }
+      console.log('sessionToken', token, typeof token, JSON.stringify(token), isSessionTokenExpired(cookie.get("authorization")), isSessionTokenExpired(cookie.get("authorization")), JSON.parse(atob(cookie.get("authorization").split('.')[1])))
       const decodedToken = jwt(cookie.get("authorization"));
       console.log('sessionToken', Date.now() > decodedToken.exp * 1000, Date.now(), decodedToken.exp * 1000, cookie.get("authorization"))
       if (Date.now() > decodedToken.exp * 1000) {
@@ -439,7 +449,7 @@ const App = ({ props }) => {
   }, [entityDetails, currentUserDetails]);
 
   useEffect(() => {
-    if (isAuthenticated && cookie.get("authorization")) {
+    if (isAuthenticated && cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
       scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
     }
 
@@ -720,7 +730,7 @@ const App = ({ props }) => {
       refreshTimeoutRef.current = setTimeout(async () => {
         try {
           await refreshToken(); // Refresh token
-          if (cookie.get("authorization")) {
+          if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
             scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1]))); // Re-run after successful refresh
           }
         } catch (err) {
@@ -805,7 +815,7 @@ const App = ({ props }) => {
         });
       });
     console.log('entered')
-    if (cookie.get("authorization")) {
+    if (cookie.get("authorization") && cookie.get("authorization") !== 'undefined') {
       scheduleTokenRefresh(JSON.parse(atob(cookie.get("authorization").split('.')[1])))
     }
     return true;
@@ -988,6 +998,7 @@ const App = ({ props }) => {
                 {/* Public Routes */}
                 <Route path="/" element={<LoginRoute />} />
                 <Route path="/loginPage" element={<IsLoggedIn><DescopeLoginDialog /></IsLoggedIn>} />
+                <Route path="/medicalDirectiveAttest" element={<MedicalDirectivesAttestRFC />} />
                 {/* <Route path="/loginPage" element={<DescopeLoginDialog />} /> */}
 
                 {/* Private Routes */}

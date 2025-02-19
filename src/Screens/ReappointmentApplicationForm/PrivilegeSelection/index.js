@@ -1681,9 +1681,27 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   const getIsRestrictedValuesFilled = (set) => {
     console.log(set, 'enteredCheck')
     const allHaveResponse = set?.every(
-      item => typeof item?.response === 'string' && item?.response?.trim() !== '' && item?.response !== null
+      item => {
+        const hasValidResponse = typeof item?.response === 'string' && item?.response?.trim() !== '' && item?.response !== null;
+        const isResponseYes = item?.response === 'YES';
+        const hasAdditionalData = isResponseYes ? item?.notes?.notes && item?.notes?.notes?.trim() !== '' && item?.notes?.notes !== null : true;
+        return hasValidResponse && hasAdditionalData;
+      }
     );
     return (set?.length === 0 || set === undefined) ? true : allHaveResponse;
+  }
+
+  const getIsAdditionalRestrictedValuesFilled = (set) => {
+    console.log(set, 'enteredCheck')
+    const allAdditionalHaveResponse = set?.every(
+      item => {
+        const hasValidResponse = typeof item?.response === 'string' && item?.response?.trim() !== '' && item?.response !== null;
+        const isResponseYes = item?.response === 'YES';
+        const hasAdditionalData = isResponseYes ? item?.notes?.notes && item?.notes?.notes?.trim() !== '' && item?.notes?.notes !== null : true;
+        return hasValidResponse && hasAdditionalData;
+      }
+    );
+    return (set?.length === 0 || set === undefined) ? true : allAdditionalHaveResponse;
   }
 
   const getFields = () => {
@@ -2414,9 +2432,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 )}
                 <div className={style.twoCol}>
                   <div
-                    onClick={() => {
-                      handleSign("Restricted", "Additional");
-                    }}
+                    onClick={getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                      ?.privileges) ? () => {
+                        handleSign("Restricted", "Additional");
+                      } : () => { }}
                   >
                     <ESignature
                       userName={
@@ -2967,8 +2987,11 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ) : (
                           <div className={style.privilegeHeading}>
                             {
-                              basicForm?.basicDetails
-                                ?.credentialingPrivilegeCategory
+                              basicForm?.basicDetails?.priorPrivilegeCategory
+                                ?.name === basicForm?.basicDetails
+                                  ?.credentialingPrivilegeCategory
+                                  ?.credentialingCategory ? 'Same as Before' : basicForm?.basicDetails
+                                    ?.credentialingPrivilegeCategory
                                 ?.credentialingCategory
                             }
                           </div>
@@ -4381,7 +4404,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             >
               <button
                 className={`${style.reappointmentButton} ${style.marginLeft}
-                 ${((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                 ${(((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
                     selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.esign !== undefined) ||
@@ -4405,12 +4428,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ?.length === 0 &&
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined))
+                          ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges))
                     ? ""
                     : style.disabledButton
                   }`}
                 onClick={
-                  ((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                  (((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
                     selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                       ?.restrictedPrivileges?.esign !== undefined) ||
@@ -4434,7 +4459,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         ?.length === 0 &&
                         selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                           ?.corePrivileges?.privilegesByCategories?.[0]
-                          ?.privileges?.length !== undefined))
+                          ?.privileges?.length !== undefined)) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges))
                     ? () => {
                       setShowAdditionalPrivileges(false);
                       handleSelectedAdditionalPrivilegesForDisplayMultiple(
@@ -4443,7 +4470,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     }
                     : () => { }
                 }
-                disabled={!(((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                disabled={!((((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                   ?.restrictedPrivileges?.esign !== null &&
                   selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== undefined) ||
@@ -4467,7 +4494,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       ?.length === 0 &&
                       selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                         ?.corePrivileges?.privilegesByCategories?.[0]
-                        ?.privileges?.length !== undefined)))
+                        ?.privileges?.length !== undefined))) && getIsAdditionalRestrictedValuesFilled(selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges))
                 }
               >
                 CONTINUE

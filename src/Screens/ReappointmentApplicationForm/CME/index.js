@@ -119,7 +119,11 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     }, [fileMetadata])
 
     useEffect(() => {
-        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && basicForm?.basicDetails?.applicant?.applicantType !== "Midwife") {
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && basicForm?.basicDetails?.applicant?.applicantType !== "Midwife" && basicForm?.basicDetails?.applicant?.applicantType !== "Dentist") {
+            setIsChecked(false)
+            setIsSigned(false);
+        }
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 90 && basicForm?.basicDetails?.applicant?.applicantType !== "Midwife" && basicForm?.basicDetails?.applicant?.applicantType === "Dentist") {
             setIsChecked(false)
             setIsSigned(false);
         }
@@ -534,6 +538,127 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                     <div
                                                         className={`${style.leftAlign} ${style.marginTop10}`}
                                                         dangerouslySetInnerHTML={{ __html: '<p>I certify that I have completed the CME / CEU requirements of college approved education hours in the past 12 months.</p>' }}
+                                                    />
+                                                </div>
+                                                {formSchemaWholeObject?.esignatureRequired && (
+                                                    <div className={style.eSignGrid}>
+                                                        <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                                        >
+                                                            <ESignature
+                                                                userName={isSigned ? name : ""}
+                                                                encData={isSigned ? encryptedText : ''}
+                                                                showData={isSigned}
+                                                                showDatais={true}
+                                                            />
+                                                        </div>
+                                                        <div className={style.verticalAlignCenter}>
+                                                            <div className={style.displayInRow}>
+                                                                <div className={style.dateTitle}>Date: </div>
+                                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ) : basicForm?.basicDetails?.applicant?.applicantType === "Dentist" ? (
+                                    <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
+                                        <div>
+                                            <div className={style.cmeCard}>
+                                                <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
+                                                <div className={`${style.twoCol} ${style.marginTop}`}>
+                                                    <Tooltip
+                                                        title="Click Here to Edit"
+                                                        arrow
+                                                        {...(!basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file && { open: false })}
+                                                    >
+                                                        <div className={`${style.cmeHourCard} ${style.cursorPointer} `} onClick={() => {
+                                                            const fileData = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file;
+                                                            const rowId = basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.rowId;
+                                                            if (!fileData) {
+                                                                setShowFileWithFields(false);
+                                                            } else {
+                                                                setShowFileWithFields(true);
+                                                                getDocument(rowId);
+                                                            }
+                                                        }}>
+                                                            <div className={style.totalText}>Your Total</div>
+                                                            <div className={`${style.displayInRow} ${style.justifyCenter}`}>
+                                                                <div className={style.hourText}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours}</div>
+                                                                {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours !== undefined && (
+                                                                    <div className={`${style.marginLeft} ${style.verticalAlignCenter}`}>
+                                                                        <EditOutlinedIcon sx={{ fontSize: 28, color: "#06617A" }} />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            <div className={style.totalText}>Credits / Hours</div>
+                                                            {(90 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours) > 0 && (
+                                                                <div className={style.hourRemainingText}>{90 - basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours} more needed</div>
+                                                            )}
+                                                        </div>
+                                                    </Tooltip>
+                                                    <div className={style.cmeHourCard}>
+                                                        <div className={style.totalText}>Required</div>
+                                                        <div className={style.hourText}>90</div>
+                                                        <div className={style.totalText}>Credits / Hours</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 90 ? (
+                                            <div>
+                                                <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                                                <div className={style.marginTop10}>
+                                                    <CKEditor
+                                                        editor={ClassicEditor}
+                                                        data={notes}
+                                                        onChange={(event, editor) => {
+                                                            const data = editor.getData();
+                                                            setNotes(data);
+                                                        }}
+                                                        onReady={(editor) => {
+                                                            editor.editing.view.change((writer) => {
+                                                                writer.setStyle(
+                                                                    "height",
+                                                                    "110px",
+                                                                    editor.editing.view.document.getRoot()
+                                                                );
+                                                            });
+                                                        }}
+                                                        config={{
+                                                            placeholder: "Type your content here...",
+                                                            toolbar: {
+                                                                shouldNotGroupWhenFull: true,
+                                                                sticky: true,
+                                                                items: [
+                                                                    'undo', 'redo',
+                                                                    '|',
+                                                                    'heading',
+                                                                    '|',
+                                                                    'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                                    '|',
+                                                                    'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                                    '|',
+                                                                    'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                                ],
+                                                            },
+                                                            autoGrow: false,
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 90 ? style.disabled : ''}>
+                                                <div className={`${style.checkGrid}`}>
+                                                    {formContent?.disclaimer?.content !== null && (
+                                                        <span>
+                                                            <CommonCheckBox checked={isChecked} onChange={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 90 ? () => { } : (e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
+                                                        </span>
+                                                    )}
+                                                    <div
+                                                        className={`${style.leftAlign} ${style.marginTop10}`}
+                                                        dangerouslySetInnerHTML={{ __html: "<p>I certify that I have completed the CME / CEU requirements of 90 hours of college approved education hours in the past 12 months.</p>" }}
                                                     />
                                                 </div>
                                                 {formSchemaWholeObject?.esignatureRequired && (

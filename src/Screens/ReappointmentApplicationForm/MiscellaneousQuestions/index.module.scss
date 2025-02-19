@@ -388,6 +388,12 @@
     height: 100%;
 }
 
+.verticalAlignBottom {
+    display: flex;
+    align-items: baseline;
+    height: 100%;
+}
+
 .markedAsText {
     text-align: left;
     font: italic normal medium $tabledatatext2 proxima-nova;
