@@ -148,6 +148,32 @@ const ReappointmentApplicationFormRequirement = () => {
         navigate('/')
     }
 
+    const getIsDocRequired = (data) => {
+        if (!data?.departmentSpecific) {
+            return data?.document?.shortName === "Profile Picture" ? "Optional" : data?.required ? 'Required' : 'Recommended';
+        } else {
+            if (data?.document?.shortName === "Profile Picture") {
+                return "Optional";
+            } else {
+                let isDepartmentMatching = data?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+                if (isDepartmentMatching) {
+                    if (data?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+                        let isSpecialtyMatching = data?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+                        if (isSpecialtyMatching) {
+                            return data?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        } else {
+                            return data?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        }
+                    } else {
+                        return data?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                    }
+                } else {
+                    return data?.required ? 'Required' : 'Recommended';
+                }
+            }
+        }
+    }
+
     console.log(basicForm, '75')
 
     return (
@@ -187,7 +213,7 @@ const ReappointmentApplicationFormRequirement = () => {
                                                         <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName}</div>
                                                         {/* <InfoOutlinedIcon sx={{ fontSize: 14, marginLeft: '10px' }} className={style.info} /> */}
                                                     </div>
-                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.document?.shortName === "Profile Picture" ? "Optional" : data?.required ? 'Required' : 'Recommended'}</div>
+                                                    <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{getIsDocRequired(data)}</div>
                                                     <div className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}>{data?.instruction}</div>
                                                 </div>
                                             </div>
