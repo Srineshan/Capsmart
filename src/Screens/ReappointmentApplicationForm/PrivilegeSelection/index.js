@@ -3845,12 +3845,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             >
                               SAVE
                             </div> */}
-                            {/* <div
+                            <div
                               className={`${style.reappointmentButtonOutlined}`}
                               onClick={() => { setIsPrivilegeSetChanging(false); setPrivilegeSetChangeYesOrNo('') }}
                             >
                               CANCEL
-                            </div> */}
+                            </div>
                           </div>
                         </div>
                         {/* )} */}
@@ -3994,12 +3994,12 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       >
                         SAVE
                       </div> */}
-                      {/* <div
+                      <div
                         className={`${style.reappointmentButtonOutlined}`}
                         onClick={() => { setAdditionalPrivilegeChangeYesOrNo(''); setIsAdditionalPrivilegeCategoryChanging(false); }}
                       >
                         CANCEL
-                      </div> */}
+                      </div>
                     </div>
                   </div>
                 )}
