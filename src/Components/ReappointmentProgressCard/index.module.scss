@@ -119,6 +119,26 @@
     cursor: pointer;
 }
 
+.reddotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    border: 1px solid $primarycolor;
+    background-color: $statusred;
+    margin-top: -3px;
+    cursor: pointer;
+}
+
+.yellowdotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 4px;
+    border: 1px solid $primarycolor;
+    background-color: $statusyellow;
+    margin-top: -3px;
+    cursor: pointer;
+}
+
 .disabledDotStyle {
     height: 12px;
     width: 12px;

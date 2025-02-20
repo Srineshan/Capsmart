@@ -51,7 +51,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [yesOrNoAddress, setYesOrNoAddress] = useState('YES');
     const [showInfo, setShowInfo] = useState(false);
     const [applicantProfile, setApplicantProfile] = useState();
-
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getBasicForm()
@@ -166,8 +166,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'MetadataLabel')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
@@ -194,6 +194,10 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getAllLabelsContactAddress = (data) => {
         let tempLabels = addObjectIfNotPresent(uniqueLabels, data);
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
+            tempLabels.push(data);
+        }
         setUniqueLabels(tempLabels)
         console.log("tempLabelsssss", tempLabels, uniqueLabels, data)
     }
@@ -234,6 +238,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         setUpdateFrom('')
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({
                 key: data,
@@ -314,13 +319,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         if (emailValue && !emailRegex.test(emailValue)) {
             missingKeys.push({ key: emailPath, label: "Email (Invalid email Format)" });
         }
-        if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
+
+        setWarningFields(missingKeys);
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (hasMandatoryMissingFields) {
             setShowValidationDialog(true);
         } else {
             handleSubmitApplicationReq();
         }
-        console.log(missingKeys, 'Metadata', updateFrom)
-        setWarningFields(missingKeys);
+        console.log(missingKeys, 'MetadataAddress', updateFrom, hasMandatoryMissingFields, warningFields)
+        // setWarningFields(missingKeys);
     };
 
     const getIsSaveInProgressOpen = (value) => {
@@ -348,9 +357,11 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const getSkipClicked = (value) => {
         if (value) {
             handleSubmitApplicationReq("skipped")
+                .then(() => getAllMissingFields("skipped"))
+                .catch((error) => console.error("Error processing skip action:", error));
         }
-        setUpdateFrom('')
-    }
+        setUpdateFrom('');
+    };
 
     const getSkipClicked1 = (value) => {
         if (value) {
@@ -359,19 +370,25 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
     }
 
-    const getContactSkipClicked = (value, data, skip) => {
+    const getContactSkipClicked = async (value, data, skip) => {
         if (value) {
-            handleContactAddressSubmit('skipped')
+            try {
+                await Promise.resolve(getAllMissingFields("skipped")); // Ensuring it behaves like a Promise
+                navigate(navigateURL);
+            } catch (error) {
+                console.error("Error processing skip action:", error);
+            }
         }
-        setUpdateFrom('')
-    }
+        setUpdateFrom('');
+    };
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         setUpdateFrom('')
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
-            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label })
+            keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: uniqueLabels?.find(labelData => labelData?.path === data) || {} })
         })
         const validateBusinessPhone = (phone) => {
             const phoneRegex = /^[0-9]{10}$/; // Example: validate if phone is a 10-digit number
@@ -462,20 +479,29 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         }
 
         setWarningFieldsContact(missingKeys)
-        if (missingKeys?.length !== 0 && missingKeys?.filter(data => data?.label !== undefined)?.length !== 0) {
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+            handleContactAddressSubmit();
+    }
+
+    if(data !== "skipped"){
+        if (hasMandatoryMissingFields) {
             setShowValidationDialog(true)
         } else {
             // setShowContactInfo(false);
             getIsSubmitClickedForContact(true);
         }
-        console.log(keyValuePair, 'Metadata', missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
+    }
+        console.log(keyValuePair, 'Metadata77777',allMissingFields, missingKeys, getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`))
     }
 
     const handleSubmitApplicationReq = async () => {
         // const errors = validateSchema(formSchema, basicForm?.basicDetails);
         // console.log(errors)
         let data = basicForm;
-        console.log(data)
+        console.log(data,"dataaaaa123")
         await PUT(`application-management-service/application/${applicationId}`, data)
             .then(response => {
                 console.log(response)
@@ -498,8 +524,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let temp = {
             schemaId: basicForm?.forms?.[formIndex]?.schemaId,
             data: basicForm?.forms?.[formIndex]?.data,
-            unFilledFields: warningFields?.map(data => data?.label),
-            acknowledged: skip === "skipped" ? false : true
+            unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+            acknowledged: true
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -587,11 +613,12 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     //     }
     // }
 
-    const getAllMissingFields = () => {
+    const getAllMissingFields = (data) => {
         setUpdateFrom("Continue"); // Track the source of the action
 
         let allMissingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
 
         // Collect metadata-based missing fields (Basic Info & Contact Info)
         metadata?.forEach((data, index) => {
@@ -599,7 +626,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 key: data,
                 value: getValueByPath(basicForm, data),
                 // Assign correct label from either Basic Info or Contact Info labels
-                label: labels[index] || uniqueLabels?.filter(labelData => labelData?.path === data)[0]?.label
+                label: labels[index] || uniqueLabels?.find(labelData => labelData?.path === data)
             });
         });
 
@@ -660,21 +687,31 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
         console.log("All Missing Keys:", allMissingKeys);
 
-        // Set all warning fields in state
+        setAllWarningFields(allMissingKeys);
+        allMissingFields = allMissingKeys;
+        hasMandatoryMissingFields = allMissingKeys?.find(field => field?.label?.mandatory === true);
 
-
-        // Display validation dialog if there are missing fields
-        if (allMissingKeys.length > 0) {
-            setAllWarningFields(allMissingKeys);
-            setShowValidationDialog(true);
-        } else {
-            handleYesOrNo();
+        if(data === "skipped"){
+            handleContactAddressSubmit();
             if (sessionStorage.getItem('fromSummary') === "true") {
                 navigate(-1);
             } else {
                 navigate(navigateURL)
             }
         }
+     if (data !== "skipped"){
+        if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+        } else {
+            handleContactAddressSubmit();
+            if (sessionStorage.getItem('fromSummary') === "true") {
+                navigate(-1);
+            } else {
+                navigate(navigateURL)
+            }
+        }
+    }
+    console.log("fix",allMissingFields)
     };
 
 
@@ -716,7 +753,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 getAllPath={getAllPath}
                                 getAllLabels={getAllLabels}
                                 getIsSubmitClicked={getMissingFieldsBasicInfo}
-                                warningFields={warningFields}
+                                warningFields={warningFields?.filter(field => field?.label?.mandatory === true)}
                                 formSchema={formSchemaWholeObject}
                                 isReappointment={true}
                                 dataChangedObject={formSchema?.properties?.isDemographicDataChanged}
@@ -760,7 +797,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact}
+                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
                                                 formSchema={formSchemaWholeObject}
                                             />
 
@@ -782,7 +819,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact}
+                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
                                                 formSchema={formSchemaWholeObject}
                                             />
                                         </div>
@@ -802,7 +839,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                                 getAllPath={getAllPath}
                                                 getAllLabels={getAllLabelsContactAddress}
                                                 getIsSubmitClicked={getIsSubmitClickedForContact}
-                                                warningFields={warningFieldsContact}
+                                                warningFields={warningFieldsContact?.filter(field => field?.label?.mandatory === true)}
                                                 formSchema={formSchemaWholeObject}
                                             />
 
@@ -877,7 +914,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div>
@@ -922,7 +959,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             SKIP FOR NOW
                         </div> */}
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked1(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop10}`}
                             onClick={() => getIsSaveInProgressOpen(true)}
@@ -959,13 +996,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <ValidationDialog
                     getIsOpen={getIsValidationDialogOpen}
                     labelList={updateFrom === "Continue"
-                        ? allWarningFields
+                        ? allWarningFields?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
                         : updateFrom === "contact"
-                            ? warningFieldsContact
-                            : warningFields
+                            ? warningFieldsContact?.filter(field => field?.label?.mandatory !== false && Object.keys(field?.label).length !== 0)
+                            : warningFields?.filter(field => field?.label?.mandatory !== false && field?.label !== undefined)
                     }
                     getSkipClicked={updateFrom === "Continue"
-                        ? handleYesOrNo
+                        ? getContactSkipClicked
                         : updateFrom === "contact"
                             ? getContactSkipClicked
                             : getSkipClicked

@@ -25,6 +25,45 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
         setShowSubmitDialog(value);
     }
 
+    const getIsDocRequired = (shortName) => {
+        let documentData = basicForm?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
+        if (!documentData?.departmentSpecific) {
+            return documentData?.documentType?.shortName === "Profile Picture" ? "Optional" : documentData?.required ? 'Required' : 'Recommended';
+        } else {
+            if (documentData?.document?.shortName === "Profile Picture") {
+                return "Optional";
+            } else {
+                let isDepartmentMatching = documentData?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+                if (isDepartmentMatching) {
+                    if (documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+                        let isSpecialtyMatching = documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+                        if (isSpecialtyMatching) {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        } else {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        }
+                    } else {
+                        return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                    }
+                } else {
+                    return documentData?.required ? 'Required' : 'Recommended';
+                }
+            }
+        }
+    }
+
+    const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
+    const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
+    const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+    const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+    const ScheduleAUpdate = ScheduleA?.unFilledFields ?? [];
+    const ScheduleBUpdate = ScheduleB?.unFilledFields ?? [];
+    const documentsRequired = basicForm?.documentsRequired ?? [];
+    const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
+    const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
+    const hasMissingScheduleA = ScheduleAUpdate?.includes("skipped");
+    const hasMissingScheduleB = ScheduleBUpdate?.includes("skipped");
+
     const handleLogout = () => {
         var cookies = new Cookie();
         cookies.remove("user", { path: "/" });
@@ -89,16 +128,18 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <div className={style.spaceBetween}>
                                                 <div className={style.displayInRow}>
                                                     <div>
-                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
-                                                        {(data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0) && (
-                                                            data?.unFilledFields?.map((innerData, innerIndex) => (
-                                                                <div className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{`${innerData}`}</div>
+                                                        <div className={`${(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? style.completedItemsTextRed : style.completedItemsText} ${disclosureList?.includes(data?.schemaCategory) ? style.marginLeft : ''}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }}>{data?.title}</div>
+                                                        {(data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) && (
+                                                            data?.unFilledFields?.filter(innerData => missingRequiredDocs?.includes(innerData))?.map((innerData, innerIndex) => (
+                                                                <div key={innerIndex} className={`${style.completedItemsTextRed} ${style.marginLeft}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/Form/${btoa(data?.schemaCategory)}`); getIsOpen(false); }}>
+                                                                    {innerData}
+                                                                </div>
                                                             ))
                                                         )}
                                                     </div>
                                                     {/* <img src={Pencil} alt="" className={`${style.pencilImgStyle} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => { sessionStorage.setItem('fromSummary', true); navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`); getIsOpen(false) }} /> */}
                                                 </div>
-                                                <div>{(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && data?.unFilledFields?.length !== 0)) ? <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />}</div>
+                                                <div>{(!data?.acknowledged || errorSchema === data?.schemaCategory || (data?.schemaCategory === 'UploadYourDoc' && missingRequiredDocs?.length !== 0) || (data?.schemaCategory === 'ScheduleA' && hasMissingScheduleA) || (data?.schemaCategory === 'ScheduleB' && hasMissingScheduleB)) ? <WarningIcon style={{ fontSize: 20, color: `#FFAA00` }} /> : <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A` }} />}</div>
                                             </div>
                                             {/* {data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS' && (
                                                 <>
@@ -135,9 +176,9 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <Tooltip
                                                 title="To submit you have to correct all errors and issues identified."
                                                 arrow
-                                                {...(basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length === 0 && { open: false })}
+                                                {...(missingRequiredDocs?.length === 0 && { open: false })}
                                             >
-                                                <div className={`${style.continue} ${style.marginLeft} ${basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length !== 0 ? style.disabledButton : ''}`} onClick={basicForm?.forms?.filter((data) => data?.schemaCategory === 'UploadYourDoc')?.[0]?.unFilledFields?.length !== 0 ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
+                                                <div className={`${style.continue} ${style.marginLeft} ${missingRequiredDocs?.length !== 0 ? style.disabledButton : ''}`} onClick={missingRequiredDocs?.length !== 0 ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
                                             </Tooltip>
                                         </div>
                                     )}
