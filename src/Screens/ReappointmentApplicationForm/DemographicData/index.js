@@ -8,7 +8,7 @@ import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonCheckBox from '../../../Components/CommonFields/CommonCheckBox';
 import { GET, PUT } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import { ErrorToaster, SuccessToaster, SuccessToaster2 } from '../../../utils/toaster';
 import JourneyStep2 from './../../../images/journeyStep2.png';
 import style from './index.module.scss';
 import AIAssistantDialog from '../../../Components/AIAssistantDialog';
@@ -482,7 +482,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             .then(response => {
                 console.log(response)
                 setBasicForm(response?.data)
-                SuccessToaster("Staff Member Application Updated Successfully");
+                SuccessToaster2("Updated Successfully");
                 getPreApplication();
                 // if (sessionStorage.getItem('fromSummary') === "true") {
                 //     navigate(-1);
@@ -507,7 +507,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             .then(response => {
                 console.log(response)
                 setBasicForm(response?.data)
-                SuccessToaster("Application Updated Successfully");
+                SuccessToaster2("Updated Successfully");
                 getPreApplication()
                 updateProfileAddress();
             })

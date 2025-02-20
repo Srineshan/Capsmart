@@ -26,3 +26,21 @@ export const ErrorToaster = (message) => { }
 //   icon: 'error',
 //   timeout: 2000,
 // });
+
+export const SuccessToaster2 = (message) => {
+  CommonToaster.show({
+    message,
+    intent: Intent.PRIMARY,
+    icon: 'tick',
+    timeout: 2000,
+  });
+}
+
+export const ErrorToaster2 = (message) => {
+  CommonToaster.show({
+    message,
+    intent: Intent.DANGER,
+    icon: 'error',
+    timeout: 2000,
+  });
+}
