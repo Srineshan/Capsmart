@@ -145,7 +145,7 @@ const logError = async (error, info) => {
 const root = createRoot(document.getElementById('root'));
 if (window.self === window.top) {
   root.render(
-    <AuthProvider projectId={'P2rl8Q4yCg5yfnfU46z6kJqDrjMW'}
+    <AuthProvider projectId={'P2s3tDP6w2Yx68uVgPDJAHBiAV8C'}
     // persistJwt="cookie"
     // cookieDomain={window.location.hostname?.split('.')?.length >= 3 ? window.location.hostname?.slice(-2)?.join('.') : window.location.hostname} // Set the domain to parent domain
     // cookieSecure={false}
