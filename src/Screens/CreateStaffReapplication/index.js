@@ -123,7 +123,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       }
 
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${10}&offset=${page - 1}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${300}&offset=${page - 1}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
@@ -398,6 +398,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 getSelectedPage={getSelectedPage}
                 totalCount={totalCount}
                 page={page}
+                hidePagination={true}
                 // Pass checkedIds as a prop
                 checkedIds={checkedIds}
                 // Optional: pass the checkbox click handler if TableTwo needs it
