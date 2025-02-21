@@ -411,7 +411,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             temp[index].requirement = value === 'Profile Picture' ? 'Optional' : getIsDocRequired(value);
         }
         console.log(temp)
-        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}`, temp[index])
+        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}&manuallyClassified=${true}`, temp[index])
             .then(response => {
                 console.log(response)
                 setIsLoading(false)
