@@ -53,6 +53,7 @@ const StaffApplicationList = ({
   getActiveApplicationTask,
   getNotesCommentBox,
   getNotesDialog,
+  getClarificationRequestFromApplicantDialog,
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
   getTitleCounts,
@@ -623,6 +624,11 @@ const StaffApplicationList = ({
     getNotesDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
+
+  const onClickClarificationRequrstFromApplicantDialog = (data) => {
+    getClarificationRequestFromApplicantDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  }
 
   const onClickDeptReviewDialog = (data) => {
     getApprovalNotesCommentBoxDept(true);
@@ -2722,7 +2728,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   isParagraph: true,
     // },
-    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: onClickClarificationRequrstFromApplicantDialog, isIndent: true },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ]
@@ -2943,20 +2949,21 @@ const StaffApplicationList = ({
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
   ]
   const clarificationActionsData = [
-    { data: "View & Verify", requiredValue: "boolean", onClick: "" },
-    {
-      data: "Send for Committee Review",
-      requiredValue: "boolean",
-      onClick: "",
-    },
-    {
-      data: "Request for Clarification",
-      requiredValue: "boolean",
-      onClick: "",
-    },
-    { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "" },
-    { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
-    { data: "From Institution", requiredValue: "boolean", onClick: "" },
+    { data: "View & Verify", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog }
+    // {
+    //   data: "Send for Committee Review",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // {
+    //   data: "Request for Clarification",
+    //   requiredValue: "boolean",
+    //   onClick: "",
+    // },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "" },
+    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "" },
+    // { data: "From Institution", requiredValue: "boolean", onClick: "" },
   ];
 
   const rejectedActionsData = [
@@ -3299,11 +3306,11 @@ const StaffApplicationList = ({
                                       }
                                     ></div>
                                     <div className={style.marginLeft10}>
-                                      {/* {status?.basicDetail?.applicant?.name?.lastName.toUpperCase() || "-"},{" "}
-                                      {status?.basicDetail?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                        status?.basicDetail?.applicant?.name?.firstName.slice(1).toLowerCase() || "-"} */}
+                                      {status?.basicDetail?.applicant?.name?.firstName}{" "}
+                                      {status?.basicDetail?.applicant?.name?.lastName.charAt(0).toUpperCase() +
+                                        status?.basicDetail?.applicant?.name?.lastName.slice(1).toLowerCase() || "-"}
 
-                                      {status?.basicDetail?.applicant?.name?.firstName}{" "} {status?.basicDetail?.applicant?.name?.lastName.toLowerCase()}
+                                      {/* {status?.basicDetail?.applicant?.name?.firstName}{" "} {status?.basicDetail?.applicant?.name?.lastName.toLowerCase()} */}
                                     </div>
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
