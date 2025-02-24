@@ -146,6 +146,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 setCheckingCondition(['Completed']);
             } else if (notes) {
                 setCheckingCondition(['Completed']);
+            } else if (!notes) {
+                setCheckingCondition(['notYetStarted']);
             } else {
                 setCheckingCondition(['inProgress']);
             }
@@ -157,6 +159,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 setCheckingCondition(['Completed']);
             } else if (fileData && creditOrHours < 90 && notes) {
                 setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 90) {
+                setCheckingCondition(['notYetStarted']);
             } else {
                 setCheckingCondition(['inProgress']);
             }
@@ -168,6 +172,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 setCheckingCondition(['Completed']);
             } else if (fileData && creditOrHours < 25 && notes) {
                 setCheckingCondition(['Completed']);
+            } else if (fileData && creditOrHours < 25) {
+                setCheckingCondition(['notYetStarted']);
             } else {
                 setCheckingCondition(['inProgress']);
             }
@@ -403,7 +409,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         console.log("fffffff", fields)
     }
 
-    const handleContinue = async () => {
+    const handleContinue = async (actionType) => {
         let tempData = basicForm?.forms?.[formIndex]?.data !== null ? basicForm?.forms?.[formIndex]?.data : {};
         tempData.yesOrNoCME = yesOrNoCME;
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
@@ -413,7 +419,9 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             data: tempData,
             unFilledFields: checkingCondition,
             acknowledged: true,
-            esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+            esign: actionType === "skip"
+          ? { esign: '', name: '', signedDate: '' } 
+          : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -948,7 +956,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )}
                     </div> */}
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div>

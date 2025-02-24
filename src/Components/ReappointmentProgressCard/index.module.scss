@@ -114,7 +114,8 @@
     height: 12px;
     width: 12px;
     border-radius: 4px;
-    background-color: $primarycolor;
+    border: 1px solid $primarycolor;
+    background-color: $acknowledgmentgreen;
     margin-top: -3px;
     cursor: pointer;
 }
@@ -134,7 +135,7 @@
     width: 12px;
     border-radius: 4px;
     border: 1px solid $primarycolor;
-    background-color: $statusyellow;
+    background-color: $acknowledgmentyellow;
     margin-top: -3px;
     cursor: pointer;
 }

@@ -78,6 +78,34 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
         }
     }, [step, basicForm])
 
+    const getIsDocRequired = (shortName) => {
+        let documentData = basicForm?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
+        if (!documentData?.departmentSpecific) {
+            return documentData?.documentType?.shortName === "Profile Picture" ? "Optional" : documentData?.required ? 'Required' : 'Recommended';
+        } else {
+            if (documentData?.document?.shortName === "Profile Picture") {
+                return "Optional";
+            } else {
+                let isDepartmentMatching = documentData?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+                if (isDepartmentMatching) {
+                    if (documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+                        let isSpecialtyMatching = documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+                        if (isSpecialtyMatching) {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        } else {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        }
+                    } else {
+                        return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                    }
+                } else {
+                    return documentData?.required ? 'Required' : 'Recommended';
+                }
+            }
+        }
+    }
+
+
     console.log(Math.floor(totalTime / 60000), totalTime, (formIndex / (basicForm?.forms?.length - 1)) * 100, 'progress', formIndex, basicForm?.forms?.length - 1, basicForm?.forms?.reduce(
         (maxIndex, step, index) => (step?.acknowledged ? index : maxIndex),
         -1
@@ -126,7 +154,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                         const medicalHistoryUnfilledFields = medicalHistoryDisclosure?.unFilledFields ?? [];
                         const privilegeAtOtherHosiptalUnfilledFields = privilegeAtOtherHosiptalDisclosure?.unFilledFields ?? [];
                         const patientConernUnfilledFields = patientConcernDisclosure?.unFilledFields ?? [];
-                        const medicalDriectivesUnfilledFields = medicalDirectives?.unFilledFields ?? [];
+                        const medicalDirectivesUnfilledFields = medicalDirectives?.unFilledFields ?? [];
                         const CMEUnfilledFields = CMETranscripts?.unFilledFields ?? [];
                         const MiscellaneousQuestionUnfilledFields = MiscellaneousQuestion?.unFilledFields ?? [];
                         const ScheduleAUpdate = ScheduleA?.unFilledFields ?? [];
@@ -136,9 +164,12 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                         dotClass = style.dotStyle;
 
                         if (data?.schemaCategory === 'UploadYourDoc') {
-                            const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
+                            // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
+                            const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
                             const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
                             const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
+                            
+                            // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
                             
                             dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
                         } else if (data?.schemaCategory === 'DemographicData') {
@@ -172,8 +203,8 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                             
                             dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                         } else if (data?.schemaCategory === 'MEDICAL_DIRECTIVES') {
-                            let hasMandatoryTrue = medicalDriectivesUnfilledFields?.includes("notYetStarted");
-                            let hasMandatoryFalse = medicalDriectivesUnfilledFields?.includes("inProgress");
+                            let hasMandatoryTrue = medicalDirectivesUnfilledFields?.includes("notYetStarted");
+                            let hasMandatoryFalse = medicalDirectivesUnfilledFields?.includes("inProgress");
                             
                             dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
                         } else if (data?.schemaCategory === 'CME') {
