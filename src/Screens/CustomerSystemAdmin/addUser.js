@@ -89,19 +89,25 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }, [selectedSites]);
 
     useEffect(() => {
-        setSelectedSpecialtys([])
+        if (!isEdit) {
+            setSelectedSpecialtys([])
+        }
     }, [selectedDepartments])
 
 
     useEffect(() => {
         if (isEdit) {
             let tempDepartmentList = [];
+            let tempSpecialtyList = [];
             // let siteTemp = addUser?.sites?.sites || [];
 
             selectedSites?.map(data => {
                 //     console.log('inside initial map', data);
                 addUser?.sites?.sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]?.departmentList?.departments?.map(deptData => {
-                    tempDepartmentList.push(`${deptData?.id}-${data}`);
+                    tempDepartmentList.push(`${deptData?.id}`);
+                    deptData?.serviceAreas?.map(data =>
+                        tempSpecialtyList.push(data?.id)
+                    )
                 })
                 //     siteTemp.push(sites?.filter(data => data?.id === data)?.map(data => data)[0]);
                 //     sites?.filter(data => data?.id === data)?.map(data => data)?.[0]?.departmentList?.departments?.map(deptData => {
@@ -119,6 +125,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             })
             // setAddUser({ ...addUser, sites: { sites: siteTemp } });
             setSelectedDepartments(tempDepartmentList);
+            setSelectedSpecialtys(tempSpecialtyList);
         }
     }, [sites, addUser, selectedSites]);
 
@@ -467,7 +474,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             onChange={(e) => handleSiteTitle(e.target.value)}
                                                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                         >
-                                                            {functionalTitle?.map((data, index) =>
+                                                            {functionalTitle?.filter(filterData => filterData?.id !== deptTitle?.id)?.map((data, index) =>
                                                                 <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                                             )}
                                                         </Select>
@@ -487,7 +494,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             selected={deptTitle?.id}
                                                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                         >
-                                                            {functionalTitle?.map((data, index) =>
+                                                            {functionalTitle?.filter(filterData => filterData?.id !== siteTitle?.id)?.map((data, index) =>
                                                                 <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                                             )}
                                                         </Select>

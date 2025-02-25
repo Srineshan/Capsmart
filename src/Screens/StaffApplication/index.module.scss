@@ -2,7 +2,7 @@
 @import "../../index.scss";
 
 body {
-  background: #f8fcff 0% 0% no-repeat padding-box;
+  background: $secondarycolor 0% 0% no-repeat padding-box;
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 
@@ -618,7 +618,7 @@ body::-webkit-scrollbar {
 }
 
 .bigCardStyle {
-  height: calc(100vh - 225px);
+  height: calc(100vh - 175px);
   overflow: scroll;
   background: #ffffff 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #c4c8d066;
@@ -922,7 +922,7 @@ body::-webkit-scrollbar {
 .applicantStaffReappointGrid {
   display: grid;
   // grid-template-columns: 2% 18% 15% 6% 5% 7% 9% 12% 16% 3%;
-  grid-template-columns: 2% 25% 14% 20% 6% 4% 6% 12% 5%;
+  grid-template-columns: 2% 25% 11% 23% 6% 4% 6% 12% 5%;
   grid-gap: 1%;
 }
 
@@ -936,7 +936,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
-  grid-template-columns: 3% 25% 16% 25% 6% 5% 9% 6%;
+  grid-template-columns: 3% 25% 11% 30% 6% 5% 9% 6%;
   grid-gap: 1%;
 }
 
@@ -958,7 +958,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
-  grid-template-columns: 2% 26% 15% 26% 7% 5% 8% 6%;
+  grid-template-columns: 2% 26% 11% 30% 7% 5% 8% 6%;
   grid-gap: 1%;
 }
 
@@ -974,7 +974,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
   // grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
-  grid-template-columns: 3% 26% 13% 25% 7% 7% 8% 6%;
+  grid-template-columns: 3% 26% 11% 27% 7% 7% 8% 6%;
   grid-gap: 1%;
 }
 
@@ -990,7 +990,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 8% 8% 7% 10%;
   // grid-template-columns: 20% 15% 14% 7% 8% 11% 12% 9%;
-  grid-template-columns: 5% 25% 17% 25% 6% 5% 7% 5%;
+  grid-template-columns: 5% 25% 12% 30% 6% 5% 7% 5%;
   grid-gap: 1%;
 }
 
@@ -3045,7 +3045,7 @@ input[type="file"] {
 }
 
 .contractScrollStyle {
-  // height: calc(100vh - 420px);
+  height: calc(100vh - 300px);
   overflow: scroll;
 }
 
@@ -3847,7 +3847,7 @@ input[type="number"] {
   height: 65px;
   background: transparent linear-gradient(174deg, $primarycolor 0%, $primarycolor 47%, $primarycolor 100%) 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #130D4B1F;
-  border-radius: 20px;
+  border-radius: 16px;
   text-align: left;
   font: normal normal bold 18px proxima-nova;
   font-weight: 500;
