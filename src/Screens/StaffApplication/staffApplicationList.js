@@ -3149,6 +3149,9 @@ const StaffApplicationList = ({
                           applicationType === "NEW"
                             ? navigate("/createStaffMemberApplication")
                             : navigate("/createStaffReapplication")
+                            // : navigate("/ApplicantPortalRFC")
+
+
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
