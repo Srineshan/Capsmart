@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Classes, Icon, Intent } from '@blueprintjs/core';
 import { POST, TenantID, GET, PUT, DELETE } from './../dataSaver';
-import { ErrorToaster, SuccessToaster } from './../../utils/toaster';
+import { ErrorToaster2, SuccessToaster2 } from './../../utils/toaster';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -89,19 +89,25 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }, [selectedSites]);
 
     useEffect(() => {
-        setSelectedSpecialtys([])
+        if (!isEdit) {
+            setSelectedSpecialtys([])
+        }
     }, [selectedDepartments])
 
 
     useEffect(() => {
         if (isEdit) {
             let tempDepartmentList = [];
+            let tempSpecialtyList = [];
             // let siteTemp = addUser?.sites?.sites || [];
 
             selectedSites?.map(data => {
                 //     console.log('inside initial map', data);
                 addUser?.sites?.sites?.filter(siteData => siteData?.id === data)?.map(siteData => siteData)?.[0]?.departmentList?.departments?.map(deptData => {
-                    tempDepartmentList.push(`${deptData?.id}-${data}`);
+                    tempDepartmentList.push(`${deptData?.id}`);
+                    deptData?.serviceAreas?.map(data =>
+                        tempSpecialtyList.push(data?.id)
+                    )
                 })
                 //     siteTemp.push(sites?.filter(data => data?.id === data)?.map(data => data)[0]);
                 //     sites?.filter(data => data?.id === data)?.map(data => data)?.[0]?.departmentList?.departments?.map(deptData => {
@@ -119,6 +125,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             })
             // setAddUser({ ...addUser, sites: { sites: siteTemp } });
             setSelectedDepartments(tempDepartmentList);
+            setSelectedSpecialtys(tempSpecialtyList);
         }
     }, [sites, addUser, selectedSites]);
 
@@ -200,6 +207,10 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             setAccessLevelNeeded(user?.executiveAccessLevelNeeded);
             setSelectedAccessLevelToShow(user?.accessLevel);
             setSiteTitle(user?.sites?.sites?.[0]?.siteResponsibility);
+            setSelectedApplicantsToShow(user?.recordAccessApplicantTypes?.map(data => data?.id))
+            setSelectedDepartmentsToShow(user?.recordAccessDepartments?.map(data => data?.id))
+            setSpecificDeptRecordsToAccess(user?.departmentSpecificRecordAccess)
+            setManageRecordTypeByApplicantType(user?.applicantTypeSpecificRecordAccess)
             // user?.sites?.sites?.map((data, index) => {
             //     if (data?.departmentList?.departments?.length !== 0) {
             //         setDeptTitle(user?.sites?.sites?.[index]?.departmentList?.departments?.[0]?.departmentResponsibility)
@@ -220,14 +231,13 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     }
 
     const getUserCreatedDialog = async (value, sendInvite) => {
-
         if (sendInvite === 'OKAY' && createdUserDetails !== undefined) {
             if (createdUserDetails !== undefined) {
                 await POST(`user-management-service/user/${createdUserDetails}/sendInviteEmail`)
                 setShowUserCreatedDialog(value)
             }
         }
-
+        getManageUserDialog(false);
     }
 
     const handleAccessLevelChange = (value) => {
@@ -273,19 +283,20 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
     const submitUserDetails = async () => {
         // console.log('roles', addUser?.roles);
         if (addUser?.firstName === '') {
-            ErrorToaster('First Name is Mandatory');
+            ErrorToaster2('First Name is Mandatory');
             return;
         }
         if (!addUser?.email.includes('@') || !addUser?.email.includes('.') || addUser?.email === '') {
-            ErrorToaster('Enter a valid mail-id');
+            ErrorToaster2('Enter a valid mail-id');
             return;
         }
         // if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0 || getFinalSiteValueWithDepartments()?.length === 0) {
-        //     ErrorToaster('All Fields are Mandatory');
-        //     return;
-        // }
+        if (addUser?.roles?.filter(data => data !== undefined)?.map(data => data)?.length === 0) {
+            ErrorToaster2('Role is Mandatory');
+            return;
+        }
         // if (accessLevelNeeded === true && (selectedAccessLevelToShow === null || selectedAccessLevelToShow === "")) {
-        //     ErrorToaster('Access Level is Mandatory');
+        //     ErrorToaster2('Access Level is Mandatory');
         //     return;
         // }
 
@@ -299,7 +310,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             "userType": isEdit ? addUser?.userType : "REGISTERED_USER",
             ...(isEdit && { "contracts": userDataById?.contracts }),
             "title": siteTitle,
-            "ssoId": addUser?.ssoId,
+            "ssoId": addUser?.email,
             "email": {
                 "officialEmail": addUser?.email
             },
@@ -341,20 +352,21 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
 
             await PUT('user-management-service/user', JSON.stringify(user))
                 .then(response => {
-                    SuccessToaster('User Modified Successfully');
+                    getManageUserDialog(false);
+                    SuccessToaster2('User Modified Successfully');
                 })
                 .catch(error => {
-                    ErrorToaster('Unexpected Error');
+                    ErrorToaster2('Unexpected Error');
                 })
         } else {
             await POST('user-management-service/user/register', JSON.stringify(user))
                 .then(response => {
                     setCreatedUserDetails(response?.data)
                     handleAddStep3()
-                    SuccessToaster('User Added Successfully');
+                    SuccessToaster2('User Added Successfully');
                 })
                 .catch(error => {
-                    ErrorToaster('Unexpected Error');
+                    ErrorToaster2('Unexpected Error');
                 })
         }
 
@@ -365,11 +377,11 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
         //         workFlowUserData.userId = userId;
         //         await POST('contract-managment-service/contracts/workFlowUser', JSON.stringify(user))
         //             .then(response => {
-        //                 // SuccessToaster('Workflow User Updated Successfully');
+        //                 // SuccessToaster2('Workflow User Updated Successfully');
         //             })
         //             .catch(error => {
         //                 console.log('Error!');
-        //                 // ErrorToaster('Unexpected Error');
+        //                 // ErrorToaster2('Unexpected Error');
         //             })
         //     }
         // } else {
@@ -462,7 +474,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             onChange={(e) => handleSiteTitle(e.target.value)}
                                                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                         >
-                                                            {functionalTitle?.map((data, index) =>
+                                                            {functionalTitle?.filter(filterData => filterData?.id !== deptTitle?.id)?.map((data, index) =>
                                                                 <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                                             )}
                                                         </Select>
@@ -482,7 +494,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                                             selected={deptTitle?.id}
                                                             SelectDisplayProps={{ style: { paddingTop: 5, paddingBottom: 5, fontSize: 15 } }}
                                                         >
-                                                            {functionalTitle?.map((data, index) =>
+                                                            {functionalTitle?.filter(filterData => filterData?.id !== siteTitle?.id)?.map((data, index) =>
                                                                 <MenuItem value={data?.id} key={index}>{data?.title}</MenuItem>
                                                             )}
                                                         </Select>
@@ -710,7 +722,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? handleAddStep1() : submitUserDetails()} >{addUser?.roles?.map(role => role?.roleName)?.includes('Staff Manager') ? 'NEXT' : isEdit ? 'UPDATE' : 'ADD'}</button>
                                     </div>
                                 </div>
                             </div>
@@ -782,7 +794,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep2()} >ADD</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => handleAddStep2()} >NEXT</button>
                                     </div>
                                 </div>
                             </div>
@@ -854,7 +866,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
                                 <div>
                                     <div className={`${style.spaceBetween} ${style.marginTop20}`}>
                                         <button className={`${style.outlinedButton} `} onClick={() => getManageUserDialog(false)} >CANCEL</button>
-                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >SAVE</button>
+                                        <button className={`${style.buttonStyle} `} onClick={() => submitUserDetails(false)} >{isEdit ? "UPDATE" : 'SAVE'}</button>
                                     </div>
                                 </div>
                             </div>

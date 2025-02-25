@@ -399,6 +399,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                             tableData={valuesToUse}
                             gridStyle={selectedOption === 'INVITED USERS' ? style.invitedUsersGrid : isMultiSiteEntity ? (selectedOption === 'ENTITY REGISTERED USERS' || selectedOption === 'CONTRACTED SERVICE PROVIDER USERS') ? style.registeredUsersMultiSiteGrid : style.registeredUsersGrid : style.registeredUsersGrid}
                             actions={actionsData}
+                            hidePagination={true}
                         />
                     </div>
                 </div>

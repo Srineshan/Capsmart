@@ -549,6 +549,7 @@ const DescopeLoginDialog = ({ getIsOpen, days }) => {
               onError={(err) => {
                 console.log("Error!", err)
               }}
+              form={{ email: '' }}
             />
           </div>
         </div>

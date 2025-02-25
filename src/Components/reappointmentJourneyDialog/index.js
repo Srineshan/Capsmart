@@ -3,7 +3,7 @@ import { Dialog, Classes } from '@blueprintjs/core';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import Cookie from 'universal-cookie';
 import style from './index.module.scss'
-import { POST } from '../../Screens/dataSaver';
+import { POST, PUT } from '../../Screens/dataSaver';
 import Pencil from "./../../images/pencil.png";
 import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -36,6 +36,9 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
 
 
     const handleSubmitApplication = async () => {
+        if ((sessionStorage.getItem('taskId') !== undefined && sessionStorage.getItem('taskId') !== 'undefined' && sessionStorage.getItem('taskId') !== null) && (sessionStorage.getItem('taskStatus') !== undefined && sessionStorage.getItem('taskStatus') !== 'undefined' && sessionStorage.getItem('taskStatus') !== null && sessionStorage.getItem('taskStatus') === "ON_GOING")) {
+            await PUT(`task-management-service/task/${sessionStorage.getItem('taskId')}/updateStatus?status=COMPLETED`)
+        }
         await POST(`application-management-service/application/${applicationId}/submit`)
             .then(response => {
                 console.log(response)

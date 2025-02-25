@@ -1,27 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
+import Cookie from 'universal-cookie';
 
 import style from './index.module.scss'
-import { PUT } from '../../Screens/dataSaver';
+import { GET, PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
 import { ErrorToaster } from '../../utils/toaster';
 import { useDescope } from '@descope/react-sdk';
 
 const SaveInProgressDialog = ({ getIsOpen }) => {
     const [isContinue, setIsContinue] = useState(false);
+    const [taskDetails, setTaskDetails] = useState(false);
     const { applicationId, section, step } = useParams()
     const { logout } = useDescope();
+    let taskId = sessionStorage.getItem('taskId')
 
+    useEffect(() => {
+        if (taskId !== undefined && taskId !== 'undefined' && taskId !== null) {
+            getTaskById()
+        }
+    }, [taskId])
+
+    const getTaskById = async () => {
+        const { data: content } = await GET(
+            `task-management-service/task/${taskId}`
+        );
+        setTaskDetails(content);
+    }
+    console.log(taskId, 'taskId')
+
+    const handleLogout = () => {
+        var cookies = new Cookie();
+        cookies.remove("user", { path: "/" });
+        cookies.remove("entityId", { path: "/" });
+        cookies.remove("authorization", { path: "/" });
+        logout()
+    }
 
     const handleSubmit = async () => {
+        if (taskId !== undefined && taskId !== 'undefined' && taskId !== null) {
+            let tempTask = taskDetails;
+            tempTask.details.application.lastSavedSection = `${section}/${step}`;
+            await PUT(`task-management-service/task/${taskId}`, tempTask);
+        }
         await PUT(
             `application-management-service/application/${applicationId}/saveInprogress`,
             `${section}/${step}`
         )
             .then((response) => {
                 console.log(response);
-                logout()
+                handleLogout()
             })
             .catch((error) => {
                 console.log(error);
