@@ -330,15 +330,11 @@ const Navbar = () => {
             // <img src={SanmateoLogo} alt="Hospital Logo" className={style.logo} />
           }
           <div>
-            {hospitalLogo !== null ? (
-              <img
-                src={hospitalLogo}
-                alt="Hospital Logo"
-                className={style.sanmateoLogo}
-              />
-            ) : (
-              <div></div>
-            )}
+            <img
+              src={hospitalLogo}
+              alt=""
+              className={style.sanmateoLogo}
+            />
           </div>
           {/* <div
             className={`${style.menuStyle} ${window.location.pathname.includes(homeLink) && !window.location.pathname.includes('contractsWithABusinessEntity') &&

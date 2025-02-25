@@ -15,10 +15,13 @@
     height: 50px;
     opacity: 1;
     cursor: pointer;
-    padding: 10px;
+    padding: 4px 12px;
     background: #E8E9E9 0% 0% no-repeat padding-box;
     // box-shadow: 0px 3px 15px #9AAFB5;
     border-radius: 4px 4px 0px 0px;
+    margin-right: 3px;
+    border: 2px solid transparent;
+    border-bottom: none;
 }
 
 .padding10 {
@@ -46,13 +49,13 @@
 
 .selectedApplicationText {
     text-align: left;
-    font: normal normal bold 20px proxima-nova;
+    font: normal normal bold 16px proxima-nova;
     letter-spacing: 0px;
     color: #06617A;
 }
 
 .headingForContracts {
-    font: normal normal bold 20px proxima-nova !important;
+    font: normal normal normal 16px proxima-nova !important;
     letter-spacing: 0px;
     text-align: left;
     color: $textgrey;
@@ -80,6 +83,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+
 // 
 .selectedApplicantBackground {
     background: #06617A1A 0% 0% no-repeat padding-box;
@@ -212,7 +216,8 @@
     align-items: center;
     justify-content: center;
     margin-left: 10px;
-    font-size: 22px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 .defaultSmallNumber {
@@ -242,7 +247,7 @@
     justify-content: flex-end;
 }
 
-.alignCenterNumber{
+.alignCenterNumber {
     align-items: center
 }
 

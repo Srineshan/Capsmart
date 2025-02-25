@@ -24,6 +24,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     const { applicationId, section, step } = useParams()
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
+    const [isEdited, setIsEdited] = useState(false);
     useEffect(() => {
         console.log("filesssssssssssssssss", file);
         // getPreApplicationTask();
@@ -56,7 +57,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         <CommonTextField
                             value={changedData?.[field?.name]}
                             className={style.fullWidth}
-                            onChange={(e) => setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
+                            onChange={(e) => { setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
@@ -76,7 +77,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         <TextArea
                             value={changedData?.[field?.name]}
                             className={`${style.fullWidth} ${style.marginTop10}`}
-                            onChange={(e) => setChangedData({ ...changedData, [field.name]: e.target.value })}
+                            onChange={(e) => { setChangedData({ ...changedData, [field.name]: e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
                             rows={4}
@@ -88,7 +89,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     <CommonPhoneField
                         value={changedData?.[field?.name]}
                         className={style.fullWidth}
-                        onChange={(e) => setChangedData({ ...changedData, [field.name]: e.target.value })}
+                        onChange={(e) => { setChangedData({ ...changedData, [field.name]: e.target.value }); setIsEdited(true) }}
                         placeholder={''}
                         label={field.label}
                         required={false}
@@ -104,7 +105,8 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         onClose={() => setCalendarStart(false)}
                         value={changedData?.[field?.name]}
                         onChange={(newValue) => {
-                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") })
+                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") });
+                            setIsEdited(true)
                         }}
                         InputProps={{
                             style: {
@@ -134,7 +136,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         <CommonTextField
                             value={changedData?.[field?.name]}
                             className={style.fullWidth}
-                            onChange={(e) => setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value })}
+                            onChange={(e) => { setChangedData({ ...changedData, [field.name]: (field.name === "creditOrHours" || field.name === "credits") ? e.target.value !== "" ? parseFloat(e.target.value) : 0 : e.target.value }); setIsEdited(true) }}
                             maxLength={50}
                             placeholder={''}
                             label={field.label}
@@ -156,16 +158,18 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     }
 
     const handleContinue = async () => {
-        let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}`;
-        let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
-        await PUT(url, changedData)
-            .then(response => {
-                console.log(response)
-                getPreApplication()
-            })
-            .catch((error) => {
-                console.log(error)
-            })
+        if (isEdited || changedData === null) {
+            let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&manuallyUpdated=${true}`;
+            let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
+            await PUT(url, changedData !== null ? changedData : {})
+                .then(response => {
+                    console.log(response)
+                    getPreApplication()
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
         getIsOpen(false)
     }
 

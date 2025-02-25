@@ -3401,7 +3401,7 @@ const StaffApplicationList = ({
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div> */}
-            <div>
+            <div className={style.marginLeft20}>
               <StaffApplicationTopTiles
                 getSelectedTab={getSelectedTab}
                 selectedTab={selectedTab}
@@ -3409,7 +3409,7 @@ const StaffApplicationList = ({
                 getApplicationCreationType={getApplicationCreationType}
               />
             </div>
-            <div className={`${style.borderStyleTiles}`}></div>
+            <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
             {/* <CommonDivider /> */}
             {/* <CommonDivider /> */}
             {/* <StaffApplicationTopTiles
@@ -3417,7 +3417,7 @@ const StaffApplicationList = ({
               selectedTab={selectedTab}
             /> */}
             <div
-              className={`${style.spaceBetween} ${style.marginTop10}`}
+              className={`${style.spaceBetween} ${style.marginTop10} ${style.marginLeft20}`}
             >
               <StaffApplicationTiles
                 getSelectedTab={getSelectedTab}
