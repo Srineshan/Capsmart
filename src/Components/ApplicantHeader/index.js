@@ -24,14 +24,14 @@ const ApplicantHeader = () => {
             <div className={`${style.gridCol}`}>
                 <img src={HapiCare} alt="HapiCare Logo" className={`${style.logo}`} />
                 <div className={style.icons}>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><AssignmentOutlinedIcon sx={{ fontSize: 18, color: "#52575D" }} /></div>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><SettingsOutlinedIcon sx={{ fontSize: 18, color: "#52575D" }} /></div>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><HelpOutlineOutlinedIcon sx={{ fontSize: 18, color: "#52575D" }} /></div>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><AppsIcon sx={{ fontSize: 18, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><AssignmentOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><SettingsOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><HelpOutlineOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><AppsIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
                 </div>
                 <div className={style.icons}>
                     <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}><Avatar alt="User" src="" className={style.avatar} /></div>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleLogout}><LogoutOutlinedIcon sx={{ fontSize: 18, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleLogout}><LogoutOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
                 </div>
             </div>
         </div>
