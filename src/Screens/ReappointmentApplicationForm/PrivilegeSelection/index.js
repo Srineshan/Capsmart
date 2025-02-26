@@ -679,10 +679,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const handleSubmitDepartment = async (isUpdated) => {
     let data = basicForm;
+    console.log(data, 'data');
     if (isUpdated) {
+      console.log(data, 'data');
       if (data?.basicDetails?.priorDepartmentSpecialty === null && !basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated) {
-        data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+        console.log(data, 'data');
+        data.basicDetails.priorDepartmentSpecialty = { ...basicForm?.basicDetails?.departmentSpecialty }
       }
+      data.basicDetails.departmentSpecialty = { ...data.basicDetails.departmentSpecialty };
       data.basicDetails.departmentSpecialty.department = departmentList?.filter(
         (data) => data?.id === selectedDepartment
       )?.[0]?.departmentName?.name;
@@ -693,7 +697,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         data.basicDetails.regionalCallResponsibilities = {};
       }
       data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || 'NA';
-      console.log(data);
+      console.log(data, 'data');
       await PUT(
         `application-management-service/application/${applicationId}`,
         data
@@ -726,6 +730,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         .catch((error) => {
           console.log(error);
         });
+      console.log(data, 'data');
     }
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
