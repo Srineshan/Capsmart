@@ -574,6 +574,10 @@ const StaffApplicationTopTiles = () => {
     if (workModeType === "Department Head") {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
+
+    if (workModeType === "Chief Of Staff") {
+      return (parseInt(countsObj['level-2']) || 0) + clarifications;
+    }
     
     // For Credentialing Committee, show only level-3 count
     if (workModeType === "Credentialing Committee") {

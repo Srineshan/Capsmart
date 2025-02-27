@@ -761,7 +761,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
 
-    const isManagerOrChief = workModeType === "Staff Manager" || workModeType === "Chief Of Staff" ;
+    const isManagerOrChief = workModeType === "Staff Manager" ;
 
     const newCurrentRoleIndex = isManagerOrChief
       ? 0
@@ -797,6 +797,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         initialTab = "LocumRenewals";
       } else if (workModeType === "Department Head") {
         initialTab = "level-2";
+      } else if (workModeType === "Chief Of Staff") {
+        initialTab = "level-2";
       } else if (workModeType === "Credentialing Committee") {
         initialTab = "level-3";
       } else {
@@ -825,10 +827,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
           label = "Applicants to Verify";
-        } else if ((applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee")) {
-          label = "Reappointments to Review";
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments to Process";
+        } else if ((applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee")) {
+          label = "Reappointments to Review";
         } else {
           label = value.tabDisplayName;
         }
@@ -845,7 +847,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
     if (workModeType === "Department Head") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2');
-    } else if (workModeType === "Credentialing Committee") {
+    }
+     else if (workModeType === "Chief Of Staff") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
+        ...tile,
+        label: "Reappointments to Process",
+      }));
+    }
+    // else if (workModeType === "Chief Of Staff") {
+    //   filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2');
+    // }  
+    else if (workModeType === "Credentialing Committee") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3');
     } else {
       filteredArray = baseUserFlowArray.slice(currentRoleIndex);

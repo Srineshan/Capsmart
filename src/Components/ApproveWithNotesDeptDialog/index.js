@@ -97,6 +97,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
+    // getApplicationChief();
     getApplicationUserRoleDept();
     console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
     console.log("selectedRoleDept" + JSON.stringify(selectedRoleDept))
@@ -353,13 +354,31 @@ useEffect(() => {
       const deptDataMember = filteredRoles.filter(
               (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
             );
-      return setUserSelectRoleDept(deptDataMember);
+      const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+      const combinedData = [...deptDataMember, ...basicFormRoleCos];
+      // return setUserSelectRoleDept(deptDataMember);
+
+      const uniqueUsers = combinedData?.filter((user, index, self) => 
+        index === self.findIndex((u) => u?.id === user?.id)
+      );
+      setUserSelectRoleDept(uniqueUsers);
+      // setUserSelectRoleDept(combinedData);
   
     } catch (error) {
       console.error("Error fetching application user role:", error);
       return [];
     }
   };  
+
+  // const getApplicationChief = async () => {
+  //   try {
+  //     setIsLoadingImage(true);
+  //     const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+  //     console.log(basicFormRoleCos)
+  //   } catch (error) {
+  //     console.error('Error fetching application:', error);
+  //   }
+  // };
 
   const getApplication = async () => {
     try {

@@ -2729,11 +2729,17 @@ const StaffApplicationList = ({
 
   const departmentHeadActionsData = [
     {
-      data: workModeType === "Staff Manager" || workModeType === "Chief Of Staff" ? "View" : "Review to Recommend",
+      data: workModeType === "Staff Manager" ? "View" : "Review to Recommend",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyLevelFunction,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager", hideForRoles2: "Chief Of Staff" },
+    // {
+    //   data: "Send for Dept Head Review",
+    //   requiredValue: "boolean",
+    //   // onClick: onClickDeptReviewDialog,
+    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Department Head")?.approverDetail?.id === ${userRole?.id}`,
+    // },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Staff Manager" },
     // {
     //   data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks",
     //   requiredValue: "boolean",

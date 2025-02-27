@@ -592,9 +592,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   return null;
   // }
 
-  if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
-    return null;
-  }
+  // if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
+  //   return null;
+  // }
 
   return (
     <>
