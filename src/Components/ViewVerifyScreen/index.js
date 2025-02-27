@@ -38,6 +38,8 @@ import style from "./index.module.scss";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
@@ -95,6 +97,14 @@ const NewActiveApplication = ({
   reappointmentChangesCommentsBox,
   notesCommentsBox,
   getNotesDialog,
+  showNotesDialog,
+  getClarificationRequestFromApplicantDialog,
+  showClarificationRequestFromApplicantDialog,
+  getDocumentClarificationDialog,
+  showDocumentClarificationDialog,
+  getResolveDialog,
+  showResolveDialog,
+  getRequestOverrideDialog,
   staffView,
   getPaymentDisplayBox
 
@@ -157,8 +167,17 @@ const NewActiveApplication = ({
     section2: false,
     section3: false,
     section4: false,
-    section5: false
+    section5: false,
+    section6: false,
+    section7: false,
   });
+  const [isOpenToggle, setIsOpenToggle] = useState(false);
+  const toggleDropdown = (index) => {
+    setIsOpenToggle(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
   const [expandAcknowledgement, setExpandAcknowledgement] = useState({
     status: false,
     index: 0,
@@ -265,6 +284,12 @@ const NewActiveApplication = ({
   }, []);
 
   useEffect(() => {
+    if (!showClarificationRequestFromApplicantDialog || !showDocumentClarificationDialog || !showNotesDialog || !showResolveDialog) {
+        getPreApplication();
+    }
+}, [showClarificationRequestFromApplicantDialog, showDocumentClarificationDialog, showResolveDialog, showNotesDialog]);
+
+  useEffect(() => {
     getMedicalDirectives()
     getAllFormSchemas();
   }, [applicationId])
@@ -356,6 +381,8 @@ const NewActiveApplication = ({
       `application-management-service/application/${applicationId}`
     );
     setForm(basicForm);
+    console.log("form" , form?.forms)
+    console.log(form?.forms?.filter((data) => data?.clarifications));
   }
 
   // const isApproved = form?.forms[index]?.status === "APPROVED";
@@ -1031,6 +1058,22 @@ const NewActiveApplication = ({
 
   const onClickNotesFunction = () => {
     getNotesDialog(true);
+  };
+
+  const onClickDocumentClarificationFunction = (clarificationId, formId) => {
+    getDocumentClarificationDialog(true,clarificationId,formId);
+  };
+
+  const onClickDocumentClarificationRequestFunction = (formId,type) => {
+    getClarificationRequestFromApplicantDialog(true, formId, type);
+  };
+
+  const onClickResolveDialogFunction =  (mode, clarificationId, formId) => {
+    getResolveDialog(true , mode, clarificationId, formId);
+  };
+
+  const onClickRequestOverrideDialogFunction =  () => {
+    getRequestOverrideDialog(true);
   };
 
   const onClickPaymentFunction = () => {
@@ -4410,8 +4453,6 @@ const NewActiveApplication = ({
     }}
     // className={style.calcHeight}
     >
-      <div className={style.screenBackground}></div>
-
       <ApplicationHeader
         title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
           ? form?.basicDetails?.applicant?.name?.firstName
@@ -5648,6 +5689,8 @@ const NewActiveApplication = ({
                                               });
 
                                               return (
+                                                <div key={form?.id}>
+                                                <div className={`${style.flexEnd}`}>
                                                 <div>
                                                   {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                     isMatch ? (
@@ -5739,6 +5782,27 @@ const NewActiveApplication = ({
                                                       )
                                                     )
                                                   ): null} */}
+                                                </div>
+                                                <div className={`${style.whiteButton} ${style.cursorPointer}`}  onClick={() => toggleDropdown(index)}>
+                                                  <div className={`${style.spaceEvenly}`}>
+                                                    <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                      RFC
+                                                    </div>    
+                                                   {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon /> }      
+                                                    </div>     
+                                                </div>
+                                    
+                                                </div>
+                                                {isOpenToggle[index] && (
+                                                  <div className={`${style.dropdownContainer}`}>
+                                                    <div className={`${style.dropdownItem}`}>Request for Clarification</div>
+                                                    <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
+                                                      onClickDocumentClarificationRequestFunction(form?.forms[index], "APPLICANT");
+                                                    }}>From Applicant</div>
+                                                    <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div>
+                                                    {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30}`}>From Institution</div> */}
+                                                  </div>
+                                                )}
                                                 </div>
                                               );
                                             })()
@@ -6711,7 +6775,7 @@ const NewActiveApplication = ({
                                                         }
 
                                                         // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
+                                                        if (selectedTabRole === log?.role) {
                                                           console.log("Selected tab role matches log role: " + log.role);
                                                           Match = true;
                                                         }
@@ -6756,10 +6820,29 @@ const NewActiveApplication = ({
                                           ) : (
                                             <>
                                               {!staffView && (
+                                                <div>
                                                 <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                   <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                     Verified
                                                   </div>
+                                                </div>
+                                                <div className={`${style.whiteButton} ${style.cursorPointer}`}  onClick={() => toggleDropdown(index)}>
+                                                  <div className={`${style.spaceEvenly}`}>
+                                                    <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                      RFC
+                                                    </div>    
+                                                   {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon /> }      
+                                                    </div>     
+                                                </div>
+                                                {isOpenToggle[index] && (
+                                                  <div className={`${style.dropdownContainer}`}>
+                                                    <div className={`${style.dropdownItem}`}>Request for Clarification</div>
+                                                    <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
+                                                      onClickDocumentClarificationRequestFunction(form?.forms[index], "APPLICANT");
+                                                    }}>From Applicant</div>
+                                                    <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div>
+                                                  </div>
+                                                )}
                                                 </div>
                                               )}
                                             </>
@@ -11206,7 +11289,7 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                         </div> */}
-                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                           <div
                             className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -11227,6 +11310,7 @@ const NewActiveApplication = ({
                                       color: "#94979A",
                                       cursor: "pointer",
                                     }}
+                                    onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
                                   />
                                 ) : (
                                   <AddIcon
@@ -11242,35 +11326,217 @@ const NewActiveApplication = ({
                           </div>
                           {expandStates.section1 && (
                             <>
-                              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                                <div>Proof of Qualifications</div>
-                                <RemoveIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                              <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
-                                <div className={`${style.gridGap3}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
+                         {form?.forms
+                          ?.filter((data) => data?.clarifications?.length > 0)
+                          .map((data) => {
+                            const isExpanded = expandStates[`section6_${data.id}`] || false;
+
+                            return (
+                              <div key={data.id} className={`${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                                {/* Parent section */}
+                                <div className={`${style.spaceBetween}`}>
+                                  <div className={`${style.headingRFCtextStyle}`}>{data?.title}</div>
+                                  {isExpanded ? (
+                                    <RemoveIcon
+                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                      onClick={() =>
+                                        setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: false }))
+                                      }
+                                    />
+                                  ) : (
+                                    <AddIcon
+                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                      onClick={() =>
+                                        setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: true }))
+                                      }
+                                    />
+                                  )}
                                 </div>
+
+                                {/* Show clarifications when expanded */}
+                                {isExpanded &&
+                                  data?.clarifications?.map((clarification, index) => {
+                                    const isExpandedData = expandStates[`section7_${data.id}_${index}`] || false;
+                                    return (
+                                      <div key={`${data.id}-${index}`} className={`${style.marginBottom10} ${style.marginTop10} ${style.clarificationCardStyle}`}>
+                                        <div className={`${style.gridGap3}`}>
+                                        <Tooltip title={clarification?.clarificationStatus === "RESPONDED" ? "Clarification Responded" : clarification?.clarificationStatus === "ACCEPTED" ? "Clarification Resolved" : clarification?.clarificationStatus === "REJECTED" ? "Clarification Unresolved" : "Clarification Not Initiated" } arrow>
+                                        <div className={`${style.buttonCenter} ${clarification?.clarificationStatus === "RESPONDED" ? style.yellowDotStyle : clarification?.clarificationStatus === "REJECTED" ? style.redDotStyle : clarification?.clarificationStatus === "ACCEPTED" ? style.greenDotStyle : style.greyDotStyle}`}></div>
+                                        </Tooltip>
+                                          <div className={`${style.sideHeadingFontStyle}`}>
+                                            {clarification?.clarificationRequest?.clarificationTitle}
+                                          </div>
+                                          {isExpandedData ? (
+                                            <RemoveIcon
+                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                              onClick={() =>
+                                                setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: false }))
+                                              }
+                                            />
+                                          ) : (
+                                            <AddIcon
+                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                              onClick={() =>
+                                                setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: true }))
+                                              }
+                                            />
+                                          )}
+                                        </div>
+
+                                        {isExpandedData && (
+                                          <div>
+                                            <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                              Clarification requested from {clarification?.clarificationRequest?.clarificationRequiredFrom.toLowerCase()}
+                                            </div>
+                                            <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                              <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationRequest?.clarificationDescription }} />
+                                            </div>
+                                            <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                              {clarification?.clarificationRequest?.createdDate
+                                                ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
+                                                : 'N/A'}
+                                            </div>
+                                            {clarification?.clarificationStatus === 'NA' && (
+                                              <div className={style.twoColumnGrid}>
+                                                <div
+                                                  className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                                  onClick={() => onClickDocumentClarificationFunction(clarification, data)}
+                                                >
+                                                  <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                    Document Clarification
+                                                  </div>
+                                                </div>
+                                                <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                                  <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                                                    Send by Email
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            )}  
+                                            {clarification?.clarificationStatus !== "NA" && (      
+                                          <div>
+                                            <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                              Response from {clarification?.clarificationResponse?.title}
+                                            </div>
+                                            <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                            <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationResponse?.clarificationDescription }} />
+                                            </div>
+                                            {clarification?.clarificationResponse?.attachedDocuments && clarification?.clarificationResponse?.attachedDocuments?.length > 0 && (
+                                            <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                              {clarification?.clarificationResponse?.attachedDocuments?.map((file, fileIndex) => {
+                                                return (
+                                                  <div key={fileIndex}>
+                                                    <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
+                                                      <div
+                                                        className={style.cursorPointer}
+                                                        onClick={() => {
+                                                          setShowFileDisplayDialog(true);
+                                                          setselectedFile(file);
+                                                        }}
+                                                      >
+                                                        <PictureAsPdfIcon
+                                                          className={style.docsIcon}
+                                                          style={{ marginRight: '8px' }}
+                                                        />
+                                                      </div>
+                                                      <div
+                                                        className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                        onClick={() => {
+                                                          setShowFileDisplayDialog(true);
+                                                          setselectedFile(file);
+                                                        }}
+                                                      >
+                                                        {file?.fileName}
+                                                      </div>
+                                                      <div>
+                                                      <img src={Verified} className={style.verifyImage} alt="img" />
+                                                      </div>
+                                                    </div>
+                                                    {/* {file?.title && (
+                                                      <div
+                                                        className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                                                      >
+                                                        <div>{file?.title}</div>
+                                                      </div>
+                                                    )} */}
+                                                    {/* Optional description */}
+                                                    {/* {file?.description && (
+                                                      <div
+                                                        className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                                                      >
+                                                        <div>{file?.description}</div>
+                                                      </div>
+                                                    )} */}
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          )}
+                                            <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                            {clarification?.clarificationResponse?.createdDate 
+                                            ? `Created on ${format(new Date(clarification?.clarificationResponse?.createdDate), 'MMM d, yyyy, HH.mm')}` 
+                                            : 'N/A'}
+                                            </div>
+                                            {clarification?.clarificationStatus === "RESPONDED" && (
+                                              <div>
+                                            <div className={`${style.twoColumnGrid}`}>
+                                              <div
+                                                className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                                onClick={() => onClickResolveDialogFunction("unresolve", clarification, data)}
+                                              >
+                                                <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>Un-Resolved</div>
+                                              </div>
+                                              <div
+                                                className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                                                onClick={() => onClickResolveDialogFunction("resolve", clarification, data)}
+                                              >
+                                                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Resolve</div>
+                                              </div>
+                                            </div>
+
+                                            <div
+                                              className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop10}`}
+                                              onClick={onClickRequestOverrideDialogFunction}
+                                            >
+                                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Request Override</div>
+                                            </div>
+                                            </div>
+                                            )}
+                                            {(clarification?.clarificationStatus === "REJECTED" || clarification?.clarificationStatus === "ACCEPTED") && (
+                                            <div>
+                                            <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                            {clarification?.clarificationStatus === "REJECTED" 
+                                            ? `Clarification Marked As Unresolved by ${clarification?.workflowUser?.name?.firstName}` 
+                                            : `Clarification Required resolved by ${clarification?.workflowUser?.name?.firstName}`}
+                                            </div>
+                                            <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                            <div dangerouslySetInnerHTML={{ __html: clarification?.notes?.notes }} />
+                                            </div>
+                                            <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                            {clarification?.workflowActionDate
+                                              ? clarification?.clarificationStatus === "REJECTED"
+                                                ? `Unresolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
+                                                : `Resolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
+                                              : 'Date not available'}                                         
+                                            </div>
+                                            </div>
+                                            )}
+                                            </div>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
                               </div>
-                            </>
-                          )}
+                            );
+                          })}
+                        </>
+                      )}
                         </div>
 
                         <div className={style.marginBottom20}></div>
-                      </div> */}
+                      </div>
                     </>
                   ) : (" ")}
 
