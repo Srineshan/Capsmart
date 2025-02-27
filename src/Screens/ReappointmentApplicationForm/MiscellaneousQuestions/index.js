@@ -336,17 +336,21 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let missingKeys = [];
     let hasMandatoryMissingFields = [];
     if (yesOrNoLMS === '') {
-      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory:true } });
+      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
 
     }
     if (yesOrNoSuboxone === '') {
-      missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory:true } });
+      missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory: true } });
     }
     if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
-      missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?',mandatory:true } });
+      missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?', mandatory: true } });
     }
-    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group") {
-      missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory:true } });
+    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
+      basicForm?.basicDetails?.departmentSpecialty?.department !==
+      "Women & Children" &&
+      basicForm?.basicDetails?.departmentSpecialty?.specialty !==
+      "Obstetrics & Gynecology") {
+      missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory: true } });
     }
     if (
       (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" && obstetricsProviderType !== "Department / Specialty Group"
@@ -357,7 +361,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
-        label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory:true }
+        label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory: true }
       });
     }
     setWarningFields(missingKeys)
@@ -365,23 +369,6 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
 
     if (data === "skipped") {
-      handleSubmit()
-      .then(() => {
-        return getPreApplication();
-      })
-      .then(() => {
-        return handleSubmitApplicationReq();
-      })
-      .catch((error) => {
-        console.error("Error during API calls:", error);
-      });
-  }
-
-
-if(data !== "skipped"){
-    if (hasMandatoryMissingFields) {
-      setShowValidationDialog(true)
-    } else {
       handleSubmit()
         .then(() => {
           return getPreApplication();
@@ -393,7 +380,24 @@ if(data !== "skipped"){
           console.error("Error during API calls:", error);
         });
     }
-  }
+
+
+    if (data !== "skipped") {
+      if (hasMandatoryMissingFields) {
+        setShowValidationDialog(true)
+      } else {
+        handleSubmit()
+          .then(() => {
+            return getPreApplication();
+          })
+          .then(() => {
+            return handleSubmitApplicationReq();
+          })
+          .catch((error) => {
+            console.error("Error during API calls:", error);
+          });
+      }
+    }
     console.log('Metadata', missingKeys)
   }
 

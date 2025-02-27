@@ -414,6 +414,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}&manuallyClassified=${true}`, temp[index])
             .then(response => {
                 console.log(response)
+                temp[index].valid = response?.data?.valid;
+                temp[index].verified = response?.data?.verified
                 setIsLoading(false)
             })
             .catch((error) => {
