@@ -4,7 +4,7 @@
 .backgroundDashboard {
   background: transparent radial-gradient(at 2% -8%, #F5F8F8 0%, #BDD4DA 66%, #06617A 100%) 0% 0% no-repeat padding-box;
   opacity: 1;
-  height: 100vh;
+  height: calc(100vh - 60px);
   overflow: scroll;
 }
 
@@ -21,6 +21,10 @@
 .flexGap {
   display: flex;
   gap: 5px;
+}
+
+.gap {
+  gap: 30px;
 }
 
 .flexGap10 {
@@ -99,6 +103,10 @@
   margin-left: 5px;
 }
 
+.marginLeft10 {
+  margin-left: 10px;
+}
+
 .paddingAllSide {
   padding: 0px 0px 0px 0px !important;
 }
@@ -132,44 +140,40 @@
 }
 
 .header {
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
   background: white;
   border-radius: 10px;
   margin-bottom: 20px;
-  width: 100%
+  width: 100%;
+  align-content: center;
 }
 
 .notificationText {
   text-align: left;
-  font: normal normal normal 20px/24px Proxima Nova;
+  font: normal normal normal 16px/14px Proxima Nova;
   letter-spacing: 0px;
-  color: #454747;
+  color: #171A1A;
   opacity: 1;
   margin-left: 15px;
 }
 
 .notificationNumber {
   text-align: left;
-  font: normal normal bold 17px/21px Proxima Nova;
+  font: normal normal bold 18px/22px Proxima Nova;
   letter-spacing: 0px;
   color: #454747;
-  opacity: 0.6;
-  align-content: center;
+  opacity: 1;
 }
 
 .viewButton {
-  background: #06617A 0% 0% no-repeat padding-box;
-  border: 0.4000000059604645px solid #FFFFFF;
-  border-radius: 8px;
-  opacity: 1;
-  padding: 0px 30px;
-  text-align: left;
-  font: normal normal bold 20px/24px Proxima Nova;
+  text-align: center;
+  text-decoration: underline;
+  font: normal normal bold 14px/30px Proxima Nova;
   letter-spacing: 0px;
-  color: #FFFFFF;
+  color: #06617A;
   text-transform: capitalize;
-  align-content: center;
+  opacity: 1;
 }
 
 .taskBoardShadow {
@@ -177,6 +181,7 @@
   border-radius: 8px;
   padding: 5px;
   width: 100%;
+  margin-bottom: 30px;
   // margin-left: 10px;
 }
 
@@ -187,22 +192,22 @@
   // flex-direction: column;
   padding: 10px;
   width: 100%;
-  min-height: calc(100vh - 200px);
-  max-height: calc(100vh - 200px) !important;
+  // min-height: calc(100vh - 200px);
+  // max-height: calc(100vh - 200px) !important;
   overflow: scroll;
+  height: calc(100vh - 170px);
   // margin-left: 10px;
 }
 
 .addTask {
   background: rgb(6, 97, 122, 0.06);
   border-radius: 8px;
-  padding: 10px;
+  padding: 5px;
   text-align: center;
   font: normal normal bold 14px/30px Proxima Nova;
   letter-spacing: 0px;
   color: #06617A;
   text-transform: capitalize;
-  opacity: 1;
   display: flex;
   justify-content: center;
 }
@@ -211,32 +216,90 @@
   background-color: rgba(255, 230, 230, 0.4);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
+  position: relative;
+  padding-top: 5px;
+  height: calc(100vh - 240px);
+  overflow: scroll;
+}
+
+.pastDueHeader {
+  background-color: #FF6562;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .ongoing {
   background-color: rgba(255, 244, 204, 0.4);
   border-radius: 10px;
   width: 25%;
-  height: calc(100vh - 220px);
+  position: relative;
+  padding-top: 5px;
+  height: calc(100vh - 240px);
+  // height: calc(100vh - 220px);
   overflow: scroll;
   // height: 100vh;
 }
 
+.ongoingHeader {
+  background-color: #FFC100;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
 .notStarted {
-  background-color: rgba(230, 240, 255, 0.4);
+  background-color: rgba(115, 117, 117, 0.06);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
+  position: relative;
+  padding-top: 5px;
+  // height: calc(100vh - 220px);
+  height: calc(100vh - 240px);
+  overflow: scroll;
   // height: 100vh;
+}
+
+.notStartedHeader {
+  background-color: #7A7E7E;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .completed {
   background-color: rgba(217, 246, 217, 0.4);
   border-radius: 10px;
   width: 25%;
-  // height: calc(100vh - 40px);
+  position: relative;
+  padding-top: 5px;
+  // height: calc(100vh - 220px);
+  height: calc(100vh - 240px);
+  overflow: scroll;
   // height: 100vh;
+}
+
+.completedHeader {
+  background-color: #14B15A;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .columnTitlePastDue {
@@ -536,7 +599,7 @@
   padding: 10px;
 }
 
-.logo {
+.logoNotification {
   position: relative;
   width: auto;
   height: 30px;
@@ -664,7 +727,7 @@
   object-fit: contain;
 }
 
-.smallLogo {
+.smallLogo1 {
   position: relative;
   width: auto;
   height: 15px;
