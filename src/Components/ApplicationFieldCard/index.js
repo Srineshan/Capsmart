@@ -295,7 +295,7 @@ const ApplicationFieldCard = ({
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
       } else if (basePath2 && basePath && path) {
         setNestedValue(newData, `${basePath}.${basePath2}.${path}`, value);
-        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
+        setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value); 
       } else if (basePath && path) {
         setNestedValue(newData, `${basePath}.${path}`, value);
         setNestedValue(newData, `${basicpath}.${basePath}.${path}`, value);
@@ -2660,7 +2660,7 @@ const ApplicationFieldCard = ({
                           onClick={() => {
                             setShowFileDisplayDialog(true);
                             setselectedFile(
-                              fileURL
+                              fieldValue
                             );
 
                           }}
@@ -2708,14 +2708,14 @@ const ApplicationFieldCard = ({
                         src={VerifiedImage}
                         alt=""
                         className={`${style.imgIcon} ${style.cursorPointer}`}
-                        onClick={() =>
-                          window.open(
+                         onClick={() => {
+                          setShowFileDisplayDialog(true); setselectedFile(
                             getValueByPath(
                               basicForm,
                               `${basicpath}.${baseKey}.${fieldKey}`
-                            )?.fileURL,
-                            "_blank"
-                          )
+                            )
+                          );
+                        }
                         }
                       />
                     ) : (
@@ -2755,7 +2755,21 @@ const ApplicationFieldCard = ({
                   type="file"
                   accept=".pdf,.doc,.png,.xls,.xlsx,.jpeg,.gif,.docx"
                   onChange={(e) => {
-                    handleChange(fieldKey, e.target.files[0], baseKey);
+                    const selectedFile = e.target.files[0];
+                
+                    if (basicForm?.forms?.[formIndex]?.formCategory === "Disclosure") {
+                    
+                      setBasicForm((prevData) => {
+                        const newData = { ...prevData };
+                        setNestedValue(newData, `${basicpath}.${baseKey}.${fieldKey}`, {
+                          fileName: selectedFile.name,  
+                        });
+                        return newData;
+                      });
+                
+                      
+                      handleChange(fieldKey, selectedFile, baseKey);
+                    }
                   }}
                 />
                 {basicForm?.forms?.[formIndex]?.formCategory === "Disclosure" &&
@@ -2765,17 +2779,23 @@ const ApplicationFieldCard = ({
                         <Tooltip title="Click to View File" placement="bottom-start" followCursor>
                           <span
                             className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
-                            onClick={() =>
-                              window.open(
+                            onClick={() => {
+                              setShowFileDisplayDialog(true);
+                              console.log(getValueByPath(
+                                basicForm,
+                                `${basicpath}.${baseKey}.${fieldKey}`
+                              )
+                            );
+                               setselectedFile(
                                 getValueByPath(
                                   basicForm,
                                   `${basicpath}.${baseKey}.${fieldKey}`
-                                )?.fileURL,
-                                "_blank"
-                              )
+                                )
+                              );
+                            }
                             }
                           >
-                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
+                           {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
                           </span>
                         </Tooltip>
                         <img
