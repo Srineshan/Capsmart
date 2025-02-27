@@ -287,6 +287,11 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalRFC = React.lazy(() =>
+  import("./Screens/ApplicantPortalRFC")
+);
+
+
 const ApplicantPortalDashboard = React.lazy(() =>
   import("./Screens/ApplicantDashboard")
 );
@@ -761,7 +766,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -801,7 +806,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1331,6 +1336,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/ApplicantPortalRFC"
+                  element={<ProtectedRoute><ApplicantPortalRFC /></ProtectedRoute>}
                 />
                 <Route
                   path="/ApplicantDashboard"
