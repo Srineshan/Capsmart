@@ -104,7 +104,7 @@ const ApplicantDashboard = () => {
   const handlePrevNotification = () => {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + notifications.length) % notifications.length);
   };
-  
+
 
   useEffect(() => {
     getEntity();
@@ -148,6 +148,7 @@ const ApplicantDashboard = () => {
   const handleOnCick = (task) => {
     sessionStorage.setItem('taskId', task?.id)
     sessionStorage.setItem('taskStatus', task?.status)
+    sessionStorage.setItem('taskInfo', JSON.stringify(task))
     if (task?.category === 'REAPPOINTMENT_APPLICATION') {
       if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
         console.log(task?.details?.application?.lastSavedSection)
@@ -162,6 +163,9 @@ const ApplicantDashboard = () => {
       } else {
         navigate(`/applicationForm/${task?.details?.application?.application?.id}`);
       }
+    }
+    if (task.category === 'REQUEST_FOR_CLARIFICATION') {
+      navigate(`/applicantPortalRFC`);
     }
   }
 
@@ -200,28 +204,28 @@ const ApplicantDashboard = () => {
               </div> */}
               <div className={`${style.spaceBetween} ${style.padding10}`}>
                 <div className={`${style.flex} ${style.alignItem}`}>
-                <img src={NotificationLogo} alt="Notification Logo" className={`${style.logoNotification}`} />
-                <Stack direction="column" spacing={0.3} sx={{ marginLeft: 1 }}>
-                  {notifications.map((_, index) => (
-                    <FiberManualRecordIcon
-                      key={index}
-                      sx={{
-                        fontSize: 5,
-                        color: currentIndex === index ? "#06617A" : "#B0BEC5",
-                        transition: "color 0.3s"
-                      }}
-                    />
-                  ))}
-                </Stack>
-                  <KeyboardArrowLeftOutlinedIcon sx={{ fontSize: 22, color: "#06617A",cursor: "pointer" }} onClick={handlePrevNotification} />
+                  <img src={NotificationLogo} alt="Notification Logo" className={`${style.logoNotification}`} />
+                  <Stack direction="column" spacing={0.3} sx={{ marginLeft: 1 }}>
+                    {notifications.map((_, index) => (
+                      <FiberManualRecordIcon
+                        key={index}
+                        sx={{
+                          fontSize: 5,
+                          color: currentIndex === index ? "#06617A" : "#B0BEC5",
+                          transition: "color 0.3s"
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                  <KeyboardArrowLeftOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handlePrevNotification} />
                   <div className={style.notificationText}>
                     <span className={style.notificationNumber}>{currentIndex + 1}. </span>
                     {notifications[currentIndex]}
                   </div>
                 </div>
                 <div className={`${style.flex} ${style.alignItem} ${style.gap}`}>
-                <div className={`${style.viewButton} ${style.cursorPointer}`} onClick={() => handleShowTrackApplicationDialog()}>View</div>
-                <KeyboardArrowRightOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handleNextNotification} />
+                  <div className={`${style.viewButton} ${style.cursorPointer}`} onClick={() => handleShowTrackApplicationDialog()}>View</div>
+                  <KeyboardArrowRightOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handleNextNotification} />
                 </div>
               </div>
               {/* <div>
@@ -281,10 +285,10 @@ const ApplicantDashboard = () => {
             {activeSection === "tasks" ? (
               <div className={style.taskBoardShadow}>
                 <div className={style.taskBoard}>
-                  <div className={`${style.addTask} ${style.alignItem} ${style.cursorPointer}`} onClick={() => handleShowTaskNewDialog()}><AddIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}/> <span className={style.marginLeft10}>Add New Task</span></div>
+                  <div className={`${style.addTask} ${style.alignItem} ${style.cursorPointer}`} onClick={() => handleShowTaskNewDialog()}><AddIcon sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> <span className={style.marginLeft10}>Add New Task</span></div>
                   <div className={`${style.flexGap} ${style.marginTop10}`}>
                     <div className={`${style.padding5} ${style.pastDue}`}>
-                    <div className={style.pastDueHeader}></div>
+                      <div className={style.pastDueHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
                         {/* <div className={`${style.redDotStyle}`}></div> */}
                         <div className={style.columnTitlePastDue}>Past Due</div>
@@ -336,7 +340,7 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.ongoing}`}>
-                    <div className={style.ongoingHeader}></div>
+                      <div className={style.ongoingHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
                         {/* <div className={`${style.yellowDotStyle}`}></div> */}
                         <div className={style.columnTitleOngoing}>Ongoing</div>
@@ -388,7 +392,7 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.notStarted}`}>
-                    <div className={style.notStartedHeader}></div>
+                      <div className={style.notStartedHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
                         {/* <div className={`${style.greyDotStyle}`}></div> */}
                         <div className={style.columnTitleNotYet}>Not Yet Started</div>
@@ -440,7 +444,7 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.completed}`}>
-                    <div className={style.completedHeader}></div>
+                      <div className={style.completedHeader}></div>
                       <div className={`${style.spaceBetween} ${style.alignItem} ${style.marginBottom10}`}>
                         <div className={`${style.flex} ${style.alignItem}`}>
                           {/* <div className={`${style.greenDotStyle}`}></div> */}
@@ -876,10 +880,10 @@ const ApplicantDashboard = () => {
       {showPrivilegeDialog && (
         <PrivilegeDisplayDialog getIsOpen={setShowPrivilegeDialog} privilegeList={selectedPrivilegeList} />
       )}
-       {showTaskNewDialog && (
+      {showTaskNewDialog && (
         <TaskNewDialog getIsOpen={setShowTaskNewDialog} />
       )}
-         {showTrackApplicationDialog && (
+      {showTrackApplicationDialog && (
         <TrackApplicationDialog getIsOpen={setShowTrackApplicationDialog} />
       )}
     </div >

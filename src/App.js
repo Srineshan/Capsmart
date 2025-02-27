@@ -1341,7 +1341,7 @@ const App = ({ props }) => {
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
                 />
                 <Route
-                  path="/ApplicantPortalRFC"
+                  path="/applicantPortalRFC"
                   element={<ProtectedRoute><ApplicantPortalRFC /></ProtectedRoute>}
                 />
                 <Route
