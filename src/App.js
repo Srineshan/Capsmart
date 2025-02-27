@@ -971,6 +971,9 @@ const App = ({ props }) => {
   };
 
   const ProtectedRoute = ({ children }) => {
+    if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
+      sessionStorage.setItem('initialRoute', window.location.pathname)
+    }
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
 
