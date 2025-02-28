@@ -5,7 +5,7 @@ import { TextField } from '@mui/material';
 import { GET, POST, PUT } from '../../Screens/dataSaver';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import ApplicationHeader from "../../Components/ApplicationHeader";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -31,12 +31,16 @@ import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonPhoneField from '../../Components/CommonFields/CommonPhoneField';
 import CommonDateField from '../../Components/CommonFields/CommonDateField';
+import { fileLoadingURL } from '../../utils/formatting';
+import DescriptionIcon from '@mui/icons-material/Description';
+import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
 const ApplicantPortalRFC = () => {
     const navigate = useNavigate();
     //   const [applicationId, setApplicationId] = useState(
     //       sessionStorage.getItem("applicationId")
     //     );
+    const { taskId } = useParams()
     const applicationId = '67b8140e3d08146b499af66c'
     const [form, setForm] = useState();
     const [userNotes, setUserNotes] = useState('');
@@ -65,19 +69,17 @@ const ApplicantPortalRFC = () => {
     const [uploadFileData, setUploadFileData] = useState([]);
     const [documentDesc, setDocumentDesc] = useState("");
     const [documentTitle, setDocumentTitle] = useState("");
-    const taskInfo = (sessionStorage.getItem('taskInfo') !== undefined && sessionStorage.getItem('taskInfo') !== 'undefined' && sessionStorage.getItem('taskInfo') !== null) ? JSON.parse(sessionStorage.getItem('taskInfo')) : {}
-    console.log(taskInfo, 'taskInfo')
+    const [taskById, setTaskById] = useState({});
 
     useEffect(() => {
-        if (taskInfo?.details?.application?.application?.id !== undefined) {
+        if (taskById?.details?.application?.application?.id !== undefined) {
             getPreApplication();
         }
-    }, [taskInfo?.details?.application?.application?.id]);
+    }, [taskById?.details?.application?.application?.id]);
 
     useEffect(() => {
-        // getFormSchema()
-        // getDocument()
-    }, [taskInfo?.details?.application?.formDetails?.formId])
+        getTaskInfo()
+    }, [taskId])
 
     useEffect(() => {
         setFormIndex(form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
@@ -94,11 +96,22 @@ const ApplicantPortalRFC = () => {
 
     const getPreApplication = async () => {
         const { data: basicForm } = await GET(
-            `application-management-service/application/${taskInfo?.details?.application?.application?.id}`
+            `application-management-service/application/${taskById?.details?.application?.application?.id}`
         );
         setForm(basicForm);
-        setClarificationSubject(basicForm?.forms?.filter(data => data?.id === taskInfo?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskInfo?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationTitle)
-        setClarificationDescription(basicForm?.forms?.filter(data => data?.id === taskInfo?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskInfo?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
+        setClarificationSubject(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationTitle)
+        setClarificationDescription(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
+        setUploadFileData(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
+        setUserNotes(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.clarificationDescription)
+        setDocumentTitle(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.title))
+        setDocumentDesc(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.description))
+    }
+
+    const getTaskInfo = async () => {
+        if (taskId !== undefined) {
+            const { data: task } = await GET(`task-management-service/task/${taskId}`)
+            setTaskById(task);
+        }
     }
 
     const getIsDocRequired = (shortName) => {
@@ -207,7 +220,7 @@ const ApplicantPortalRFC = () => {
             .catch((error) => {
                 console.log(error)
             });
-        handleSubmitApplicationReq(temp)
+        // handleSubmitApplicationReq(temp)
     }
 
     const getDocument = async () => {
@@ -224,46 +237,49 @@ const ApplicantPortalRFC = () => {
     }
 
     const changeHandler = async (event) => {
-        setIsLoading(true);
-        setFiles(event);
-        console.log(event, 'Test');
-        let table = tempValue.table !== undefined ? tempValue.table : []
+        console.log("Event received:", event);
+        const filesArray = Array.from(event);
+        console.log("Converted files array:", filesArray);
+        setFiles(filesArray);
 
         const formData = new FormData();
         let fileNameArray = [];
-        event?.forEach(file => {
-            fileNameArray.push({ "fileName": file?.name });
-            formData.append('documents', file); // Append each file individually
+
+        filesArray.forEach(file => {
+            const fileInfo = {
+                "filePath": file.path || '',
+                "fileName": file.name,
+                "fileURL": "",
+                "fileType": file.type,
+                "classification": "",
+                "verified": true,
+                "valid": true,
+            };
+            fileNameArray.push(fileInfo);
+            formData.append('documents', file);
         });
 
-        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+        const blob = new Blob([JSON.stringify(fileNameArray)], {
             type: "application/json"
-        }));
-        console.log(fileNameArray)
+        });
+        formData.append('files', blob);
+
         try {
-            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            setIsLoadingImageDocs(true);
+            const response = await POST(`application-management-service/application/${taskById?.details?.application?.application?.id}/files/bulk?isLLMRequired=${true}`, formData);
+            console.log("API Response:", response);
             SuccessToaster('File Uploaded Successfully');
-            console.log(response?.data);
-            event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[index]?.documentType?.shortName) : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
-            })
-            for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
-                try {
-                    if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.shortName}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[triggerIndex]?.documentType?.shortName) : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
-                    }
-                    console.log(response);
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            handleSubmitApplicationReq(table)
-            setIsLoading(false);
+            console.log("Response data:", response?.data);
+            setUploadFileData(prevData => {
+                // Merge previous data with new data
+                return [...(prevData || []), ...(response?.data || [])];
+            });
+            setIsLoadingImageDocs(false);
+            console.log("Responseupload:", uploadFileData);
             return response?.data;
         } catch (error) {
             ErrorToaster('File Upload Failed');
-            console.error(error);
-            setIsLoading(false);
+            console.error("Error:", error);
             return null;
         }
     };
@@ -273,7 +289,7 @@ const ApplicantPortalRFC = () => {
     };
 
     const handleCloseClick = () => {
-        navigate("/applications");
+        navigate("/applicantDashboard");
     };
 
     const getApplicantValues = (array) => {
@@ -356,10 +372,10 @@ const ApplicantPortalRFC = () => {
         return temp;
     }
 
-    const getClarificationResponse = async () => {
+    const getClarificationResponse = async (saveInProgress) => {
 
         const files = (uploadFileData || []).map((item, index) => ({
-            ...item.file,
+            ...item.file || item,
             description: documentDesc[index] || "",
             title: documentTitle[index] || "",
         }));
@@ -372,14 +388,23 @@ const ApplicantPortalRFC = () => {
             attachedDocuments: files
         };
 
-        // await PUT(`application-management-service/application/${id}/form/${form?.id}/clarification/${data?.id}/response`, temp)
-        //     .then(response => {
-        //         console.log('successfull notes added');
-        //         getPreApplication();
-        //     })
-        //     .catch((error) => {
-        //         console.log(error);
-        //     });
+        if (saveInProgress) {
+            if (taskById?.status === "NOT_STARTED") {
+                await PUT(`task-management-service/task/${taskById?.id}/updateStatus?status=ON_GOING`)
+            }
+        } else {
+            await PUT(`task-management-service/task/${taskById?.id}/updateStatus?status=COMPLETED`)
+        }
+
+        await PUT(`application-management-service/application/${taskById?.details?.application?.application?.id}/form/${taskById?.details?.application?.formDetails?.formId}/clarification/${taskById?.details?.application?.clarificationId}/response`, temp)
+            .then(response => {
+                console.log('successfull notes added');
+                getPreApplication();
+                handleCloseClick();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     const renderFields = (field, index) => {
@@ -485,6 +510,13 @@ const ApplicantPortalRFC = () => {
 
     return (
         <div>
+            {isLoadingImageDocs && (
+                <div
+                    className={`${style.loadingOverlay}`}
+                >
+                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                </div>
+            )}
             <ApplicationHeader
                 title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : "Clarification Required For Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
                     ? form?.basicDetails?.applicant?.name?.firstName
@@ -581,7 +613,47 @@ const ApplicantPortalRFC = () => {
                                     accept="image/*"
                                 />
                             </div>
-                            <div className={style.tableContainer}>
+                            {uploadFileData.length > 0 && (
+                                <div>
+                                    {uploadFileData.map((file, index) => (
+                                        <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                                            <div className={`${style.threeColumnGrid}`}>
+                                                <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.verticalAlignCenter}`}>
+                                                    <DescriptionIcon className={style.docsIcon} />
+                                                    <div className={style.marginLeft20}>{file?.file?.fileName || file?.fileName}</div>
+                                                </div>
+                                                <div>
+                                                    <CommonInputField
+                                                        value={documentTitle[index] || ""}
+                                                        onChange={(e) => {
+                                                            const newDocumentTitle = [...documentTitle];
+                                                            newDocumentTitle[index] = e.target.value;
+                                                            setDocumentTitle(newDocumentTitle);
+                                                        }}
+                                                        type="text"
+                                                        placeholder="Title*"
+                                                        className={style.referenceCardStyleDescription}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <CommonInputField
+                                                        value={documentDesc[index] || ""}
+                                                        onChange={(e) => {
+                                                            const newDocumentDesc = [...documentDesc];
+                                                            newDocumentDesc[index] = e.target.value;
+                                                            setDocumentDesc(newDocumentDesc);
+                                                        }}
+                                                        type="text"
+                                                        placeholder="Description (Optional)"
+                                                        className={style.referenceCardStyleDescription}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            {/* <div className={style.tableContainer}>
                                 {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
                                     <TableTwo
                                         tableHeaderValues={[
@@ -593,8 +665,8 @@ const ApplicantPortalRFC = () => {
                                             "Valid",
                                             "",
                                         ]}
-                                        tableDataValues={getApplicantValues(tempValue?.table)}
-                                        tableData={tempValue?.table || []}
+                                        tableDataValues={getApplicantValues(uploadFileData)}
+                                        tableData={uploadFileData || []}
                                         gridStyle={style.gridStyle}
                                         // actions={actions}
                                         // scrollStyle={style.contractScrollStyle}
@@ -625,7 +697,7 @@ const ApplicantPortalRFC = () => {
                             </div>
                             <div className={`${style.twoCol} ${style.marginTop20}`}>
                                 {fields?.map((field, index) => renderFields(field, index))}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div>
@@ -642,8 +714,8 @@ const ApplicantPortalRFC = () => {
                         <div>
                             <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
                                 <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
-                                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                                <div className={style.marginTop20}>
+                                {/* <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} /> */}
+                                <div >
                                     <ApplicationAssistanceCard
                                         user={"Neena Greenly"}
                                         designation={"{Designation}"}
@@ -654,11 +726,11 @@ const ApplicantPortalRFC = () => {
                             </div>
                         </div>
                         <div className={`${style.stickyContainer}`}>
-                            {/* <div className={`${style.saveInProgress} ${style.marginTop20}`}
-                                //  onClick={() => getIsSaveInProgressOpen(true)}
+                            <div className={`${style.saveInProgress} ${style.marginTop20}`}
+                                onClick={() => getClarificationResponse(true)}
                             >
                                 SAVE IN PROGRESS
-                            </div> */}
+                            </div>
                             <div className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => getClarificationResponse()}
                             >CONTINUE</div>
