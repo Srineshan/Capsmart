@@ -340,7 +340,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
       missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
     }
-    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group") {
+    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
+      basicForm?.basicDetails?.departmentSpecialty?.department !==
+      "Women & Children" &&
+      basicForm?.basicDetails?.departmentSpecialty?.specialty !==
+      "Obstetrics & Gynecology") {
       missingKeys.push({
         label: "Who covers your hospital patients when you are not available?",
       });

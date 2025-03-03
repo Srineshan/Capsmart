@@ -275,7 +275,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
       }
       setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-      setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities)
+      setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
       setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
       if ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
         setDontUpdatePrivilegeState(true)
@@ -679,10 +679,14 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
   const handleSubmitDepartment = async (isUpdated) => {
     let data = basicForm;
+    console.log(data, 'data');
     if (isUpdated) {
+      console.log(data, 'data');
       if (data?.basicDetails?.priorDepartmentSpecialty === null && !basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated) {
-        data.basicDetails.priorDepartmentSpecialty = basicForm?.basicDetails?.departmentSpecialty
+        console.log(data, 'data');
+        data.basicDetails.priorDepartmentSpecialty = { ...basicForm?.basicDetails?.departmentSpecialty }
       }
+      data.basicDetails.departmentSpecialty = { ...data.basicDetails.departmentSpecialty };
       data.basicDetails.departmentSpecialty.department = departmentList?.filter(
         (data) => data?.id === selectedDepartment
       )?.[0]?.departmentName?.name;
@@ -693,7 +697,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         data.basicDetails.regionalCallResponsibilities = {};
       }
       data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || 'NA';
-      console.log(data);
+      console.log(data, 'data');
       await PUT(
         `application-management-service/application/${applicationId}`,
         data
@@ -712,6 +716,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           data.basicDetails.departmentSpecialty = data?.basicDetails?.priorDepartmentSpecialty;
         }
       }
+      if (!data?.basicDetails?.regionalCallResponsibilities) {
+        data.basicDetails.regionalCallResponsibilities = {};
+      }
+      data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || 'NA';
       await PUT(
         `application-management-service/application/${applicationId}`,
         data
@@ -722,6 +730,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
         .catch((error) => {
           console.log(error);
         });
+      console.log(data, 'data');
     }
     let temp = {
       schemaId: basicForm?.forms?.[formIndex]?.schemaId,
@@ -3489,6 +3498,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           console.log('setDept', item.id, item.specialityId, item)
                           setSelectedDepartment(item.id)
                           setSelectedSpeciality(item.specialityId)
+                          setSelectedValue('NA');
                         }}
                         className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
                         maxLength={50}
@@ -3549,16 +3559,25 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     </div>
                     <div className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}>
                       <div
-                        className={`${style.reappointmentButton} ${style.marginLeft}`}
-                        onClick={() => {
-                          setDepartmentChangeYesOrNo((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined))) ? 'Yes' : 'No');
-                          setIsDepartmentChanging(false);
-                          if ((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined)))) {
-                            handleSubmitDepartment()
-                          } else {
-                            handleSubmitDepartment(true)
-                          }
-                        }}
+                        className={`${style.reappointmentButton} ${style.marginLeft}
+                        ${(departmentList?.some(department => department.id === selectedDepartment) && (
+                            departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
+                              (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
+                            )) && selectedValue === "NA") ? style.disabled : ''}`}
+                        onClick={
+                          (departmentList?.some(department => department.id === selectedDepartment) && (
+                            departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
+                              (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
+                            )) && selectedValue === "NA") ? () => { } :
+                            () => {
+                              setDepartmentChangeYesOrNo((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined))) ? 'Yes' : 'No');
+                              setIsDepartmentChanging(false);
+                              if ((!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined)))) {
+                                handleSubmitDepartment()
+                              } else {
+                                handleSubmitDepartment(true)
+                              }
+                            }}
                       >
                         {(!basicForm?.forms?.[formIndex]?.data?.departmentChangeUpdated ? (selectedDepartment === prevDepartment && selectedSpeciality === prevSpeciality) : (selectedDepartment === departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.id && selectedSpeciality === (basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty !== null ? departmentList?.filter(data => data?.departmentName?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.department)?.[0]?.serviceAreas?.filter(specialtyData => specialtyData?.name === basicForm?.basicDetails?.priorDepartmentSpecialty?.specialty)?.[0]?.id : undefined))) ? 'CONFIRM' : 'UPDATE'}
                       </div>

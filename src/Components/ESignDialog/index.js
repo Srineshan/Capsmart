@@ -4,7 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 import Pencil from "../../images/pencil.png";
 import SignatureCanvas from 'react-signature-canvas';
 import { POST, PUT, GET } from '../../Screens/dataSaver';
-import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
+import { ErrorToaster, ErrorToaster2, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
@@ -90,7 +90,22 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     };
 
     const saveSignature = async () => {
+        if (selectedESignFormat === 'DRAW' && !isShowDrawCanvas) {
+            ErrorToaster2("Signature cannot be empty.");
+            return;
+        }
         if (selectedESignFormat === 'DRAW' && isShowDrawCanvas) {
+            if (!sigCanvas.current.isEmpty()) {
+                const canvas = sigCanvas.current.getTrimmedCanvas();
+                const { width, height } = canvas;
+                if (width < 30 && height < 30) {
+                    ErrorToaster2("Please add a valid signature, not just a dot.");
+                    return;
+                }
+            } else {
+                ErrorToaster2("Signature cannot be empty.");
+                return;
+            }
             const dataURL = sigCanvas.current.getTrimmedCanvas().toDataURL('image/png');
             let blobFormat = dataURLToBlob(dataURL)
             let fileName = {
@@ -116,6 +131,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 return null;
             }
         } else {
+            if (eSignType === "" || eSignType === "<br>") {
+                ErrorToaster2("Signature shouldn't be empty");
+                return;
+            }
             let temp = tempValue;
             if (temp[baseKey].type === undefined) {
                 temp[baseKey].type = {}
