@@ -90,6 +90,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
     };
 
     const saveSignature = async () => {
+        if (selectedESignFormat === 'DRAW' && !isShowDrawCanvas) {
+            ErrorToaster2("Signature cannot be empty.");
+            return;
+        }
         if (selectedESignFormat === 'DRAW' && isShowDrawCanvas) {
             if (!sigCanvas.current.isEmpty()) {
                 const canvas = sigCanvas.current.getTrimmedCanvas();
@@ -127,6 +131,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 return null;
             }
         } else {
+            if (eSignType === "" || eSignType === "<br>") {
+                ErrorToaster2("Signature shouldn't be empty");
+                return;
+            }
             let temp = tempValue;
             if (temp[baseKey].type === undefined) {
                 temp[baseKey].type = {}

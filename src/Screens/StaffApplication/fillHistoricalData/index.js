@@ -476,37 +476,31 @@ const HistoricalData = () => {
   }, [privilege, privilegeCategoryList]);
 
   const formatPhoneNumber = (digits) => {
-    if (!digits) return "+1"; // Return default country code if no digits are provided
-
+    if (!digits) return ""; // Return empty if no digits are provided
+  
     // Format the number dynamically
     if (digits.length <= 3) {
-      return `+1 (${digits}`;
+      return `(${digits}`;
     } else if (digits.length <= 6) {
-      return `+1 (${digits.slice(0, 3)}) ${digits.slice(3)}`;
+      return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
     } else {
-      return `+1 (${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     }
   };
-
-
-
-  // Reusable phone change handler
+  
   const handlePhoneChange = (e, setPhoneState) => {
     const rawValue = e.target.value;
-
-    // Strip all non-numeric characters except + and limit to 10 digits after +1
-    const numericValue = rawValue.replace(/[^\d]/g, "");
-
-    // Ensure it starts with +1
-    let formattedValue = "+1";
-    if (numericValue.startsWith("1")) {
-      const digits = numericValue.slice(1, 11); // Get up to 10 digits after the country code
-      formattedValue = formatPhoneNumber(digits);
-    }
-
-    // Update state with the formatted value
-    setPhoneState(formattedValue);
+  
+    // Strip all non-numeric characters
+    let numericValue = rawValue.replace(/\D/g, ""); // Remove non-numeric characters
+  
+    // Limit to 10 digits max
+    const digits = numericValue.slice(0, 10);
+  
+    // Format and update state
+    setPhoneState(formatPhoneNumber(digits));
   };
+  
 
 
 
@@ -746,8 +740,8 @@ const HistoricalData = () => {
     formData.append("files", filesBlob);
 
     try {
-      const response = await axios.post(
-        `${baseUrl()}/application-management-service/application/historicFileUpload`,
+      const response = await POST(
+        'application-management-service/application/historicFileUpload',
         formData,
         {
           headers: {
