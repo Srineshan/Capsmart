@@ -680,70 +680,171 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
-   const [isApproverDept, setIsApproverDept] = useState("notApprove");
-    const [isApproverCred, setIsApproverCred] = useState(false);
-    const [userFirstName, setUserFirstName] = useState('');
-    const [userLastName, setUserLastName] = useState('');
-    let approverDetails = {};
-  // useEffect(() => {
-  //   if (dateFormat) {
-  //     setCurrentDate(format(new Date(), dateFormat));
-  //   }
-  // }, [dateFormat]);
+  const [isApproverDept1, setIsApproverDept1] = useState("");
+  const [isApproverCred, setIsApproverCred] = useState(false);
+  const [userFirstName, setUserFirstName] = useState('');
+  const [userLastName, setUserLastName] = useState('');
+  let approverDetails;
+  let approverDetailsCred;
 
    useEffect(() => {
         getApplicationEntity();
-        getLog();;
+        getLog();
       }, [applicationType]);
 
       useEffect(() => {
-        console.log("Updated firstnameuserssssss", userFirstName);
-        
-        if ((workModeType === "Department Head"  || workModeType === "Chief Of Staff")) {
-          approverDetails = formDetails?.completedWorkflows?.find(
-            (workflow) => workflow?.role === "Department Head"
-          );
-        } else if (workModeType === "Credentialing Committee") {
-          approverDetails = formDetails?.completedWorkflows?.find(
-            (workflow) => workflow?.role === "Credentialing Committee"
-          );
-        }
-      
-        let firstName = approverDetails?.approverDetail?.name?.firstName || "";
-        let lastName = approverDetails?.approverDetail?.name?.lastName || "";
-      
-        console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName} ${isApproverDept}`);
+        sessionStorage.setItem("fromSummary", false);
+        getApplication();
+      }, [applicationType,id]);
 
-      
-        if (firstName === userFirstName && lastName === userLastName) {
-          if (workModeType === "Department Head") {
-            setIsApproverDept("Approve");
-          } else if (workModeType === "Chief Of Staff") {
-            setIsApproverDept("Approve");
-          } else if (workModeType === "Credentialing Committee") {
-            setIsApproverCred("Approve");
-          }
-        } 
-        if (firstName !== userFirstName && lastName !== userLastName) {
-          if (workModeType === "Department Head") {
-            setIsApproverDept("notApprove");
-          } else if (workModeType === "Chief Of Staff") {
-            setIsApproverDept("notApprove");
-          } else if (workModeType === "Credentialing Committee") {
-            setIsApproverCred("notApprove");
-          }
-        } 
-        // else {
-        //   if (workModeType === "Department Head") {
-        //     setIsApproverDept(false);
-        //   }  else if (workModeType === "Chief Of Staff") {
-        //     setIsApproverDept(false);
-        //   } else if (workModeType === "Credentialing Committee") {
-        //     setIsApproverCred(false);
-        //   }
-        // }
-        console.log("approvebydept",isApproverDept)
-      }, [formDetails]);
+  useEffect(() => {
+    // if (getIsOpen) {
+    // console.log("Updated firstnameuserssssss", userFirstName);
+    // console.log("Updated Lastnameuserssssss", userLastName);
+    // let approverDetails;
+    
+    if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
+      approverDetails = formDetails?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Department Head"
+      );
+    } 
+    // else if (workModeType === "Credentialing Committee") {
+    //   approverDetails = formDetails?.completedWorkflows?.find(
+    //     (workflow) => workflow?.role === "Credentialing Committee"
+    //   );
+    // }
+  
+    const firstName = approverDetails?.approverDetail?.name?.firstName;
+    const lastName = approverDetails?.approverDetail?.name?.lastName;
+
+    console.log("Updated firstname:", approverDetails , formDetails?.id);
+    console.log("Updated lastname:", lastName);
+  
+    // console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`);
+
+  
+    if (firstName === userFirstName && lastName === userLastName) {
+      // if (workModeType === "Department Head") {
+      //   setIsApproverDept1("Approve");
+      // } else if (workModeType === "Chief Of Staff") {
+      //   setIsApproverDept1("Approve");
+      // } else if (workModeType === "Credentialing Committee") {
+      //   setIsApproverCred("Approve");
+      // }
+      setIsApproverDept1("Approve");
+    } else{
+      setIsApproverDept1("notApproved")
+    }
+    // if (firstName !== userFirstName && lastName !== userLastName) {
+    //   // if (workModeType === "Department Head") {
+    //   //   setIsApproverDept1("notApproved");
+    //   // } else if (workModeType === "Chief Of Staff") {
+    //   //   setIsApproverDept1("notApproved");
+    //   // } else if (workModeType === "Credentialing Committee") {
+    //   //   setIsApproverCred("notApproved");
+    //   // }
+    //   setIsApproverDept1("notApproved")
+    // } 
+    // else {
+    //   if (workModeType === "Department Head") {
+    //     setIsApproverDept1(false);
+    //   }  else if (workModeType === "Chief Of Staff") {
+    //     setIsApproverDept1(false);
+    //   } else if (workModeType === "Credentialing Committee") {
+    //     setIsApproverCred(false);
+    //   }
+    // }
+    // console.log("approvebydept",isApproverDept1)
+  // }
+
+    // console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`);
+  }, [workModeType, formDetails, userFirstName, userLastName,id]);
+
+  useEffect(() => {  
+    if (workModeType === "Credentialing Committee") {
+      approverDetailsCred = formDetails?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Credentialing Committee"
+      );
+    } 
+  
+    const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
+    const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
+
+    console.log("Updated firstname:", approverDetailsCred , formDetails?.id);
+    console.log("Updated lastname:", lastName);
+
+ 
+    if (firstName === userFirstName && lastName === userLastName) {
+      setIsApproverDept1("Approve");
+    } else{
+      setIsApproverDept1("notApproved")
+    }
+  }, [ workModeType, formDetails, userFirstName, userLastName,id]);
+
+  // const setUserDetails = async () => {
+  //   try {
+  //     const { data: userData } = await GET(
+  //       `user-management-service/user/${users?.id}`
+  //     );
+  //     console.log("userdataaaa", JSON.stringify(userData));
+  //     sessionStorage.setItem("user", JSON.stringify(userData));
+  //     setUserFirstName(userData?.name?.firstName || "");
+  //     setUserLastName(userData?.name?.lastName || "");
+  //   } catch (error) {
+  //     console.error("Error fetching user details:", error);
+  //   }
+  // };
+  
+  // Run logic after formDetails & user details are updated
+
+  // useEffect(() => {
+  //   // if (!formDetails) return;
+  
+  //   console.log("Updated firstname:", userFirstName);
+  //   console.log("Updated lastname:", userLastName);
+  
+  //   // let approverDetails = null;
+  
+  //   if (
+  //     workModeType === "Department Head" ||
+  //     workModeType === "Chief Of Staff"
+  //   ) {
+  //     approverDetails = formDetails?.completedWorkflows?.find(
+  //       (workflow) => workflow?.role === "Department Head"
+  //     );
+  //   } else if (workModeType === "Credentialing Committee") {
+  //     approverDetails = formDetails?.completedWorkflows?.find(
+  //       (workflow) => workflow?.role === "Credentialing Committee"
+  //     );
+  //   }
+  
+  //   firstName = approverDetails?.approverDetail?.name?.firstName || "";
+  //   lastName = approverDetails?.approverDetail?.name?.lastName || "";
+  
+  //   if (firstName !== userFirstName && lastName !== userLastName) {
+  //     setIsApproverDept1("notApproved");
+  //     console.log("approvebydept11111111111");
+  //   } else {
+  //     setIsApproverDept1("Approve");
+  //     console.log("approvebydept2222222222");
+  //   }
+  
+  //   console.log("approvebydept", isApproverDept1);
+  //   console.log(
+  //     `Approvers ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`
+  //   );
+  // }, [ ]);
+
+  console.log(`Approverssssss ${workModeType}: ${isApproverDept1}`);
+
+
+  console.log("approvebydept",isApproverDept1)
+  console.log("Updated Lastnameuserssssss", userFirstName);
+  console.log("Updated Lastnameuserssssss", userLastName);
+
+  const closeAndReset = () => {
+    getIsOpen(false);
+  };
 
 
   const onClicksignFunction = () => {
@@ -758,10 +859,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     setCurrentDate(formattedDate);
   };
 
-  useEffect(() => {
-    sessionStorage.setItem("fromSummary", false);
-    getApplication();
-  }, [applicationType]);
 
   useEffect(() => {
     setIsCheckedSign(formDetails?.forms?.[19]?.acknowledged || true);
@@ -785,9 +882,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     setUserDetails();
   }, [users?.id])
 
-  useEffect(() => {
-    setUserDetails();
-  }, [])
+  // useEffect(() => {
+  //   setUserDetails();
+  // }, [])
 
   const changeHandler = async (event) => {
       setIsLoading(true);
@@ -1199,20 +1296,40 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   return null;
   // }
 
-  // if ((workModeType === 'Staff Manager') || (workModeType === 'Department Head' &&  isApproverDept === false))  {
+  // if ((workModeType === 'Staff Manager') || (workModeType === 'Department Head' &&  isApproverDept1 === false))  {
   //   return null;
   // }
 
-  // if ((workModeType === 'Chief Of Staff'))  {
-  //   return null;
+  // useEffect(() => {
+  //   if (workModeType === "Chief Of Staff" && isApproverDept1 === "notApproved") {
+  //     setIsApproverDept1(""); // Reset state when condition is met
+  //   }
+  // }, [workModeType, isApproverDept1]);
+
+  // if ((workModeType === "Chief Of Staff" && isApproverDept1 === "notApproved")) {
+  //   return (
+  //     isLoadingImage && (
+  //       <div className={style.loadingOverlay}>
+  //         <LoadingScreen />
+  //       </div>
+  //     )
+  //   );
   // }
 
   if (
-    workModeType === 'Staff Manager' || 
-    (workModeType === 'Department Head' && isApproverDept === "notApprove") || 
-    (workModeType === 'Chief Of Staff' && isApproverDept === "notApprove")
+    workModeType === 'Staff Manager' 
+    // || 
+    // (workModeType === 'Department Head' && isApproverDept1 === "notApproved") || 
+    // (workModeType === 'Chief Of Staff' && isApproverDept1 === "notApproved") ||
+    // (workModeType === 'Credentialing Committee' && isApproverCred === "notApproved")
   ) {
-    return null;
+       return (
+      isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )
+    );
   }
 
   return (
@@ -1227,7 +1344,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     <Dialog
       isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
+      onClose={() => closeAndReset()}
       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
@@ -1245,7 +1362,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  getIsOpen(false);
+                  closeAndReset();
                 }}
               />
             </div>
@@ -1361,9 +1478,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                ))}
               {((workModeType === "Department Head") || (workModeType === "Chief Of Staff")) &&
               <>
-              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+              {/* <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
                Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
-               </div>
+               </div> */}
                
                <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
                Assigned Credentials Committee: {
@@ -1380,7 +1497,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </div>
                </>
                }
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => closeAndReset()}>
                {workModeType === "Department Head" ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
              </div>
           </div>

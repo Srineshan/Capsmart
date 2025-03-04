@@ -707,8 +707,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       return;
     }
     try {
+      let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${workModeType}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${role}`
       );
       setCounts(response?.data);
       getReFetchMetaData(false);
@@ -758,64 +759,104 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [reFetchMetaData]);
 
   // Handle user flow and role updates
+  // useEffect(() => {
+  //   const UserFlowType = userFlow?.workflow || [];
+
+  //   const isManagerOrChief = workModeType === "Staff Manager" ;
+
+  //   const newCurrentRoleIndex = isManagerOrChief
+  //     ? 0
+  //     : Object.entries(UserFlowType).findIndex(([key, value]) => {
+  //       const details = value?.flowDetails;
+  //       return (
+  //         details &&
+  //         details.some((detail) => detail?.role &&  detail?.role?.roleName === workModeType)
+  //       );
+  //     });
+
+  //   // if (userRole.length > 0 && !initialTabSet) {
+  //   //   let initialTab;
+  //   //   if (applicationType === "LOCUM") {
+  //   //     // For LOCUM, set initial tab to LocumRenewals if the user is a Department Head
+  //   //     initialTab =  "LocumRenewals" ;
+  //   //   } else {
+  //   //     // For other application types, keep the existing logic
+  //   //     initialTab = (isManagerOrChief
+  //   //       ? 'level-1'
+  //   //       : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`);
+  //   //   }
+
+  //   //   if (initialTab) {
+  //   //     getSelectedTab(initialTab);
+  //   //     setInitialTabSet(true);
+  //   //   }
+  //   // }
+  //   if (userRole.length > 0 && !initialTabSet) {
+  //     let initialTab;
+    
+  //     if (applicationType === "LOCUM") {
+  //       initialTab = "LocumRenewals";
+  //     } else if (workModeType === "Department Head") {
+  //       initialTab = "level-2";
+  //     } else if (workModeType === "Chief Of Staff") {
+  //       initialTab = "level-2";
+  //     } else if (workModeType === "Credentialing Committee") {
+  //       initialTab = "level-3";
+  //     } else {
+  //       initialTab = isManagerOrChief
+  //         ? "level-1"
+  //         : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
+  //     }
+    
+  //     if (initialTab) {
+  //       getSelectedTab(initialTab);
+  //       setInitialTabSet(true);
+  //     }
+  //   }
+
+  //   setCurrentRoleIndex(newCurrentRoleIndex);
+  //   console.log('user1',userRole)
+  // }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType,workModeType]);
+
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
-
-    const isManagerOrChief = workModeType === "Staff Manager" ;
-
+  
+    const isManagerOrChief = workModeType === "Staff Manager";
+  
     const newCurrentRoleIndex = isManagerOrChief
       ? 0
       : Object.entries(UserFlowType).findIndex(([key, value]) => {
-        const details = value?.flowDetails;
-        return (
-          details &&
-          details.some((detail) => detail?.role &&  detail?.role?.roleName === workModeType)
-        );
-      });
-
-    // if (userRole.length > 0 && !initialTabSet) {
-    //   let initialTab;
-    //   if (applicationType === "LOCUM") {
-    //     // For LOCUM, set initial tab to LocumRenewals if the user is a Department Head
-    //     initialTab =  "LocumRenewals" ;
-    //   } else {
-    //     // For other application types, keep the existing logic
-    //     initialTab = (isManagerOrChief
-    //       ? 'level-1'
-    //       : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`);
-    //   }
-
-    //   if (initialTab) {
-    //     getSelectedTab(initialTab);
-    //     setInitialTabSet(true);
-    //   }
-    // }
-    if (userRole.length > 0 && !initialTabSet) {
+          return value?.flowDetails?.some(
+            (detail) => detail?.role?.roleName === workModeType
+          );
+        });
+  
+    if (userRole.length > 0) {
       let initialTab;
-    
+  
       if (applicationType === "LOCUM") {
         initialTab = "LocumRenewals";
-      } else if (workModeType === "Department Head") {
+      } else if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
         initialTab = "level-2";
-      } else if (workModeType === "Chief Of Staff") {
-        initialTab = "level-2";
-      } else if (workModeType === "Credentialing Committee") {
+      }  else if (workModeType === "Credentialing Committee User") {
+        initialTab = "level-3";
+      }else if (workModeType === "Credentialing Committee") {
         initialTab = "level-3";
       } else {
         initialTab = isManagerOrChief
           ? "level-1"
           : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
       }
-    
-      if (initialTab) {
+  
+      if (initialTab && !initialTabSet) {
         getSelectedTab(initialTab);
         setInitialTabSet(true);
       }
     }
-
+  
     setCurrentRoleIndex(newCurrentRoleIndex);
-    console.log('user1',userRole)
-  }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType,workModeType]);
+  }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType, workModeType, setCurrentRoleIndex]);
+  
 
   const getFilteredTiles = () => {
     const UserFlowType = userFlow?.workflow || [];
@@ -829,9 +870,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           label = "Applicants to Verify";
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments to Process";
-        } else if ((applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee")) {
-          label = "Reappointments to Review";
-        } else {
+        }else {
           label = value.tabDisplayName;
         }
       } else {
@@ -854,12 +893,27 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         label: "Reappointments to Process",
       }));
     }
+    else if (workModeType === "Credentialing Committee User") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
+        ...tile,
+        label: "Reappointments to Process",
+      }));
+    }
     // else if (workModeType === "Chief Of Staff") {
     //   filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2');
     // }  
+    // else if (workModeType === "Credentialing Committee") {
+    //   filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3');
+    // }  
     else if (workModeType === "Credentialing Committee") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
+        ...tile,
+        label: "Reappointments to Review",
+      }));
+    }
+    else if (workModeType === "Credentialing Committee User") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3');
-    } else {
+    }  else {
       filteredArray = baseUserFlowArray.slice(currentRoleIndex);
     }
 

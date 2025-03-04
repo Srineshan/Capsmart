@@ -71,6 +71,7 @@ import CommonCheckBox from "../CommonFields/CommonCheckBox";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import IconButton from '@mui/material/IconButton';
+import LoadingScreen from "../LoadingScreen";
 const NewActiveApplication = ({
   contracts,
   getNewContract,
@@ -96,7 +97,8 @@ const NewActiveApplication = ({
   notesCommentsBox,
   getNotesDialog,
   staffView,
-  getPaymentDisplayBox
+  getPaymentDisplayBox,
+  dataLevel
 
 }) => {
   console.log("contract Type", contractType);
@@ -177,6 +179,7 @@ const NewActiveApplication = ({
   const [calendarStart, setCalendarStart] = useState(false);
   const [calendarEnd, setCalendarEnd] = useState(false);
   const [selectedDateForBod, setSelectedDateForBod] = useState(null);
+  const [selectedDateForCC, setSelectedDateForCC] = useState(null);
   const [selectedDateForReappoint, setSelectedDateForReappoint] = useState(null);
   const [selectedDateForMac, setSelectedDateForMac] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -218,10 +221,11 @@ const NewActiveApplication = ({
   const [selectedFileIndex, setSelectedFileIndex] = useState(0);
   const [fileArray, setFileArray] = useState([]);
   const [expandedIcon, setExpandedIcon] = useState(false);
-  const [isApproverDept, setIsApproverDept] = useState("Approve");
-  const [isApproverCred, setIsApproverCred] = useState(false);
+  const [isApproverDept, setIsApproverDept] = useState("");
+  const [isApproverCred, setIsApproverCred] = useState("");
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
+  const [isLoadingImage, setIsLoadingImage] = useState(false);
   // const userData = JSON.parse(sessionStorage.getItem('user'));
   // const userFirstName = userData?.name?.firstName || "No First Name";
   // const userLastName = userData?.name?.lastName || "No Last Name";
@@ -257,12 +261,13 @@ const NewActiveApplication = ({
     borderRadius: 5,
   };
 
+  console.log("dataLevel", dataLevel)
 
   useEffect(() => {
     getPreApplication();
     // getPreApplicationTask();
     console.log("staffview", staffView)
-  }, []);
+  }, [applicationId]);
 
   useEffect(() => {
     getMedicalDirectives()
@@ -281,6 +286,8 @@ const NewActiveApplication = ({
       setSelectedDateForReappoint(formattedDate);
     } else if (field === 'MAC') {
       setSelectedDateForMac(formattedDate);
+    } else if (field === 'CC') {
+      setSelectedDateForCC(formattedDate);
     }
 
     setCalendarStart(false);
@@ -351,13 +358,16 @@ const NewActiveApplication = ({
 
   // };
 
-  const getPreApplication = async () => {
-    const { data: basicForm } = await GET(
-      `application-management-service/application/${applicationId}`
-    );
-    setForm(basicForm);
-  }
-
+   const getPreApplication = async () => {
+      try {
+        setIsLoadingImage(true);
+        const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
+        setForm(basicForm);
+        setIsLoadingImage(false)
+      } catch (error) {
+        console.error('Error fetching application:', error);
+      }
+    };
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
   useEffect(() => {
@@ -589,34 +599,46 @@ const NewActiveApplication = ({
 
     console.log(`Approver dept: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
-    console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
+    // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
     console.log("applicationType:", applicationType);
 
     if (firstName === userFirstName && lastName === userLastName) {
-      // setIsApproverDept("Approve");
+      setIsApproverDept("Approve");
       console.log("levelofApprovaltrue:", isApproverDept);
     } else {
       setIsApproverDept("NotApproved");
       console.log("levelofApprovalfalse:", isApproverDept);
     }
-  }, [form]);
 
-  
-  const checkApproverCred = () => {
+    console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
+  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverDept]);
+
+  useEffect(() => {
     console.log("Updated firstnameuser", userFirstName);
-  
-    const credApproverDetails = form?.completedWorkflows?.find(
+    console.log("Updated firstnameuser", userLastName);
+
+    let CredCommApproverDetails = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Credentialing Committee"
     );
-  
-    const firstName = credApproverDetails?.approverDetail?.name?.firstName || "";
-    const lastName = credApproverDetails?.approverDetail?.name?.lastName || "";
-  
-    console.log(`Approver Cred: ${firstName} ${lastName}`);
-  
-    setIsApproverCred(firstName === userFirstName && lastName === userLastName);
-  };
 
+    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName || "";
+    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName || "";
+
+    console.log(`Approver cred: ${firstName} ${lastName}`);
+    console.log("workModeType:", workModeType);
+    // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
+    console.log("applicationType:", applicationType);
+
+    if (firstName === userFirstName && lastName === userLastName) {
+      setIsApproverCred("Approve");
+      console.log("levelofApprovaltrue:", isApproverCred);
+    } else {
+      setIsApproverCred("NotApproved");
+      console.log("levelofApprovalfalse:", isApproverCred);
+    }
+
+    console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverCred);
+  }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverCred]);
 
   console.log("Is Approver:", isApproverDept);
 
@@ -1044,7 +1066,7 @@ const NewActiveApplication = ({
   };
 
   const onClickApprovalwithoutnotesFunction = () => {
-    getApprovalwithoutNotesCommentBox(true);
+    getApprovalwithoutNotesCommentBox(true,selectedDateForCC);
   };
 
   const onClickApprovalDeptFunction = () => {
@@ -1063,6 +1085,11 @@ const NewActiveApplication = ({
     getApplicationMoveToNext(true)
   };
 
+  const onClickCCDateSetFunction = () => {
+    getApplicationDateForCC(true);
+    getActiveApplicationView(false);
+  };
+
   const onClickApproveMoveMacFunction = () => {
     handleApplicationAcceptMac(true);
     getApplicationMoveToNext(true)
@@ -1071,6 +1098,21 @@ const NewActiveApplication = ({
   const onClickRejectFunction = () => {
     handleApplicationReject(true);
   };
+
+  const getApplicationDateForCC = async () => {
+    let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    let temp = [applicationId]; 
+
+    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`,temp)
+      .then(response => {
+        console.log('successfull')
+        onClose();
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    getPreApplication();
+  }
 
   const handleApplicationAccept = async () => {
     let role;
@@ -4404,6 +4446,13 @@ const NewActiveApplication = ({
   };
 
   return (
+    <>
+    {/* {isLoadingImage && (
+      <div  className={style.loadingOverlay}>
+        <LoadingScreen/>
+      </div>
+    )} */}
+    {/* {!isLoadingImage && ( */}
     <div style={{
       maxHeight: 'calc(100vh - 10px)',
       overflowY: "auto",
@@ -4442,7 +4491,7 @@ const NewActiveApplication = ({
         </div> */}
         <div className={style.grid2to1}>
           <>
-            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Department Head') ? (
+            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
               <>
                 <div>
                   {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
@@ -9907,7 +9956,7 @@ const NewActiveApplication = ({
             )}
           </>
           <div>
-            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Department Head') ? (
+            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
               <>
                 {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
                   <div className={`${style.twoColumnGrid}`}>
@@ -10229,7 +10278,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === true) ? (
+                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
                   <div className={`${style.fixedBottom} `}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
                     <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10286,6 +10335,62 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")}
                 {(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                  <div className={`${style.fixedBottom}`}>
+                    {/* <div className={`${style.twoColumnGrid}`}> */}
+                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                        onClick={() => {
+                          onClose();
+                        }}
+                      >
+                        SAVE IN PROGRESS
+                      </div>
+                    </div>
+                    <div
+                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                    >
+                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
+                      <div
+                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                        // onClick={() => {
+                        //   setShowApplicationDeclineDialog(true);
+                        // }}
+                        onClick={() => {
+                          setShowApplicationDeclineDialog(true);
+                        }}
+                      >
+                        NOT RECOMMENDED
+                      </div>
+                    </div>
+                    {/* </div> */}
+                    <div className={`${style.marginTop20}`}>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                          // onClick={onClickApproveFunction}
+                          onClick={() => {
+                            onClickApprovalFunction();
+                          }}
+                        >
+                          RECOMMENDED WITH COMMENTS
+                        </div>
+                      </div>
+                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                          onClick={onClickApprovalwithoutnotesFunction}
+                        >
+                          RECOMMEND
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (" ")}
+                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") ? (
                   <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                     {/* <div className={`${style.twoColumnGrid}`}> */}
                     <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10341,71 +10446,22 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 ) : (" ")}
-                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === true) ? (
-                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
-                    {/* <div className={`${style.twoColumnGrid}`}> */}
-                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                        onClick={() => {
-                          onClose();
-                        }}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
-                    >
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                        // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
-                        // }}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        NOT RECOMMENDED
-                      </div>
-                    </div>
-                    {/* </div> */}
-                    <div className={`${style.marginTop20}`}>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                          // onClick={onClickApproveFunction}
-                          onClick={() => {
-                            onClickApprovalFunction();
-                          }}
-                        >
-                          RECOMMENDED WITH COMMENTS
-                        </div>
-                      </div>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
-                        >
-                          RECOMMEND
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (" ")}
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "notApproved"))  ? (<>
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Dept. Head. Recommendation
                     </div>
                   </div>
                 </>) : ("")}
+                {/* {((workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  && (<>
+                  <div>
+                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                      Pending Dept. Head. Recommendation
+                    </div>
+                  </div>
+                </>)} */}
 
-                {(workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") ? (<>
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Cred. Comm. Recommendation
@@ -10428,6 +10484,114 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 </>) : (" ")}
+                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
+                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                    <div className={`${style.cardLeftStyle2}`}>
+                      <div className={`${style.displayInCol}`}>
+                        <div
+                          className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                        >
+                          <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                            CC Meeting Date*
+                          </span>
+                        </div>
+                        <CommonDateField
+                          className={style.dateWidth}
+                          onChange={(date) => handleDateChange(date, 'CC')}
+                          open={calendarStart}
+                          onOpen={() => setCalendarStart(true)}
+                          onClose={() => setCalendarStart(false)}
+
+                          minDate={sub(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
+                          value={selectedDateForCC}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                placeholder: 'Enter CC Approval Date',
+                                readOnly: true
+                              }}
+                              variant="outlined"
+                              margin="normal"
+                              fullWidth
+                            />
+                          )}
+                        />
+                      </div>
+                      <>
+                        <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
+                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}>REJECTED BY CRED COMM</div>
+                        </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesFunction()}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            APPROVED BY CRED COMM
+                          </div>
+                        </div>
+                      </>
+                    </div>
+                  </div>
+                ) : (" ")
+                }
+                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
+                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                    <div className={`${style.cardLeftStyleSaveButton}`}>
+                      <div className={`${style.displayInCol}`}>
+                        <div
+                          className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                        >
+                          <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                            CC Meeting Date*
+                          </span>
+                        </div>
+                        <CommonDateField
+                          className={style.dateWidth}
+                          onChange={(date) => handleDateChange(date, 'CC')}
+                          open={calendarStart}
+                          onOpen={() => setCalendarStart(true)}
+                          onClose={() => setCalendarStart(false)}
+
+                          minDate={sub(new Date(), { years: 3 })}
+                          // maxDate={add(new Date(), { years: 3 })}
+                          maxDate={getJune30thOfCurrentYear()}
+                          value={selectedDateForCC}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              inputProps={{
+                                ...params.inputProps,
+                                placeholder: 'Enter CC Approval Date',
+                                readOnly: true
+                              }}
+                              variant="outlined"
+                              margin="normal"
+                              fullWidth
+                            />
+                          )}
+                        />
+                      </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            SAVE
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                ) : (" ")
+                }
                 {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
@@ -11775,6 +11939,8 @@ const NewActiveApplication = ({
         </Dialog>
       </div >
     </div>
+    {/* // )} */}
+    </>
   );
 };
 export default NewActiveApplication;
