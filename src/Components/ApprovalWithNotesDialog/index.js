@@ -292,17 +292,40 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   getApplicationMoveToNext(true);
   // }
 
+  // const onClickApproveMoveFunction = () => {
+  //   handleApplicationApprove(true)
+  //     .then(() => {
+  //       return getApplicationMoveToNext(true);
+  //     })
+  //     .then(() => {
+  //       console.log('Application successfully moved to next step.');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error processing application:', error);
+  //     });
+  // };
+
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true)
-      .then(() => {
-        return getApplicationMoveToNext(true);
-      })
-      .then(() => {
-        console.log('Application successfully moved to next step.');
-      })
-      .catch((error) => {
-        console.error('Error processing application:', error);
-      });
+    if (workModeType === "Credentialing Committee") {
+      handleApplicationApprove(true)
+        .then(() => {
+          console.log('Application approved.');
+        })
+        .catch((error) => {
+          console.error('Error approving application:', error);
+        });
+    } else {
+      handleApplicationApprove(true)
+        .then(() => {
+          return getApplicationMoveToNext(true);
+        })
+        .then(() => {
+          console.log('Application successfully moved to next step.');
+        })
+        .catch((error) => {
+          console.error('Error processing application:', error);
+        });
+    }
   };
 
   const handleApplicationApprove = async () => {
@@ -334,6 +357,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
         title = "Chief Of Staff Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -344,6 +370,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
       title = "Staff Manager Verification";
+      isDelegate = false;
     }
 
     // Prepare the payload
@@ -451,6 +478,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -461,6 +491,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
       title = "Staff Manager Verification";
+      isDelegate = false;
     }
 
     // Prepare the payload
@@ -475,7 +506,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     };
 
 
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('successfull');
         onClose();
@@ -592,9 +623,9 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   return null;
   // }
 
-  if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
-    return null;
-  }
+  // if (!(workModeType === 'Credentialing Committee') && !(workModeType === 'Department Head')) {
+  //   return null;
+  // }
 
   return (
     <>

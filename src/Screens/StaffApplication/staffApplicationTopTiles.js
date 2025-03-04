@@ -496,8 +496,9 @@ const StaffApplicationTopTiles = () => {
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
+      let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&role=${workModeType}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&role=${role}`
       );
 
       if (response?.data) {
@@ -574,9 +575,17 @@ const StaffApplicationTopTiles = () => {
     if (workModeType === "Department Head") {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
+
+    if (workModeType === "Chief Of Staff") {
+      return (parseInt(countsObj['level-2']) || 0) + clarifications;
+    }
     
     // For Credentialing Committee, show only level-3 count
     if (workModeType === "Credentialing Committee") {
+      return (parseInt(countsObj['level-3']) || 0) + clarifications;
+    }
+
+    if (workModeType === "Credentialing Committee User") {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
     

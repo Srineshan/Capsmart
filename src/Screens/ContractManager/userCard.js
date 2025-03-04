@@ -48,6 +48,10 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
 
     console.log('currentUserDetails', currentUserDetails, currentUserDetails?.lastLogin);
 
+    const handleWorkModeSelection = () => {
+        window.location.pathname = "/"
+      };
+
     return (
         <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -59,8 +63,8 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
 
                         <input id="file-upload" type="file" />
                     </Link>
+                    <div>
                     <Link to={'/profile'} className={style.noFontStyle}>
-
                         <div className={style.marginLeft20}>
                             <div className={style.userNameStyle}>
                                 Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName.toLowerCase()}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName.toLowerCase()}`}
@@ -74,7 +78,17 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                             </div>
                         </div>
                     </Link>
-
+                    {currentUserDetails?.roles?.length > 1 && (
+                        <div
+                            className={`${style.workSpaceSwitchTextStyle} ${style.marginLeft20}`}
+                            onClick={handleWorkModeSelection}
+                        >
+                            Switch Workspaces
+                        </div>
+                        )}
+                    </div>
+                        
+                    
                 </div>
                 <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
             </div>
