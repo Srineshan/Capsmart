@@ -1014,7 +1014,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     disabledList={false}
                     required={false}
                     // label="Assign a Department Head to Review & Approve*"
-                    label={isUser ? "Assign a COS to Review & Approve*" : "Assign a Department Head to Review & Approve*"}
+                    label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head to Review & Approve*"}
                   />
               </div>
               {/* <div>

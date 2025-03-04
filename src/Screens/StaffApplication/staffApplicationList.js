@@ -199,7 +199,7 @@ const StaffApplicationList = ({
   const credUserHeaderValues = [
     <CommonCheckBox
       size="medium"
-      checked={checkedIds.length === tableData.length}
+      checked={checkedIds?.length === tableData?.length}
       onChange={handleSelectAllClick}
     />,
     // "",
@@ -940,8 +940,9 @@ const StaffApplicationList = ({
         return response?.data.staffs || [];
       } else {
         setIsLoadingImage(true);
+        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${workModeType}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${role}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
