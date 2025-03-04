@@ -477,7 +477,7 @@ const HistoricalData = () => {
 
   const formatPhoneNumber = (digits) => {
     if (!digits) return ""; // Return empty if no digits are provided
-  
+
     // Format the number dynamically
     if (digits.length <= 3) {
       return `(${digits}`;
@@ -487,20 +487,20 @@ const HistoricalData = () => {
       return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
     }
   };
-  
+
   const handlePhoneChange = (e, setPhoneState) => {
     const rawValue = e.target.value;
-  
+
     // Strip all non-numeric characters
     let numericValue = rawValue.replace(/\D/g, ""); // Remove non-numeric characters
-  
+
     // Limit to 10 digits max
     const digits = numericValue.slice(0, 10);
-  
+
     // Format and update state
     setPhoneState(formatPhoneNumber(digits));
   };
-  
+
 
 
 
@@ -1239,6 +1239,7 @@ const HistoricalData = () => {
           tableSortValues={[]}
           heading={'There are no record to display'}
           onClickFunction={() => { }}
+          hidePagination={true}
         />
       </div>
       <div className={style.margin10}>
