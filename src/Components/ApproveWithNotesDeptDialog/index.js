@@ -691,7 +691,7 @@ useEffect(() => {
       //  upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/move/APPROVED?isDelegate=${isDelegate}`, payload)
+    await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, payload)
       .then(response => {
         console.log('successfull');
         onClose();
@@ -981,7 +981,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                   ))}
                 </div>
               )}
-            <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
+            <div className={`${style.twoColumnGridDropDown} ${style.marginTop10}`}>
             <div>
               <CommonSelectField
                     value={selectedRoleDept}

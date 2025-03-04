@@ -389,7 +389,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       };
 
       await PUT(
-        `application-management-service/application/${id}/workflow/move/REJECTED?isDelegate=${isDelegate}`,
+        `application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`,
         payload
       );
 
