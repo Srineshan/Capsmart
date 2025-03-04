@@ -499,7 +499,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       files: files
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/move/APPROVED?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('successfull');
         onClose();

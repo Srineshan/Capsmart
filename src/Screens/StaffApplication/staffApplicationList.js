@@ -58,6 +58,7 @@ const StaffApplicationList = ({
   getCCDateDialog,
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
+  approvalnotesCommentsBoxDept,
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
@@ -887,7 +888,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     getWorkflowUserData(showNotesDialog);
     // getNotesDialog();
-  }, [showNotesDialog,showCCDateDialog]);
+  }, [showNotesDialog,showCCDateDialog,approvalnotesCommentsBoxDept]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -2132,11 +2133,11 @@ const StaffApplicationList = ({
       }
 
       if (credCommittee) {
-        if (credCommittee.currentLevelStatus === "RECOMMENDED_WITH_NOTES") {
+        if (credCommittee.approvalType === "RECOMMENDED_WITH_NOTES") {
           cc.push('yellow');
-        } else if (credCommittee.currentLevelStatus === "NOT_RECOMMENDED") {
+        } else if (credCommittee.approvalType === "NOT_RECOMMENDED") {
           cc.push('red');
-        } else if (credCommittee.currentLevelStatus === "RECOMMENDED") {
+        } else if (credCommittee.approvalType === "RECOMMENDED") {
           cc.push('green');
         } else {
           cc.push('grey');
