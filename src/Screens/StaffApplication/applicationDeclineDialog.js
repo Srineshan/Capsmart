@@ -136,6 +136,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
+  const workModeType = sessionStorage.getItem('workModeType')
   const getDeclineMailDialog = (value) => {
     setShowDeclineMailDialog(value);
     getApplicationDeclineDialog(false);
@@ -255,23 +256,140 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
           setIsLoadingImage(false)
         };
 
+
+  const onClickRejectMoveFunction = () => {
+      handleApplicationReject(true)
+    .then(() => {
+      return handleApplicationRejectMove(true);
+    })
+    .then(() => {
+      console.log('Application successfully moved to next step.');
+    })
+    .catch((error) => {
+      console.error('Error processing application:', error);
+    });
+  };
+
   const handleApplicationReject = async () => {
     try {
+      let role;
+      let title;
       const files = (uploadFileData || []).map((item, index) => ({
         ...item.file,              
         description: documentDesc[index] || "",
         title: documentTitle[index] || "", 
       }));
+      let notesComments = notes;
+      let isDelegate = true;
+    if (selectedTab === 'level-2') {
+      if (workModeType === "Department Head") {
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
+      } else {
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
+      }
+    } else if (selectedTab === 'level-3') {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (workModeType === "Chief Of Staff") {
+        role = "Credentialing Committee";
+        title = "Chief Of Staff Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+      isDelegate = false;
+    }
       const payload = {
+        role: isDelegate ? role : "",
         notes: {
-            notes: notes
+            notes: notesComments
                },
         approvedDate: new Date().toISOString(),
+        title: title,
         files: files
       };
 
       await PUT(
-        `application-management-service/application/${id}/workflow/complete/REJECTED?isDelegate=false`,
+        `application-management-service/application/${id}/workflow/complete/REJECTED?isDelegate=${isDelegate}&approvalType=NOT_RECOMMENDED`,
+        payload
+      );
+
+      await getApplication();
+      onClose();
+    } catch (error) {
+      console.error('Error approving application:', error);
+    }
+  };
+
+  const handleApplicationRejectMove = async () => {
+    try {
+      let role;
+      let title;
+      const files = (uploadFileData || []).map((item, index) => ({
+        ...item.file,              
+        description: documentDesc[index] || "",
+        title: documentTitle[index] || "", 
+      }));
+      let notesComments = notes;
+      let isDelegate = true;
+    if (selectedTab === 'level-2') {
+      if (workModeType === "Department Head") {
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
+      } else {
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
+      }
+    } else if (selectedTab === 'level-3') {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (workModeType === "Chief Of Staff") {
+        role = "Credentialing Committee";
+        title = "Chief Of Staff Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+      isDelegate = false;
+    }
+      const payload = {
+        role: isDelegate ? role : "",
+        notes: {
+            notes: notesComments
+               },
+        approvedDate: new Date().toISOString(),
+        title: title,
+        files: files
+      };
+
+      await PUT(
+        `application-management-service/application/${id}/workflow/move/REJECTED?isDelegate=${isDelegate}`,
         payload
       );
 
@@ -658,7 +776,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 CONTINUE
               </button>
             </div> */}
-            <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => handleApplicationReject() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
+            <div className={`${style.marginTop10} ${style.reviewButtonContainer}`} onClick={isApproveEnabled ? () => onClickRejectMoveFunction() : () => { }}  style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}>
                <div className={style.reviewButton}>NOT RECOMMENDED</div>
             </div>
           </div>

@@ -5,7 +5,7 @@ import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
-import CommonTextField from "../CommonFields/CommonTextField";
+import CommonSwitch from "../CommonFields/CommonSwitch";
 import CommonDateField from "../CommonFields/CommonDateField";
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonInputField from "../CommonFields/CommonInputField";
@@ -61,8 +61,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
   const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
-   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
-   const [entity, setEntity] = useState([]);
+  const [isApproveEnabled, setIsApproveEnabled] = useState(false);
+  const [entity, setEntity] = useState([]);
+  const [isUser, setIsUser] = useState(false);
   const dropzoneStyle = {
       width: "100%",
       height: "auto",
@@ -97,6 +98,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen,getActiveApplicationView, dateF
   useEffect(() => {
     getApplicantType();
     getApplicationUserRole();
+    // getApplicationChief();
     getApplicationUserRoleDept();
     console.log("selectedRoleCred" + JSON.stringify(selectedRoleCred))
     console.log("selectedRoleDept" + JSON.stringify(selectedRoleDept))
@@ -319,47 +321,121 @@ useEffect(() => {
   //   }
   // };
 
+  // const getApplicationUserRoleDept = async () => {
+  //   try {
+  //     const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
+  //     const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
+  //     const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
+  //     const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
+  //     const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail
+
+  //     const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
+  
+  //     const filteredRoles = basicFormRole.filter((user) => {
+  //       const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
+  //       console.log("departmentList1111", departmentList);
+        
+  //       return departmentList.some((department) => {
+  //         const isDepartmentMatch = department?.id === applicantDepartmentId;
+  //         console.log("matchedId", isDepartmentMatch);
+  //         console.log("applicantDepartmentId",applicantDepartmentId)
+  
+  //         if (!isDepartmentMatch) return false;
+  
+  //         if (department?.serviceAreaSpecific) {
+  //           return department?.serviceAreas?.some(
+  //             (area) => area?.id === applicantSpecialtyId
+  //           );
+  //         }
+  //         return true;
+  //       });
+  //     });
+  
+  //     console.log("filteredRolessss", filteredRoles);
+  //     console.log("applicantName",applicantfirstName)
+  //     console.log("applicantName",applicantlastName)
+  //     const deptDataMember = filteredRoles.filter(
+  //             (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
+  //           );
+  //     const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+  //     const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
+  //     const combinedData = [...deptDataMember, ...basicFormRoleCos];
+  //     // return setUserSelectRoleDept(deptDataMember);
+
+  //     const uniqueUsers = combinedData?.filter((user, index, self) => 
+  //       index === self.findIndex((u) => u?.id === user?.id)
+  //     );
+  //     setUserSelectRoleDept(uniqueUsers);
+  //     // setUserSelectRoleDept(combinedData);
+  
+  //   } catch (error) {
+  //     console.error("Error fetching application user role:", error);
+  //     return [];
+  //   }
+  // };  
+
   const getApplicationUserRoleDept = async () => {
     try {
-      const applicantfirstName = formDetails?.basicDetails?.applicant?.name?.firstName
-      const applicantlastName = formDetails?.basicDetails?.applicant?.name?.lastName
-      const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id
-      const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id
+      setIsLoadingImage(true);
+      const applicantFirstName = formDetails?.basicDetails?.applicant?.name?.firstName;
+      const applicantLastName = formDetails?.basicDetails?.applicant?.name?.lastName;
+      const applicantDepartmentId = formDetails?.basicDetailReferences?.department?.id;
+      const applicantSpecialtyId = formDetails?.basicDetailReferences?.specialty?.id;
+      const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail;
+  
       const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
   
-      const filteredRoles = basicFormRole.filter((user) => {
-        const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
-        console.log("departmentList1111", departmentList);
-        
-        return departmentList.some((department) => {
-          const isDepartmentMatch = department?.id === applicantDepartmentId;
-          console.log("matchedId", isDepartmentMatch);
-          console.log("applicantDepartmentId",applicantDepartmentId)
+      const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
+      const user = basicRole?.[0];
   
-          if (!isDepartmentMatch) return false;
+      const isDepartmentHead = user?.roles?.some(role => role?.roleName === "Department Head");
   
-          if (department?.serviceAreaSpecific) {
-            return department?.serviceAreas?.some(
-              (area) => area?.id === applicantSpecialtyId
-            );
-          }
-          return true;
+      console.log("isDepartmentHead:", isDepartmentHead);
+  
+      let userRolesData = [];
+  
+      if (isDepartmentHead) {
+        const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+        userRolesData = basicFormRoleCos.filter(
+          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
+        );
+        setIsUser(true)
+      } else {
+        userRolesData = basicFormRole;
+  
+        userRolesData = userRolesData.filter(user => {
+          const departmentList = user?.sites?.sites?.[0]?.departmentList?.departments || [];
+          return departmentList.some(department => {
+            const isDepartmentMatch = department?.id === applicantDepartmentId;
+            if (!isDepartmentMatch) return false;
+            return department?.serviceAreaSpecific
+              ? department?.serviceAreas?.some(area => area?.id === applicantSpecialtyId)
+              : true;
+          });
         });
-      });
+
+        userRolesData = userRolesData.filter(
+          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
+        );
+        setIsUser(false)
+      }
   
-      console.log("filteredRolessss", filteredRoles);
-      console.log("applicantName",applicantfirstName)
-      console.log("applicantName",applicantlastName)
-      const deptDataMember = filteredRoles.filter(
-              (user) => !(user?.name?.firstName === applicantfirstName && user?.name?.lastName === applicantlastName)
-            );
-      return setUserSelectRoleDept(deptDataMember);
-  
+      setUserSelectRoleDept(userRolesData);
+      setIsLoadingImage(false);
     } catch (error) {
       console.error("Error fetching application user role:", error);
-      return [];
     }
-  };  
+  };
+
+  // const getApplicationChief = async () => {
+  //   try {
+  //     setIsLoadingImage(true);
+  //     const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+  //     console.log(basicFormRoleCos)
+  //   } catch (error) {
+  //     console.error('Error fetching application:', error);
+  //   }
+  // };
 
   const getApplication = async () => {
     try {
@@ -399,7 +475,6 @@ useEffect(() => {
 
   const checkApproveEnabled = () => {
     const hasValidComments = userRoleComments.trim() !== '';
-    const hasValidDate = selectedDateForDept !== null ; 
     const hasValidMember = selectedRoleCred !== '';
     const hasValidMemberDept = selectedRoleDept !== '';
     
@@ -410,10 +485,10 @@ useEffect(() => {
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
       
-      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate && allFilesHaveTitles);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && allFilesHaveTitles);
     } else {
       // If no files are uploaded, only check for valid comments
-      setIsApproveEnabled(hasValidMember && hasValidMemberDept  && hasValidDate);
+      setIsApproveEnabled(hasValidMember && hasValidMemberDept);
     }
   };
 
@@ -531,7 +606,7 @@ useEffect(() => {
             }
           ],
           files: files || [],
-          upcomingCredCommitteeMeetingDate: selectedDateForDept || ''
+          // upcomingCredCommitteeMeetingDate: selectedDateForDept || ''
         };
         
       await PUT(
@@ -613,10 +688,10 @@ useEffect(() => {
       }
     ],
        files: files,
-       upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
+      //  upcomingCredCommitteeMeetingDate: selectedDateForDept || ""
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, payload)
+    await PUT(`application-management-service/application/${id}/workflow/move/APPROVED?isDelegate=${isDelegate}`, payload)
       .then(response => {
         console.log('successfull');
         onClose();
@@ -690,9 +765,9 @@ const handleCheckboxChange = (checkboxName) => (event) => {
       <div>
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
-            <div className={`${style.heading}`}>
-              SEND TO DEPARTMENT HEAD FOR REVIEW
-            </div>
+          <div className={`${style.heading}`}>
+            {isUser ? "SEND TO CHIEF / DEP COS FOR REVIEW" : "SEND TO DEPARTMENT HEAD FOR REVIEW"}
+          </div>
             <div className={style.displayInRow}>
               <img
                 src={CrossPink}
@@ -781,9 +856,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 </div>
               </div>
             </div>
-            <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+            {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
             Provide notes, if any, for the Department Head regarding this application(Optional)
-            </div>
+            </div> */}
+            <div  className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+            {isUser ? " Provide notes, if any, for the Chief / Dep COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
+          </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
                 value={userRoleComments}
@@ -903,12 +981,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                   ))}
                 </div>
               )}
-            <div className={`${style.threeColumnGridRole} ${style.marginTop10}`}>
+            <div className={`${style.twoColumnGrid} ${style.marginTop10}`}>
             <div>
               <CommonSelectField
                     value={selectedRoleDept}
                     onChange={(e) => setSelectedRoleDept(e.target.value)}
-                    className={style.fullWidth1}
+                    className={style.fullWidth}
                     firstOptionLabel={''}
                     firstOptionValue={''}
                     // valueList={["HIGH", "NO"]}
@@ -935,10 +1013,11 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     })}
                     disabledList={false}
                     required={false}
-                    label="Assign a Department Head to Review & Approve*"
+                    // label="Assign a Department Head to Review & Approve*"
+                    label={isUser ? "Assign a COS to Review & Approve*" : "Assign a Department Head to Review & Approve*"}
                   />
               </div>
-              <div>
+              {/* <div>
               <CommonDateField
                 className={style.fullWidth}
                 onChange={(date) => handleDateChange(date)}
@@ -970,12 +1049,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                   />
                 )}
               />
-              </div>
+              </div> */}
               <div>
               <CommonSelectField
                     value={selectedRoleCred}
                     onChange={(e) => setSelectedRoleCred(e.target.value)}
-                    className={style.fullWidth2}
+                    className={style.fullWidth}
                     firstOptionLabel={''}
                     firstOptionValue={''}
                     // valueList={["HIGH", "NO"]}
