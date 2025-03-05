@@ -411,20 +411,20 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let temp = {
       providerType: providerType,
       providerDetails: providerType === 'Group' ? [] : selectApplicant
-        .filter(obj => covererNameList.includes(obj.id))
+        .filter(obj => covererNameList?.includes(obj.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),
       groupDetails: providerType === 'Group' ? covererNameList : [],
       obstetricsProviderType: obstetricsProviderType,
       obstetricsProviderDetails: obstetricsProviderType === 'Group' ? [] : selectApplicantObstetrics
-        .filter(obj => obstetricsCovererNameList.includes(obj.id))
+        .filter(obj => obstetricsCovererNameList?.includes(obj?.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),

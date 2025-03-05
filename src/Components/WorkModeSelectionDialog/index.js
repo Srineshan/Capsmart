@@ -125,6 +125,21 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee</p>
                 </div>
               )}
+              {userRole?.includes("Credentialing Committee User") && (
+                <div
+                  className={`${style.justifyItem} ${style.backgroundRoleColor} ${style.cursorPointer}`}
+                  onClick={() => handleWorkModeSelection("Credentialing Committee User")}
+                  onMouseEnter={() => setHoveredRole("Credentialing Committee User")}
+                  onMouseLeave={() => setHoveredRole(null)}
+                >
+                  <img
+                    src={hoveredRole === "Credentialing Committee User" ? CCimgHover : CCimg}
+                    alt="Credentialing Committee User"
+                    className={`${style.crossStyle} ${style.cursorPointer}`}
+                  />
+                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee User</p>
+                </div>
+              )}
               {userRole?.includes("Chief Of Staff") && (
                 <div
                   className={`${style.justifyItem} ${style.backgroundRoleColor} ${style.cursorPointer}`}

@@ -13,6 +13,7 @@ import ApprovalWithoutNotesDialog from '../../Components/ApprovalWithoutNotesDia
 import ApprovalWithNotesDeptDialog from '../../Components/ApproveWithNotesDeptDialog';
 import PaymentDisplayDialog from '../../Components/PaymentDisplayDialog';
 import EmailDialog from '../../Components/EmailDialog';
+import CCdateDialog from '../../Components/CCDateDialog';
 import NotesDialog from "../../Components/NotesDialog";
 import ClarificationRequestFromApplicantDialog from "../../Components/ClarificationRequestFromApplicantDialog";
 import DocumentClarificationDialog from "../../Components/DocumentClarificationDialog";
@@ -23,7 +24,7 @@ import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('level-1');
+    const [selectedTab, setSelectedTab] = useState('');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);
@@ -48,7 +49,8 @@ const StaffApplication = () => {
     const [clarificationModeType, setClarificationModeType] = useState({});
     const [clarificationFormMode, setClarificationFormMode] = useState({});
     const [clarificationRequestFormMode, setClarificationRequestFormMode] = useState({});
-
+    const [ccDateSetMode, setCcDateSetMode] = useState('');
+    const [ccMeetingDateSet, setCcMeetingDateSet] = useState();
     const getSelectedTab = (value) => {
         setSelectedTab(value);
     }
@@ -57,8 +59,9 @@ const StaffApplication = () => {
         setIsLoading(value);
     }
 
-    const getActiveApplicationView = (value) => {
+    const getActiveApplicationView = (value, mode) => {
         setActiveApplicationView(value);
+        setCcDateSetMode(mode);
     }
 
     const getCredCommApplicationView = (value) => {
@@ -103,7 +106,7 @@ const StaffApplication = () => {
     const getTimerDialog = (value) => {
         setShowTimerDialog(value);
     };
-    
+
 
     const getNotesCommentBox = (value) => {
         setNotesCommentBox(value);
@@ -121,8 +124,9 @@ const StaffApplication = () => {
         setApprovalNotesCommentBox(value);
     }
 
-    const getApprovalwithoutNotesCommentBox = (value) => {
+    const getApprovalwithoutNotesCommentBox = (value, date) => {
         setApprovalwithoutNotesCommentBox(value);
+        setCcMeetingDateSet(date)
     }
 
     const getApprovalNotesCommentBoxDept = (value) => {
@@ -140,93 +144,106 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView = {staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog}/>
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={ccMeetingDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
-              <Fragment>
-                  <Navbar />
-                  <StaffApplicationList
-                      isLoading={isLoading}
-                      getSelectedTab={getSelectedTab}
-                      selectedTab={selectedTab}
-                      getActiveApplicationView={getActiveApplicationView}
-                      getActiveApplicationTask={getActiveApplicationTask}
-                      getCredCommApplicationView={getCredCommApplicationView}
-                      getNotesCommentBox={getNotesCommentBox}
-                      getReappointmentChangesCommentBox={getReappointmentChangesCommentBox}
-                      getApprovalNotesCommentBox={getApprovalNotesCommentBox}
-                      getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox}
-                      getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept}
-                      getEmailDialogBox={getEmailDialogBox}
-                      getPaymentDisplayBox={getPaymentDisplayBox}
-                      emailDialogBox={emailDialogBox}
-                      approvalnotesCommentsBox={approvalnotesCommentsBox}
-                      approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox}
-                      approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
-                      notesCommentsBox={notesCommentsBox}
-                      reappointmentChangesCommentsBox={reappointmentChangesCommentsBox}
-                      showTimerDialog={showTimerDialog}
-                      showNotesDialog={showNotesDialog}
-                      getNotesDialog={getNotesDialog}
-                      getClarificationRequestFromApplicantDialog = {getClarificationRequestFromApplicantDialog}
-                      getDocumentClarificationDialog = {getDocumentClarificationDialog}
-                      getResolveDialog ={getResolveDialog}
-                      getRequestOverrideDialog ={getRequestOverrideDialog}
-                      getDeptTrackerDialog={getDeptTrackerDialog}
-                      getloading={getloading}
-                      getStaffView = {getStaffView}
-                      staffView ={staffView}
-                  />
-              </Fragment>
-          )}
-           {activeApplicationTask && (
-                <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask}/>
+                <Fragment>
+                    <Navbar />
+                    <StaffApplicationList
+                        isLoading={isLoading}
+                        getSelectedTab={getSelectedTab}
+                        selectedTab={selectedTab}
+                        getActiveApplicationView={getActiveApplicationView}
+                        getActiveApplicationTask={getActiveApplicationTask}
+                        getCredCommApplicationView={getCredCommApplicationView}
+                        getNotesCommentBox={getNotesCommentBox}
+                        getReappointmentChangesCommentBox={getReappointmentChangesCommentBox}
+                        getApprovalNotesCommentBox={getApprovalNotesCommentBox}
+                        getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox}
+                        getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept}
+                        getEmailDialogBox={getEmailDialogBox}
+                        getPaymentDisplayBox={getPaymentDisplayBox}
+                        emailDialogBox={emailDialogBox}
+                        approvalnotesCommentsBox={approvalnotesCommentsBox}
+                        approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox}
+                        approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
+                        notesCommentsBox={notesCommentsBox}
+                        reappointmentChangesCommentsBox={reappointmentChangesCommentsBox}
+                        showTimerDialog={showTimerDialog}
+                        showNotesDialog={showNotesDialog}
+                        getNotesDialog={getNotesDialog}
+                        getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog}
+                        getDocumentClarificationDialog={getDocumentClarificationDialog}
+                        getResolveDialog={getResolveDialog}
+                        getRequestOverrideDialog={getRequestOverrideDialog}
+                        getDeptTrackerDialog={getDeptTrackerDialog}
+                        getloading={getloading}
+                        getStaffView={getStaffView}
+                        staffView={staffView}
+                        ccDateSetMode={ccDateSetMode}
+                    />
+                </Fragment>
             )}
-              {notesCommentsBox && (
-                <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} selectedTab={selectedTab}/>
+            {activeApplicationTask && (
+                <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask} />
             )}
-            {reappointmentChangesCommentsBox && (     
-                <ReappointmentApplicationChangesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab}/>
+            {notesCommentsBox && (
+                <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} selectedTab={selectedTab} />
             )}
-              {approvalnotesCommentsBox && (
-                <ApprovalWithNotesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab}/>
+            {reappointmentChangesCommentsBox && (
+                <ReappointmentApplicationChangesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab} />
+            )}
+            {approvalnotesCommentsBox && (
+                <ApprovalWithNotesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {paymentDisplayBox && (
-                <PaymentDisplayDialog isLoading={isLoading} getloading={getloading} getIsOpen={getPaymentDisplayBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab}/>
+                <PaymentDisplayDialog isLoading={isLoading} getloading={getloading} getIsOpen={getPaymentDisplayBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {approvalwithoutnotesCommentsBox && (
-                <ApprovalWithoutNotesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalwithoutNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab}/>
+                <ApprovalWithoutNotesDialog isLoading={isLoading} dateStorage={ccMeetingDateSet} getloading={getloading} getIsOpen={getApprovalwithoutNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
-             {approvalnotesCommentsBoxDept && (
-                <ApprovalWithNotesDeptDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBoxDept} getActiveApplicationView={getActiveApplicationView}  selectedTab={selectedTab}/>
+            {approvalnotesCommentsBoxDept && (
+                <ApprovalWithNotesDeptDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBoxDept} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {emailDialogBox && (
-                <EmailDialog isLoading={isLoading} getloading={getloading} getIsOpen={getEmailDialogBox}/>
+                <EmailDialog isLoading={isLoading} getloading={getloading} getIsOpen={getEmailDialogBox} />
             )}
             {showNotesDialog && (
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
-            {showClarificationRequestFromApplicantDialog && (
-                <ClarificationRequestFromApplicantDialog isLoading={isLoading} getIsOpen={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} data={clarificationFormMode} type={clarificationModeType} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showDocumentClarificationDialog && (
-                <DocumentClarificationDialog isLoading={isLoading} getIsOpen={getDocumentClarificationDialog} data={clarificationRequestFormMode} form={clarificationFormMode}  getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showResolveDialog && (
-                <ResolveDialog isLoading={isLoading} getIsOpen={getResolveDialog} data={clarificationMode} formData={clarificationRequestFormMode} form={clarificationFormMode} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
-            )}
-             {showRequestOverrideDialog && (
-                <RequestOverrideDialog isLoading={isLoading} getIsOpen={getRequestOverrideDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showDeptTrackerDialog && (
-                <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog}  getActiveApplicationView={getActiveApplicationView} />
-            )}
-            {showTimerDialog && (
-                <IdleTimer getIsOpen={getTimerDialog} />
-            )}
+            {
+                showClarificationRequestFromApplicantDialog && (
+                    <ClarificationRequestFromApplicantDialog isLoading={isLoading} getIsOpen={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} data={clarificationFormMode} type={clarificationModeType} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showDocumentClarificationDialog && (
+                    <DocumentClarificationDialog isLoading={isLoading} getIsOpen={getDocumentClarificationDialog} data={clarificationRequestFormMode} form={clarificationFormMode} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showResolveDialog && (
+                    <ResolveDialog isLoading={isLoading} getIsOpen={getResolveDialog} data={clarificationMode} formData={clarificationRequestFormMode} form={clarificationFormMode} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showRequestOverrideDialog && (
+                    <RequestOverrideDialog isLoading={isLoading} getIsOpen={getRequestOverrideDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showDeptTrackerDialog && (
+                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} />
+                )
+            }
+            {
+                showTimerDialog && (
+                    <IdleTimer getIsOpen={getTimerDialog} />
+                )
+            }
         </>
-      )
+    )
 }
 
 export default StaffApplication;

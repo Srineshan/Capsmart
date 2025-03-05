@@ -19,7 +19,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab,dateStorage }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -64,6 +64,8 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   //     setCurrentDate(format(new Date(), dateFormat));
   //   }
   // }, [dateFormat]);
+
+  console.log("dateStorage",dateStorage)
 
   useEffect(() => {
       getApplicationEntity();
@@ -230,17 +232,40 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   //   handleApplicationApprove(true);
   //   getApplicationMoveToNext(true);
   // }
+  // const onClickApproveMoveFunction = () => {
+  //   handleApplicationApprove(true)
+  //     .then(() => {
+  //       return getApplicationMoveToNext(true);
+  //     })
+  //     .then(() => {
+  //       console.log('Application successfully moved to next step.');
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error processing application:', error);
+  //     });
+  // };
+
   const onClickApproveMoveFunction = () => {
-    handleApplicationApprove(true)
-      .then(() => {
-        return getApplicationMoveToNext(true);
-      })
-      .then(() => {
-        console.log('Application successfully moved to next step.');
-      })
-      .catch((error) => {
-        console.error('Error processing application:', error);
-      });
+    if (workModeType === "Credentialing Committee") {
+      handleApplicationApprove(true)
+        .then(() => {
+          console.log('Application approved.');
+        })
+        .catch((error) => {
+          console.error('Error approving application:', error);
+        });
+    } else {
+      handleApplicationApprove(true)
+        .then(() => {
+          return getApplicationMoveToNext(true);
+        })
+        .then(() => {
+          console.log('Application successfully moved to next step.');
+        })
+        .catch((error) => {
+          console.error('Error processing application:', error);
+        });
+    }
   };
 
    const getLog = async () => {
@@ -297,6 +322,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // };
     let role;
     let title;
+    let approvedDate;
     const files = (uploadFileData || []).map((item, index) => ({
       ...item.file,              
       description: documentDesc[index] || "",
@@ -323,6 +349,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -333,6 +362,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
       title = "Staff Manager Verification";
+      isDelegate = false;
+    }
+    if (workModeType === "Credentialing Committee User" && dateStorage) {
+      approvedDate = format(new Date(dateStorage), 'yyyy-MM-dd');
+    } else {
+      approvedDate = new Date().toISOString();
     }
 
     // Prepare the payload
@@ -341,7 +376,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       notes: {
         notes: notesComments
       },
-      approvedDate: new Date().toISOString(),
+      approvedDate: approvedDate,
       title: title,
       files: files
     };
@@ -405,6 +440,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
     let role;
     let title;
+    let approvedDate;
     const files = (uploadFileData || []).map((item, index) => ({
       ...item.file,              
       description: documentDesc[index] || "",
@@ -431,6 +467,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -441,6 +480,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
       title = "Staff Manager Verification";
+      isDelegate = false;
+    }
+    if (workModeType === "Credentialing Committee User" && dateStorage) {
+      approvedDate = format(new Date(dateStorage), 'yyyy-MM-dd');
+    } else {
+      approvedDate = new Date().toISOString();
     }
 
     // Prepare the payload
@@ -449,12 +494,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       notes: {
         notes: notesComments
       },
-      approvedDate: new Date().toISOString(),
+      approvedDate: approvedDate,
       title: title,
       files: files
     };
 
-    await PUT(`application-management-service/application/${id}/workflow/move?isDelegate=${isDelegate}`, temp)
+    await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
       .then(response => {
         console.log('successfull');
         onClose();

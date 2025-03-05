@@ -962,6 +962,12 @@ body::-webkit-scrollbar {
   grid-gap: 1%;
 }
 
+.credUserStaffReappointGrid {
+  display: grid;
+  grid-template-columns: 5% 20% 10% 22% 10% 9% 5% 8% 3%;
+  grid-gap: 1%;
+}
+
 .macStaffGrid {
   display: grid;
   // grid-template-columns: 14% 12% 14% 13% 13% 10% 13% 7%;
