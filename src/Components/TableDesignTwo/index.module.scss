@@ -10,6 +10,12 @@
     padding: 10px 20px;
 }
 
+.tableBodyScroll {
+    overflow: auto;
+    overflow-y: scroll !important;
+    scrollbar-color: gray $tableheadbg !important;
+}
+
 .marginTop5 {
     margin-top: 4px !important;
 }
@@ -444,5 +450,4 @@
 
 .redBorder {
     border: 2px solid red !important;
-  }
-  
+}

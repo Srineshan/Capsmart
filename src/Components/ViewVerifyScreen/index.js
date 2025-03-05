@@ -358,16 +358,16 @@ const NewActiveApplication = ({
 
   // };
 
-   const getPreApplication = async () => {
-      try {
-        setIsLoadingImage(true);
-        const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
-        setForm(basicForm);
-        setIsLoadingImage(false)
-      } catch (error) {
-        console.error('Error fetching application:', error);
-      }
-    };
+  const getPreApplication = async () => {
+    try {
+      setIsLoadingImage(true);
+      const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
+      setForm(basicForm);
+      setIsLoadingImage(false)
+    } catch (error) {
+      console.error('Error fetching application:', error);
+    }
+  };
   // const isApproved = form?.forms[index]?.status === "APPROVED";
 
   useEffect(() => {
@@ -610,7 +610,7 @@ const NewActiveApplication = ({
       console.log("levelofApprovalfalse:", isApproverDept);
     }
 
-    console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
+    console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverDept);
   }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverDept]);
 
   useEffect(() => {
@@ -637,7 +637,7 @@ const NewActiveApplication = ({
       console.log("levelofApprovalfalse:", isApproverCred);
     }
 
-    console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverCred);
+    console.log("selectedTab:", selectedTab, (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve"), workModeType === 'Chief Of Staff', selectedTab === 'level-2', applicationType === "REAPPOINTMENT", isApproverCred);
   }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverCred]);
 
   console.log("Is Approver:", isApproverDept);
@@ -1066,7 +1066,7 @@ const NewActiveApplication = ({
   };
 
   const onClickApprovalwithoutnotesFunction = () => {
-    getApprovalwithoutNotesCommentBox(true,selectedDateForCC);
+    getApprovalwithoutNotesCommentBox(true, selectedDateForCC);
   };
 
   const onClickApprovalDeptFunction = () => {
@@ -1101,9 +1101,9 @@ const NewActiveApplication = ({
 
   const getApplicationDateForCC = async () => {
     let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
-    let temp = [applicationId]; 
+    let temp = [applicationId];
 
-    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`,temp)
+    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`, temp)
       .then(response => {
         console.log('successfull')
         onClose();
@@ -4447,41 +4447,41 @@ const NewActiveApplication = ({
 
   return (
     <>
-    {/* {isLoadingImage && (
+      {/* {isLoadingImage && (
       <div  className={style.loadingOverlay}>
         <LoadingScreen/>
       </div>
     )} */}
-    {/* {!isLoadingImage && ( */}
-    <div style={{
-      maxHeight: 'calc(100vh - 10px)',
-      overflowY: "auto",
-      scrollbarWidth: "thin",
-      scrollbarColor: "gray transparent",
-    }}
-    // className={style.calcHeight}
-    >
-      <div className={style.screenBackground}></div>
+      {/* {!isLoadingImage && ( */}
+      <div style={{
+        maxHeight: 'calc(100vh - 10px)',
+        overflowY: "auto",
+        // scrollbarWidth: "thin",
+        scrollbarColor: "gray #E8E9E9",
+      }}
+      // className={style.calcHeight}
+      >
+        <div className={style.screenBackground}></div>
 
-      <ApplicationHeader
-        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
-          ? form?.basicDetails?.applicant?.name?.firstName
-          : "{First Name}"
-          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
-            ? form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
-            : "{Last Name}"
-          }, ${form?.basicDetails?.applicant?.applicantType !== undefined
-            ? form?.basicDetails?.applicant?.applicantType
-            : "{Applicant Type}"
-          }`}
-        close={true}
-        closeClick={onClose}
-      />
+        <ApplicationHeader
+          title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+            ? form?.basicDetails?.applicant?.name?.firstName
+            : "{First Name}"
+            } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+              ? form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
+              : "{Last Name}"
+            }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+              ? form?.basicDetails?.applicant?.applicantType
+              : "{Applicant Type}"
+            }`}
+          close={true}
+          closeClick={onClose}
+        />
 
-      <div className={style.welcomeBorder}></div>
+        <div className={style.welcomeBorder}></div>
 
-      <div className={`${style.marginLeftRight50}`}>
-        {/* <div
+        <div className={`${style.marginLeftRight50}`}>
+          {/* <div
           className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}
         >
           {applicationType === "NEW" ?
@@ -4489,81 +4489,81 @@ const NewActiveApplication = ({
             : `${userRoleTab} DASHBOARD > REAPPOINTMENT APPLICATIONS >>  ${form?.basicDetails?.applicant?.name?.firstName || ""} ${form?.basicDetails?.applicant?.name?.lastName || ""}`}
 
         </div> */}
-        <div className={style.grid2to1}>
-          <>
-            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
-              <>
-                <div>
-                  {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
-                    <div className={style.grid5and2}>
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                        <div className={style.flex}>
-                          {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle}`}>
+          <div className={style.grid2to1}>
+            <>
+              {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
+                <>
+                  <div>
+                    {(selectedTab === "level-1" && applicationType === "REAPPOINTMENT") ? (
+                      <div className={style.grid5and2}>
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                          <div className={style.flex}>
+                            {/* <div className={style.displayInRow}> */}
+                            <div className={`${style.photoBorderStyle}`}>
 
-                            <img
-                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
-                              alt="Profile Picture"
-                              className={style.profileImage}
-                            />
+                              <img
+                                src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                                alt="Profile Picture"
+                                className={style.profileImage}
+                              />
 
-                          </div>
-                          <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
-                            <div className={style.marginTop10}>
-                              <span className={`${style.cardTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                            </div>
+                            <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
+                              <div className={style.marginTop10}>
+                                <span className={`${style.cardTextBoldStyle}`}>
+                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
+                                  {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
                                   : ""}{", "} */}
-                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                              </span>
-                              <span className={`${style.cardTextNormalStyle}`}>
-                                {/* {form?.displayId || ""} */}
-                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                              </span>
-                            </div>
-                            <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                Reappointment Date:
-                              </span>
-                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                {/* {form?.createdDate} */}
-                                {reappointmentStartDate}
-                              </span>
-                            </div>
-                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                                </span>
+                                <span className={`${style.cardTextNormalStyle}`}>
+                                  {/* {form?.displayId || ""} */}
+                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                </span>
+                              </div>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Reappointment Date:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {/* {form?.createdDate} */}
+                                  {reappointmentStartDate}
+                                </span>
+                              </div>
+                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
-                            <div className={`${style.cardTextNormalStyle}`}>
-                              {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                              {form?.basicDetailReferences?.specialty?.name
-                                ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
-                                : ""}
-                            </div>
-                            <div className={`${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                Application Submitted:
-                              </span>
-                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
-                              </span>
-                            </div>
-                            {/* <div className={style.spaceBetween}> */}
-                            <div className={`${style.emailTextBoldStyle}`}>
-                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                            </div>
-                            <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                            </div>
-                            {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                              <div className={`${style.cardTextNormalStyle}`}>
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
+                                  : ""}
+                              </div>
+                              <div className={`${style.twoColumnGridInner2}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Application Submitted:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                                </span>
+                              </div>
+                              {/* <div className={style.spaceBetween}> */}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
+                              {/* </div> */}
+                            </div>
                             {/* </div> */}
-                          </div>
-                          {/* </div> */}
-                          {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                            {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
@@ -4585,7 +4585,7 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                          {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                            {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
@@ -4593,98 +4593,98 @@ const NewActiveApplication = ({
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                          {/* </div>
+                            {/* </div>
                           </div> */}
-                        </div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
-                        <div className={style.greyDotTextStyle}>
-                          Application Payment Status
-                        </div>
-                        <div className={style.cursorPointer}> Transaction ID:{" "}
-                          <Tooltip title="View Transaction Details" arrow>
-                            <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
-                          </Tooltip>
-                        </div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${statusStyle} ${style.marginCenter}`}></div>
-                        <div className={style.greyDotTextStyle}>
-                          Overall Verification & Acceptance Status
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={style.grid5and1}>
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                        <div className={style.flex}>
-                          {/* <div className={style.displayInRow}> */}
-                          <div className={`${style.photoBorderStyle}`}>
-
-                            <img
-                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
-                              alt="Profile Picture"
-                              className={style.profileImage}
-                            />
-
                           </div>
-                          <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
-                            <div className={style.marginTop10}>
-                              <span className={`${style.cardTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                        </div>
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                          <div className={`${form?.payment?.paymentCompleted ? style.greenBigDotStyle : style.greyBigDotStyle} ${style.marginCenter}`}></div>
+                          <div className={style.greyDotTextStyle}>
+                            Application Payment Status
+                          </div>
+                          <div className={style.cursorPointer}> Transaction ID:{" "}
+                            <Tooltip title="View Transaction Details" arrow>
+                              <span className={`${style.marginTop10} ${style.paymentIDStyle}`} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(form?.payment?.invoice) }}>{form?.payment?.receiptId || "-"}</span>
+                            </Tooltip>
+                          </div>
+                        </div>
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                          <div className={`${statusStyle} ${style.marginCenter}`}></div>
+                          <div className={style.greyDotTextStyle}>
+                            Overall Verification & Acceptance Status
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={style.grid5and1}>
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                          <div className={style.flex}>
+                            {/* <div className={style.displayInRow}> */}
+                            <div className={`${style.photoBorderStyle}`}>
+
+                              <img
+                                src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                                alt="Profile Picture"
+                                className={style.profileImage}
+                              />
+
+                            </div>
+                            <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
+                              <div className={style.marginTop10}>
+                                <span className={`${style.cardTextBoldStyle}`}>
+                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
+                                  {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
                                   : ""}{", "} */}
-                                {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                              </span>
-                              <span className={`${style.cardTextNormalStyle}`}>
-                                {/* {form?.displayId || ""} */}
-                                {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                              </span>
-                            </div>
-                            <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                Reappointment Date:
-                              </span>
-                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                {/* {form?.createdDate} */}
-                                {reappointmentStartDate}
-                              </span>
-                            </div>
-                            {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                  {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                                </span>
+                                <span className={`${style.cardTextNormalStyle}`}>
+                                  {/* {form?.displayId || ""} */}
+                                  {form?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                </span>
+                              </div>
+                              <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Reappointment Date:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {/* {form?.createdDate} */}
+                                  {reappointmentStartDate}
+                                </span>
+                              </div>
+                              {/* <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
                               {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
                             </div> */}
-                            <div className={`${style.cardTextNormalStyle}`}>
-                              {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
-                              {form?.basicDetailReferences?.specialty?.name
-                                ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
-                                : ""}
-                            </div>
-                            <div className={`${style.twoColumnGridInner2}`}>
-                              <span className={style.rightAlignTextStyle}>
-                                Application Submitted:
-                              </span>
-                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                                {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
-                              </span>
-                            </div>
-                            {/* <div className={style.spaceBetween}> */}
-                            <div className={`${style.emailTextBoldStyle}`}>
-                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                            </div>
-                            <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                            </div>
-                            {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
+                              <div className={`${style.cardTextNormalStyle}`}>
+                                {form?.basicDetailReferences?.department?.name ? `${form.basicDetailReferences.department.name}` : ""}
+                                {form?.basicDetailReferences?.specialty?.name
+                                  ? `${form?.basicDetailReferences?.department?.name ? ", " : ""}${form.basicDetailReferences.specialty.name}`
+                                  : ""}
+                              </div>
+                              <div className={`${style.twoColumnGridInner2}`}>
+                                <span className={style.rightAlignTextStyle}>
+                                  Application Submitted:
+                                </span>
+                                <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                  {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                                </span>
+                              </div>
+                              {/* <div className={style.spaceBetween}> */}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </div>
+                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </div>
+                              {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
+                              {/* </div> */}
+                            </div>
                             {/* </div> */}
-                          </div>
-                          {/* </div> */}
-                          {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                            {/* <div className={`${style.displayInRow} ${style.marginRight20}`}>
                             <div className={style.displayInCol}>
                               <div className={`${style.marginTop10} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
@@ -4706,7 +4706,7 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
                               </div> */}
-                          {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
+                            {/* <div className={`${style.marginTop5} ${style.twoColumnGridInner1}`}>
                                 <span className={style.rightAlignTextStyle}>
                                   Days Since Submission:
                                 </span>
@@ -4714,51 +4714,30 @@ const NewActiveApplication = ({
                                   {daysDifference} Days
                                 </span>
                               </div> */}
-                          {/* </div>
+                            {/* </div>
                           </div> */}
+                          </div>
+                        </div>
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
+                          <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
+                          <div className={style.greyDotTextStyle}>
+                            Overall Review Status
+                          </div>
                         </div>
                       </div>
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
-                        <div className={`${style.greenBigDotStyle} ${style.marginCenter}`}></div>
-                        <div className={style.greyDotTextStyle}>
-                          Overall Review Status
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  <>
-                    {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1")) ? (
-                      <div
-                        className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
-                      >
+                    <>
+                      {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1")) ? (
+                        <div
+                          className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
+                        >
 
-                        <div>
-                          {applicationType === "REAPPOINTMENT" && (
-                            <div
-                              className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
-                            >
+                          <div>
+                            {applicationType === "REAPPOINTMENT" && (
                               <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                className={`${style.tableHeaderStyle} ${style.tableHeaderStyleCred} ${style.marginTop20} `}
                               >
-                                <div
-                                  className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
-                                  Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          {applicationType === "NEW" && (
-                            <div
-                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
-                            >
-                              <>
                                 <div
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
@@ -4769,395 +4748,416 @@ const NewActiveApplication = ({
                                 <div
                                   className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                 >
-                                  <div className={`${style.tableHeaderTextStyle}`}>
+                                  <div className={`${style.tableHeaderTextStyle} ${style.marginLeft20}`}>
                                     Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                   </div>
                                 </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
+                              </div>
+                            )}
+                            {applicationType === "NEW" && (
+                              <div
+                                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+                              >
+                                <>
                                   <div
-                                    className={`${style.tableHeaderTextStyle}`}
-                                    aria-owns={open ? "mouse-over-popover" : undefined}
-                                    aria-haspopup="true"
-                                    onMouseEnter={handlePopoverOpen}
-                                    onMouseLeave={handlePopoverClose}
-                                  >
-                                    <img
-                                      src={DataStatusIcon}
-                                      alt=""
-                                      style={{
-                                        width: "18px",
-                                        height: "20px",
-                                      }}
-                                    />
-                                    <Popover
-                                      id={"mouse-over-popover"}
-                                      sx={{
-                                        pointerEvents: "none",
-                                      }}
-                                      open={open}
-                                      anchorEl={anchorEl}
-                                      anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "center",
-                                      }}
-                                      transformOrigin={{
-                                        vertical: "top",
-                                        horizontal: "center",
-                                      }}
-                                      onClose={handlePopoverClose}
-                                      PaperProps={{
-                                        style: {
-                                          backgroundColor: "transparent",
-                                          boxShadow: "none",
-                                          borderRadius: 0,
-                                        },
-                                      }}
-                                      disableRestoreFocus
-                                    >
-                                      <div className={style.multipleOptionsCard}>
-                                        <div
-                                          className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                        >
-                                          Data Quality Status
-                                        </div>
-                                      </div>
-                                    </Popover>
-                                  </div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div
-                                    className={`${style.tableHeaderTextStyle}`}
-                                    aria-owns={
-                                      openTextWithHover ? "mouse-over-popover" : undefined
-                                    }
-                                    aria-haspopup="true"
-                                    onMouseEnter={handlePopoverTextOpen}
-                                    onMouseLeave={handlePopoverTextClose}
-                                  >
-                                    <img
-                                      src={DocumentIcon}
-                                      alt=""
-                                      style={{
-                                        width: "18px",
-                                        height: "20px",
-                                      }}
-                                    />
-                                    <Popover
-                                      id={"mouse-over-popover"}
-                                      sx={{
-                                        pointerEvents: "none",
-                                      }}
-                                      open={openTextWithHover}
-                                      anchorEl={anchorTextEl}
-                                      anchorOrigin={{
-                                        vertical: "bottom",
-                                        horizontal: "center",
-                                      }}
-                                      transformOrigin={{
-                                        vertical: "top",
-                                        horizontal: "center",
-                                      }}
-                                      onClose={handlePopoverTextClose}
-                                      PaperProps={{
-                                        style: {
-                                          backgroundColor: "transparent",
-                                          boxShadow: "none",
-                                          borderRadius: 0,
-                                        },
-                                      }}
-                                      disableRestoreFocus
-                                    >
-                                      <div className={style.multipleOptionsCard}>
-                                        <div
-                                          className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                        >
-                                          Document Status
-                                        </div>
-                                      </div>
-                                    </Popover>
-                                  </div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div className={`${style.tableHeaderTextStyle}`}>
-                                    Documents
-                                  </div>
-                                </div>
-                              </>
-                            </div>
-                          )}
-                          {/* </div> */}
-                          <div>
-                            <>
-                              {applicationType === "NEW" && (
-                                <div
-                                  className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${expand?.status && expand?.index === 0
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle
-                                      } ${style.marginTop10}`}
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.basicInformationStatus
-                                            ? style.greenDotStyle
-                                            : style.greyDotStyle
-                                          }`}
-                                      ></div>
+                                      className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                                    ></div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div className={`${style.tableHeaderTextStyle}`}>
+                                      Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
                                     </div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      className={`${style.tableHeaderTextStyle}`}
+                                      aria-owns={open ? "mouse-over-popover" : undefined}
+                                      aria-haspopup="true"
+                                      onMouseEnter={handlePopoverOpen}
+                                      onMouseLeave={handlePopoverClose}
                                     >
-                                      <div
-                                        className={`${expand?.status && expand?.index === 0
-                                          ? style.tableHeaderTextStyle
-                                          : style.tableDataFontStyle1
-                                          }`}
+                                      <img
+                                        src={DataStatusIcon}
+                                        alt=""
+                                        style={{
+                                          width: "18px",
+                                          height: "20px",
+                                        }}
+                                      />
+                                      <Popover
+                                        id={"mouse-over-popover"}
+                                        sx={{
+                                          pointerEvents: "none",
+                                        }}
+                                        open={open}
+                                        anchorEl={anchorEl}
+                                        anchorOrigin={{
+                                          vertical: "bottom",
+                                          horizontal: "center",
+                                        }}
+                                        transformOrigin={{
+                                          vertical: "top",
+                                          horizontal: "center",
+                                        }}
+                                        onClose={handlePopoverClose}
+                                        PaperProps={{
+                                          style: {
+                                            backgroundColor: "transparent",
+                                            boxShadow: "none",
+                                            borderRadius: 0,
+                                          },
+                                        }}
+                                        disableRestoreFocus
                                       >
-                                        Applicant Profile Information
-                                      </div>
-                                    </div>
-                                    {expand?.status && expand?.index === 0 ? (
-                                      <>
-                                        {!form?.basicInformationStatus ? (
+                                        <div className={style.multipleOptionsCard}>
                                           <div
-                                            className={`${style.purpleButton} ${style.cursorPointer} `}
+                                            className={`${style.specificActionCard} ${style.cursorPointer}`}
                                           >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                              onClick={() => handleVerify()}
-                                            >
-                                              Verify
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <div
-                                            className={`${style.greenButton}  ${style.cursorPointer} `}
-                                          >
-                                            <div
-                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            >
-                                              Verified
-                                            </div>
-                                          </div>
-                                        )}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                          ></div>
-                                        </div>
-                                        <div
-                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                        >
-                                          <div
-                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                          >
-                                            -
+                                            Data Quality Status
                                           </div>
                                         </div>
-                                      </>
-                                    )}
-
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expand?.status && expand?.index === 0 ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              setExpand({ status: false, index: 0 })
-                                            }
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() =>
-                                              setExpand({ status: true, index: 0 })
-                                            }
-                                          />
-                                        )}{" "}
-                                      </div>
+                                      </Popover>
                                     </div>
                                   </div>
-                                  {expand?.status && expand?.index === 0 && (
-                                    <div
-                                      className={`${style.marginTop} ${style.screenPadding}`}
-                                    >
-
-                                      {form1 !== undefined &&
-                                        "applicant" in form1?.properties && (
-                                          <ApplicationFieldCard
-                                            object={form1?.properties?.applicant}
-                                            gridStyle={style.applicantGrid}
-                                            baseKey={"applicant"}
-                                            basicForm={form}
-                                            setBasicForm={setForm}
-                                            isBasicPath={true}
-                                            isPOD={true}
-                                          />
-                                        )}
-                                      {form1 !== undefined &&
-                                        "credentialingPrivilegeCategory" in
-                                        form1?.properties && (
-                                          <ApplicationFieldCard
-                                            object={
-                                              form1?.properties?.credentialingPrivilegeCategory
-                                            }
-                                            gridStyle={style.credentialingGrid}
-                                            baseKey={"credentialingPrivilegeCategory"}
-                                            basicForm={form}
-                                            setBasicForm={setForm}
-                                            isBasicPath={true}
-                                            isPOD={true}
-                                          />
-                                        )}
-                                      {form1 !== undefined &&
-                                        "departmentSpecialty" in form1?.properties && (
-                                          <ApplicationFieldCard
-                                            object={form1?.properties?.departmentSpecialty}
-                                            gridStyle={style.twoCol}
-                                            baseKey={"departmentSpecialty"}
-                                            basicForm={form}
-                                            setBasicForm={setForm}
-                                            isBasicPath={true}
-                                            isPOD={true}
-                                          />
-                                        )}
-                                      {form1 !== undefined &&
-                                        getValueByPath(
-                                          form,
-                                          "basicDetails.departmentSpecialty.department"
-                                        ) ===
-                                        form1?.if?.properties?.departmentSpecialty?.properties?.department?.const &&
-                                        form1?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(
-                                          getValueByPath(
-                                            form,
-                                            "basicDetails.departmentSpecialty.specialty"
-                                          )
-                                        ) &&
-                                        form1 !== undefined &&
-                                        "regionalCallResponsibilities" in form1?.properties && (
-                                          <ApplicationFieldCard
-                                            object={
-                                              form1?.properties?.regionalCallResponsibilities
-                                            }
-                                            gridStyle={""}
-                                            baseKey={"regionalCallResponsibilities"}
-                                            basicForm={form}
-                                            setBasicForm={setForm}
-                                            isBasicPath={true}
-                                            isPOD={true}
-                                          />
-                                        )}
-                                      {form1 !== undefined &&
-                                        "billingNumber" in form1?.properties && (
-                                          <ApplicationFieldCard
-                                            object={form1?.properties?.billingNumber}
-                                            gridStyle={style.twoCol}
-                                            baseKey={"billingNumber"}
-                                            basicForm={form}
-                                            setBasicForm={setForm}
-                                            isBasicPath={true}
-                                            isPOD={true}
-                                          />
-                                        )}
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </>
-
-                            {form?.formSchemas
-                              ?.filter(
-                                (data) => {
-                                  if (form?.creationType === "NEW") {
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                      data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  } else {
-                                    // Default filter when form?.creationType is not "NEW"
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                      // data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  }
-                                })
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
                                   <div
-                                    className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointmentForStaff : expand?.index === index + 1
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle
-                                      } ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
-                                    {/* <div  className={`${style.backgroundColorStyle}`}> */}
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                      className={`${style.tableHeaderTextStyle}`}
+                                      aria-owns={
+                                        openTextWithHover ? "mouse-over-popover" : undefined
+                                      }
+                                      aria-haspopup="true"
+                                      onMouseEnter={handlePopoverTextOpen}
+                                      onMouseLeave={handlePopoverTextClose}
                                     >
-                                      <>
+                                      <img
+                                        src={DocumentIcon}
+                                        alt=""
+                                        style={{
+                                          width: "18px",
+                                          height: "20px",
+                                        }}
+                                      />
+                                      <Popover
+                                        id={"mouse-over-popover"}
+                                        sx={{
+                                          pointerEvents: "none",
+                                        }}
+                                        open={openTextWithHover}
+                                        anchorEl={anchorTextEl}
+                                        anchorOrigin={{
+                                          vertical: "bottom",
+                                          horizontal: "center",
+                                        }}
+                                        transformOrigin={{
+                                          vertical: "top",
+                                          horizontal: "center",
+                                        }}
+                                        onClose={handlePopoverTextClose}
+                                        PaperProps={{
+                                          style: {
+                                            backgroundColor: "transparent",
+                                            boxShadow: "none",
+                                            borderRadius: 0,
+                                          },
+                                        }}
+                                        disableRestoreFocus
+                                      >
+                                        <div className={style.multipleOptionsCard}>
+                                          <div
+                                            className={`${style.specificActionCard} ${style.cursorPointer}`}
+                                          >
+                                            Document Status
+                                          </div>
+                                        </div>
+                                      </Popover>
+                                    </div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div className={`${style.tableHeaderTextStyle}`}>
+                                      Documents
+                                    </div>
+                                  </div>
+                                </>
+                              </div>
+                            )}
+                            {/* </div> */}
+                            <div>
+                              <>
+                                {applicationType === "NEW" && (
+                                  <div
+                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
+                                      ? style.tableDataStyle1
+                                      : style.tableDataStyle
+                                      }`}
+                                  >
+                                    <div
+                                      className={` ${expand?.status && expand?.index === 0
+                                        ? style.tableHeaderGridStyleForm
+                                        : style.tableHeaderGridStyle
+                                        } ${style.marginTop10}`}
+                                    >
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                      >
                                         <div
                                           className={`${style.marginLeft10} ${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
+                                            } ${form?.basicInformationStatus
+                                              ? style.greenDotStyle
+                                              : style.greyDotStyle
                                             }`}
                                         ></div>
-                                      </>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
-                                        {data?.title}
                                       </div>
-                                      {/* <div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${expand?.status && expand?.index === 0
+                                            ? style.tableHeaderTextStyle
+                                            : style.tableDataFontStyle1
+                                            }`}
+                                        >
+                                          Applicant Profile Information
+                                        </div>
+                                      </div>
+                                      {expand?.status && expand?.index === 0 ? (
+                                        <>
+                                          {!form?.basicInformationStatus ? (
+                                            <div
+                                              className={`${style.purpleButton} ${style.cursorPointer} `}
+                                            >
+                                              <div
+                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                onClick={() => handleVerify()}
+                                              >
+                                                Verify
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div
+                                              className={`${style.greenButton}  ${style.cursorPointer} `}
+                                            >
+                                              <div
+                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                              >
+                                                Verified
+                                              </div>
+                                            </div>
+                                          )}
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                                            ></div>
+                                          </div>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                                            ></div>
+                                          </div>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                            >
+                                              -
+                                            </div>
+                                          </div>
+                                        </>
+                                      )}
+
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                        >
+                                          {expand?.status && expand?.index === 0 ? (
+                                            <RemoveIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                setExpand({ status: false, index: 0 })
+                                              }
+                                            />
+                                          ) : (
+                                            <AddIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                setExpand({ status: true, index: 0 })
+                                              }
+                                            />
+                                          )}{" "}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {expand?.status && expand?.index === 0 && (
+                                      <div
+                                        className={`${style.marginTop} ${style.screenPadding}`}
+                                      >
+
+                                        {form1 !== undefined &&
+                                          "applicant" in form1?.properties && (
+                                            <ApplicationFieldCard
+                                              object={form1?.properties?.applicant}
+                                              gridStyle={style.applicantGrid}
+                                              baseKey={"applicant"}
+                                              basicForm={form}
+                                              setBasicForm={setForm}
+                                              isBasicPath={true}
+                                              isPOD={true}
+                                            />
+                                          )}
+                                        {form1 !== undefined &&
+                                          "credentialingPrivilegeCategory" in
+                                          form1?.properties && (
+                                            <ApplicationFieldCard
+                                              object={
+                                                form1?.properties?.credentialingPrivilegeCategory
+                                              }
+                                              gridStyle={style.credentialingGrid}
+                                              baseKey={"credentialingPrivilegeCategory"}
+                                              basicForm={form}
+                                              setBasicForm={setForm}
+                                              isBasicPath={true}
+                                              isPOD={true}
+                                            />
+                                          )}
+                                        {form1 !== undefined &&
+                                          "departmentSpecialty" in form1?.properties && (
+                                            <ApplicationFieldCard
+                                              object={form1?.properties?.departmentSpecialty}
+                                              gridStyle={style.twoCol}
+                                              baseKey={"departmentSpecialty"}
+                                              basicForm={form}
+                                              setBasicForm={setForm}
+                                              isBasicPath={true}
+                                              isPOD={true}
+                                            />
+                                          )}
+                                        {form1 !== undefined &&
+                                          getValueByPath(
+                                            form,
+                                            "basicDetails.departmentSpecialty.department"
+                                          ) ===
+                                          form1?.if?.properties?.departmentSpecialty?.properties?.department?.const &&
+                                          form1?.if?.properties?.departmentSpecialty?.properties?.specialty?.enum?.includes(
+                                            getValueByPath(
+                                              form,
+                                              "basicDetails.departmentSpecialty.specialty"
+                                            )
+                                          ) &&
+                                          form1 !== undefined &&
+                                          "regionalCallResponsibilities" in form1?.properties && (
+                                            <ApplicationFieldCard
+                                              object={
+                                                form1?.properties?.regionalCallResponsibilities
+                                              }
+                                              gridStyle={""}
+                                              baseKey={"regionalCallResponsibilities"}
+                                              basicForm={form}
+                                              setBasicForm={setForm}
+                                              isBasicPath={true}
+                                              isPOD={true}
+                                            />
+                                          )}
+                                        {form1 !== undefined &&
+                                          "billingNumber" in form1?.properties && (
+                                            <ApplicationFieldCard
+                                              object={form1?.properties?.billingNumber}
+                                              gridStyle={style.twoCol}
+                                              baseKey={"billingNumber"}
+                                              basicForm={form}
+                                              setBasicForm={setForm}
+                                              isBasicPath={true}
+                                              isPOD={true}
+                                            />
+                                          )}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </>
+
+                              {form?.formSchemas
+                                ?.filter(
+                                  (data) => {
+                                    if (form?.creationType === "NEW") {
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                                        data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    } else {
+                                      // Default filter when form?.creationType is not "NEW"
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
+                                        // data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    }
+                                  })
+                                ?.map((data, index) => (
+                                  <div
+                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
+                                      ? style.tableDataStyle1
+                                      : style.tableDataStyle
+                                      }`}
+                                  >
+                                    <div
+                                      className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointmentForStaff : expand?.index === index + 1
+                                        ? style.tableHeaderGridStyleForm
+                                        : style.tableHeaderGridStyle
+                                        } ${style.marginTop10} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`}
+                                    >
+                                      {/* <div  className={`${style.backgroundColorStyle}`}> */}
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                      >
+                                        <>
+                                          <div
+                                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                                              } ${form?.forms[index]?.status !== "APPROVED"
+                                                ? style.greyDotStyle
+                                                : style.greenDotStyle
+                                              }`}
+                                          ></div>
+                                        </>
+                                      </div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div className={`${applicationType === "NEW" ? style.tableDataFontStyle1 : style.tableDataFontStyleCredReappointment}`}>
+                                          {data?.title}
+                                        </div>
+                                        {/* <div>
                                         {data?.title}
                                       </div> */}
-                                    </div>
-                                    {/* </div> */}
-                                    {/* {((expand?.status && expand?.index === index + 1) || applicationType !== "NEW") ? (
+                                      </div>
+                                      {/* </div> */}
+                                      {/* {((expand?.status && expand?.index === index + 1) || applicationType !== "NEW") ? (
                                       <>
                                         {credApproval?.some((newData) => {
                                           console.log("newData.approvalRequired:", newData.approvalRequired);
@@ -5281,7 +5281,7 @@ const NewActiveApplication = ({
                                           </div>
                                         </>
                                       )} */}
-                                    {/* {expand?.status && expand?.index === index + 1 ? (
+                                      {/* {expand?.status && expand?.index === index + 1 ? (
                        <>
                           {credApproval?.filter((newData) => {
                               console.log("newData.schema:", newData.schemaId);
@@ -5400,7 +5400,7 @@ const NewActiveApplication = ({
                           </>
                         )} */}
 
-                                    {/* {expand?.status && expand?.index === index + 1 ? (
+                                      {/* {expand?.status && expand?.index === index + 1 ? (
                                 <>
                                   {credApproval?.filter((newData) => {
                                     console.log("newData.schema:", newData.schemaId);
@@ -5496,254 +5496,254 @@ const NewActiveApplication = ({
                               )} */}
 
 
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      {applicationType === "NEW" && (
-                                        <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                        >
-                                          {expand?.status && expand?.index === index + 1 ? (
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: false, index: 0 });
-                                                setFormSchemaId("");
-                                              }}
-                                            />
-                                          ) : (
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpand({ status: true, index: index + 1 });
-                                                setFormSchemaId(data?.id);
-                                              }}
-                                            />
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                  {applicationType === "NEW" ? (
-                                    <>
-                                      {expand?.status && expand?.index === index + 1 &&
-                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                          {renderFieldsBasedOnStep(data)}
-                                        </div>
-                                      }
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                        {renderFieldsBasedOnStepReappointment(data, index)}
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        {applicationType === "NEW" && (
+                                          <div
+                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                          >
+                                            {expand?.status && expand?.index === index + 1 ? (
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: false, index: 0 });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
+                                            ) : (
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpand({ status: true, index: index + 1 });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
+                                            )}
+                                          </div>
+                                        )}
                                       </div>
-                                    </>
-                                  )}
-                                  {/* </div> */}
-                                  {applicationType === "NEW" ? (
-                                    <>
-                                      {expand?.status && expand?.index === index + 1 && (
-                                        <>
-                                          {credApproval?.some((newData) => {
-                                            console.log("newData.approvalRequired:", newData.approvalRequired);
-                                            return newData.schemaId === data.id && newData.approvalRequired;
-                                          }) ? (
-                                            <>
-                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                (() => {
-                                                  const isMatch = logDetails?.logs?.some((log) => {
-                                                    if (log?.form && log?.form?.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                    </div>
+                                    {applicationType === "NEW" ? (
+                                      <>
+                                        {expand?.status && expand?.index === index + 1 &&
+                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                            {renderFieldsBasedOnStep(data)}
+                                          </div>
+                                        }
+                                      </>
+                                    ) : (
+                                      <>
+                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                          {renderFieldsBasedOnStepReappointment(data, index)}
+                                        </div>
+                                      </>
+                                    )}
+                                    {/* </div> */}
+                                    {applicationType === "NEW" ? (
+                                      <>
+                                        {expand?.status && expand?.index === index + 1 && (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              console.log("newData.approvalRequired:", newData.approvalRequired);
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                            }) ? (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
+                                                    const isMatch = logDetails?.logs?.some((log) => {
+                                                      if (log?.form && log?.form?.id) {
+                                                        const match = log.form.id === form?.forms[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                      if (match) {
-                                                        let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                        // Check if userRole includes log.role
-                                                        if (workModeType === log.role) {
-                                                          console.log("Role matches user role: " + log.role);
-                                                          Match = true;
+                                                          // Check if userRole includes log.role
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          // Determine selectedTabRole based on selectedTab
+                                                          let selectedTabRole;
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
+                                                          }
+
+                                                          // Check if selectedTabRole matches log.role
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
                                                         }
-
-                                                        // Determine selectedTabRole based on selectedTab
-                                                        let selectedTabRole;
-                                                        if (selectedTab === 'level-2') {
-                                                          selectedTabRole = "Department Head";
-                                                        } else if (selectedTab === 'level-3') {
-                                                          selectedTabRole = "Chief Of Staff";
-                                                        } else if (selectedTab === 'level-4') {
-                                                          selectedTabRole = "Advisory Committee";
-                                                        } else if (selectedTab === 'level-5') {
-                                                          selectedTabRole = "Board";
-                                                        } else if (selectedTab === 'level-1') {
-                                                          selectedTabRole = "Staff Manager";
-                                                        }
-
-                                                        // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
-                                                          console.log("Selected tab role matches log role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        return Match;
                                                       }
-                                                    }
-                                                    return false;
-                                                  });
+                                                      return false;
+                                                    });
 
-                                                  return (
-                                                    <div>
-                                                      {isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Approved
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                            >
-                                                              Approve
-                                                            </div>
-                                                          </div>
-                                                        ) : (
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                               Approved
                                                             </div>
                                                           </div>
-                                                        )
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })()
-                                              )}
-                                            </>
-                                          ) : (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      {credApproval?.some((newData) => {
-                                        console.log("newData.approvalRequired:", newData.approvalRequired);
-                                        console.log("newData id:", data.id);
-                                        return newData.schemaId === data.id && newData.approvalRequired;
-                                      }) ? (
-                                        <>
-                                          {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                            (() => {
-                                              const isMatch = logDetails.logs.some((log) => {
-                                                if (log?.form && log?.form?.id) {
-                                                  const match = log?.form?.id === form?.forms[index]?.id;
-                                                  console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id, match);
-
-                                                  if (match) {
-                                                    let Match = false;
-
-                                                    // Check if userRole includes log.role
-                                                    if (workModeType === log?.role) {
-                                                      console.log("Role matches user role: " + log.role);
-                                                      Match = true;
-                                                    }
-
-                                                    // Determine selectedTabRole based on selectedTab
-                                                    let selectedTabRole;
-                                                    switch (selectedTab) {
-                                                      case 'level-2':
-                                                        selectedTabRole = "Department Head";
-                                                        break;
-                                                      case 'level-3':
-                                                        selectedTabRole = "Chief Of Staff";
-                                                        break;
-                                                      case 'level-4':
-                                                        selectedTabRole = "Advisory Committee";
-                                                        break;
-                                                      case 'level-5':
-                                                        selectedTabRole = "Board";
-                                                        break;
-                                                      case 'level-1':
-                                                        selectedTabRole = "Staff Manager";
-                                                        break;
-                                                      default:
-                                                        selectedTabRole = null;
-                                                    }
-
-                                                    // Check if selectedTabRole matches log.role
-                                                    if (selectedTabRole === log.role) {
-                                                      console.log("Selected tab role matches log role: " + log.role);
-                                                      Match = true;
-                                                    }
-
-                                                    return Match;
-                                                  }
-                                                }
-                                                return false;
-                                              });
-
-                                              return (
-                                                <div>
-                                                  {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
-                                                    isMatch ? (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <Tooltip title="Click To Revert Verification">
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                            onClick={() => {
-                                                              handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                            }}
-                                                          >
-                                                            Verified
-                                                          </div>
-                                                        </Tooltip>
-                                                      </div>
-                                                    ) :
-                                                      (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <Tooltip title="Click To Verify">
+                                                        ) : (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => {
-                                                                  handleStepsVerify(form?.forms[index]?.id);
-                                                                }}
+                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
                                                               >
-                                                                Verify
+                                                                Approve
                                                               </div>
-                                                            </Tooltip>
-                                                          </div>
-                                                        ) : (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <Tooltip title="Click To Revert Verification">
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => {
-                                                                  handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                                }}
-                                                              >
-                                                                Verified
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
                                                               </div>
-                                                            </Tooltip>
-                                                          </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()
+                                                )}
+                                              </>
+                                            ) : (
+                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                  Approved
+                                                </div>
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
+                                      </>
+                                    ) : (
+                                      <>
+                                        {credApproval?.some((newData) => {
+                                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                                          console.log("newData id:", data.id);
+                                          return newData.schemaId === data.id && newData.approvalRequired;
+                                        }) ? (
+                                          <>
+                                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                              (() => {
+                                                const isMatch = logDetails.logs.some((log) => {
+                                                  if (log?.form && log?.form?.id) {
+                                                    const match = log?.form?.id === form?.forms[index]?.id;
+                                                    console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id, match);
+
+                                                    if (match) {
+                                                      let Match = false;
+
+                                                      // Check if userRole includes log.role
+                                                      if (workModeType === log?.role) {
+                                                        console.log("Role matches user role: " + log.role);
+                                                        Match = true;
+                                                      }
+
+                                                      // Determine selectedTabRole based on selectedTab
+                                                      let selectedTabRole;
+                                                      switch (selectedTab) {
+                                                        case 'level-2':
+                                                          selectedTabRole = "Department Head";
+                                                          break;
+                                                        case 'level-3':
+                                                          selectedTabRole = "Chief Of Staff";
+                                                          break;
+                                                        case 'level-4':
+                                                          selectedTabRole = "Advisory Committee";
+                                                          break;
+                                                        case 'level-5':
+                                                          selectedTabRole = "Board";
+                                                          break;
+                                                        case 'level-1':
+                                                          selectedTabRole = "Staff Manager";
+                                                          break;
+                                                        default:
+                                                          selectedTabRole = null;
+                                                      }
+
+                                                      // Check if selectedTabRole matches log.role
+                                                      if (selectedTabRole === log.role) {
+                                                        console.log("Selected tab role matches log role: " + log.role);
+                                                        Match = true;
+                                                      }
+
+                                                      return Match;
+                                                    }
+                                                  }
+                                                  return false;
+                                                });
+
+                                                return (
+                                                  <div>
+                                                    {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
+                                                      isMatch ? (
+                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                          <Tooltip title="Click To Revert Verification">
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                              onClick={() => {
+                                                                handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                              }}
+                                                            >
+                                                              Verified
+                                                            </div>
+                                                          </Tooltip>
+                                                        </div>
+                                                      ) :
+                                                        (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click To Verify">
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => {
+                                                                    handleStepsVerify(form?.forms[index]?.id);
+                                                                  }}
+                                                                >
+                                                                  Verify
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <Tooltip title="Click To Revert Verification">
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => {
+                                                                    handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                  }}
+                                                                >
+                                                                  Verified
+                                                                </div>
+                                                              </Tooltip>
+                                                            </div>
+                                                          )
                                                         )
-                                                      )
-                                                  )}
-                                                  {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                    )}
+                                                    {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
                                                     //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     //     <Tooltip title="Click To Revert Verification">
@@ -5790,22 +5790,22 @@ const NewActiveApplication = ({
                                                       )
                                                     )
                                                   ): null} */}
-                                                </div>
-                                              );
-                                            })()
-                                          )}
-                                        </>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Verified
+                                                  </div>
+                                                );
+                                              })()
+                                            )}
+                                          </>
+                                        ) : (
+                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                              Verified
+                                            </div>
                                           </div>
-                                        </div>
-                                      )}
-                                    </>
-                                  )}
-                                </div>))}
-                            {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
+                                        )}
+                                      </>
+                                    )}
+                                  </div>))}
+                              {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
                               
                               <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
@@ -5856,66 +5856,66 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                             ) : ("")} */}
-                          </div>
-                          {applicationType === "NEW" ? (
-                            <div>
-                              <div
-                                className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
-                              >
+                            </div>
+                            {applicationType === "NEW" ? (
+                              <div>
                                 <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
                                 >
                                   <div
-                                    className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
-                                  ></div>
-                                </div>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                >
-                                  <div className={`${style.tableHeaderTextStyle}`}>
-                                    Requested Form Completeness Check
-                                  </div>
-                                </div>
-                              </div>
-                              {form?.formSchemas
-                                ?.filter((data) => data?.formCategory === "Acknowledgement")
-                                ?.map((data, index) => (
-                                  <div
-                                    className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index
-                                      ? style.tableDataStyle1
-                                      : style.tableDataStyle
-                                      }`}
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
                                   >
                                     <div
-                                      className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                                      className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                                    ></div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div className={`${style.tableHeaderTextStyle}`}>
+                                      Requested Form Completeness Check
+                                    </div>
+                                  </div>
+                                </div>
+                                {form?.formSchemas
+                                  ?.filter((data) => data?.formCategory === "Acknowledgement")
+                                  ?.map((data, index) => (
+                                    <div
+                                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
                                         expandAcknowledgement?.index === index
-                                        ? style.tableHeaderGridStyleForm
-                                        : style.tableHeaderGridStyle1
+                                        ? style.tableDataStyle1
+                                        : style.tableDataStyle
                                         }`}
                                     >
                                       <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                                          expandAcknowledgement?.index === index
+                                          ? style.tableHeaderGridStyleForm
+                                          : style.tableHeaderGridStyle1
+                                          }`}
                                       >
                                         <div
-                                          className={`${style.marginLeft10} ${style.justifySpaceAround
-                                            } ${form?.forms?.filter(
-                                              (data) =>
-                                                data?.formCategory === "Acknowledgement"
-                                            )[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
-                                            }`}
-                                        ></div>
-                                      </div>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div className={`${style.tableDataFontStyle1}`}>
-                                          {data?.title}
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                        >
+                                          <div
+                                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                                              } ${form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory === "Acknowledgement"
+                                              )[index]?.status !== "APPROVED"
+                                                ? style.greyDotStyle
+                                                : style.greenDotStyle
+                                              }`}
+                                          ></div>
                                         </div>
-                                      </div>
-                                      {/* {expandAcknowledgement?.status &&
+                                        <div
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                        >
+                                          <div className={`${style.tableDataFontStyle1}`}>
+                                            {data?.title}
+                                          </div>
+                                        </div>
+                                        {/* {expandAcknowledgement?.status &&
                           expandAcknowledgement?.index === index && (
                             <>
                               {form?.forms?.filter(
@@ -5953,374 +5953,374 @@ const NewActiveApplication = ({
                               )}
                             </>
                           )} */}
-                                      {/* working without credapproval false */}
-                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                        <>
-                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                            <>
-                                              {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                                <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                    const isMatch = logDetails.logs.some((log) => {
-                                                      if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                        {/* working without credapproval false */}
+                                        {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                                          <>
+                                            {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                              <>
+                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                        if (match) {
-                                                          let Match = false;
+                                                          if (match) {
+                                                            let Match = false;
 
-                                                          // Check if userRole includes log.role
-                                                          if (workModeType === log.role) {
-                                                            console.log("Role matches user role: " + log.role);
-                                                            Match = true;
+                                                            // Check if userRole includes log.role
+                                                            if (workModeType === log.role) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            // Determine selectedTabRole based on selectedTab
+                                                            let selectedTabRole;
+                                                            switch (selectedTab) {
+                                                              case 'level-1':
+                                                                selectedTabRole = "Staff Manager";
+                                                                break;
+                                                              case 'level-2':
+                                                                selectedTabRole = "Department Head";
+                                                                break;
+                                                              case 'level-3':
+                                                                selectedTabRole = "Chief Of Staff";
+                                                                break;
+                                                              case 'level-4':
+                                                                selectedTabRole = "Advisory Committee";
+                                                                break;
+                                                              case 'level-5':
+                                                                selectedTabRole = "Board";
+                                                                break;
+                                                              default:
+                                                                selectedTabRole = "";
+                                                            }
+
+                                                            // Check if selectedTabRole matches log.role
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
                                                           }
-
-                                                          // Determine selectedTabRole based on selectedTab
-                                                          let selectedTabRole;
-                                                          switch (selectedTab) {
-                                                            case 'level-1':
-                                                              selectedTabRole = "Staff Manager";
-                                                              break;
-                                                            case 'level-2':
-                                                              selectedTabRole = "Department Head";
-                                                              break;
-                                                            case 'level-3':
-                                                              selectedTabRole = "Chief Of Staff";
-                                                              break;
-                                                            case 'level-4':
-                                                              selectedTabRole = "Advisory Committee";
-                                                              break;
-                                                            case 'level-5':
-                                                              selectedTabRole = "Board";
-                                                              break;
-                                                            default:
-                                                              selectedTabRole = "";
-                                                          }
-
-                                                          // Check if selectedTabRole matches log.role
-                                                          if (selectedTabRole === log.role) {
-                                                            console.log("Selected tab role matches log role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          return Match;
                                                         }
-                                                      }
-                                                      return false;
-                                                    });
+                                                        return false;
+                                                      });
 
-                                                    return (
-                                                      <div>
-                                                        {isMatch ? (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Verified
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                              >
-                                                                Verify
-                                                              </div>
-                                                            </div>
-                                                          ) : (
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                 Verified
                                                               </div>
                                                             </div>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    );
-                                                  })()}
-                                                </>
-                                              )}
-                                            </>
-                                          )}
-                                        </>
-                                      )}
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
+                                                          ) : (
+                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                >
+                                                                  Verify
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Verified
+                                                                </div>
+                                                              </div>
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()}
+                                                  </>
+                                                )}
+                                              </>
+                                            )}
+                                          </>
+                                        )}
                                         <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                                         >
-                                          {expandAcknowledgement?.status &&
-                                            expandAcknowledgement?.index === index ? (
-                                            <RemoveIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpandAcknowledgement({
-                                                  status: false,
-                                                  index: 0,
-                                                });
-                                                setFormSchemaId("");
-                                              }}
-                                            />
-                                          ) : (
-                                            <AddIcon
-                                              sx={{
-                                                fontSize: 20,
-                                                color: "#94979A",
-                                                cursor: "pointer",
-                                              }}
-                                              onClick={() => {
-                                                setExpandAcknowledgement({
-                                                  status: true,
-                                                  index: index,
-                                                });
-                                                setFormSchemaId(data?.id);
-                                              }}
-                                            />
-                                          )}
+                                          <div
+                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                          >
+                                            {expandAcknowledgement?.status &&
+                                              expandAcknowledgement?.index === index ? (
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: false,
+                                                    index: 0,
+                                                  });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
+                                            ) : (
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: true,
+                                                    index: index,
+                                                  });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
+                                            )}
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                    {expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index && (
-                                        <div
-                                          className={`${style.marginTop} ${style.screenPadding}`}
-                                        >
-                                          {form?.forms?.filter(
-                                            (data) => data?.formCategory === "Acknowledgement"
-                                          )[index]?.uploadedFiles?.length !== 0 && (
-                                              <>
-                                                <iframe
-                                                  src={
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory === "Acknowledgement"
-                                                    )[index]?.uploadedFiles[
+                                      {expandAcknowledgement?.status &&
+                                        expandAcknowledgement?.index === index && (
+                                          <div
+                                            className={`${style.marginTop} ${style.screenPadding}`}
+                                          >
+                                            {form?.forms?.filter(
+                                              (data) => data?.formCategory === "Acknowledgement"
+                                            )[index]?.uploadedFiles?.length !== 0 && (
+                                                <>
+                                                  <iframe
+                                                    src={
                                                       form?.forms?.filter(
                                                         (data) =>
-                                                          data?.formCategory ===
-                                                          "Acknowledgement"
-                                                      )[index]?.uploadedFiles?.length - 1
-                                                    ]?.fileURL
-                                                  }
-                                                  width="100%"
-                                                  height="600px"
-                                                ></iframe>
-                                                {(data?.description ===
-                                                  "Statement of Confidentiality and Non-Disclosure" ||
-                                                  data?.description ===
-                                                  "Conflict Of Interest Policy") && (
-                                                    <div className={style.grid2}>
-                                                      <div
-                                                        onClick={
-                                                          form?.forms[index]?.staffEsign === null
-                                                            ? () =>
-                                                              handleStaffEsign(
-                                                                form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[index]?.id
-                                                              )
-                                                            : () => { }
-                                                        }
-                                                      >
-                                                        <ESignature
-                                                          userName={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign?.name
-                                                              : ""
-                                                          }
-                                                          encData={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.staffEsign?.esign
-                                                              : ""
-                                                          }
-                                                          showData={
-                                                            form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? true
-                                                              : false
-                                                          }
-                                                          showDatais={true}
-                                                        />
-                                                      </div>
-                                                      <div className={style.verticalAlignCenter}>
-                                                        <div className={style.displayInRow}>
-                                                          <div className={style.dateTitle}>
-                                                            Date:{" "}
-                                                          </div>
-                                                          <div
-                                                            className={`${style.date} ${style.marginLeft}`}
-                                                          >
-                                                            {form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign !== null
-                                                              ? format(
-                                                                new Date(
+                                                          data?.formCategory === "Acknowledgement"
+                                                      )[index]?.uploadedFiles[
+                                                        form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.uploadedFiles?.length - 1
+                                                      ]?.fileURL
+                                                    }
+                                                    width="100%"
+                                                    height="600px"
+                                                  ></iframe>
+                                                  {(data?.description ===
+                                                    "Statement of Confidentiality and Non-Disclosure" ||
+                                                    data?.description ===
+                                                    "Conflict Of Interest Policy") && (
+                                                      <div className={style.grid2}>
+                                                        <div
+                                                          onClick={
+                                                            form?.forms[index]?.staffEsign === null
+                                                              ? () =>
+                                                                handleStaffEsign(
                                                                   form?.forms?.filter(
                                                                     (data) =>
                                                                       data?.formCategory ===
                                                                       "Acknowledgement"
-                                                                  )[
-                                                                    index
-                                                                  ]?.staffEsign?.signedDate
-                                                                ),
-                                                                canadaData?.dateFormat ||
-                                                                "dd/MM/yyyy"
-                                                              )
-                                                              : ""}
+                                                                  )[index]?.id
+                                                                )
+                                                              : () => { }
+                                                          }
+                                                        >
+                                                          <ESignature
+                                                            userName={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[index]?.staffEsign?.name
+                                                                : ""
+                                                            }
+                                                            encData={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[index]?.staffEsign?.esign
+                                                                : ""
+                                                            }
+                                                            showData={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? true
+                                                                : false
+                                                            }
+                                                            showDatais={true}
+                                                          />
+                                                        </div>
+                                                        <div className={style.verticalAlignCenter}>
+                                                          <div className={style.displayInRow}>
+                                                            <div className={style.dateTitle}>
+                                                              Date:{" "}
+                                                            </div>
+                                                            <div
+                                                              className={`${style.date} ${style.marginLeft}`}
+                                                            >
+                                                              {form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? format(
+                                                                  new Date(
+                                                                    form?.forms?.filter(
+                                                                      (data) =>
+                                                                        data?.formCategory ===
+                                                                        "Acknowledgement"
+                                                                    )[
+                                                                      index
+                                                                    ]?.staffEsign?.signedDate
+                                                                  ),
+                                                                  canadaData?.dateFormat ||
+                                                                  "dd/MM/yyyy"
+                                                                )
+                                                                : ""}
+                                                            </div>
                                                           </div>
                                                         </div>
                                                       </div>
-                                                    </div>
-                                                  )}
-                                              </>
-                                            )}
-                                        </div>
-                                      )}
-                                  </div>
-                                ))}
-                            </div>
-                          ) : (" ")}
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
-                        <div>
-
-
-                          <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
-
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
-                            </div>
-
-                          </div>
-                          <div>
-                            <>
-                              {applicationType === "NEW" && (
-                                <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                  <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
-
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
-                                    </div>
-
-
-                                    {(expand?.status && expand?.index === 0) ? (
-                                      <>
-                                        {!form?.basicInformationStatus ? (
-                                          <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
-                                          </div>
-                                        ) : (
-                                          <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                                    )}
+                                                </>
+                                              )}
                                           </div>
                                         )}
-                                      </>
-                                    ) : (
-                                      " "
-                                    )}
-
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                        {
-                                          (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
-                                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
-                                        }                    </div>
                                     </div>
-                                  </div>
-                                  {expand?.status && expand?.index === 0 &&
-                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
-
-                                      {form1 !== undefined && 'applicant' in form1?.properties && (
-                                        <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                      )}
-                                      {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                                        <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                      )}
-                                      {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                                        <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                      )}
-                                      {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
-                                        form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                          <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                        )
-                                      )}
-                                      {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                                        <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                      )}
-                                    </div>
-                                  }
+                                  ))}
+                              </div>
+                            ) : (" ")}
+                            <div className={style.marginBottom20}></div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
+                          <div>
 
 
-                                </div>
-                              )}
-                            </>
-                            <>
-                              {
-                                form?.formSchemas?.filter(
-                                  (data) => {
-                                    if (form?.creationType === "NEW") {
-                                      return (
-                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                        data?.schemaCategory !== "UploadYourDoc"
-                                      );
-                                    } else {
-                                      // Default filter when form?.creationType is not "NEW"
-                                      return (
-                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                        // data?.schemaCategory !== "UploadYourDoc"
-                                      );
-                                    }
-                                  })?.map((data, index) => (
+                            <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
 
-                                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                      {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
-                                      <div>
-                                        <div className={`${style.tableHeaderGridStyleCred1} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`} >
-                                          <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                          {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} > */}
-                                          {applicationType === "NEW" ? (
-                                            <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                              {
-                                                (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                                  : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                              }
+                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                              </div>
 
+                            </div>
+                            <div>
+                              <>
+                                {applicationType === "NEW" && (
+                                  <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                    <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
+                                      </div>
+
+
+                                      {(expand?.status && expand?.index === 0) ? (
+                                        <>
+                                          {!form?.basicInformationStatus ? (
+                                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
                                             </div>
-                                          ) : ''}
-                                          {/* </div> */}
-                                        </div>
-                                        {/* {!(expand?.status && expand?.index === index + 1) && (
+                                          ) : (
+                                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                            </div>
+                                          )}
+                                        </>
+                                      ) : (
+                                        " "
+                                      )}
+
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                          {
+                                            (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
+                                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
+                                          }                    </div>
+                                      </div>
+                                    </div>
+                                    {expand?.status && expand?.index === 0 &&
+                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+
+                                        {form1 !== undefined && 'applicant' in form1?.properties && (
+                                          <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                        )}
+                                        {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                                          <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                        )}
+                                        {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                                          <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                        )}
+                                        {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
+                                          form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                                            <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                          )
+                                        )}
+                                        {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                                          <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                        )}
+                                      </div>
+                                    }
+
+
+                                  </div>
+                                )}
+                              </>
+                              <>
+                                {
+                                  form?.formSchemas?.filter(
+                                    (data) => {
+                                      if (form?.creationType === "NEW") {
+                                        return (
+                                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                                          data?.schemaCategory !== "UploadYourDoc"
+                                        );
+                                      } else {
+                                        // Default filter when form?.creationType is not "NEW"
+                                        return (
+                                          (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
+                                          // data?.schemaCategory !== "UploadYourDoc"
+                                        );
+                                      }
+                                    })?.map((data, index) => (
+
+                                      <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                        {/* <div className={` ${applicationType !== "NEW" ? style.tableHeaderGridStyleFormReappointment : (expand?.index === index + 1) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}> */}
+                                        <div>
+                                          <div className={`${style.tableHeaderGridStyleCred1} ${style.backgroundColorStyle} ${style.paddingTopBottom10}`} >
+                                            <div className={`${applicationType !== "NEW" ? style.tableDataFontStyleCredReappointment : style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                            {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} > */}
+                                            {applicationType === "NEW" ? (
+                                              <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                                {
+                                                  (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                                    : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                                                }
+
+                                              </div>
+                                            ) : ''}
+                                            {/* </div> */}
+                                          </div>
+                                          {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
                             {form?.forms[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
@@ -6329,7 +6329,7 @@ const NewActiveApplication = ({
                             )}
                           </>
                         )} */}
-                                        {/* {applicationType === "NEW" ? (
+                                          {/* {applicationType === "NEW" ? (
                                           <>
                                             {expand?.status && expand?.index === index + 1 && (
                                               <>
@@ -6511,7 +6511,7 @@ const NewActiveApplication = ({
                                           </>
                                         )} */}
 
-                                        {/* {expand?.status && expand?.index === index + 1 && (
+                                          {/* {expand?.status && expand?.index === index + 1 && (
                               <>
                                 {credApproval?.filter(
                                   (newData) => {
@@ -6603,7 +6603,7 @@ const NewActiveApplication = ({
                                 )}
                               </>
                             )} */}
-                                        {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          {/* <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
                                           {applicationType === "NEW" ? (
                                             <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
                                               {
@@ -6614,208 +6614,208 @@ const NewActiveApplication = ({
                                             </div>
                                           ) : ''}
                                         </div> */}
-                                      </div>
+                                        </div>
 
-                                      {applicationType === "NEW" ? (
-                                        <>
-                                          {expand?.status && expand?.index === index + 1 &&
+                                        {applicationType === "NEW" ? (
+                                          <>
+                                            {expand?.status && expand?.index === index + 1 &&
+                                              <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                                {renderFieldsBasedOnStep(data)}
+                                              </div>
+                                            }
+                                          </>
+                                        ) : (
+                                          <>
                                             <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                              {renderFieldsBasedOnStep(data)}
+                                              {renderFieldsBasedOnStepReappointment(data, index)}
                                             </div>
-                                          }
-                                        </>
-                                      ) : (
-                                        <>
-                                          <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                            {renderFieldsBasedOnStepReappointment(data, index)}
-                                          </div>
 
-                                        </>
-                                      )}
-                                      {applicationType === "NEW" ? (
-                                        <>
-                                          {expand?.status && expand?.index === index + 1 && (
-                                            <>
-                                              {credApproval?.some((newData) => {
-                                                console.log("newData.approvalRequired:", newData.approvalRequired);
-                                                return newData.schemaId === data.id && newData.approvalRequired;
-                                              }) ? (
-                                                <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                    (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                          </>
+                                        )}
+                                        {applicationType === "NEW" ? (
+                                          <>
+                                            {expand?.status && expand?.index === index + 1 && (
+                                              <>
+                                                {credApproval?.some((newData) => {
+                                                  console.log("newData.approvalRequired:", newData.approvalRequired);
+                                                  return newData.schemaId === data.id && newData.approvalRequired;
+                                                }) ? (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                      (() => {
+                                                        const isMatch = logDetails.logs.some((log) => {
+                                                          if (log.form && log.form.id) {
+                                                            const match = log.form.id === form?.forms[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                          if (match) {
-                                                            let Match = false;
+                                                            if (match) {
+                                                              let Match = false;
 
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
+                                                              // Check if userRole includes log.role
+                                                              if (workModeType === log.role) {
+                                                                console.log("Role matches user role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              // Determine selectedTabRole based on selectedTab
+                                                              let selectedTabRole;
+                                                              if (selectedTab === 'level-2') {
+                                                                selectedTabRole = "Department Head";
+                                                              } else if (selectedTab === 'level-3') {
+                                                                selectedTabRole = "Chief Of Staff";
+                                                              } else if (selectedTab === 'level-4') {
+                                                                selectedTabRole = "Advisory Committee";
+                                                              } else if (selectedTab === 'level-5') {
+                                                                selectedTabRole = "Board";
+                                                              } else if (selectedTab === 'level-1') {
+                                                                selectedTabRole = "Staff Manager";
+                                                              }
+
+                                                              // Check if selectedTabRole matches log.role
+                                                              if (selectedTabRole === log.role) {
+                                                                console.log("Selected tab role matches log role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              return Match;
                                                             }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            if (selectedTab === 'level-2') {
-                                                              selectedTabRole = "Department Head";
-                                                            } else if (selectedTab === 'level-3') {
-                                                              selectedTabRole = "Chief Of Staff";
-                                                            } else if (selectedTab === 'level-4') {
-                                                              selectedTabRole = "Advisory Committee";
-                                                            } else if (selectedTab === 'level-5') {
-                                                              selectedTabRole = "Board";
-                                                            } else if (selectedTab === 'level-1') {
-                                                              selectedTabRole = "Staff Manager";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
                                                           }
-                                                        }
-                                                        return false;
-                                                      });
+                                                          return false;
+                                                        });
 
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
-                                                              </div>
-                                                            ) : (
+                                                        return (
+                                                          <div>
+                                                            {isMatch ? (
                                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                                   Approved
                                                                 </div>
                                                               </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()
-                                                  )}
-                                                </>
-                                              ) : (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Approved
+                                                            ) : (
+                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
+                                                                </div>
+                                                              ) : (
+                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                    Approved
+                                                                  </div>
+                                                                </div>
+                                                              )
+                                                            )}
+                                                          </div>
+                                                        );
+                                                      })()
+                                                    )}
+                                                  </>
+                                                ) : (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Approved
+                                                    </div>
                                                   </div>
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-                                        </>
-                                      ) : (
-                                        <>
-                                          {credApproval?.some((newData) => {
-                                            console.log("newData.approvalRequired:", newData.approvalRequired);
-                                            return newData.schemaId === data.id && newData.approvalRequired;
-                                          }) ? (
-                                            <>
-                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                (() => {
-                                                  const isMatch = logDetails.logs.some((log) => {
-                                                    if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                )}
+                                              </>
+                                            )}
+                                          </>
+                                        ) : (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              console.log("newData.approvalRequired:", newData.approvalRequired);
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                            }) ? (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                      if (match) {
-                                                        let Match = false;
+                                                        if (match) {
+                                                          let Match = false;
 
-                                                        // Check if userRole includes log.role
-                                                        if (workModeType === log.role) {
-                                                          console.log("Role matches user role: " + log.role);
-                                                          Match = true;
+                                                          // Check if userRole includes log.role
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          // Determine selectedTabRole based on selectedTab
+                                                          let selectedTabRole;
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
+                                                          }
+
+                                                          // Check if selectedTabRole matches log.role
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
                                                         }
-
-                                                        // Determine selectedTabRole based on selectedTab
-                                                        let selectedTabRole;
-                                                        if (selectedTab === 'level-2') {
-                                                          selectedTabRole = "Department Head";
-                                                        } else if (selectedTab === 'level-3') {
-                                                          selectedTabRole = "Chief Of Staff";
-                                                        } else if (selectedTab === 'level-4') {
-                                                          selectedTabRole = "Advisory Committee";
-                                                        } else if (selectedTab === 'level-5') {
-                                                          selectedTabRole = "Board";
-                                                        } else if (selectedTab === 'level-1') {
-                                                          selectedTabRole = "Staff Manager";
-                                                        }
-
-                                                        // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
-                                                          console.log("Selected tab role matches log role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        return Match;
                                                       }
-                                                    }
-                                                    return false;
-                                                  });
+                                                      return false;
+                                                    });
 
-                                                  return (
-                                                    <div>
-                                                      {isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Approved
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                            >
-                                                              Approve
-                                                            </div>
-                                                          </div>
-                                                        ) : (
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
                                                           <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
                                                               Approved
                                                             </div>
                                                           </div>
-                                                        )
-                                                      )}
+                                                        ) : (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              >
+                                                                Approve
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()
+                                                )}
+                                              </>
+                                            ) : (
+                                              <>
+                                                {!staffView && (
+                                                  <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                      Verified
                                                     </div>
-                                                  );
-                                                })()
-                                              )}
-                                            </>
-                                          ) : (
-                                            <>
-                                              {!staffView && (
-                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                    Verified
                                                   </div>
-                                                </div>
-                                              )}
-                                            </>
-                                          )}
-                                          {/* {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
+                                                )}
+                                              </>
+                                            )}
+                                            {/* {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
                                                     <div className={style.padding20}>
                                                       <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                                                         Application Payment Status
@@ -6842,10 +6842,10 @@ const NewActiveApplication = ({
                                                       </div>
                                                     </div>
                                                   )} */}
-                                        </>
-                                      )}
-                                    </div>))}
-                              {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
+                                          </>
+                                        )}
+                                      </div>))}
+                                {/* {(userRole?.includes("Department Head") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") || (userRole?.includes("Credentialing Committee") && selectedTab === "level-3" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -6893,7 +6893,7 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               ) : (" ")} */}
-                              {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
+                                {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-4" && applicationType === "REAPPOINTMENT")  ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.twoColumnGrid1}`}>
                                     <div
@@ -6925,7 +6925,7 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               ) : (" ")} */}
-                              {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
+                                {/* {(userRole?.includes("Staff Manager") && selectedTab === "level-5" && applicationType === "REAPPOINTMENT")  ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.twoColumnGrid1}`}>
                                     <div
@@ -6957,7 +6957,7 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               ) : (" ")} */}
-                              {/* {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
+                                {/* {(userRole?.includes("Credentialing Committee") && selectedTab === "level-2" && applicationType === "REAPPOINTMENT") ? (
                                 <div className={`${style.margin20}`}>
                                   <div className={`${style.fourColumnGrid}`}>
                                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -7003,34 +7003,34 @@ const NewActiveApplication = ({
                                   </div>
                                 </div>
                               ) : (" ")} */}
-                              {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
+                                {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (<>
                                     <div className={${style.margin20}}>
                                       <div className={${style.textCardStyle} ${style.buttonTextStyle} ${style.alignCenter}}>
                                       Pending Cred. Comm. Verification
                                       </div>
                                     </div>
                                   </>)} */}
-                            </>
+                              </>
 
-                          </div >
-                          {applicationType === "NEW" ? (
-                            <div>
-                              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                  <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
+                            </div >
+                            {applicationType === "NEW" ? (
+                              <div>
+                                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                    <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
+                                  </div>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                    <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
+                                  </div>
                                 </div>
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                  <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
-                                </div>
-                              </div>
-                              {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                                <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                  <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+                                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
+                                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
 
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                    </div>
-                                    {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                      </div>
+                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                         <>
                           {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
                             <div className={`${style.purpleButton} ${style.cursorPointer} `}>
@@ -7043,18 +7043,678 @@ const NewActiveApplication = ({
                           )}
                         </>
                       )} */}
-                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                      <>
-                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                          <>
-                                            {credApproval?.some((newData) => {
+                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                                        <>
+                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                            <>
+                                              {credApproval?.some((newData) => {
 
-                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                                return newData.schemaId === data.id && newData.approvalRequired;
 
-                                            }) ? (
-                                              <>
+                                              }) ? (
                                                 <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                          if (match) {
+                                                            let Match = false;
+
+                                                            // Check if userRole includes log.role
+                                                            if (workModeType === log.role) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            // Determine selectedTabRole based on selectedTab
+                                                            let selectedTabRole;
+                                                            switch (selectedTab) {
+                                                              case 'level-1':
+                                                                selectedTabRole = "Staff Manager";
+                                                                break;
+                                                              case 'level-2':
+                                                                selectedTabRole = "Department Head";
+                                                                break;
+                                                              case 'level-3':
+                                                                selectedTabRole = "Chief Of Staff";
+                                                                break;
+                                                              case 'level-4':
+                                                                selectedTabRole = "Advisory Committee";
+                                                                break;
+                                                              case 'level-5':
+                                                                selectedTabRole = "Board";
+                                                                break;
+                                                              default:
+                                                                selectedTabRole = "";
+                                                            }
+
+                                                            // Check if selectedTabRole matches log.role
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
+                                                          }
+                                                        }
+                                                        return false;
+                                                      });
+
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()}
+                                                  </>
+
+                                                </>
+                                              ) : (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Approved
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </>
+                                          )}
+                                        </>
+                                      )}
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                          {
+                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
+                                          }
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
+                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                                          <>
+                                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                                              <div className={style.grid2}>
+                                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                  <ESignature
+                                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                                    showDatais={true}
+                                                  />
+                                                </div>
+                                                <div className={style.verticalAlignCenter}>
+                                                  <div className={style.displayInRow}>
+                                                    <div className={style.dateTitle}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+                                    }
+                                  </div>))}
+                              </div>
+                            ) : (" ")}
+                            <div className={style.marginBottom20}></div>
+                          </div >
+                        </div >
+                      )}
+                    </>
+                  </div >
+                </>
+              ) : (
+                <>
+                  <div className={`${style.displayInCol}`}>
+                    <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
+                      <div className={style.spaceBetween}>
+                        <div className={style.displayInRow}>
+                          <div className={`${style.photoBorderStyle}`}>
+
+                            <img
+                              src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                              alt="Profile Picture"
+                              className={style.profileImage}
+                            />
+
+                          </div>
+                          <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
+                            <div className={style.marginTop10}>
+                              <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
+                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
+                              </span>
+                              <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
+                                {form?.displayId || ""}
+                              </span>
+                            </div>
+                            <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                              {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
+                            </div>
+                            <div className={style.spaceBetween}>
+                              <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
+                                {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
+                              </span>
+                              <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
+                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.displayInRow} ${style.marginRight20}`}>
+                          <div className={style.displayInCol}>
+                            <div className={style.marginTop15}>
+                              <span className={style.rightAlignTextStyle}>
+                                Days To Complete:
+                              </span>
+                              <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                15
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <>
+                      {(workModeType === 'Staff Manager') ? (
+                        <div
+                          className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
+                        >
+
+                          <div>
+                            <div
+                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
+                            >
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div
+                                  className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
+                                ></div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div className={`${style.tableHeaderTextStyle}`}>
+                                  Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div
+                                  className={`${style.tableHeaderTextStyle}`}
+                                  aria-owns={open ? "mouse-over-popover" : undefined}
+                                  aria-haspopup="true"
+                                  onMouseEnter={handlePopoverOpen}
+                                  onMouseLeave={handlePopoverClose}
+                                >
+                                  <img
+                                    src={DataStatusIcon}
+                                    alt=""
+                                    style={{
+                                      width: "18px",
+                                      height: "20px",
+                                    }}
+                                  />
+                                  <Popover
+                                    id={"mouse-over-popover"}
+                                    sx={{
+                                      pointerEvents: "none",
+                                    }}
+                                    open={open}
+                                    anchorEl={anchorEl}
+                                    anchorOrigin={{
+                                      vertical: "bottom",
+                                      horizontal: "center",
+                                    }}
+                                    transformOrigin={{
+                                      vertical: "top",
+                                      horizontal: "center",
+                                    }}
+                                    onClose={handlePopoverClose}
+                                    PaperProps={{
+                                      style: {
+                                        backgroundColor: "transparent",
+                                        boxShadow: "none",
+                                        borderRadius: 0,
+                                      },
+                                    }}
+                                    disableRestoreFocus
+                                  >
+                                    <div className={style.multipleOptionsCard}>
+                                      <div
+                                        className={`${style.specificActionCard} ${style.cursorPointer}`}
+                                      >
+                                        Data Quality Status
+                                      </div>
+                                    </div>
+                                  </Popover>
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div
+                                  className={`${style.tableHeaderTextStyle}`}
+                                  aria-owns={
+                                    openTextWithHover ? "mouse-over-popover" : undefined
+                                  }
+                                  aria-haspopup="true"
+                                  onMouseEnter={handlePopoverTextOpen}
+                                  onMouseLeave={handlePopoverTextClose}
+                                >
+                                  <img
+                                    src={DocumentIcon}
+                                    alt=""
+                                    style={{
+                                      width: "18px",
+                                      height: "20px",
+                                    }}
+                                  />
+                                  <Popover
+                                    id={"mouse-over-popover"}
+                                    sx={{
+                                      pointerEvents: "none",
+                                    }}
+                                    open={openTextWithHover}
+                                    anchorEl={anchorTextEl}
+                                    anchorOrigin={{
+                                      vertical: "bottom",
+                                      horizontal: "center",
+                                    }}
+                                    transformOrigin={{
+                                      vertical: "top",
+                                      horizontal: "center",
+                                    }}
+                                    onClose={handlePopoverTextClose}
+                                    PaperProps={{
+                                      style: {
+                                        backgroundColor: "transparent",
+                                        boxShadow: "none",
+                                        borderRadius: 0,
+                                      },
+                                    }}
+                                    disableRestoreFocus
+                                  >
+                                    <div className={style.multipleOptionsCard}>
+                                      <div
+                                        className={`${style.specificActionCard} ${style.cursorPointer}`}
+                                      >
+                                        Document Status
+                                      </div>
+                                    </div>
+                                  </Popover>
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                              >
+                                <div className={`${style.tableHeaderTextStyle}`}>
+                                  Documents
+                                </div>
+                              </div>
+                            </div>
+                            <div>
+                              <div
+                                className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
+                                  ? style.tableDataStyle1
+                                  : style.tableDataStyle
+                                  }`}
+                              >
+                                <div
+                                  className={` ${expand?.status && expand?.index === 0
+                                    ? style.tableHeaderGridStyleForm
+                                    : style.tableHeaderGridStyle
+                                    } ${style.marginTop10}`}
+                                >
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.justifySpaceAround
+                                        } ${form?.basicInformationStatus
+                                          ? style.greenDotStyle
+                                          : style.greyDotStyle
+                                        }`}
+                                    ></div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${expand?.status && expand?.index === 0
+                                        ? style.tableHeaderTextStyle
+                                        : style.tableDataFontStyle1
+                                        }`}
+                                    >
+                                      Applicant Profile Information
+                                    </div>
+                                  </div>
+                                  {expand?.status && expand?.index === 0 ? (
+                                    <>
+                                      {!form?.basicInformationStatus ? (
+                                        <div
+                                          className={`${style.purpleButton} ${style.cursorPointer} `}
+                                        >
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleVerify()}
+                                          >
+                                            Verify
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div
+                                          className={`${style.greenButton}  ${style.cursorPointer} `}
+                                        >
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                          >
+                                            Verified
+                                          </div>
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                                        ></div>
+                                      </div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
+                                        ></div>
+                                      </div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                        >
+                                          -
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
+
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                    >
+                                      {expand?.status && expand?.index === 0 ? (
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            setExpand({ status: false, index: 0 })
+                                          }
+                                        />
+                                      ) : (
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() =>
+                                            setExpand({ status: true, index: 0 })
+                                          }
+                                        />
+                                      )}{" "}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expand?.status && expand?.index === 0 && (
+                                  <div
+                                    className={`${style.marginTop} ${style.screenPadding}`}
+                                  >
+
+                                    {form1 !== undefined &&
+                                      "applicant" in form1?.properties && (
+                                        <ApplicationFieldCard
+                                          object={form1?.properties?.applicant}
+                                          gridStyle={style.applicantGrid}
+                                          baseKey={"applicant"}
+                                          basicForm={form}
+                                          setBasicForm={setForm}
+                                          isBasicPath={true}
+                                          isPOD={true}
+                                        />
+                                      )}
+                                    {form1 !== undefined &&
+                                      "credentialingPrivilegeCategory" in
+                                      form1?.properties && (
+                                        <ApplicationFieldCard
+                                          object={
+                                            form1?.properties?.credentialingPrivilegeCategory
+                                          }
+                                          gridStyle={style.credentialingGrid}
+                                          baseKey={"credentialingPrivilegeCategory"}
+                                          basicForm={form}
+                                          setBasicForm={setForm}
+                                          isBasicPath={true}
+                                          isPOD={true}
+                                        />
+                                      )}
+                                    {form1 !== undefined &&
+                                      "departmentSpecialty" in form1?.properties && (
+                                        <ApplicationFieldCard
+                                          object={form1?.properties?.departmentSpecialty}
+                                          gridStyle={style.twoCol}
+                                          baseKey={"departmentSpecialty"}
+                                          basicForm={form}
+                                          setBasicForm={setForm}
+                                          isBasicPath={true}
+                                          isPOD={true}
+                                        />
+                                      )}
+                                    {form1 !== undefined &&
+                                      getValueByPath(
+                                        form,
+                                        "basicDetails.departmentSpecialty.department"
+                                      ) ===
+                                      form1.if.properties.departmentSpecialty.properties
+                                        .department.const &&
+                                      form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
+                                        getValueByPath(
+                                          form,
+                                          "basicDetails.departmentSpecialty.specialty"
+                                        )
+                                      ) &&
+                                      form1 !== undefined &&
+                                      "regionalCallResponsibilities" in form1?.properties && (
+                                        <ApplicationFieldCard
+                                          object={
+                                            form1?.properties?.regionalCallResponsibilities
+                                          }
+                                          gridStyle={""}
+                                          baseKey={"regionalCallResponsibilities"}
+                                          basicForm={form}
+                                          setBasicForm={setForm}
+                                          isBasicPath={true}
+                                          isPOD={true}
+                                        />
+                                      )}
+                                    {form1 !== undefined &&
+                                      "billingNumber" in form1?.properties && (
+                                        <ApplicationFieldCard
+                                          object={form1?.properties?.billingNumber}
+                                          gridStyle={style.twoCol}
+                                          baseKey={"billingNumber"}
+                                          basicForm={form}
+                                          setBasicForm={setForm}
+                                          isBasicPath={true}
+                                          isPOD={true}
+                                        />
+                                      )}
+                                  </div>
+                                )}
+                              </div>
+
+                              {form?.formSchemas
+                                ?.filter(
+                                  (data) => {
+                                    if (form?.creationType === "NEW") {
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                                        data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    } else {
+                                      // Default filter when form?.creationType is not "NEW"
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
+                                        // data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    }
+                                  })
+                                ?.map((data, index) => (
+                                  <div
+                                    className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
+                                      ? style.tableDataStyle1
+                                      : style.tableDataStyle
+                                      }`}
+                                  >
+                                    <div
+                                      className={` ${expand?.index === index + 1
+                                        ? style.tableHeaderGridStyleForm
+                                        : style.tableHeaderGridStyle
+                                        } ${style.marginTop10}`}
+                                    >
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10} ${style.justifySpaceAround
+                                            } ${form?.forms[index]?.status !== "APPROVED"
+                                              ? style.greyDotStyle
+                                              : style.greenDotStyle
+                                            }`}
+                                        ></div>
+                                      </div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div className={`${style.tableDataFontStyle1}`}>
+                                          {data?.title}
+                                        </div>
+                                      </div>
+                                      {/* {expand?.status && expand?.index === index + 1 ? ( 
+                          <>
+                            {form?.forms[index]?.status !== "APPROVED" ? (
+                              <div
+                                className={`${style.purpleButton} ${style.cursorPointer} `}
+                              >
+                                <div
+                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  onClick={() =>
+                                    handleStepsVerify(form?.forms[index]?.id)
+                                  }
+                                >
+                                  Verify
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                className={`${style.greenButton}  ${style.cursorPointer} `}
+                              >
+                                <div
+                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                >
+                                  Verified
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10}${style.justifySpaceAround
+                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                    ? style.greyDotStyle
+                                    : style.greenDotStyle
+                                  }`}
+                              ></div>
+                            </div>
+                            <div
+                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                            >
+                              <div
+                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                              >
+                                {form?.forms
+                                  ?.filter(
+                                    (formData, formIndex) => formIndex === index
+                                  )
+                                  ?.map(
+                                    (data) => data?.uploadedFiles?.length || 0
+                                  )}
+                              </div>
+                            </div>
+                          </>
+                        )} */}
+                                      {expand?.status && expand?.index === index + 1 ? (
+                                        <>
+                                          {credApproval?.some((newData) => {
+                                            console.log("newData.approvalRequired:", newData.approvalRequired);
+                                            return newData.schemaId === data.id && newData.approvalRequired;
+                                          }) && (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
                                                     const isMatch = logDetails.logs.some((log) => {
                                                       if (log.form && log.form.id) {
                                                         const match = log.form.id === form?.forms[index]?.id;
@@ -7071,24 +7731,755 @@ const NewActiveApplication = ({
 
                                                           // Determine selectedTabRole based on selectedTab
                                                           let selectedTabRole;
-                                                          switch (selectedTab) {
-                                                            case 'level-1':
-                                                              selectedTabRole = "Staff Manager";
-                                                              break;
-                                                            case 'level-2':
-                                                              selectedTabRole = "Department Head";
-                                                              break;
-                                                            case 'level-3':
-                                                              selectedTabRole = "Chief Of Staff";
-                                                              break;
-                                                            case 'level-4':
-                                                              selectedTabRole = "Advisory Committee";
-                                                              break;
-                                                            case 'level-5':
-                                                              selectedTabRole = "Board";
-                                                              break;
-                                                            default:
-                                                              selectedTabRole = "";
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
+                                                          }
+
+                                                          // Check if selectedTabRole matches log.role
+                                                          if (selectedTabRole === log.role) {
+                                                            console.log("Selected tab role matches log role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          return Match;
+                                                        }
+                                                      }
+                                                      return false;
+                                                    });
+
+                                                    return (
+                                                      <div>
+                                                        {isMatch ? (
+                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                              Verified
+                                                            </div>
+                                                          </div>
+                                                        ) : (
+                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                              <div
+                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              >
+                                                                Verify
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Verified
+                                                              </div>
+                                                            </div>
+                                                          )
+                                                        )}
+                                                      </div>
+                                                    );
+                                                  })()
+                                                )}
+                                              </>
+                                            )}
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10}${style.justifySpaceAround
+                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                  ? style.greyDotStyle
+                                                  : style.greenDotStyle
+                                                }`}
+                                            ></div>
+                                          </div>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10}${style.justifySpaceAround
+                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                  ? style.greyDotStyle
+                                                  : style.greenDotStyle
+                                                }`}
+                                            ></div>
+                                          </div>
+                                          <div
+                                            className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                          >
+                                            <div
+                                              className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                            >
+                                              {form?.forms
+                                                ?.filter(
+                                                  (formData, formIndex) => formIndex === index
+                                                )
+                                                ?.map(
+                                                  (data) => data?.uploadedFiles?.length || 0
+                                                )}
+                                            </div>
+                                          </div>
+                                        </>
+                                      )}
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                        >
+                                          {expand?.status && expand?.index === index + 1 ? (
+                                            <RemoveIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => {
+                                                setExpand({ status: false, index: 0 });
+                                                setFormSchemaId("");
+                                              }}
+                                            />
+                                          ) : (
+                                            <AddIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => {
+                                                setExpand({ status: true, index: index + 1 });
+                                                setFormSchemaId(data?.id);
+                                              }}
+                                            />
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {expand?.status && expand?.index === index + 1 && (
+                                      <div
+                                        className={`${style.marginTop} ${style.screenPadding}`}
+                                      >
+                                        {renderFieldsBasedOnStep(data)}
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                            </div>
+                            {applicationType === "NEW" ? (
+                              <div>
+                                <div
+                                  className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
+                                >
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
+                                    ></div>
+                                  </div>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                  >
+                                    <div className={`${style.tableHeaderTextStyle}`}>
+                                      Requested Form Completeness Check
+                                    </div>
+                                  </div>
+                                </div>
+                                {form?.formSchemas
+                                  ?.filter((data) => data?.formCategory === "Acknowledgement")
+                                  ?.map((data, index) => (
+                                    <div
+                                      className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
+                                        expandAcknowledgement?.index === index
+                                        ? style.tableDataStyle1
+                                        : style.tableDataStyle
+                                        }`}
+                                    >
+                                      <div
+                                        className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
+                                          expandAcknowledgement?.index === index
+                                          ? style.tableHeaderGridStyleForm
+                                          : style.tableHeaderGridStyle1
+                                          }`}
+                                      >
+                                        <div
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter} `}
+                                        >
+                                          <div
+                                            className={`${style.marginLeft10} ${style.justifySpaceAround
+                                              } ${form?.forms?.filter(
+                                                (data) =>
+                                                  data?.formCategory === "Acknowledgement"
+                                              )[index]?.status !== "APPROVED"
+                                                ? style.greyDotStyle
+                                                : style.greenDotStyle
+                                              }`}
+                                          ></div>
+                                        </div>
+                                        <div
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                        >
+                                          <div className={`${style.tableDataFontStyle1}`}>
+                                            {data?.title}
+                                          </div>
+                                        </div>
+                                        {/* {expandAcknowledgement?.status &&
+                          expandAcknowledgement?.index === index && (
+                            <>
+                              {form?.forms?.filter(
+                                (data) =>
+                                  data?.formCategory === "Acknowledgement"
+                              )[index]?.status !== "APPROVED" ? (
+                                <div
+                                  className={`${style.purpleButton} ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                    onClick={() =>
+                                      handleStepsVerify(
+                                        form?.forms?.filter(
+                                          (data) =>
+                                            data?.formCategory ===
+                                            "Acknowledgement"
+                                        )[index]?.id
+                                      )
+                                    }
+                                  >
+                                    Verify
+                                  </div>
+                                </div>
+                              ) : (
+                                <div
+                                  className={`${style.greenButton}  ${style.cursorPointer} `}
+                                >
+                                  <div
+                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                  >
+                                    Verified
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )} */}
+                                        {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                                          <>
+                                            {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                              <>
+                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                          if (match) {
+                                                            let Match = false;
+
+                                                            // Check if userRole includes log.role
+                                                            if (workModeType === log.role) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            // Determine selectedTabRole based on selectedTab
+                                                            let selectedTabRole;
+                                                            switch (selectedTab) {
+                                                              case 'level-1':
+                                                                selectedTabRole = "Staff Manager";
+                                                                break;
+                                                              case 'level-2':
+                                                                selectedTabRole = "Department Head";
+                                                                break;
+                                                              case 'level-3':
+                                                                selectedTabRole = "Chief Of Staff";
+                                                                break;
+                                                              case 'level-4':
+                                                                selectedTabRole = "Advisory Committee";
+                                                                break;
+                                                              case 'level-5':
+                                                                selectedTabRole = "Board";
+                                                                break;
+                                                              default:
+                                                                selectedTabRole = "";
+                                                            }
+
+                                                            // Check if selectedTabRole matches log.role
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
+                                                          }
+                                                        }
+                                                        return false;
+                                                      });
+
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()}
+                                                  </>
+                                                )}
+                                              </>
+                                            )}
+                                          </>
+                                        )}
+                                        <div
+                                          className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                        >
+                                          <div
+                                            className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                          >
+                                            {expandAcknowledgement?.status &&
+                                              expandAcknowledgement?.index === index ? (
+                                              <RemoveIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: false,
+                                                    index: 0,
+                                                  });
+                                                  setFormSchemaId("");
+                                                }}
+                                              />
+                                            ) : (
+                                              <AddIcon
+                                                sx={{
+                                                  fontSize: 20,
+                                                  color: "#94979A",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() => {
+                                                  setExpandAcknowledgement({
+                                                    status: true,
+                                                    index: index,
+                                                  });
+                                                  setFormSchemaId(data?.id);
+                                                }}
+                                              />
+                                            )}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {expandAcknowledgement?.status &&
+                                        expandAcknowledgement?.index === index && (
+                                          <div
+                                            className={`${style.marginTop} ${style.screenPadding}`}
+                                          >
+                                            {form?.forms?.filter(
+                                              (data) => data?.formCategory === "Acknowledgement"
+                                            )[index]?.uploadedFiles?.length !== 0 && (
+                                                <>
+                                                  <iframe
+                                                    src={
+                                                      form?.forms?.filter(
+                                                        (data) =>
+                                                          data?.formCategory === "Acknowledgement"
+                                                      )[index]?.uploadedFiles[
+                                                        form?.forms?.filter(
+                                                          (data) =>
+                                                            data?.formCategory ===
+                                                            "Acknowledgement"
+                                                        )[index]?.uploadedFiles?.length - 1
+                                                      ]?.fileURL
+                                                    }
+                                                    width="100%"
+                                                    height="600px"
+                                                  ></iframe>
+                                                  {(data?.description ===
+                                                    "Statement of Confidentiality and Non-Disclosure" ||
+                                                    data?.description ===
+                                                    "Conflict Of Interest Policy") && (
+                                                      <div className={style.grid2}>
+                                                        <div
+                                                          onClick={
+                                                            form?.forms[index]?.staffEsign === null
+                                                              ? () =>
+                                                                handleStaffEsign(
+                                                                  form?.forms?.filter(
+                                                                    (data) =>
+                                                                      data?.formCategory ===
+                                                                      "Acknowledgement"
+                                                                  )[index]?.id
+                                                                )
+                                                              : () => { }
+                                                          }
+                                                        >
+                                                          <ESignature
+                                                            userName={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[index]?.staffEsign?.name
+                                                                : ""
+                                                            }
+                                                            encData={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? form?.forms?.filter(
+                                                                  (data) =>
+                                                                    data?.formCategory ===
+                                                                    "Acknowledgement"
+                                                                )[index]?.staffEsign?.esign
+                                                                : ""
+                                                            }
+                                                            showData={
+                                                              form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? true
+                                                                : false
+                                                            }
+                                                            showDatais={true}
+                                                          />
+                                                        </div>
+                                                        <div className={style.verticalAlignCenter}>
+                                                          <div className={style.displayInRow}>
+                                                            <div className={style.dateTitle}>
+                                                              Date:{" "}
+                                                            </div>
+                                                            <div
+                                                              className={`${style.date} ${style.marginLeft}`}
+                                                            >
+                                                              {form?.forms?.filter(
+                                                                (data) =>
+                                                                  data?.formCategory ===
+                                                                  "Acknowledgement"
+                                                              )[index]?.staffEsign !== null
+                                                                ? format(
+                                                                  new Date(
+                                                                    form?.forms?.filter(
+                                                                      (data) =>
+                                                                        data?.formCategory ===
+                                                                        "Acknowledgement"
+                                                                    )[
+                                                                      index
+                                                                    ]?.staffEsign?.signedDate
+                                                                  ),
+                                                                  canadaData?.dateFormat ||
+                                                                  "dd/MM/yyyy"
+                                                                )
+                                                                : ""}
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    )}
+                                                </>
+                                              )}
+                                          </div>
+                                        )}
+                                    </div>
+                                  ))}
+                              </div>
+                            ) : (" ")}
+                            <div className={style.marginBottom20}></div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
+                          <div>
+
+
+                            <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
+
+                              <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
+                              </div>
+
+                            </div>
+                            <div>
+                              <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
+
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                    <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
+                                  </div>
+
+
+                                  {(expand?.status && expand?.index === 0) ? (
+                                    <>
+                                      {!form?.basicInformationStatus ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                                        </div>
+                                      )}
+                                    </>
+                                  ) : (
+                                    " "
+                                  )}
+
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                    <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                      {
+                                        (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
+                                          : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
+                                      }                    </div>
+                                  </div>
+                                </div>
+                                {expand?.status && expand?.index === 0 &&
+                                  <div className={`${style.marginTop} ${style.screenPadding}`}>
+
+                                    {form1 !== undefined && 'applicant' in form1?.properties && (
+                                      <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                    )}
+                                    {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
+                                      <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                    )}
+                                    {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
+                                      <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                    )}
+                                    {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
+                                      form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
+                                        <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                      )
+                                    )}
+                                    {form1 !== undefined && 'billingNumber' in form1?.properties && (
+                                      <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
+                                    )}
+                                  </div>
+                                }
+
+
+                              </div>
+
+                              {
+                                form?.formSchemas?.filter(
+                                  (data) => {
+                                    if (form?.creationType === "NEW") {
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
+                                        data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    } else {
+                                      // Default filter when form?.creationType is not "NEW"
+                                      return (
+                                        (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
+                                        // data?.schemaCategory !== "UploadYourDoc"
+                                      );
+                                    }
+                                  })?.map((data, index) => (
+
+                                    <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                      <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
+
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                        </div>
+                                        {/* {!(expand?.status && expand?.index === index + 1) && (
+                          <>
+                            {form?.forms[index]?.status === "APPROVED" ? (
+                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
+                            ) : (
+                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
+                            )}
+                          </>
+                        )} */}
+                                        {/* {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {credApproval?.filter(
+                                (newData) =>{console.log("newData.schema:", newData.schemaId);
+                                    console.log("data.id:", data.id);
+                                   return newData.schemaId === data.id
+                                }
+                                )[0]?.approvalRequired === true ? (
+                                <>
+                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )}
+                                </>
+                                ) : (""
+                                )}
+                            </>
+                            )} */}
+
+                                        {/* working with log details without credapproval false */}
+                                        {/* {expand?.status && expand?.index === index + 1 && (
+                            <>
+                                {credApproval?.some((newData) => {
+                          console.log("newData.approvalRequired:", newData.approvalRequired);
+                          return newData.schemaId === data.id && newData.approvalRequired;
+                        }) && (
+                          <>
+                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                              (() => {
+                                const isMatch = logDetails.logs.some((log) => {
+                                  if (log.form && log.form.id) {
+                                    const match = log.form.id === form?.forms[index]?.id;
+                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                    if (match) {
+                                      let Match = false;
+
+                                      // Check if userRole includes log.role
+                                      if (userRole?.includes(log.role)) {
+                                        console.log("Role matches user role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      // Determine selectedTabRole based on selectedTab
+                                      let selectedTabRole;
+                                      if (selectedTab === 'level-2') {
+                                        selectedTabRole = "Department Head";
+                                      } else if (selectedTab === 'level-3') {
+                                        selectedTabRole = "Chief Of Staff";
+                                      } else if (selectedTab === 'level-4') {
+                                        selectedTabRole = "Advisory Committee";
+                                      } else if (selectedTab === 'level-5') {
+                                        selectedTabRole = "Board";
+                                      } else if (selectedTab === 'level-1') {
+                                        selectedTabRole = "Staff Manager";
+                                      }
+
+                                      // Check if selectedTabRole matches log.role
+                                      if (selectedTabRole === log.role) {
+                                        console.log("Selected tab role matches log role: " + log.role);
+                                        Match = true;
+                                      }
+
+                                      return Match;
+                                    }
+                                  }
+                                  return false;
+                                });
+
+                                return (
+                                  <div>
+                                    {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    form?.forms[index]?.status !== "APPROVED" ? (
+                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                        <div
+                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        >
+                                        Approve
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                        Approved
+                                        </div>
+                                    </div>
+                                    )
+                                    )}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </>
+                        )}
+                            </>
+                            )} */}
+                                        {/* woking with credapproval false  */}
+                                        {expand?.status && expand?.index === index + 1 && (
+                                          <>
+                                            {credApproval?.some((newData) => {
+                                              console.log("newData.approvalRequired:", newData.approvalRequired);
+                                              return newData.schemaId === data.id && newData.approvalRequired;
+                                            }) ? (
+                                              <>
+                                                {logDetails?.logs && Array.isArray(logDetails.logs) && (
+                                                  (() => {
+                                                    const isMatch = logDetails.logs.some((log) => {
+                                                      if (log.form && log.form.id) {
+                                                        const match = log.form.id === form?.forms[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                        if (match) {
+                                                          let Match = false;
+
+                                                          // Check if userRole includes log.role
+                                                          if (workModeType === log.role) {
+                                                            console.log("Role matches user role: " + log.role);
+                                                            Match = true;
+                                                          }
+
+                                                          // Determine selectedTabRole based on selectedTab
+                                                          let selectedTabRole;
+                                                          if (selectedTab === 'level-2') {
+                                                            selectedTabRole = "Department Head";
+                                                          } else if (selectedTab === 'level-3') {
+                                                            selectedTabRole = "Chief Of Staff";
+                                                          } else if (selectedTab === 'level-4') {
+                                                            selectedTabRole = "Advisory Committee";
+                                                          } else if (selectedTab === 'level-5') {
+                                                            selectedTabRole = "Board";
+                                                          } else if (selectedTab === 'level-1') {
+                                                            selectedTabRole = "Staff Manager";
                                                           }
 
                                                           // Check if selectedTabRole matches log.role
@@ -7131,9 +8522,8 @@ const NewActiveApplication = ({
                                                         )}
                                                       </div>
                                                     );
-                                                  })()}
-                                                </>
-
+                                                  })()
+                                                )}
                                               </>
                                             ) : (
                                               <div className={`${style.greenButton} ${style.cursorPointer}`}>
@@ -7144,104 +8534,292 @@ const NewActiveApplication = ({
                                             )}
                                           </>
                                         )}
+
+                                        <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                          <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                            {
+                                              (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                                : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
+                                            }
+
+                                          </div>
+                                        </div>
+                                      </div>
+                                      {expand?.status && expand?.index === index + 1 &&
+                                        <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                          {renderFieldsBasedOnStep(data)}
+                                        </div>
+                                      }
+                                    </div>))}
+
+                            </div>
+                            {applicationType === "NEW" ? (
+                              <div>
+                                <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                    <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
+                                  </div>
+                                  <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
+                                    <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
+                                  </div>
+                                </div>
+                                {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
+                                  <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
+                                    <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
+
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
+                                      </div>
+                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                        <>
+                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
+                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
+                            </div>
+                          ) : (
+                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
+                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
+                            </div>
+                          )}
+                        </>
+                      )} */}
+                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                                                                            {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Approved
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Approve
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Approved
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                            </div>
+                                          );
+                                        })()}
                                       </>
                                     )}
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                        {
-                                          (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
-                                        }
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                                  </>
+                                )}
+                              </>
+                            )} */}
+                                      {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                                         <>
-                                          <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                          {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                            <div className={style.grid2}>
-                                              <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                                <ESignature
-                                                  userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                  encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                  showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                  showDatais={true}
-                                                />
-                                              </div>
-                                              <div className={style.verticalAlignCenter}>
-                                                <div className={style.displayInRow}>
-                                                  <div className={style.dateTitle}>Date: </div>
-                                                  <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                          {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
+                                            <>
+                                              {credApproval?.some((newData) => {
+
+                                                return newData.schemaId === data.id && newData.approvalRequired;
+
+                                              }) ? (
+                                                <>
+                                                  <>
+                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                      const isMatch = logDetails.logs.some((log) => {
+                                                        if (log.form && log.form.id) {
+                                                          const match = log.form.id === form?.forms[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                                          if (match) {
+                                                            let Match = false;
+
+                                                            // Check if userRole includes log.role
+                                                            if (workModeType === log.role) {
+                                                              console.log("Role matches user role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            // Determine selectedTabRole based on selectedTab
+                                                            let selectedTabRole;
+                                                            switch (selectedTab) {
+                                                              case 'level-1':
+                                                                selectedTabRole = "Staff Manager";
+                                                                break;
+                                                              case 'level-2':
+                                                                selectedTabRole = "Department Head";
+                                                                break;
+                                                              case 'level-3':
+                                                                selectedTabRole = "Chief Of Staff";
+                                                                break;
+                                                              case 'level-4':
+                                                                selectedTabRole = "Advisory Committee";
+                                                                break;
+                                                              case 'level-5':
+                                                                selectedTabRole = "Board";
+                                                                break;
+                                                              default:
+                                                                selectedTabRole = "";
+                                                            }
+
+                                                            // Check if selectedTabRole matches log.role
+                                                            if (selectedTabRole === log.role) {
+                                                              console.log("Selected tab role matches log role: " + log.role);
+                                                              Match = true;
+                                                            }
+
+                                                            return Match;
+                                                          }
+                                                        }
+                                                        return false;
+                                                      });
+
+                                                      return (
+                                                        <div>
+                                                          {isMatch ? (
+                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                Approved
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                <div
+                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                >
+                                                                  Approve
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            )
+                                                          )}
+                                                        </div>
+                                                      );
+                                                    })()}
+                                                  </>
+
+                                                </>
+                                              ) : (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Approved
+                                                  </div>
                                                 </div>
-                                              </div>
-                                            </div>
+                                              )}
+                                            </>
                                           )}
                                         </>
                                       )}
+                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
+                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
+                                          {
+                                            (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
+                                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
+                                          }
+                                        </div>
+                                      </div>
                                     </div>
-                                  }
-                                </div>))}
-                            </div>
-                          ) : (" ")}
-                          <div className={style.marginBottom20}></div>
-                        </div >
-                      </div >
-                    )}
-                  </>
-                </div >
-              </>
-            ) : (
-              <>
-                <div className={`${style.displayInCol}`}>
-                  <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}>
-                    <div className={style.spaceBetween}>
-                      <div className={style.displayInRow}>
-                        <div className={`${style.photoBorderStyle}`}>
-
-                          <img
-                            src={form?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
-                            alt="Profile Picture"
-                            className={style.profileImage}
-                          />
-
-                        </div>
-                        <div className={`${style.displayInCol} ${style.textAlignLeft}`}>
-                          <div className={style.marginTop10}>
-                            <span className={`${style.cardTextBoldStyle} ${style.marginTop10}`}>
-                              {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.middleName || ""} {form?.basicDetails?.applicant?.name?.lastName || ""}
-                            </span>
-                            <span className={`${style.cardTextNormalStyle} ${style.marginTop10} ${style.marginLeft10}`}>
-                              {form?.displayId || ""}
-                            </span>
-                          </div>
-                          <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
-                            {form?.providerType?.serviceProviderType || ""} Applying As {form?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || ""}
-                          </div>
-                          <div className={style.spaceBetween}>
-                            <span className={`${style.cardTextBoldStyle} ${style.marginTop30}`}>
-                              {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
-                            </span>
-                            <span className={`${style.emailTextBoldStyle} ${style.marginTop30} ${style.marginLeft20}`}>
-                              {form?.basicDetails?.applicant?.email?.officialEmail || ""}
-                            </span>
+                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
+                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
+                                        {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
+                                          <>
+                                            <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
+                                            {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
+                                              <div className={style.grid2}>
+                                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                  <ESignature
+                                                    userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
+                                                    encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
+                                                    showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
+                                                    showDatais={true}
+                                                  />
+                                                </div>
+                                                <div className={style.verticalAlignCenter}>
+                                                  <div className={style.displayInRow}>
+                                                    <div className={style.dateTitle}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+                                    }
+                                  </div>))}
+                              </div>
+                            ) : (" ")}
+                            <div className={style.marginBottom20}></div>
                           </div>
                         </div>
-                      </div>
-                      <div className={`${style.displayInRow} ${style.marginRight20}`}>
-                        <div className={style.displayInCol}>
-                          <div className={style.marginTop15}>
-                            <span className={style.rightAlignTextStyle}>
-                              Days To Complete:
-                            </span>
-                            <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
-                              15
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      )}
+                    </>
                   </div>
                   <>
                     {(workModeType === 'Staff Manager') ? (
@@ -7625,7 +9203,8 @@ const NewActiveApplication = ({
                                     >
                                       <div
                                         className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms[index]?.status !== "APPROVED"
+                                          } ${form?.forms[index]?.status !== "APPROVED" &&
+                                            form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                             ? style.greyDotStyle
                                             : style.greenDotStyle
                                           }`}
@@ -7637,21 +9216,55 @@ const NewActiveApplication = ({
                                       <div className={`${style.tableDataFontStyle1}`}>
                                         {data?.title}
                                       </div>
+                                      <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      >
+                                        <div
+                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                        >
+                                          {expand?.status && expand?.index === index + 1 ? (
+                                            <RemoveIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => {
+                                                setExpand({ status: false, index: 0 });
+                                                setFormSchemaId("");
+                                              }}
+                                            />
+                                          ) : (
+                                            <AddIcon
+                                              sx={{
+                                                fontSize: 20,
+                                                color: "#94979A",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() => {
+                                                setExpand({ status: true, index: index + 1 });
+                                                setFormSchemaId(data?.id);
+                                              }}
+                                            />
+                                          )}
+                                        </div>
+                                      </div>
                                     </div>
-                                    {/* {expand?.status && expand?.index === index + 1 ? ( 
+                                    {/* {expand?.status && expand?.index === index + 1 ? (
                           <>
-                            {form?.forms[index]?.status !== "APPROVED" ? (
+                            {form?.forms[index]?.status !== "APPROVED" &&
+                             form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
                               <div
                                 className={`${style.purpleButton} ${style.cursorPointer} `}
                               >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  onClick={() =>
-                                    handleStepsVerify(form?.forms[index]?.id)
-                                  }
-                                >
-                                  Verify
-                                </div>
+                               {form?.forms[index]?.schemaCategory !== "UploadYourDoc" && (
+                                    <div
+                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                    >
+                                      Verify
+                                    </div>
+                                  )}
                               </div>
                             ) : (
                               <div
@@ -7672,7 +9285,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -7683,7 +9297,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms[index]?.status !== "APPROVED" &&
+                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -7829,39 +9444,39 @@ const NewActiveApplication = ({
                                         </div>
                                       </>
                                     )}
+                                    {/* <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
                                     <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
                                     >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expand?.status && expand?.index === index + 1 ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: false, index: 0 });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: true, index: index + 1 });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
+                                      {expand?.status && expand?.index === index + 1 ? (
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setExpand({ status: false, index: 0 });
+                                            setFormSchemaId("");
+                                          }}
+                                        />
+                                      ) : (
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                          onClick={() => {
+                                            setExpand({ status: true, index: index + 1 });
+                                            setFormSchemaId(data?.id);
+                                          }}
+                                        />
+                                      )}
                                     </div>
+                                  </div> */}
                                   </div>
                                   {expand?.status && expand?.index === index + 1 && (
                                     <div
@@ -7969,91 +9584,198 @@ const NewActiveApplication = ({
                               )}
                             </>
                           )} */}
+                                      {/* wokring credapproval without false */}
+                                      {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
+                              <>
+                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement") && (
+                                  <>
+                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                      <>
+                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                          const isMatch = logDetails.logs.some((log) => {
+                                            if (log.form && log.form.id) {
+                                              const match = log.form.id === form?.forms[index]?.id;
+                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+
+                                              if (match) {
+                                                let Match = false;
+
+                                                // Check if userRole includes log.role
+                                                if (userRole?.includes(log.role)) {
+                                                  console.log("Role matches user role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                // Determine selectedTabRole based on selectedTab
+                                                let selectedTabRole;
+                                                switch (selectedTab) {
+                                                  case 'level-1':
+                                                    selectedTabRole = "Staff Manager";
+                                                    break;
+                                                  case 'level-2':
+                                                    selectedTabRole = "Department Head";
+                                                    break;
+                                                  case 'level-3':
+                                                    selectedTabRole = "Chief Of Staff";
+                                                    break;
+                                                  case 'level-4':
+                                                    selectedTabRole = "Advisory Committee";
+                                                    break;
+                                                  case 'level-5':
+                                                    selectedTabRole = "Board";
+                                                    break;
+                                                  default:
+                                                    selectedTabRole = "";
+                                                }
+
+                                                // Check if selectedTabRole matches log.role
+                                                if (selectedTabRole === log.role) {
+                                                  console.log("Selected tab role matches log role: " + log.role);
+                                                  Match = true;
+                                                }
+
+                                                return Match;
+                                              }
+                                            }
+                                            return false;
+                                          });
+
+                                          return (
+                                            <div>
+                                               {isMatch ? (
+                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                          Approved
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                          <div
+                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                          >
+                                            Approve
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                            Approved
+                                          </div>
+                                        </div>
+                                      )
+                                    )}
+                                            </div>
+                                          );
+                                        })()}
+                                      </>
+                                    )}
+                                  </>
+                                )}
+                              </>
+                            )} */}
+                                      {/* working with cred Approval */}
                                       {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
                                         <>
                                           {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
                                             <>
-                                              {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                              {credApproval?.some((newData) => {
+                                                if (newData.schemaId === data.id && newData.approvalRequired) {
+                                                  return true;
+                                                }
+                                                return false;
+                                              }) ? (
                                                 <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                    const isMatch = logDetails.logs.some((log) => {
-                                                      if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                  {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
+                                                    <>
+                                                      {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
+                                                        const isMatch = logDetails.logs.some((log) => {
+                                                          if (log.form && log.form.id) {
+                                                            const match = log.form.id === form?.forms[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
 
-                                                        if (match) {
-                                                          let Match = false;
+                                                            if (match) {
+                                                              let Match = false;
 
-                                                          // Check if userRole includes log.role
-                                                          if (workModeType === log.role) {
-                                                            console.log("Role matches user role: " + log.role);
-                                                            Match = true;
+                                                              // Check if userRole includes log.role
+                                                              if (workModeType === log.role) {
+                                                                console.log("Role matches user role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              // Determine selectedTabRole based on selectedTab
+                                                              let selectedTabRole;
+                                                              switch (selectedTab) {
+                                                                case 'level-1':
+                                                                  selectedTabRole = "Staff Manager";
+                                                                  break;
+                                                                case 'level-2':
+                                                                  selectedTabRole = "Department Head";
+                                                                  break;
+                                                                case 'level-3':
+                                                                  selectedTabRole = "Chief Of Staff";
+                                                                  break;
+                                                                case 'level-4':
+                                                                  selectedTabRole = "Advisory Committee";
+                                                                  break;
+                                                                case 'level-5':
+                                                                  selectedTabRole = "Board";
+                                                                  break;
+                                                                default:
+                                                                  selectedTabRole = "";
+                                                              }
+
+                                                              // Check if selectedTabRole matches log.role
+                                                              if (selectedTabRole === log.role) {
+                                                                console.log("Selected tab role matches log role: " + log.role);
+                                                                Match = true;
+                                                              }
+
+                                                              return Match;
+                                                            }
                                                           }
+                                                          return false;
+                                                        });
 
-                                                          // Determine selectedTabRole based on selectedTab
-                                                          let selectedTabRole;
-                                                          switch (selectedTab) {
-                                                            case 'level-1':
-                                                              selectedTabRole = "Staff Manager";
-                                                              break;
-                                                            case 'level-2':
-                                                              selectedTabRole = "Department Head";
-                                                              break;
-                                                            case 'level-3':
-                                                              selectedTabRole = "Chief Of Staff";
-                                                              break;
-                                                            case 'level-4':
-                                                              selectedTabRole = "Advisory Committee";
-                                                              break;
-                                                            case 'level-5':
-                                                              selectedTabRole = "Board";
-                                                              break;
-                                                            default:
-                                                              selectedTabRole = "";
-                                                          }
-
-                                                          // Check if selectedTabRole matches log.role
-                                                          if (selectedTabRole === log.role) {
-                                                            console.log("Selected tab role matches log role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          return Match;
-                                                        }
-                                                      }
-                                                      return false;
-                                                    });
-
-                                                    return (
-                                                      <div>
-                                                        {isMatch ? (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
-                                                            </div>
+                                                        return (
+                                                          <div>
+                                                            {isMatch ? (
+                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                  Approved
+                                                                </div>
+                                                              </div>
+                                                            ) : (
+                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                  <div
+                                                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  >
+                                                                    Approve
+                                                                  </div>
+                                                                </div>
+                                                              ) : (
+                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                                    Approved
+                                                                  </div>
+                                                                </div>
+                                                              )
+                                                            )}
                                                           </div>
-                                                        ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
-                                                            </div>
-                                                          ) : (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    );
-                                                  })()}
+                                                        );
+                                                      })()}
+                                                    </>
+                                                  )}
                                                 </>
+                                              ) : (
+                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                  <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
+                                                    Approved
+                                                  </div>
+                                                </div>
                                               )}
                                             </>
                                           )}
@@ -8227,1738 +9949,16 @@ const NewActiveApplication = ({
                         </div>
                       </div>
                     ) : (
-                      <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop10}`}>
-                        <div>
-
-
-                          <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyleCred1} `}>
-
-                            <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                              <div className={`${style.tableHeaderTextStyleCred}`}> Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026 </div>
-                            </div>
-
-                          </div>
-                          <div>
-                            <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === 0) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                              <div className={` ${(expand?.status && expand?.index === 0) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1} ${style.marginTop10}`}>
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${(expand?.status && expand?.index === 0) ? style.tableHeaderTextStyleCred : style.tableDataFontStyleCred}`}>Applicant Profile Information</div>
-                                </div>
-
-
-                                {(expand?.status && expand?.index === 0) ? (
-                                  <>
-                                    {!form?.basicInformationStatus ? (
-                                      <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleVerify()}>Approve</div>
-                                      </div>
-                                    ) : (
-                                      <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                                      </div>
-                                    )}
-                                  </>
-                                ) : (
-                                  " "
-                                )}
-
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                  <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                    {
-                                      (expand?.status && expand?.index === 0) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: false, index: 0 })} />)
-                                        : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => setExpand({ status: true, index: 0 })} />)
-                                    }                    </div>
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 &&
-                                <div className={`${style.marginTop} ${style.screenPadding}`}>
-
-                                  {form1 !== undefined && 'applicant' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.applicant} gridStyle={style.applicantGrid} baseKey={'applicant'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'credentialingPrivilegeCategory' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.credentialingPrivilegeCategory} gridStyle={style.credentialingGrid} baseKey={'credentialingPrivilegeCategory'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && 'departmentSpecialty' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.departmentSpecialty} gridStyle={style.twoCol} baseKey={'departmentSpecialty'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                  {form1 !== undefined && (getValueByPath(form, 'basicDetails.departmentSpecialty.department') === form1.if.properties.departmentSpecialty.properties.department.const && form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(getValueByPath(form, 'basicDetails.departmentSpecialty.specialty'))) && (
-                                    form1 !== undefined && 'regionalCallResponsibilities' in form1?.properties && (
-                                      <ApplicationFieldCard object={form1?.properties?.regionalCallResponsibilities} gridStyle={''} baseKey={'regionalCallResponsibilities'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                    )
-                                  )}
-                                  {form1 !== undefined && 'billingNumber' in form1?.properties && (
-                                    <ApplicationFieldCard object={form1?.properties?.billingNumber} gridStyle={style.twoCol} baseKey={'billingNumber'} basicForm={form} setBasicForm={setForm} isBasicPath={true} isPOD={true} />
-                                  )}
-                                </div>
-                              }
-
-
-                            </div>
-
-                            {
-                              form?.formSchemas?.filter(
-                                (data) => {
-                                  if (form?.creationType === "NEW") {
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                      data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  } else {
-                                    // Default filter when form?.creationType is not "NEW"
-                                    return (
-                                      (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                      // data?.schemaCategory !== "UploadYourDoc"
-                                    );
-                                  }
-                                })?.map((data, index) => (
-
-                                  <div className={` ${style.marginTop5} ${(expand?.status && expand?.index === index + 1) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                    <div className={` ${expand?.index === index + 1 ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred} ${style.marginTop10}`}>
-
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                      </div>
-                                      {/* {!(expand?.status && expand?.index === index + 1) && (
-                          <>
-                            {form?.forms[index]?.status === "APPROVED" ? (
-                              <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
-                            ) : (
-                              <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
-                            )}
-                          </>
-                        )} */}
-                                      {/* {expand?.status && expand?.index === index + 1 && (
-                            <>
-                                {credApproval?.filter(
-                                (newData) =>{console.log("newData.schema:", newData.schemaId);
-                                    console.log("data.id:", data.id);
-                                   return newData.schemaId === data.id
-                                }
-                                )[0]?.approvalRequired === true ? (
-                                <>
-                                    {form?.forms[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                        <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                        >
-                                        Approve
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    )}
-                                </>
-                                ) : (""
-                                )}
-                            </>
-                            )} */}
-
-                                      {/* working with log details without credapproval false */}
-                                      {/* {expand?.status && expand?.index === index + 1 && (
-                            <>
-                                {credApproval?.some((newData) => {
-                          console.log("newData.approvalRequired:", newData.approvalRequired);
-                          return newData.schemaId === data.id && newData.approvalRequired;
-                        }) && (
-                          <>
-                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                              (() => {
-                                const isMatch = logDetails.logs.some((log) => {
-                                  if (log.form && log.form.id) {
-                                    const match = log.form.id === form?.forms[index]?.id;
-                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                    if (match) {
-                                      let Match = false;
-
-                                      // Check if userRole includes log.role
-                                      if (userRole?.includes(log.role)) {
-                                        console.log("Role matches user role: " + log.role);
-                                        Match = true;
-                                      }
-
-                                      // Determine selectedTabRole based on selectedTab
-                                      let selectedTabRole;
-                                      if (selectedTab === 'level-2') {
-                                        selectedTabRole = "Department Head";
-                                      } else if (selectedTab === 'level-3') {
-                                        selectedTabRole = "Chief Of Staff";
-                                      } else if (selectedTab === 'level-4') {
-                                        selectedTabRole = "Advisory Committee";
-                                      } else if (selectedTab === 'level-5') {
-                                        selectedTabRole = "Board";
-                                      } else if (selectedTab === 'level-1') {
-                                        selectedTabRole = "Staff Manager";
-                                      }
-
-                                      // Check if selectedTabRole matches log.role
-                                      if (selectedTabRole === log.role) {
-                                        console.log("Selected tab role matches log role: " + log.role);
-                                        Match = true;
-                                      }
-
-                                      return Match;
-                                    }
-                                  }
-                                  return false;
-                                });
-
-                                return (
-                                  <div>
-                                    {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    form?.forms[index]?.status !== "APPROVED" ? (
-                                    <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                        <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                        >
-                                        Approve
-                                        </div>
-                                    </div>
-                                    ) : (
-                                    <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                        Approved
-                                        </div>
-                                    </div>
-                                    )
-                                    )}
-                                  </div>
-                                );
-                              })()
-                            )}
-                          </>
-                        )}
-                            </>
-                            )} */}
-                                      {/* woking with credapproval false  */}
-                                      {expand?.status && expand?.index === index + 1 && (
-                                        <>
-                                          {credApproval?.some((newData) => {
-                                            console.log("newData.approvalRequired:", newData.approvalRequired);
-                                            return newData.schemaId === data.id && newData.approvalRequired;
-                                          }) ? (
-                                            <>
-                                              {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                                (() => {
-                                                  const isMatch = logDetails.logs.some((log) => {
-                                                    if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                      if (match) {
-                                                        let Match = false;
-
-                                                        // Check if userRole includes log.role
-                                                        if (workModeType === log.role) {
-                                                          console.log("Role matches user role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        // Determine selectedTabRole based on selectedTab
-                                                        let selectedTabRole;
-                                                        if (selectedTab === 'level-2') {
-                                                          selectedTabRole = "Department Head";
-                                                        } else if (selectedTab === 'level-3') {
-                                                          selectedTabRole = "Chief Of Staff";
-                                                        } else if (selectedTab === 'level-4') {
-                                                          selectedTabRole = "Advisory Committee";
-                                                        } else if (selectedTab === 'level-5') {
-                                                          selectedTabRole = "Board";
-                                                        } else if (selectedTab === 'level-1') {
-                                                          selectedTabRole = "Staff Manager";
-                                                        }
-
-                                                        // Check if selectedTabRole matches log.role
-                                                        if (selectedTabRole === log.role) {
-                                                          console.log("Selected tab role matches log role: " + log.role);
-                                                          Match = true;
-                                                        }
-
-                                                        return Match;
-                                                      }
-                                                    }
-                                                    return false;
-                                                  });
-
-                                                  return (
-                                                    <div>
-                                                      {isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Approved
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
-                                                          <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                            <div
-                                                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                            >
-                                                              Approve
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
-                                                            </div>
-                                                          </div>
-                                                        )
-                                                      )}
-                                                    </div>
-                                                  );
-                                                })()
-                                              )}
-                                            </>
-                                          ) : (
-                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                Approved
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
-
-                                      <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                        <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                          {
-                                            (expand?.status && expand?.index === index + 1) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                              : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpand({ status: true, index: index + 1 }); setFormSchemaId(data?.id) }} />)
-                                          }
-
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {expand?.status && expand?.index === index + 1 &&
-                                      <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                        {renderFieldsBasedOnStep(data)}
-                                      </div>
-                                    }
-                                  </div>))}
-
-                          </div>
-                          {applicationType === "NEW" ? (
-                            <div>
-                              <div className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderStyleCred} `}>
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                  <div className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}></div>
-                                </div>
-                                <div className={`${style.displayInRow} ${style.verticalAlignCenter} `} >
-                                  <div className={`${style.tableHeaderTextStyleCred}`}>Requested Form Completeness Check</div>
-                                </div>
-                              </div>
-                              {form?.formSchemas?.filter(data => data?.formCategory === 'Acknowledgement')?.map((data, index) => (
-                                <div className={` ${style.marginTop5} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableDataStyle1 : style.tableDataStyle}`}>
-                                  <div className={` ${style.marginTop10} ${(expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? style.tableHeaderGridStyleFormCred : style.tableHeaderGridStyleCred1}`}>
-
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.tableDataFontStyleCred}`}>{data?.title}</div>
-                                    </div>
-                                    {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                        <>
-                          {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.status !== "APPROVED" ? (
-                            <div className={`${style.purpleButton} ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`} onClick={() => handleStepsVerify(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id)}>Approve</div>
-                            </div>
-                          ) : (
-                            <div className={`${style.greenButton}  ${style.cursorPointer} `}>
-                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>Approved</div>
-                            </div>
-                          )}
-                        </>
-                      )} */}
-                                    {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                              <>
-                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                  <>
-                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                      <>
-                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                          const isMatch = logDetails.logs.some((log) => {
-                                            if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms[index]?.id;
-                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                              if (match) {
-                                                let Match = false;
-
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(log.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                // Determine selectedTabRole based on selectedTab
-                                                let selectedTabRole;
-                                                switch (selectedTab) {
-                                                  case 'level-1':
-                                                    selectedTabRole = "Staff Manager";
-                                                    break;
-                                                  case 'level-2':
-                                                    selectedTabRole = "Department Head";
-                                                    break;
-                                                  case 'level-3':
-                                                    selectedTabRole = "Chief Of Staff";
-                                                    break;
-                                                  case 'level-4':
-                                                    selectedTabRole = "Advisory Committee";
-                                                    break;
-                                                  case 'level-5':
-                                                    selectedTabRole = "Board";
-                                                    break;
-                                                  default:
-                                                    selectedTabRole = "";
-                                                }
-
-                                                // Check if selectedTabRole matches log.role
-                                                if (selectedTabRole === log.role) {
-                                                  console.log("Selected tab role matches log role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                return Match;
-                                              }
-                                            }
-                                            return false;
-                                          });
-
-                                          return (
-                                            <div>
-                                                                                            {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                          Approved
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      form?.forms[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                          >
-                                            Approve
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Approved
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                            </div>
-                                          );
-                                        })()}
-                                      </>
-                                    )}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                      <>
-                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                          <>
-                                            {credApproval?.some((newData) => {
-
-                                              return newData.schemaId === data.id && newData.approvalRequired;
-
-                                            }) ? (
-                                              <>
-                                                <>
-                                                  {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                    const isMatch = logDetails.logs.some((log) => {
-                                                      if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                        if (match) {
-                                                          let Match = false;
-
-                                                          // Check if userRole includes log.role
-                                                          if (workModeType === log.role) {
-                                                            console.log("Role matches user role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          // Determine selectedTabRole based on selectedTab
-                                                          let selectedTabRole;
-                                                          switch (selectedTab) {
-                                                            case 'level-1':
-                                                              selectedTabRole = "Staff Manager";
-                                                              break;
-                                                            case 'level-2':
-                                                              selectedTabRole = "Department Head";
-                                                              break;
-                                                            case 'level-3':
-                                                              selectedTabRole = "Chief Of Staff";
-                                                              break;
-                                                            case 'level-4':
-                                                              selectedTabRole = "Advisory Committee";
-                                                              break;
-                                                            case 'level-5':
-                                                              selectedTabRole = "Board";
-                                                              break;
-                                                            default:
-                                                              selectedTabRole = "";
-                                                          }
-
-                                                          // Check if selectedTabRole matches log.role
-                                                          if (selectedTabRole === log.role) {
-                                                            console.log("Selected tab role matches log role: " + log.role);
-                                                            Match = true;
-                                                          }
-
-                                                          return Match;
-                                                        }
-                                                      }
-                                                      return false;
-                                                    });
-
-                                                    return (
-                                                      <div>
-                                                        {isMatch ? (
-                                                          <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                              Approved
-                                                            </div>
-                                                          </div>
-                                                        ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <div
-                                                                className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                              >
-                                                                Approve
-                                                              </div>
-                                                            </div>
-                                                          ) : (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          )
-                                                        )}
-                                                      </div>
-                                                    );
-                                                  })()}
-                                                </>
-
-                                              </>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
-                                                </div>
-                                              </div>
-                                            )}
-                                          </>
-                                        )}
-                                      </>
-                                    )}
-                                    <div className={`${style.displayInRow} ${style.verticalAlignCenter}`} >
-                                      <div className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}>
-                                        {
-                                          (expandAcknowledgement?.status && expandAcknowledgement?.index === index) ? (<RemoveIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: false, index: 0 }); setFormSchemaId('') }} />)
-                                            : (<AddIcon sx={{ fontSize: 20, color: '#94979A', cursor: 'pointer' }} onClick={() => { setExpandAcknowledgement({ status: true, index: index }); setFormSchemaId(data?.id) }} />)
-                                        }
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandAcknowledgement?.status && expandAcknowledgement?.index === index &&
-                                    <div className={`${style.marginTop} ${style.screenPadding}`}>
-                                      {form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length !== 0 && (
-                                        <>
-                                          <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
-                                          {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
-                                            <div className={style.grid2}>
-                                              <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
-                                                <ESignature
-                                                  userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
-                                                  encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
-                                                  showData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? true : false}
-                                                  showDatais={true}
-                                                />
-                                              </div>
-                                              <div className={style.verticalAlignCenter}>
-                                                <div className={style.displayInRow}>
-                                                  <div className={style.dateTitle}>Date: </div>
-                                                  <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? format(new Date(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.signedDate), canadaData?.dateFormat || 'dd/MM/yyyy') : ""}</div>
-                                                </div>
-                                              </div>
-                                            </div>
-                                          )}
-                                        </>
-                                      )}
-                                    </div>
-                                  }
-                                </div>))}
-                            </div>
-                          ) : (" ")}
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      </div>
+                      ""
                     )}
                   </>
-                </div>
-                <>
-                  {(workModeType === 'Staff Manager') ? (
-                    <div
-                      className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth}`}
-                    >
-
-                      <div>
-                        <div
-                          className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle} `}
-                        >
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div
-                              className={`${style.marginLeft30} ${style.tableHeaderTextStyle}`}
-                            ></div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div className={`${style.tableHeaderTextStyle}`}>
-                              Required Reappointment data and Proof of Documentation for July 1, 2025 and June 30, 2026
-                            </div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div
-                              className={`${style.tableHeaderTextStyle}`}
-                              aria-owns={open ? "mouse-over-popover" : undefined}
-                              aria-haspopup="true"
-                              onMouseEnter={handlePopoverOpen}
-                              onMouseLeave={handlePopoverClose}
-                            >
-                              <img
-                                src={DataStatusIcon}
-                                alt=""
-                                style={{
-                                  width: "18px",
-                                  height: "20px",
-                                }}
-                              />
-                              <Popover
-                                id={"mouse-over-popover"}
-                                sx={{
-                                  pointerEvents: "none",
-                                }}
-                                open={open}
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "center",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "center",
-                                }}
-                                onClose={handlePopoverClose}
-                                PaperProps={{
-                                  style: {
-                                    backgroundColor: "transparent",
-                                    boxShadow: "none",
-                                    borderRadius: 0,
-                                  },
-                                }}
-                                disableRestoreFocus
-                              >
-                                <div className={style.multipleOptionsCard}>
-                                  <div
-                                    className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                  >
-                                    Data Quality Status
-                                  </div>
-                                </div>
-                              </Popover>
-                            </div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div
-                              className={`${style.tableHeaderTextStyle}`}
-                              aria-owns={
-                                openTextWithHover ? "mouse-over-popover" : undefined
-                              }
-                              aria-haspopup="true"
-                              onMouseEnter={handlePopoverTextOpen}
-                              onMouseLeave={handlePopoverTextClose}
-                            >
-                              <img
-                                src={DocumentIcon}
-                                alt=""
-                                style={{
-                                  width: "18px",
-                                  height: "20px",
-                                }}
-                              />
-                              <Popover
-                                id={"mouse-over-popover"}
-                                sx={{
-                                  pointerEvents: "none",
-                                }}
-                                open={openTextWithHover}
-                                anchorEl={anchorTextEl}
-                                anchorOrigin={{
-                                  vertical: "bottom",
-                                  horizontal: "center",
-                                }}
-                                transformOrigin={{
-                                  vertical: "top",
-                                  horizontal: "center",
-                                }}
-                                onClose={handlePopoverTextClose}
-                                PaperProps={{
-                                  style: {
-                                    backgroundColor: "transparent",
-                                    boxShadow: "none",
-                                    borderRadius: 0,
-                                  },
-                                }}
-                                disableRestoreFocus
-                              >
-                                <div className={style.multipleOptionsCard}>
-                                  <div
-                                    className={`${style.specificActionCard} ${style.cursorPointer}`}
-                                  >
-                                    Document Status
-                                  </div>
-                                </div>
-                              </Popover>
-                            </div>
-                          </div>
-                          <div
-                            className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                          >
-                            <div className={`${style.tableHeaderTextStyle}`}>
-                              Documents
-                            </div>
-                          </div>
-                        </div>
-                        <div>
-                          <div
-                            className={` ${style.marginTop5} ${expand?.status && expand?.index === 0
-                              ? style.tableDataStyle1
-                              : style.tableDataStyle
-                              }`}
-                          >
-                            <div
-                              className={` ${expand?.status && expand?.index === 0
-                                ? style.tableHeaderGridStyleForm
-                                : style.tableHeaderGridStyle
-                                } ${style.marginTop10}`}
-                            >
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.justifySpaceAround
-                                    } ${form?.basicInformationStatus
-                                      ? style.greenDotStyle
-                                      : style.greyDotStyle
-                                    }`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${expand?.status && expand?.index === 0
-                                    ? style.tableHeaderTextStyle
-                                    : style.tableDataFontStyle1
-                                    }`}
-                                >
-                                  Applicant Profile Information
-                                </div>
-                              </div>
-                              {expand?.status && expand?.index === 0 ? (
-                                <>
-                                  {!form?.basicInformationStatus ? (
-                                    <div
-                                      className={`${style.purpleButton} ${style.cursorPointer} `}
-                                    >
-                                      <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleVerify()}
-                                      >
-                                        Verify
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div
-                                      className={`${style.greenButton}  ${style.cursorPointer} `}
-                                    >
-                                      <div
-                                        className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                      >
-                                        Verified
-                                      </div>
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                <>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10}${style.justifySpaceAround} ${style.greyDotStyle}`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      -
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                >
-                                  {expand?.status && expand?.index === 0 ? (
-                                    <RemoveIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        setExpand({ status: false, index: 0 })
-                                      }
-                                    />
-                                  ) : (
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                      onClick={() =>
-                                        setExpand({ status: true, index: 0 })
-                                      }
-                                    />
-                                  )}{" "}
-                                </div>
-                              </div>
-                            </div>
-                            {expand?.status && expand?.index === 0 && (
-                              <div
-                                className={`${style.marginTop} ${style.screenPadding}`}
-                              >
-
-                                {form1 !== undefined &&
-                                  "applicant" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.applicant}
-                                      gridStyle={style.applicantGrid}
-                                      baseKey={"applicant"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "credentialingPrivilegeCategory" in
-                                  form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={
-                                        form1?.properties?.credentialingPrivilegeCategory
-                                      }
-                                      gridStyle={style.credentialingGrid}
-                                      baseKey={"credentialingPrivilegeCategory"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "departmentSpecialty" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.departmentSpecialty}
-                                      gridStyle={style.twoCol}
-                                      baseKey={"departmentSpecialty"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  getValueByPath(
-                                    form,
-                                    "basicDetails.departmentSpecialty.department"
-                                  ) ===
-                                  form1.if.properties.departmentSpecialty.properties
-                                    .department.const &&
-                                  form1.if.properties.departmentSpecialty.properties.specialty.enum?.includes(
-                                    getValueByPath(
-                                      form,
-                                      "basicDetails.departmentSpecialty.specialty"
-                                    )
-                                  ) &&
-                                  form1 !== undefined &&
-                                  "regionalCallResponsibilities" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={
-                                        form1?.properties?.regionalCallResponsibilities
-                                      }
-                                      gridStyle={""}
-                                      baseKey={"regionalCallResponsibilities"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                                {form1 !== undefined &&
-                                  "billingNumber" in form1?.properties && (
-                                    <ApplicationFieldCard
-                                      object={form1?.properties?.billingNumber}
-                                      gridStyle={style.twoCol}
-                                      baseKey={"billingNumber"}
-                                      basicForm={form}
-                                      setBasicForm={setForm}
-                                      isBasicPath={true}
-                                      isPOD={true}
-                                    />
-                                  )}
-                              </div>
-                            )}
-                          </div>
-
-                          {form?.formSchemas
-                            ?.filter(
-                              (data) => {
-                                if (form?.creationType === "NEW") {
-                                  return (
-                                    (data?.formCategory === "Form" || data?.formCategory === "Disclosure") &&
-                                    data?.schemaCategory !== "UploadYourDoc"
-                                  );
-                                } else {
-                                  // Default filter when form?.creationType is not "NEW"
-                                  return (
-                                    (data?.formCategory === "Form" || data?.formCategory === "Disclosure" || data?.formCategory === "Acknowledgement")
-                                    // data?.schemaCategory !== "UploadYourDoc"
-                                  );
-                                }
-                              })
-                            ?.map((data, index) => (
-                              <div
-                                className={` ${style.marginTop5} ${expand?.status && expand?.index === index + 1
-                                  ? style.tableDataStyle1
-                                  : style.tableDataStyle
-                                  }`}
-                              >
-                                <div
-                                  className={` ${expand?.index === index + 1
-                                    ? style.tableHeaderGridStyleForm
-                                    : style.tableHeaderGridStyle
-                                    } ${style.marginTop10}`}
-                                >
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround
-                                        } ${form?.forms[index]?.status !== "APPROVED" &&
-                                          form?.forms[index]?.schemaCategory !== "UploadYourDoc"
-                                          ? style.greyDotStyle
-                                          : style.greenDotStyle
-                                        }`}
-                                    ></div>
-                                  </div>
-                                  <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div className={`${style.tableDataFontStyle1}`}>
-                                      {data?.title}
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expand?.status && expand?.index === index + 1 ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: false, index: 0 });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpand({ status: true, index: index + 1 });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {/* {expand?.status && expand?.index === index + 1 ? (
-                          <>
-                            {form?.forms[index]?.status !== "APPROVED" &&
-                             form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
-                              <div
-                                className={`${style.purpleButton} ${style.cursorPointer} `}
-                              >
-                               {form?.forms[index]?.schemaCategory !== "UploadYourDoc" && (
-                                    <div
-                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                    >
-                                      Verify
-                                    </div>
-                                  )}
-                              </div>
-                            ) : (
-                              <div
-                                className={`${style.greenButton}  ${style.cursorPointer} `}
-                              >
-                                <div
-                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                >
-                                  Verified
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED" &&
-                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED" &&
-                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
-                                    ? style.greyDotStyle
-                                    : style.greenDotStyle
-                                  }`}
-                              ></div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                {form?.forms
-                                  ?.filter(
-                                    (formData, formIndex) => formIndex === index
-                                  )
-                                  ?.map(
-                                    (data) => data?.uploadedFiles?.length || 0
-                                  )}
-                              </div>
-                            </div>
-                          </>
-                        )} */}
-                                  {expand?.status && expand?.index === index + 1 ? (
-                                    <>
-                                      {credApproval?.some((newData) => {
-                                        console.log("newData.approvalRequired:", newData.approvalRequired);
-                                        return newData.schemaId === data.id && newData.approvalRequired;
-                                      }) && (
-                                          <>
-                                            {logDetails?.logs && Array.isArray(logDetails.logs) && (
-                                              (() => {
-                                                const isMatch = logDetails.logs.some((log) => {
-                                                  if (log.form && log.form.id) {
-                                                    const match = log.form.id === form?.forms[index]?.id;
-                                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                    if (match) {
-                                                      let Match = false;
-
-                                                      // Check if userRole includes log.role
-                                                      if (workModeType === log.role) {
-                                                        console.log("Role matches user role: " + log.role);
-                                                        Match = true;
-                                                      }
-
-                                                      // Determine selectedTabRole based on selectedTab
-                                                      let selectedTabRole;
-                                                      if (selectedTab === 'level-2') {
-                                                        selectedTabRole = "Department Head";
-                                                      } else if (selectedTab === 'level-3') {
-                                                        selectedTabRole = "Chief Of Staff";
-                                                      } else if (selectedTab === 'level-4') {
-                                                        selectedTabRole = "Advisory Committee";
-                                                      } else if (selectedTab === 'level-5') {
-                                                        selectedTabRole = "Board";
-                                                      } else if (selectedTab === 'level-1') {
-                                                        selectedTabRole = "Staff Manager";
-                                                      }
-
-                                                      // Check if selectedTabRole matches log.role
-                                                      if (selectedTabRole === log.role) {
-                                                        console.log("Selected tab role matches log role: " + log.role);
-                                                        Match = true;
-                                                      }
-
-                                                      return Match;
-                                                    }
-                                                  }
-                                                  return false;
-                                                });
-
-                                                return (
-                                                  <div>
-                                                    {isMatch ? (
-                                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                          Verified
-                                                        </div>
-                                                      </div>
-                                                    ) : (
-                                                      form?.forms[index]?.status !== "APPROVED" ? (
-                                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                          <div
-                                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                          >
-                                                            Verify
-                                                          </div>
-                                                        </div>
-                                                      ) : (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                            Verified
-                                                          </div>
-                                                        </div>
-                                                      )
-                                                    )}
-                                                  </div>
-                                                );
-                                              })()
-                                            )}
-                                          </>
-                                        )}
-                                    </>
-                                  ) : (
-                                    <>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10}${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
-                                            }`}
-                                        ></div>
-                                      </div>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10}${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
-                                              ? style.greyDotStyle
-                                              : style.greenDotStyle
-                                            }`}
-                                        ></div>
-                                      </div>
-                                      <div
-                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                      >
-                                        <div
-                                          className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                        >
-                                          {form?.forms
-                                            ?.filter(
-                                              (formData, formIndex) => formIndex === index
-                                            )
-                                            ?.map(
-                                              (data) => data?.uploadedFiles?.length || 0
-                                            )}
-                                        </div>
-                                      </div>
-                                    </>
-                                  )}
-                                  {/* <div
-                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                  >
-                                    <div
-                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                    >
-                                      {expand?.status && expand?.index === index + 1 ? (
-                                        <RemoveIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: false, index: 0 });
-                                            setFormSchemaId("");
-                                          }}
-                                        />
-                                      ) : (
-                                        <AddIcon
-                                          sx={{
-                                            fontSize: 20,
-                                            color: "#94979A",
-                                            cursor: "pointer",
-                                          }}
-                                          onClick={() => {
-                                            setExpand({ status: true, index: index + 1 });
-                                            setFormSchemaId(data?.id);
-                                          }}
-                                        />
-                                      )}
-                                    </div>
-                                  </div> */}
-                                </div>
-                                {expand?.status && expand?.index === index + 1 && (
-                                  <div
-                                    className={`${style.marginTop} ${style.screenPadding}`}
-                                  >
-                                    {renderFieldsBasedOnStep(data)}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-                        {applicationType === "NEW" ? (
-                          <div>
-                            <div
-                              className={`${style.tableHeaderStyle} ${style.marginTop20} ${style.tableHeaderGridStyle1} `}
-                            >
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div
-                                  className={`${style.marginLeft10} ${style.tableHeaderTextStyle}`}
-                                ></div>
-                              </div>
-                              <div
-                                className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                              >
-                                <div className={`${style.tableHeaderTextStyle}`}>
-                                  Requested Form Completeness Check
-                                </div>
-                              </div>
-                            </div>
-                            {form?.formSchemas
-                              ?.filter((data) => data?.formCategory === "Acknowledgement")
-                              ?.map((data, index) => (
-                                <div
-                                  className={` ${style.marginTop5} ${expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index
-                                    ? style.tableDataStyle1
-                                    : style.tableDataStyle
-                                    }`}
-                                >
-                                  <div
-                                    className={` ${style.marginTop10} ${expandAcknowledgement?.status &&
-                                      expandAcknowledgement?.index === index
-                                      ? style.tableHeaderGridStyleForm
-                                      : style.tableHeaderGridStyle1
-                                      }`}
-                                  >
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter} `}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms?.filter(
-                                            (data) =>
-                                              data?.formCategory === "Acknowledgement"
-                                          )[index]?.status !== "APPROVED"
-                                            ? style.greyDotStyle
-                                            : style.greenDotStyle
-                                          }`}
-                                      ></div>
-                                    </div>
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div className={`${style.tableDataFontStyle1}`}>
-                                        {data?.title}
-                                      </div>
-                                    </div>
-                                    {/* {expandAcknowledgement?.status &&
-                          expandAcknowledgement?.index === index && (
-                            <>
-                              {form?.forms?.filter(
-                                (data) =>
-                                  data?.formCategory === "Acknowledgement"
-                              )[index]?.status !== "APPROVED" ? (
-                                <div
-                                  className={`${style.purpleButton} ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                    onClick={() =>
-                                      handleStepsVerify(
-                                        form?.forms?.filter(
-                                          (data) =>
-                                            data?.formCategory ===
-                                            "Acknowledgement"
-                                        )[index]?.id
-                                      )
-                                    }
-                                  >
-                                    Verify
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className={`${style.greenButton}  ${style.cursorPointer} `}
-                                >
-                                  <div
-                                    className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                  >
-                                    Verified
-                                  </div>
-                                </div>
-                              )}
-                            </>
-                          )} */}
-                                    {/* wokring credapproval without false */}
-                                    {/* {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                              <>
-                                {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement") && (
-                                  <>
-                                    {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                      <>
-                                        {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                          const isMatch = logDetails.logs.some((log) => {
-                                            if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms[index]?.id;
-                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                              if (match) {
-                                                let Match = false;
-
-                                                // Check if userRole includes log.role
-                                                if (userRole?.includes(log.role)) {
-                                                  console.log("Role matches user role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                // Determine selectedTabRole based on selectedTab
-                                                let selectedTabRole;
-                                                switch (selectedTab) {
-                                                  case 'level-1':
-                                                    selectedTabRole = "Staff Manager";
-                                                    break;
-                                                  case 'level-2':
-                                                    selectedTabRole = "Department Head";
-                                                    break;
-                                                  case 'level-3':
-                                                    selectedTabRole = "Chief Of Staff";
-                                                    break;
-                                                  case 'level-4':
-                                                    selectedTabRole = "Advisory Committee";
-                                                    break;
-                                                  case 'level-5':
-                                                    selectedTabRole = "Board";
-                                                    break;
-                                                  default:
-                                                    selectedTabRole = "";
-                                                }
-
-                                                // Check if selectedTabRole matches log.role
-                                                if (selectedTabRole === log.role) {
-                                                  console.log("Selected tab role matches log role: " + log.role);
-                                                  Match = true;
-                                                }
-
-                                                return Match;
-                                              }
-                                            }
-                                            return false;
-                                          });
-
-                                          return (
-                                            <div>
-                                               {isMatch ? (
-                                      <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                          Approved
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      form?.forms[index]?.status !== "APPROVED" ? (
-                                        <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                          <div
-                                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                          >
-                                            Approve
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                          <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                            Approved
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                            </div>
-                                          );
-                                        })()}
-                                      </>
-                                    )}
-                                  </>
-                                )}
-                              </>
-                            )} */}
-                                    {/* working with cred Approval */}
-                                    {expandAcknowledgement?.status && expandAcknowledgement?.index === index && (
-                                      <>
-                                        {form?.forms?.filter((data) => data?.formCategory === "Acknowledgement")[index]?.status !== "APPROVED" && (
-                                          <>
-                                            {credApproval?.some((newData) => {
-                                              if (newData.schemaId === data.id && newData.approvalRequired) {
-                                                return true;
-                                              }
-                                              return false;
-                                            }) ? (
-                                              <>
-                                                {credApproval?.some((newData) => newData.schemaId === data.id && newData.approvalRequired) && (
-                                                  <>
-                                                    {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
-                                                      const isMatch = logDetails.logs.some((log) => {
-                                                        if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
-
-                                                          if (match) {
-                                                            let Match = false;
-
-                                                            // Check if userRole includes log.role
-                                                            if (workModeType === log.role) {
-                                                              console.log("Role matches user role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            // Determine selectedTabRole based on selectedTab
-                                                            let selectedTabRole;
-                                                            switch (selectedTab) {
-                                                              case 'level-1':
-                                                                selectedTabRole = "Staff Manager";
-                                                                break;
-                                                              case 'level-2':
-                                                                selectedTabRole = "Department Head";
-                                                                break;
-                                                              case 'level-3':
-                                                                selectedTabRole = "Chief Of Staff";
-                                                                break;
-                                                              case 'level-4':
-                                                                selectedTabRole = "Advisory Committee";
-                                                                break;
-                                                              case 'level-5':
-                                                                selectedTabRole = "Board";
-                                                                break;
-                                                              default:
-                                                                selectedTabRole = "";
-                                                            }
-
-                                                            // Check if selectedTabRole matches log.role
-                                                            if (selectedTabRole === log.role) {
-                                                              console.log("Selected tab role matches log role: " + log.role);
-                                                              Match = true;
-                                                            }
-
-                                                            return Match;
-                                                          }
-                                                        }
-                                                        return false;
-                                                      });
-
-                                                      return (
-                                                        <div>
-                                                          {isMatch ? (
-                                                            <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                Approved
-                                                              </div>
-                                                            </div>
-                                                          ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
-                                                              <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
-                                                                >
-                                                                  Approve
-                                                                </div>
-                                                              </div>
-                                                            ) : (
-                                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                                  Approved
-                                                                </div>
-                                                              </div>
-                                                            )
-                                                          )}
-                                                        </div>
-                                                      );
-                                                    })()}
-                                                  </>
-                                                )}
-                                              </>
-                                            ) : (
-                                              <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                  Approved
-                                                </div>
-                                              </div>
-                                            )}
-                                          </>
-                                        )}
-                                      </>
-                                    )}
-                                    <div
-                                      className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                    >
-                                      <div
-                                        className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                                      >
-                                        {expandAcknowledgement?.status &&
-                                          expandAcknowledgement?.index === index ? (
-                                          <RemoveIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: false,
-                                                index: 0,
-                                              });
-                                              setFormSchemaId("");
-                                            }}
-                                          />
-                                        ) : (
-                                          <AddIcon
-                                            sx={{
-                                              fontSize: 20,
-                                              color: "#94979A",
-                                              cursor: "pointer",
-                                            }}
-                                            onClick={() => {
-                                              setExpandAcknowledgement({
-                                                status: true,
-                                                index: index,
-                                              });
-                                              setFormSchemaId(data?.id);
-                                            }}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {expandAcknowledgement?.status &&
-                                    expandAcknowledgement?.index === index && (
-                                      <div
-                                        className={`${style.marginTop} ${style.screenPadding}`}
-                                      >
-                                        {form?.forms?.filter(
-                                          (data) => data?.formCategory === "Acknowledgement"
-                                        )[index]?.uploadedFiles?.length !== 0 && (
-                                            <>
-                                              <iframe
-                                                src={
-                                                  form?.forms?.filter(
-                                                    (data) =>
-                                                      data?.formCategory === "Acknowledgement"
-                                                  )[index]?.uploadedFiles[
-                                                    form?.forms?.filter(
-                                                      (data) =>
-                                                        data?.formCategory ===
-                                                        "Acknowledgement"
-                                                    )[index]?.uploadedFiles?.length - 1
-                                                  ]?.fileURL
-                                                }
-                                                width="100%"
-                                                height="600px"
-                                              ></iframe>
-                                              {(data?.description ===
-                                                "Statement of Confidentiality and Non-Disclosure" ||
-                                                data?.description ===
-                                                "Conflict Of Interest Policy") && (
-                                                  <div className={style.grid2}>
-                                                    <div
-                                                      onClick={
-                                                        form?.forms[index]?.staffEsign === null
-                                                          ? () =>
-                                                            handleStaffEsign(
-                                                              form?.forms?.filter(
-                                                                (data) =>
-                                                                  data?.formCategory ===
-                                                                  "Acknowledgement"
-                                                              )[index]?.id
-                                                            )
-                                                          : () => { }
-                                                      }
-                                                    >
-                                                      <ESignature
-                                                        userName={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.name
-                                                            : ""
-                                                        }
-                                                        encData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? form?.forms?.filter(
-                                                              (data) =>
-                                                                data?.formCategory ===
-                                                                "Acknowledgement"
-                                                            )[index]?.staffEsign?.esign
-                                                            : ""
-                                                        }
-                                                        showData={
-                                                          form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? true
-                                                            : false
-                                                        }
-                                                        showDatais={true}
-                                                      />
-                                                    </div>
-                                                    <div className={style.verticalAlignCenter}>
-                                                      <div className={style.displayInRow}>
-                                                        <div className={style.dateTitle}>
-                                                          Date:{" "}
-                                                        </div>
-                                                        <div
-                                                          className={`${style.date} ${style.marginLeft}`}
-                                                        >
-                                                          {form?.forms?.filter(
-                                                            (data) =>
-                                                              data?.formCategory ===
-                                                              "Acknowledgement"
-                                                          )[index]?.staffEsign !== null
-                                                            ? format(
-                                                              new Date(
-                                                                form?.forms?.filter(
-                                                                  (data) =>
-                                                                    data?.formCategory ===
-                                                                    "Acknowledgement"
-                                                                )[
-                                                                  index
-                                                                ]?.staffEsign?.signedDate
-                                                              ),
-                                                              canadaData?.dateFormat ||
-                                                              "dd/MM/yyyy"
-                                                            )
-                                                            : ""}
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                )}
-                                            </>
-                                          )}
-                                      </div>
-                                    )}
-                                </div>
-                              ))}
-                          </div>
-                        ) : (" ")}
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
                 </>
-              </>
-            )}
-          </>
-          <div>
-            {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
-              <>
-                {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
+              )}
+            </>
+            <div>
+              {(workModeType === 'Staff Manager') || (workModeType === 'Chief Of Staff') || (workModeType === 'Credentialing Committee') || (workModeType === 'Credentialing Committee User') || (workModeType === 'Department Head') ? (
+                <>
+                  {/* {selectedTab !== "level-4" && selectedTab !== "level-5" && !(applicationType === "REAPPOINTMENT" && selectedTab === "level-1") && !(userRole.includes('Staff Manager') && applicationType === "REAPPOINTMENT" && selectedTab === "level-2") && !(userRole.includes('Credentialing Committee') && applicationType === "REAPPOINTMENT" && selectedTab === "level-4") && (
                   <div className={`${style.twoColumnGrid}`}>
                     <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                       <div
@@ -9987,172 +9987,172 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")) ? (
-                  // <div className={`${style.twoColumnGrid}`}>
-                  //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                  //     <div
-                  //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                  //       onClick={() => {
-                  //         onClose();
-                  //       }}
-                  //     >
-                  //       SAVE IN PROGRESS
-                  //     </div>
-                  //   </div>
-                  //   <div
-                  //     className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                  //     // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                  //     // style={{ opacity: isApproved ? 1 : 0.5 }}
-                  //   >
-                  //     <div
-                  //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                  //       // onClick={() => {
-                  //       //   onClickApprovalDeptFunction();
-                  //       // }}
-                  //       // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                  //       onClick={() => {
-                  //         onClickApproveMoveFunction();
-                  //       }}
+                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")) ? (
+                    // <div className={`${style.twoColumnGrid}`}>
+                    //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                    //     <div
+                    //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                    //       onClick={() => {
+                    //         onClose();
+                    //       }}
+                    //     >
+                    //       SAVE IN PROGRESS
+                    //     </div>
+                    //   </div>
+                    //   <div
+                    //     className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                    //     // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                    //     // style={{ opacity: isApproved ? 1 : 0.5 }}
+                    //   >
+                    //     <div
+                    //       className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                    //       // onClick={() => {
+                    //       //   onClickApprovalDeptFunction();
+                    //       // }}
+                    //       // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                    //       onClick={() => {
+                    //         onClickApproveMoveFunction();
+                    //       }}
 
-                  //     >
-                  //       Verified, Send to Dept. Chief
-                  //     </div>
-                  //   </div>
-                  // </div>
-                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.twoColumnGrid}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                    //     >
+                    //       Verified, Send to Dept. Chief
+                    //     </div>
+                    //   </div>
+                    // </div>
+                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.twoColumnGrid}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
+                        </div>
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={() => {
-                            onClose();
-                          }}
+                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                         >
-                          SAVE IN PROGRESS
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            // onClick={() => {
+                            //   setShowApplicationDeclineDialog(true);
+                            // }}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}
+                          >
+                            REJECT
+                          </div>
                         </div>
                       </div>
-                      <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      >
+                      <div className={`${style.marginTop20}`}>
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                          style={{ opacity: isApproved ? 1 : 0.5 }}>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalDeptFunction}
+                            onClick={isApproved ? onClose : undefined}
+                          >
+                            Verified, send later to Department Head
+                          </div>
+                        </div>
+                      </div>
+                      <div className={`${style.marginTop20}`}>
+                        <div
+                          // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                          className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
+                          style={{ opacity: isApproved ? 1 : 0.5 }}>
+                          <div
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalDeptFunction}
+                            onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                          >
+                            Verified, Send to Department Head
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : ("")}
+                  {(applicationType === "NEW" && (selectedTab === "level-1" || selectedTab === "level-2" || selectedTab === "level-3")) ? (
+                    <>
+                      <div className={`${style.twoColumnGrid}`}>
+                        <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
+                        </div>
+                        <div
+                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                        // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                        // style={{ opacity: isApproved ? 1 : 0.5 }}
+                        >
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
                           // onClick={() => {
-                          //   setShowApplicationDeclineDialog(true);
+                          //   onClickApprovalDeptFunction();
                           // }}
-                          onClick={() => {
-                            setShowApplicationDeclineDialog(true);
-                          }}
-                        >
-                          REJECT
+                          // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                          >
+                            Reject
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className={`${style.marginTop20}`}>
+                    </>
+                  ) : ("")}
+
+                  {(applicationType === "NEW" && selectedTab === "level-1") ? (
+                    <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
                       <div
-                        // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
-                        className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                        style={{ opacity: isApproved ? 1 : 0.5 }}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          // onClick={onClickApprovalDeptFunction}
-                          onClick={isApproved ? onClose : undefined}
-                        >
-                          Verified, send later to Department Head
-                        </div>
-                      </div>
-                    </div>
-                    <div className={`${style.marginTop20}`}>
-                      <div
-                        // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
-                        className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
-                        style={{ opacity: isApproved ? 1 : 0.5 }}>
-                        <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                          // onClick={onClickApprovalDeptFunction}
-                          onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                        >
-                          Verified, Send to Department Head
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : ("")}
-                {(applicationType === "NEW" && (selectedTab === "level-1" || selectedTab === "level-2" || selectedTab === "level-3")) ? (
-                  <>
-                    <div className={`${style.twoColumnGrid}`}>
-                      <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          onClick={() => {
-                            onClose();
-                          }}
-                        >
-                          SAVE IN PROGRESS
-                        </div>
-                      </div>
-                      <div
-                        className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                      // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                      // style={{ opacity: isApproved ? 1 : 0.5 }}
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={onClickApproveMoveFunction}
                       >
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        // onClick={() => {
-                        //   onClickApprovalDeptFunction();
-                        // }}
-                        // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                        >
-                          Reject
-                        </div>
+                        VERIFY & SEND FOR DEPARTMENT HEAD
                       </div>
                     </div>
-                  </>
-                ) : ("")}
+                  ) : ("")}
 
-                {(applicationType === "NEW" && selectedTab === "level-1") ? (
-                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
+                  {(applicationType === "NEW" && selectedTab === "level-2") ? (
+                    <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
+                      <div
+                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                        onClick={onClickApproveMoveFunction}
+                      >
+                        VERIFY & SEND FOR CRED. COMM.
+                      </div>
+                    </div>
+                  ) : ("")}
+
+                  {(applicationType === "NEW" && selectedTab === "level-3") ? (
                     <div
-                      className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                      onClick={onClickApproveMoveFunction}
+                      className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${(workModeType === "Chief Of Staff") ? style.disabledButton : ""}`}
+                      style={{ opacity: (workModeType === "Chief Of Staff") ? 0.5 : 1 }}
+                      onClick={() => {
+                        if (!(workModeType === "Chief Of Staff")) {
+                          // Call your approve move function here
+                          onClickApproveMoveFunction();
+                        }
+                      }}
                     >
-                      VERIFY & SEND FOR DEPARTMENT HEAD
+                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                        APPROVE APPLICANT
+                      </div>
                     </div>
-                  </div>
-                ) : ("")}
+                  ) : (
+                    ""
+                  )}
 
-                {(applicationType === "NEW" && selectedTab === "level-2") ? (
-                  <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
-                    <div
-                      className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                      onClick={onClickApproveMoveFunction}
-                    >
-                      VERIFY & SEND FOR CRED. COMM.
-                    </div>
-                  </div>
-                ) : ("")}
+                  {/* <div className={`${style.marginBottom20}`}> */}
 
-                {(applicationType === "NEW" && selectedTab === "level-3") ? (
-                  <div
-                    className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20} ${(workModeType === "Chief Of Staff") ? style.disabledButton : ""}`}
-                    style={{ opacity: (workModeType === "Chief Of Staff") ? 0.5 : 1 }}
-                    onClick={() => {
-                      if (!(workModeType === "Chief Of Staff")) {
-                        // Call your approve move function here
-                        onClickApproveMoveFunction();
-                      }
-                    }}
-                  >
-                    <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
-                      APPROVE APPLICANT
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-
-                {/* <div className={`${style.marginBottom20}`}> */}
-
-                {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
+                  {/* {userRole?.includes('Staff Manager') && selectedTab !== "level-4" && selectedTab !== "level-5" && (!(applicationType === "REAPPOINTMENT" && userRole?.includes('Staff Manager'))) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${style.cursorPointer}`}                      
@@ -10181,7 +10181,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   )} */}
-                {/* 
+                  {/* 
                   {userRole?.includes('Department Head') && selectedTab === 'level-2' && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10206,7 +10206,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {/* {userRole?.includes('Credentialing Committee') && selectedTab === 'level-2' && (
+                  {/* {userRole?.includes('Credentialing Committee') && selectedTab === 'level-2' && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -10230,7 +10230,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
+                  {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div
@@ -10253,7 +10253,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   )} */}
-                {/* 
+                  {/* 
                   {(userRole?.includes('Staff Manager') && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -10278,182 +10278,182 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
-                  <div className={`${style.fixedBottom} `}>
-                    {/* <div className={`${style.twoColumnGrid}`}> */}
-                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                        onClick={() => {
-                          onClose();
-                        }}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
-                    >
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                        // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
-                        // }}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        NOT RECOMMENDED
-                      </div>
-                    </div>
-                    {/* </div> */}
-                    <div className={`${style.marginTop20}`}>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                    <div className={`${style.fixedBottom} `}>
+                      {/* <div className={`${style.twoColumnGrid}`}> */}
+                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                          // onClick={onClickApproveFunction}
+                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                           onClick={() => {
-                            onClickApprovalFunction();
+                            onClose();
                           }}
                         >
-                          RECOMMENDED WITH COMMENTS
+                          SAVE IN PROGRESS
                         </div>
                       </div>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                      <div
+                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                      >
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
-                        >
-                          RECOMMEND
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (" ")}
-                {(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
-                  <div className={`${style.fixedBottom}`}>
-                    {/* <div className={`${style.twoColumnGrid}`}> */}
-                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                        onClick={() => {
-                          onClose();
-                        }}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
-                    >
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                        // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
-                        // }}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        NOT RECOMMENDED
-                      </div>
-                    </div>
-                    {/* </div> */}
-                    <div className={`${style.marginTop20}`}>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                          // onClick={onClickApproveFunction}
+                          // onClick={() => {
+                          //   setShowApplicationDeclineDialog(true);
+                          // }}
                           onClick={() => {
-                            onClickApprovalFunction();
+                            setShowApplicationDeclineDialog(true);
                           }}
                         >
-                          RECOMMENDED WITH COMMENTS
+                          NOT RECOMMENDED
                         </div>
                       </div>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
-                        >
-                          RECOMMEND
+                      {/* </div> */}
+                      <div className={`${style.marginTop20}`}>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                            // onClick={onClickApproveFunction}
+                            onClick={() => {
+                              onClickApprovalFunction();
+                            }}
+                          >
+                            RECOMMENDED WITH COMMENTS
+                          </div>
+                        </div>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            onClick={onClickApprovalwithoutnotesFunction}
+                          >
+                            RECOMMEND
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ) : (" ")}
-                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") ? (
-                  <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
-                    {/* <div className={`${style.twoColumnGrid}`}> */}
-                    <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                        onClick={() => {
-                          onClose();
-                        }}
-                      >
-                        SAVE IN PROGRESS
-                      </div>
-                    </div>
-                    <div
-                      className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
-                    >
-                      <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                        // onClick={() => {
-                        //   setShowApplicationDeclineDialog(true);
-                        // }}
-                        onClick={() => {
-                          setShowApplicationDeclineDialog(true);
-                        }}
-                      >
-                        NOT RECOMMENDED
-                      </div>
-                    </div>
-                    {/* </div> */}
-                    <div className={`${style.marginTop20}`}>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                  ) : (" ")}
+                  {(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                    <div className={`${style.fixedBottom}`}>
+                      {/* <div className={`${style.twoColumnGrid}`}> */}
+                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                          // onClick={onClickApproveFunction}
+                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
                           onClick={() => {
-                            onClickApprovalFunction();
+                            onClose();
                           }}
                         >
-                          RECOMMENDED WITH COMMENTS
+                          SAVE IN PROGRESS
                         </div>
                       </div>
-                      <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
-                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                      <div
+                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                      >
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <div
                           className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          onClick={onClickApprovalwithoutnotesFunction}
+                          // onClick={() => {
+                          //   setShowApplicationDeclineDialog(true);
+                          // }}
+                          onClick={() => {
+                            setShowApplicationDeclineDialog(true);
+                          }}
                         >
-                          RECOMMEND
+                          NOT RECOMMENDED
+                        </div>
+                      </div>
+                      {/* </div> */}
+                      <div className={`${style.marginTop20}`}>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                            // onClick={onClickApproveFunction}
+                            onClick={() => {
+                              onClickApprovalFunction();
+                            }}
+                          >
+                            RECOMMENDED WITH COMMENTS
+                          </div>
+                        </div>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            onClick={onClickApprovalwithoutnotesFunction}
+                          >
+                            RECOMMEND
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ) : (" ")}
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  ? (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending Dept. Head. Recommendation
+                  ) : (" ")}
+                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") ? (
+                    <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
+                      {/* <div className={`${style.twoColumnGrid}`}> */}
+                      <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                          onClick={() => {
+                            onClose();
+                          }}
+                        >
+                          SAVE IN PROGRESS
+                        </div>
+                      </div>
+                      <div
+                        className={` ${style.gridDot} ${style.buttonCardStyle} ${style.marginTop20} ${style.cursorPointer}`}
+                      >
+                        <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                          // onClick={() => {
+                          //   setShowApplicationDeclineDialog(true);
+                          // }}
+                          onClick={() => {
+                            setShowApplicationDeclineDialog(true);
+                          }}
+                        >
+                          NOT RECOMMENDED
+                        </div>
+                      </div>
+                      {/* </div> */}
+                      <div className={`${style.marginTop20}`}>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                            // onClick={onClickApproveFunction}
+                            onClick={() => {
+                              onClickApprovalFunction();
+                            }}
+                          >
+                            RECOMMENDED WITH COMMENTS
+                          </div>
+                        </div>
+                        <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
+                          <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            onClick={onClickApprovalwithoutnotesFunction}
+                          >
+                            RECOMMEND
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </>) : ("")}
-                {/* {((workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  && (<>
+                  ) : (" ")}
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved")) ? (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                        Pending Dept. Head. Recommendation
+                      </div>
+                    </div>
+                  </>) : ("")}
+                  {/* {((workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "NotApproved"))  && (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Dept. Head. Recommendation
@@ -10461,124 +10461,124 @@ const NewActiveApplication = ({
                   </div>
                 </>)} */}
 
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending Cred. Comm. Recommendation
-                    </div>
-                  </div>
-                </>) : ("")}
-
-                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending MAC Recommendation
-                    </div>
-                  </div>
-                </>) : (" ")}
-
-                {(workModeType === 'Credentialing Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Board' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
-                  <div>
-                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
-                      Pending BOD Recommendation
-                    </div>
-                  </div>
-                </>) : (" ")}
-                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
-                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.cardLeftStyle2}`}>
-                      <div className={`${style.displayInCol}`}>
-                        <div
-                          className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                        >
-                          <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                            CC Meeting Date*
-                          </span>
-                        </div>
-                        <CommonDateField
-                          className={style.dateWidth}
-                          onChange={(date) => handleDateChange(date, 'CC')}
-                          open={calendarStart}
-                          onOpen={() => setCalendarStart(true)}
-                          onClose={() => setCalendarStart(false)}
-
-                          minDate={sub(new Date(), { years: 3 })}
-                          // maxDate={add(new Date(), { years: 3 })}
-                          maxDate={getJune30thOfCurrentYear()}
-                          value={selectedDateForCC}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              inputProps={{
-                                ...params.inputProps,
-                                placeholder: 'Enter CC Approval Date',
-                                readOnly: true
-                              }}
-                              variant="outlined"
-                              margin="normal"
-                              fullWidth
-                            />
-                          )}
-                        />
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                        Pending Cred. Comm. Recommendation
                       </div>
-                      <>
-                        <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
-                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              setShowApplicationDeclineDialog(true);
-                            }}>REJECTED BY CRED COMM</div>
-                        </div>
-                        <div
-                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
-                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesFunction()}
-                        >
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
-                            APPROVED BY CRED COMM
+                    </div>
+                  </>) : ("")}
+
+                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                        Pending MAC Recommendation
+                      </div>
+                    </div>
+                  </>) : (" ")}
+
+                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Board' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
+                    <div>
+                      <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                        Pending BOD Recommendation
+                      </div>
+                    </div>
+                  </>) : (" ")}
+                  {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyle2}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              CC Meeting Date*
+                            </span>
                           </div>
-                        </div>
-                      </>
-                    </div>
-                  </div>
-                ) : (" ")
-                }
-                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
-                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.cardLeftStyleSaveButton}`}>
-                      <div className={`${style.displayInCol}`}>
-                        <div
-                          className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                        >
-                          <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                            CC Meeting Date*
-                          </span>
-                        </div>
-                        <CommonDateField
-                          className={style.dateWidth}
-                          onChange={(date) => handleDateChange(date, 'CC')}
-                          open={calendarStart}
-                          onOpen={() => setCalendarStart(true)}
-                          onClose={() => setCalendarStart(false)}
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'CC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
 
-                          minDate={sub(new Date(), { years: 3 })}
-                          // maxDate={add(new Date(), { years: 3 })}
-                          maxDate={getJune30thOfCurrentYear()}
-                          value={selectedDateForCC}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              inputProps={{
-                                ...params.inputProps,
-                                placeholder: 'Enter CC Approval Date',
-                                readOnly: true
-                              }}
-                              variant="outlined"
-                              margin="normal"
-                              fullWidth
-                            />
-                          )}
-                        />
+                            minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForCC}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter CC Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                        <>
+                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
+                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}>REJECTED BY CRED COMM</div>
+                          </div>
+                          <div
+                            className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                            style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                            onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesFunction()}
+                          >
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                              APPROVED BY CRED COMM
+                            </div>
+                          </div>
+                        </>
                       </div>
+                    </div>
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyleSaveButton}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              CC Meeting Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'CC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+
+                            minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForCC}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter CC Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
                         <div
                           className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                           style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
@@ -10588,126 +10588,126 @@ const NewActiveApplication = ({
                             SAVE
                           </div>
                         </div>
-                    </div>
-                  </div>
-                ) : (" ")
-                }
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
-                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.cardLeftStyle2}`}>
-                      <div className={`${style.displayInRow}${style.marginTop20}`}>
-                        <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
-                          <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
-                        </div>
-                        <CommonDateField
-                          className={style.dateWidth}
-                          onChange={(date) => handleDateChange(date, 'MAC')}
-                          open={calendarStart}
-                          onOpen={() => setCalendarStart(true)}
-                          onClose={() => setCalendarStart(false)}
-                          minDate={sub(new Date(), { years: 3 })}
-                          // maxDate={add(new Date(), { years: 3 })}
-                          maxDate={getJune30thOfCurrentYear()}
-                          value={selectedDateForMac}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              inputProps={{
-                                ...params.inputProps,
-                                placeholder: 'Enter MAC Meeting Date To Continue',
-                                readOnly: true
-                              }}
-                              variant="outlined"
-                              margin="normal"
-                              fullWidth
-                            />
-                          )}
-                        />
                       </div>
-                      <div>
-                        <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
-                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              setShowApplicationDeclineDialog(true);
-                            }}>NOT RECOMMENDED BY MAC</div>
+                    </div>
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyle2}`}>
+                        <div className={`${style.displayInRow}${style.marginTop20}`}>
+                          <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
+                            <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForMac}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter MAC Meeting Date To Continue',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
                         </div>
-                        <div
-                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
-                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesFunction}
-                        >
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                            RECOMMENDED BY MAC
+                        <div>
+                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}>NOT RECOMMENDED BY MAC</div>
+                          </div>
+                          <div
+                            className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                            style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                            onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesFunction}
+                          >
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                              RECOMMENDED BY MAC
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ) : (" ")
-                }
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
-                  <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
-                    <div className={`${style.cardLeftStyle2}`}>
-                      <div className={`${style.displayInCol}`}>
-                        <div
-                          className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                        >
-                          <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                            BOD Approval Date*
-                          </span>
-                        </div>
-                        <CommonDateField
-                          className={style.dateWidth}
-                          onChange={(date) => handleDateChange(date, 'BOD')}
-                          open={calendarStart}
-                          onOpen={() => setCalendarStart(true)}
-                          onClose={() => setCalendarStart(false)}
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyle2}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              BOD Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'BOD')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
 
-                          minDate={sub(new Date(), { years: 3 })}
-                          // maxDate={add(new Date(), { years: 3 })}
-                          maxDate={getJune30thOfCurrentYear()}
-                          value={selectedDateForBod}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              inputProps={{
-                                ...params.inputProps,
-                                placeholder: 'Enter BOD Approval Date To Continue',
-                                readOnly: true
-                              }}
-                              variant="outlined"
-                              margin="normal"
-                              fullWidth
-                            />
-                          )}
-                        />
-                      </div>
-                      <>
-                        <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
-                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              setShowApplicationDeclineDialog(true);
-                            }}>REJECTED BY BOD</div>
+                            minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForBod}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter BOD Approval Date To Continue',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
                         </div>
-                        <div
-                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
-                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                          onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
-                        >
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                            APPROVED BY BOD
+                        <>
+                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}>REJECTED BY BOD</div>
                           </div>
-                        </div>
-                      </>
+                          <div
+                            className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                            style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                            onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                          >
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                              APPROVED BY BOD
+                            </div>
+                          </div>
+                        </>
+                      </div>
                     </div>
-                  </div>
-                ) : (" ")
-                }
-                {(workModeType === 'Chief Of Staff') && (
-                  <>
-                    {selectedTab === "level-3" && (
-                      <>
-                        {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                  ) : (" ")
+                  }
+                  {(workModeType === 'Chief Of Staff') && (
+                    <>
+                      {selectedTab === "level-3" && (
+                        <>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                               <div
                                 className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
@@ -10728,64 +10728,64 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                           </div> */}
-                        {applicationType === "NEW" && (
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                          {applicationType === "NEW" && (
+                            <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                onClick={onClickApproveMoveFunction}
+                              >
+                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      {(selectedTab === "level-1" && applicationType === "NEW") && (
+                        <>
+                          <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              onClick={onClickApproveMoveFunction}
+                              className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
+                              <div
+                                className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                // onClick={isApproved ? onClickApproveFunction : undefined}
+                                onClick={() => {
+                                  onClickApprovalFunction();
+                                }}
+                              >
+                                RECOMMENDED WITH COMMENTS
+                              </div>
+                            </div>
+                            <div
+                              className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                            // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
+                            //  style={{ opacity: isApproved ? 1 : 0.5 }}
+                            >
+                              <div
+                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                // onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                                onClick={onClickApprovalFunction}
+                              >
+                                RECOMMEND
+                              </div>
                             </div>
                           </div>
-                        )}
-                      </>
-                    )}
-                    {(selectedTab === "level-1" && applicationType === "NEW") && (
-                      <>
-                        <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
-                          <div
-                            className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
-                          //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                          >
-                            <div
-                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                              // onClick={isApproved ? onClickApproveFunction : undefined}
-                              onClick={() => {
-                                onClickApprovalFunction();
-                              }}
-                            >
-                              RECOMMENDED WITH COMMENTS
+                          {applicationType === "NEW" && (
+                            <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalFunction}
+                              >
+                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                              </div>
                             </div>
-                          </div>
-                          <div
-                            className={`${style.buttonCardStyle} ${style.cursorPointer}`}
-                          // className={`${style.bigButtonStyle} ${isApproved ? style.cursorPointer : ''}`}
-                          //  style={{ opacity: isApproved ? 1 : 0.5 }}
-                          >
-                            <div
-                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              // onClick={isApproved ? onClickApproveMoveFunction : undefined}
-                              onClick={onClickApprovalFunction}
-                            >
-                              RECOMMEND
-                            </div>
-                          </div>
-                        </div>
-                        {applicationType === "NEW" && (
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                    {(selectedTab === "level-2") && (
-                      <>
-                        {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
+                          )}
+                        </>
+                      )}
+                      {(selectedTab === "level-2") && (
+                        <>
+                          {/* <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                             <div
                               className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
@@ -10813,22 +10813,22 @@ const NewActiveApplication = ({
                               </div>
                             </div>
                           </div> */}
-                        {applicationType === "NEW" && (
-                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                            <div
-                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalFunction}
-                            >
-                              OVERRIDE FOR TEMPORARY PRIVILEGES
+                          {applicationType === "NEW" && (
+                            <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                              <div
+                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalFunction}
+                              >
+                                OVERRIDE FOR TEMPORARY PRIVILEGES
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </>
-                )}
+                          )}
+                        </>
+                      )}
+                    </>
+                  )}
 
-                {/* {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW")) && (
+                  {/* {((userRole?.includes('Credentialing Committee') && selectedTab === 'level-3' && applicationType === "NEW")) && (
                     <div className={`${style.twoColumnGrid} ${style.marginTop20}`}>
                       <div
                         className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
@@ -10858,38 +10858,38 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   )} */}
-                {applicationType === "NEW" ? (
-                  ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
-                    (workModeType === 'Chief Of Staff' && selectedTab === "level-3") ||
-                    (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
-                    (workModeType === 'Department Head' && selectedTab === "level-3")) ? (
-                    <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
-                      <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>
-                        Review and Approval Status
-                      </div>
-                      <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
-                        <div className={style.displayInCol}>
-                          <div className={style.statusStartTextStyle}>
-                            Not Started Yet
+                  {applicationType === "NEW" ? (
+                    ((workModeType === 'Credentialing Committee' && selectedTab === 'level-3') ||
+                      (workModeType === 'Chief Of Staff' && selectedTab === "level-3") ||
+                      (workModeType === 'Staff Manager' && selectedTab === "level-3") ||
+                      (workModeType === 'Department Head' && selectedTab === "level-3")) ? (
+                      <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
+                        <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>
+                          Review and Approval Status
+                        </div>
+                        <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
+                          <div className={style.displayInCol}>
+                            <div className={style.statusStartTextStyle}>
+                              Not Started Yet
+                            </div>
+                            <div className={style.statusRoleTextStyle}>
+                              CHIEF OF STAFF / DEPUTY
+                            </div>
                           </div>
-                          <div className={style.statusRoleTextStyle}>
-                            CHIEF OF STAFF / DEPUTY
+                          <div className={style.displayInCol}>
+                            <div className={style.statusStartTextStyle}>
+                              Not Started Yet
+                            </div>
+                            <div className={style.statusRoleTextStyle}>
+                              CREDENTIALING COMMITTEE
+                            </div>
                           </div>
                         </div>
-                        <div className={style.displayInCol}>
-                          <div className={style.statusStartTextStyle}>
-                            Not Started Yet
-                          </div>
-                          <div className={style.statusRoleTextStyle}>
-                            CREDENTIALING COMMITTEE
-                          </div>
-                        </div>
                       </div>
-                    </div>
-                  ) : null
-                ) : null}
+                    ) : null
+                  ) : null}
 
-                {/* {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
+                  {/* {((userRole?.includes('Credentialing Committee')&& selectedTab === 'level-3') || (userRole?.includes('Chief Of Staff') && selectedTab === "level-3") || (userRole?.includes('Staff Manager') && selectedTab === "level-3") || (userRole?.includes('Department Head') && selectedTab === "level-3")) ? (
                       <div className={`${style.statusCard} ${style.marginTop20} ${style.marginBottom20}`}>
                       <div className={`${style.statusCardTextStyle1} ${style.marginTop20}`}>Review and Approval Status</div>
                       <div className={`${style.spaceEvenly} ${style.marginTop20}`}>
@@ -10904,282 +10904,71 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                     ) : null } */}
-                {/* <div
+                  {/* <div
                   className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
                   onClick={handleApplicationAccept}
                 >
                   ACCEPT APPLICATION
                 </div> */}
 
-                {/* </div> */}
-                <>
-                  {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
-                    <>
-                      <div className={style.cardLeftStyle}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                Notes
-                              </span>
-                              <div
-                                className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                <img
-                                  src={EditBlue}
-                                  alt="EditBlue"
-                                  className={style.colorFileStyle}
-                                />
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                <AddIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                              RFCs & Doc Clarification
-                            </span>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
-                              >
-                                {expandStates.section1 ? (
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {expandStates.section1 && (
-                            <>
-                              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                                <div>Proof of Qualifications</div>
-                                <RemoveIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                              <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
-                                <div className={`${style.gridGap3}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                      {applicationType === "NEW" && (
-                        <>
-                          <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                            <div className={`${style.displayInRow}${style.marginTop20}`}>
-                              <div
-                                className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                              >
-                                <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                  Reference Feedback Status
-                                </span>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
-                                  >
-                                    {expandStates.section2 ? (
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    ) : (
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              {expandStates.section2 && (
-                                <>
-                                  {form?.references?.privilegeReference?.map((reference, index) => (
-                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                      <div className={`${style.gridGap}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div>
-                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                            <div>
-                                              <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName} - Special Privilege`}</div>
-                                              <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
-                                            </div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
-                                          </div>
-                                          <CommonDivider />
-                                        </div>
-                                      </div>
-                                      <div className={`${style.gridGap1}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
-                                        <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
-                                      </div>
-                                    </div>
-                                  ))}
-
-                                  {form?.references?.reference?.map((reference, index) => (
-                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-                                      <div className={`${style.gridGap}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div>
-                                          <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
-                                            <div>
-                                              <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
-                                              <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
-                                            </div>
-                                            <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
-                                          </div>
-                                          <CommonDivider />
-                                        </div>
-                                      </div>
-                                      <div className={`${style.gridGap1}`}>
-                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                        <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
-                                        <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-                            <div className={style.marginBottom20}></div>
-                          </div>
-                          <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                            <div className={`${style.displayInRow}${style.marginTop20}`}>
-                              <div
-                                className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                              >
-                                <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                                  Immunization History Review
-                                </span>
-                                <div
-                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                >
-                                  <div
-                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
-                                  >
-                                    {expandStates.section3 ? (
-                                      <RemoveIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    ) : (
-                                      <AddIcon
-                                        sx={{
-                                          fontSize: 20,
-                                          color: "#94979A",
-                                          cursor: "pointer",
-                                        }}
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                              {expandStates.section3 && (
-                                <>
-                                  <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
-
-                                    <div className={`${style.gridGap}`}>
-                                      <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                      <div>
-                                        <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
-                                        <div className={`${style.sideHeadingRefFrontStyle}`}>Approved By Safety & Wellness On Oct 11, 2024</div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                            <div className={style.marginBottom20}></div>
-                          </div>
-                        </>
-                      )}
-                    </>
-                  )}
-                  {applicationType === "REAPPOINTMENT" ? (
-                    <>
-                      {selectedTab === "level-4" || selectedTab === "level-5" ? (
-                        <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
+                  {/* </div> */}
+                  <>
+                    {selectedTab !== "level-4" && selectedTab !== "level-5" && applicationType === "NEW" && (
+                      <>
+                        <div className={style.cardLeftStyle}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                             >
-                              <span className={`${style.tableHeaderHeadingTextStyle1}`}>
-                                Verification & Review History
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                  Notes
+                                </span>
+                                <div
+                                  className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                >
+                                  <img
+                                    src={EditBlue}
+                                    alt="EditBlue"
+                                    className={style.colorFileStyle}
+                                  />
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <div
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                >
+                                  <AddIcon
+                                    sx={{
+                                      fontSize: 20,
+                                      color: "#94979A",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div
+                              className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                            >
+                              <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                RFCs & Doc Clarification
                               </span>
                               <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                               >
                                 <div
-                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section4")}
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
                                 >
-                                  {expandStates.section4 ? (
+                                  {expandStates.section1 ? (
                                     <RemoveIcon
                                       sx={{
                                         fontSize: 20,
@@ -11199,72 +10988,10 @@ const NewActiveApplication = ({
                                 </div>
                               </div>
                             </div>
-                            {expandStates.section4 && (
+                            {expandStates.section1 && (
                               <>
-                                {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                VERIFICATION
-                              </div> */}
-                                {logDetails?.logs
-                                  ?.filter((log) =>
-                                    log?.workflowStatus !== "SUBMITTED"
-                                    && !(log?.approvalType === null || log?.approvalType === "")
-                                  ).reverse()
-                                  .map((log, index) => (
-                                    <div key={index}>
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                        {log?.title}
-                                      </div>
-                                      <div
-                                        className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${log?.approvalType === 'RECOMMENDED_WITH_NOTES' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
-                                          }`}
-                                      >
-                                        {log?.approvalType ? log.approvalType.replace(/_/g, ' ') : "-"}
-                                      </div>
-                                      {log?.approvalType === "RECOMMENDED_WITH_NOTES" && log?.notes && (
-                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                          <div dangerouslySetInnerHTML={{ __html: log.notes }} />
-                                        </div>
-                                      )}
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                        {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]}
-                                      </div>
-                                    </div>
-                                  ))}
-                              </>
-                            )}
-                          </div>
-                          <div className={style.marginBottom20}></div>
-                        </div>
-                      ) : (" ")}
-                      <div className={`${style.cardLeftStyle}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <span className={`${style.tableHeaderHeadingTextStyle1}`}>
-                                Notes
-                              </span>
-                              <div
-                                className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
-                              >
-                                <Tooltip title="Create a note" arrow>
-                                  <CreateOutlinedIcon
-                                    className={`${style.notesIcon} ${style.cursorPointer}`}
-                                    onClick={onClickNotesFunction}
-                                  />
-                                </Tooltip>
-                              </div>
-                            </div>
-                            <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                            >
-                              <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
-                              >
-                                {expandStates.section5 ? (
+                                <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                                  <div>Proof of Qualifications</div>
                                   <RemoveIcon
                                     sx={{
                                       fontSize: 20,
@@ -11272,119 +10999,392 @@ const NewActiveApplication = ({
                                       cursor: "pointer",
                                     }}
                                   />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
+                                </div>
+                                <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
+                                  <div className={`${style.gridGap3}`}>
+                                    <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                    <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
+                                    <AddIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  </div>
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          <div className={style.marginBottom20}></div>
+                        </div>
+                        {applicationType === "NEW" && (
+                          <>
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Reference Feedback Status
+                                  </span>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section2")}
+                                    >
+                                      {expandStates.section2 ? (
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      ) : (
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expandStates.section2 && (
+                                  <>
+                                    {form?.references?.privilegeReference?.map((reference, index) => (
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName} - Special Privilege`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                                            </div>
+                                            <CommonDivider />
+                                          </div>
+                                        </div>
+                                        <div className={`${style.gridGap1}`}>
+                                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                          <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                                          <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
+                                        </div>
+                                      </div>
+                                    ))}
+
+                                    {form?.references?.reference?.map((reference, index) => (
+                                      <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
+                                        <div className={`${style.gridGap}`}>
+                                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                          <div>
+                                            <div className={`${style.displayInRow} ${style.spaceBetweenOnly}`}>
+                                              <div>
+                                                <div className={`${style.sideHeadingFontStyle}`}>{`${reference?.firstName} ${reference?.lastName}`}</div>
+                                                <div className={`${style.sideHeadingRefFrontStyle}`}>Reference Questionnaire Sent On Oct 11, 2024</div>
+                                              </div>
+                                              <div className={`${style.viewTextStyle} ${style.viewButton} ${style.alignItem} ${style.cursorPointer}`} onClick={onClickEmailDialogFunction}>Send</div>
+                                            </div>
+                                            <CommonDivider />
+                                          </div>
+                                        </div>
+                                        <div className={`${style.gridGap1}`}>
+                                          <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                          <div className={`${style.sideHeadingFontStyle}`}>Marked As Favourable By Dept. Head On Oct 12, 2024</div>
+                                          <div className={`${style.viewTextStyle} ${style.viewButton}`}>Review</div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </>
                                 )}
                               </div>
+                              <div className={style.marginBottom20}></div>
                             </div>
-                          </div>
-                          {expandStates.section5 && (
-                            // <>
-                            //   {logDetails?.logs
-                            //     ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
-                            //     .map((log, index) => (
-                            //       <div key={index}>
-                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                            //           Staff Manager Comments / Notes
-                            //         </div>
-                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
-                            //         {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                            //     Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-                            //     </div> */}
-                            //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
-                            //           {log.notes || "-"}
-                            //         </div>
-                            //       </div>
-                            //     ))}
+                            <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                              <div className={`${style.displayInRow}${style.marginTop20}`}>
+                                <div
+                                  className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                                >
+                                  <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                                    Immunization History Review
+                                  </span>
+                                  <div
+                                    className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                  >
+                                    <div
+                                      className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section3")}
+                                    >
+                                      {expandStates.section3 ? (
+                                        <RemoveIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      ) : (
+                                        <AddIcon
+                                          sx={{
+                                            fontSize: 20,
+                                            color: "#94979A",
+                                            cursor: "pointer",
+                                          }}
+                                        />
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                {expandStates.section3 && (
+                                  <>
+                                    <div className={`${style.marginBottom20} ${style.referenceCardStyle}`}>
 
-                            // </>
-                            <>
-                              {form?.notesDetails
-                                ?.filter(log => log.notes.notes)
-                                .reverse()
-                                .map((log, index) => (
-                                  <div key={index}>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                      {log?.title}
-                                    </div>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                      {log?.user?.name?.firstName}{log?.user?.name?.lastName && ` ${log?.user?.name?.lastName}`}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
-                                    </div>
-                                    <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
-                                      <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                                    </div>
-
-                                    {/* Check if there are files */}
-                                    {log?.files && log?.files?.length > 0 && (
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                        {log?.files?.map((file, fileIndex) => {
-                                          // let innerData = log?.files[0];
-                                          return (
-                                            <div key={fileIndex}>
-                                              <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
-                                                {/* Display Material UI PDF icon and link */}
-                                                <div
-                                                  className={style.cursorPointer}
-                                                  onClick={() => {
-                                                    setShowFileDisplayDialog(true);
-                                                    setselectedFile(file);
-                                                  }}
-                                                >
-                                                  <PictureAsPdfIcon
-                                                    className={style.docsIcon}
-                                                    style={{ marginRight: '8px' }}
-                                                  />
-                                                </div>
-                                                <div
-                                                  className={`${style.cursorPointer} ${style.notesTitle}`}
-                                                  onClick={() => {
-                                                    setShowFileDisplayDialog(true);
-                                                    setselectedFile(file);
-                                                  }}
-                                                >
-                                                  {file?.fileName}
-                                                </div>
-                                                <div>
-                                                  <DescriptionOutlinedIcon
-                                                    // className={style.docsIcon}
-                                                    style={{ marginRight: '8px' }}
-                                                  />
-                                                </div>
-                                              </div>
-                                              {file?.title && (
-                                                <div
-                                                  className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
-                                                >
-                                                  <div>{file?.title}</div>
-                                                </div>
-                                              )}
-                                              {/* Optional description */}
-                                              {file?.description && (
-                                                <div
-                                                  className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
-                                                >
-                                                  <div>{file?.description}</div>
-                                                </div>
-                                              )}
-                                            </div>
-                                          );
-                                        })}
+                                      <div className={`${style.gridGap}`}>
+                                        <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
+                                        <div>
+                                          <div className={`${style.sideHeadingFontStyle}`}>Immunization History</div>
+                                          <div className={`${style.sideHeadingRefFrontStyle}`}>Approved By Safety & Wellness On Oct 11, 2024</div>
+                                        </div>
                                       </div>
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                              <div className={style.marginBottom20}></div>
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
+                    {applicationType === "REAPPOINTMENT" ? (
+                      <>
+                        {selectedTab === "level-4" || selectedTab === "level-5" ? (
+                          <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
+                            <div className={`${style.displayInRow}${style.marginTop20}`}>
+                              <div
+                                className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                              >
+                                <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                                  Verification & Review History
+                                </span>
+                                <div
+                                  className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                >
+                                  <div
+                                    className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section4")}
+                                  >
+                                    {expandStates.section4 ? (
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
+                                    ) : (
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     )}
                                   </div>
-                                ))}
-                            </>
-                          )}
+                                </div>
+                              </div>
+                              {expandStates.section4 && (
+                                <>
+                                  {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                VERIFICATION
+                              </div> */}
+                                  {logDetails?.logs
+                                    ?.filter((log) =>
+                                      log?.workflowStatus !== "SUBMITTED"
+                                      && !(log?.approvalType === null || log?.approvalType === "")
+                                    ).reverse()
+                                    .map((log, index) => (
+                                      <div key={index}>
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                          {log?.title}
+                                        </div>
+                                        <div
+                                          className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${log?.approvalType === 'RECOMMENDED_WITH_NOTES' ? style.verificationMethodTextStyle1 : style.verificationMethodTextStyle
+                                            }`}
+                                        >
+                                          {log?.approvalType ? log.approvalType.replace(/_/g, ' ') : "-"}
+                                        </div>
+                                        {log?.approvalType === "RECOMMENDED_WITH_NOTES" && log?.notes && (
+                                          <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                            <div dangerouslySetInnerHTML={{ __html: log.notes }} />
+                                          </div>
+                                        )}
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                          {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]}
+                                        </div>
+                                      </div>
+                                    ))}
+                                </>
+                              )}
+                            </div>
+                            <div className={style.marginBottom20}></div>
+                          </div>
+                        ) : (" ")}
+                        <div className={`${style.cardLeftStyle}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
+                            <div
+                              className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                            >
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                                  Notes
+                                </span>
+                                <div
+                                  className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
+                                >
+                                  <Tooltip title="Create a note" arrow>
+                                    <CreateOutlinedIcon
+                                      className={`${style.notesIcon} ${style.cursorPointer}`}
+                                      onClick={onClickNotesFunction}
+                                    />
+                                  </Tooltip>
+                                </div>
+                              </div>
+                              <div
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              >
+                                <div
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
+                                >
+                                  {expandStates.section5 ? (
+                                    <RemoveIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  ) : (
+                                    <AddIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            {expandStates.section5 && (
+                              // <>
+                              //   {logDetails?.logs
+                              //     ?.filter((log) => log.workflowStatus !== "SUBMITTED" && log?.approvalType === null && log?.approvalType === "")
+                              //     .map((log, index) => (
+                              //       <div key={index}>
+                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                              //           Staff Manager Comments / Notes
+                              //         </div>
+                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>{log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]} </div>
+                              //         {/* <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                              //     Specify the clarification that is needed tur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
+                              //     </div> */}
+                              //         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle}`}>
+                              //           {log.notes || "-"}
+                              //         </div>
+                              //       </div>
+                              //     ))}
+
+                              // </>
+                              <>
+                                {form?.notesDetails
+                                  ?.filter(log => log.notes.notes)
+                                  .reverse()
+                                  .map((log, index) => (
+                                    <div key={index}>
+                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+                                        {log?.title}
+                                      </div>
+                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName && ` ${log?.user?.name?.lastName}`}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
+                                      </div>
+                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
+                                        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                      </div>
+
+                                      {/* Check if there are files */}
+                                      {log?.files && log?.files?.length > 0 && (
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                          {log?.files?.map((file, fileIndex) => {
+                                            // let innerData = log?.files[0];
+                                            return (
+                                              <div key={fileIndex}>
+                                                <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
+                                                  {/* Display Material UI PDF icon and link */}
+                                                  <div
+                                                    className={style.cursorPointer}
+                                                    onClick={() => {
+                                                      setShowFileDisplayDialog(true);
+                                                      setselectedFile(file);
+                                                    }}
+                                                  >
+                                                    <PictureAsPdfIcon
+                                                      className={style.docsIcon}
+                                                      style={{ marginRight: '8px' }}
+                                                    />
+                                                  </div>
+                                                  <div
+                                                    className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                    onClick={() => {
+                                                      setShowFileDisplayDialog(true);
+                                                      setselectedFile(file);
+                                                    }}
+                                                  >
+                                                    {file?.fileName}
+                                                  </div>
+                                                  <div>
+                                                    <DescriptionOutlinedIcon
+                                                      // className={style.docsIcon}
+                                                      style={{ marginRight: '8px' }}
+                                                    />
+                                                  </div>
+                                                </div>
+                                                {file?.title && (
+                                                  <div
+                                                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                                                  >
+                                                    <div>{file?.title}</div>
+                                                  </div>
+                                                )}
+                                                {/* Optional description */}
+                                                {file?.description && (
+                                                  <div
+                                                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                                                  >
+                                                    <div>{file?.description}</div>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      )}
+                                    </div>
+                                  ))}
+                              </>
+                            )}
+                          </div>
+                          <div className={style.marginBottom20}></div>
                         </div>
-                        <div className={style.marginBottom20}></div>
-                      </div>
-                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                        {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                           <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
                               className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -11428,7 +11428,7 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                         </div> */}
-                      {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                        {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
                           <div
                             className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
@@ -11493,407 +11493,407 @@ const NewActiveApplication = ({
 
                         <div className={style.marginBottom20}></div>
                       </div> */}
-                    </>
-                  ) : (" ")}
+                      </>
+                    ) : (" ")}
 
-                </>
-              </>
-            ) : null
-            }
-            {selectedTab === 'level-4' && applicationType === "NEW" ? (
-              <>
-                <div className={`${style.cardLeftStyle2}`}>
-                  <div className={`${style.displayInRow}${style.marginTop20}`}>
-                    <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
-                      <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'MAC')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={add(new Date(), { years: 3 })}
-                      value={selectedDateForMac}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className={style.marginBottom20}></div>
-                  <>
-                    <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
-                      <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        onClick={() => { onClose(); }}>REJECT</div>
-                    </div>
-                    <div
-                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                      style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                      onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
-                    >
-                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                        MAC APPROVED
-                      </div>
-                    </div>
                   </>
-                  {(workModeType === 'Chief Of Staff') && (
-                    <>
-                      {applicationType === "NEW" && (
-                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                          <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                          // onClick={onClickApprovalFunction}
-                          >
-                            OVERRIDE FOR TEMPORARY PRIVILEGES
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            ) : (selectedTab === 'level-5' && applicationType === "NEW") ? (
-              <>
-                <div className={`${style.cardLeftStyle2}`}>
-                  <div className={`${style.displayInCol}`}>
-                    <div
-                      className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                    >
-                      <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop10}`}>
-                        BOD Approval Date
-                      </span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'BOD')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={add(new Date(), { years: 3 })}
-                      value={selectedDateForBod}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className={style.marginBottom20}></div>
-                  <div className={`${style.displayInRow}${style.marginTop20}`}>
-                    <div
-                      className={`${style.spaceBetween} ${style.marginLeftRight20}`}
-                    >
-                      <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                        Reappointment Credentialing Application Creation Date
-                      </span>
-                    </div>
-                    <CommonDateField
-                      className={style.dateWidth}
-                      onChange={(date) => handleDateChange(date, 'Reappoint')}
-                      open={calendarStart}
-                      onOpen={() => setCalendarStart(true)}
-                      onClose={() => setCalendarStart(false)}
-
-                      minDate={sub(new Date(), { years: 3 })}
-                      maxDate={add(new Date(), { years: 3 })}
-                      value={selectedDateForReappoint}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          inputProps={{
-                            ...params.inputProps,
-                            placeholder: 'Start Date',
-                          }}
-                          variant="outlined"
-                          margin="normal"
-                          fullWidth
-                        />
-                      )}
-                    />
-                  </div>
-                  <div
-                    className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                  >
-                    <span className={`${style.tableHeaderHeadingTextStyle}`}>
-                      Upload Privilege request Approval from BOD
-                    </span>
-                  </div>
-                  <div className={`${style.twoColFile} ${style.marginTop} ${style.cursorPointer}`}>
-
-                    <>
-
-                      <Dropzone
-                        style={dropzoneStyle}
-                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                        accept={{
-                          'image/jpeg': [],
-                          'image/png': [],
-                          'image/jpg': [],
-                          'application/pdf': []
-                        }}
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                  Upload Your Documents
-                                </p>
-                                <p className={style.uploadDescriptionText}>
-                                  Upload your files or drag & drop from your file cabinet (Computer / Online Drive)
-                                </p>
-                              </div>
-                            </div>
-                          </section>
-                        )}
-                      </Dropzone>
-
-
-                      <Dropzone
-                        style={dropzoneStyle}
-                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                        accept="image/*"
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <div className={style.uploadBorderStyle}>
-                                <p className={style.uploadTextStyle}>
-                                  Upload A Photo
-                                </p>
-                                <p className={style.uploadDescriptionText}>
-                                  Click a picture of the document with your camera and Upload or Upload from your photo gallery.
-                                </p>
-                              </div>
-                            </div>
-                          </section>
-                        )}
-                      </Dropzone>
-                    </>
-
-                  </div>
-                  <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
-                    <DescriptionIcon className={`${style.docsIcon}`} />
-                    {files.length > 0 ? (
-                      files.map((file, index) => (
-                        <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
-                      ))
-                    ) : (
-                      <div className={`${style.marginLeft20}`}>No documents uploaded</div>
-                    )}
-                  </div>
-                  <>
-                    {taskCount > 0 ? (
-                      <>
-                        <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                          <WarningIcon className={style.warning} />
-                          <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
-                        </div>
-
-                      </>
-                    ) : (
-                      <>
-                        <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
-                          <TaskAltIcon className={style.correcticon} />
-                          <div className={`${style.marginLeft20} ${style.alignItem}`}>All checklist items are completed</div>
-                        </div>
-                      </>
-                    )}
-                    <div
-                      className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
-                    >
-                      <div
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
-                        onClick={onClickCheckListFunction}
-                      >
-                        SAVE & VIEW CHECKLIST
+                </>
+              ) : null
+              }
+              {selectedTab === 'level-4' && applicationType === "NEW" ? (
+                <>
+                  <div className={`${style.cardLeftStyle2}`}>
+                    <div className={`${style.displayInRow}${style.marginTop20}`}>
+                      <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20}`}>
+                        <span className={`${style.tableHeaderHeadingTextStyle}`}>MAC Meeting Date*</span>
                       </div>
-                      <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
+                      <CommonDateField
+                        className={style.dateWidth}
+                        onChange={(date) => handleDateChange(date, 'MAC')}
+                        open={calendarStart}
+                        onOpen={() => setCalendarStart(true)}
+                        onClose={() => setCalendarStart(false)}
+                        minDate={sub(new Date(), { years: 3 })}
+                        maxDate={add(new Date(), { years: 3 })}
+                        value={selectedDateForMac}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            inputProps={{
+                              ...params.inputProps,
+                              placeholder: 'Start Date',
+                            }}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                          />
+                        )}
+                      />
                     </div>
-                    <div
-                      className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20} ${style.paddingButton}`}
-                    >
-                      <div
-                        className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                        onClick={() => { onClose(); }}>
-                        REJECT
+                    <div className={style.marginBottom20}></div>
+                    <>
+                      <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                        <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          onClick={() => { onClose(); }}>REJECT</div>
                       </div>
-                    </div>
-                    <div
-                    >
-                      {/* <div
-                                        className={`${allTasksCompleted  ? style.bigButtonGreyStyle2 : style.bigButtonStyle2} ${style.cursorPointer}`}
-                                      > */}
                       <div
-                        className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
+                        className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
                         style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
                         onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                       >
-                        <div
-                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
-                        //  onClick={allTasksCompleted ? handleApplicationAccept : null}
-                        // onClick={onClickApproveMoveFunction}
-                        // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                        // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
-                        >
-                          BOD APPROVED
+                        <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                          MAC APPROVED
                         </div>
                       </div>
-                      <div className={style.marginBottom20}></div>
-                    </div>
-                  </>
-                  {(workModeType === 'Chief Of Staff') && (
-                    <>
-                      {applicationType === "NEW" && (
-                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
-                          <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                          // onClick={onClickApprovalFunction}
-                          >
-                            OVERRIDE FOR TEMPORARY PRIVILEGES
-                          </div>
-                        </div>
-                      )}
                     </>
-                  )}
-                </div>
-              </>
-            ) :
-              ""
-            }
-          </div>
-        </div >
-        <div className={style.marginTop50}></div>
-        {
-          showApplicationDeclineDialog && (
-            <ApplicationDecline
-              getApplicationDeclineDialog={getApplicationDeclineDialog}
-              getActiveApplicationView={getActiveApplicationView}
-              selectedTab={selectedTab}
-            />
-          )
-        }
-        {
-          showDocVerifyDialog && (
-            <Dialog
-              isOpen={showDocVerifyDialog}
-              onClose={() => setShowDocVerifyDialog(false)}
-              className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-              canOutsideClickClose={false}
-              canEscapeKeyClose={false}
-            >
-              <div>
-                <div className={Classes.DIALOG_BODY}>
-                  <div className={style.spaceBetween}>
-                    <div
-                      className={style.heading}
-                    >{`${form?.basicDetails?.applicant?.name?.firstName} ${form?.basicDetails?.applicant?.name?.lastName} ${file?.fileName} Preview`}</div>
-                    <div className={style.displayInRow}>
-                      {file?.isVerified !== undefined && file?.isVerified ? (
-                        <div
-                          className={`${style.greenButton} ${style.cursorPointer} `}
-                        >
-                          <div
-                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                          >
-                            Verified
+                    {(workModeType === 'Chief Of Staff') && (
+                      <>
+                        {applicationType === "NEW" && (
+                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalFunction}
+                            >
+                              OVERRIDE FOR TEMPORARY PRIVILEGES
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div
-                          className={`${style.purpleButton} ${style.cursorPointer}`}
-                        >
-                          <div
-                            className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              handleDocVerify(selectedRow?.rowId);
-                              setShowDocVerifyDialog(false);
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              ) : (selectedTab === 'level-5' && applicationType === "NEW") ? (
+                <>
+                  <div className={`${style.cardLeftStyle2}`}>
+                    <div className={`${style.displayInCol}`}>
+                      <div
+                        className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                      >
+                        <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop10}`}>
+                          BOD Approval Date
+                        </span>
+                      </div>
+                      <CommonDateField
+                        className={style.dateWidth}
+                        onChange={(date) => handleDateChange(date, 'BOD')}
+                        open={calendarStart}
+                        onOpen={() => setCalendarStart(true)}
+                        onClose={() => setCalendarStart(false)}
+
+                        minDate={sub(new Date(), { years: 3 })}
+                        maxDate={add(new Date(), { years: 3 })}
+                        value={selectedDateForBod}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            inputProps={{
+                              ...params.inputProps,
+                              placeholder: 'Start Date',
                             }}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    </div>
+                    <div className={style.marginBottom20}></div>
+                    <div className={`${style.displayInRow}${style.marginTop20}`}>
+                      <div
+                        className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                      >
+                        <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                          Reappointment Credentialing Application Creation Date
+                        </span>
+                      </div>
+                      <CommonDateField
+                        className={style.dateWidth}
+                        onChange={(date) => handleDateChange(date, 'Reappoint')}
+                        open={calendarStart}
+                        onOpen={() => setCalendarStart(true)}
+                        onClose={() => setCalendarStart(false)}
+
+                        minDate={sub(new Date(), { years: 3 })}
+                        maxDate={add(new Date(), { years: 3 })}
+                        value={selectedDateForReappoint}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            inputProps={{
+                              ...params.inputProps,
+                              placeholder: 'Start Date',
+                            }}
+                            variant="outlined"
+                            margin="normal"
+                            fullWidth
+                          />
+                        )}
+                      />
+                    </div>
+                    <div
+                      className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
+                    >
+                      <span className={`${style.tableHeaderHeadingTextStyle}`}>
+                        Upload Privilege request Approval from BOD
+                      </span>
+                    </div>
+                    <div className={`${style.twoColFile} ${style.marginTop} ${style.cursorPointer}`}>
+
+                      <>
+
+                        <Dropzone
+                          style={dropzoneStyle}
+                          onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                          accept={{
+                            'image/jpeg': [],
+                            'image/png': [],
+                            'image/jpg': [],
+                            'application/pdf': []
+                          }}
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <section>
+                              <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <div className={style.uploadBorderStyle}>
+                                  <p className={style.uploadTextStyle}>
+                                    Upload Your Documents
+                                  </p>
+                                  <p className={style.uploadDescriptionText}>
+                                    Upload your files or drag & drop from your file cabinet (Computer / Online Drive)
+                                  </p>
+                                </div>
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+
+
+                        <Dropzone
+                          style={dropzoneStyle}
+                          onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                          accept="image/*"
+                        >
+                          {({ getRootProps, getInputProps }) => (
+                            <section>
+                              <div {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <div className={style.uploadBorderStyle}>
+                                  <p className={style.uploadTextStyle}>
+                                    Upload A Photo
+                                  </p>
+                                  <p className={style.uploadDescriptionText}>
+                                    Click a picture of the document with your camera and Upload or Upload from your photo gallery.
+                                  </p>
+                                </div>
+                              </div>
+                            </section>
+                          )}
+                        </Dropzone>
+                      </>
+
+                    </div>
+                    <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.alignItem}  ${style.marginTop10}`}>
+                      <DescriptionIcon className={`${style.docsIcon}`} />
+                      {files.length > 0 ? (
+                        files.map((file, index) => (
+                          <div key={index} className={`${style.marginLeft20}`}>{file.name}</div>
+                        ))
+                      ) : (
+                        <div className={`${style.marginLeft20}`}>No documents uploaded</div>
+                      )}
+                    </div>
+                    <>
+                      {taskCount > 0 ? (
+                        <>
+                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                            <WarningIcon className={style.warning} />
+                            <div className={`${style.marginLeft20} ${style.alignItem}`}>ChecklistList Item Pending Completion <span className={style.checkListitem}> {taskCount} items </span></div>
+                          </div>
+
+                        </>
+                      ) : (
+                        <>
+                          <div className={`${style.displayInRow} ${style.alignContent} ${style.marginTop10}`}>
+                            <TaskAltIcon className={style.correcticon} />
+                            <div className={`${style.marginLeft20} ${style.alignItem}`}>All checklist items are completed</div>
+                          </div>
+                        </>
+                      )}
+                      <div
+                        className={`${style.bigButtonStyle2} ${style.cursorPointer}`}
+                      >
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20} ${style.paddingButton}`}
+                          onClick={onClickCheckListFunction}
+                        >
+                          SAVE & VIEW CHECKLIST
+                        </div>
+                        <div className={`${style.marginTop20} ${style.marginBottom20}`}></div>
+                      </div>
+                      <div
+                        className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop20} ${style.paddingButton}`}
+                      >
+                        <div
+                          className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                          onClick={() => { onClose(); }}>
+                          REJECT
+                        </div>
+                      </div>
+                      <div
+                      >
+                        {/* <div
+                                        className={`${allTasksCompleted  ? style.bigButtonGreyStyle2 : style.bigButtonStyle2} ${style.cursorPointer}`}
+                                      > */}
+                        <div
+                          className={` ${style.bigButtonStyle2} ${style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                        >
+                          <div
+                            className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}
+                          //  onClick={allTasksCompleted ? handleApplicationAccept : null}
+                          // onClick={onClickApproveMoveFunction}
+                          // style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          // onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
                           >
-                            Verify
+                            BOD APPROVED
                           </div>
                         </div>
-                      )}
-                      <img
-                        src={CrossPink}
-                        alt="cross"
-                        className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
+                        <div className={style.marginBottom20}></div>
+                      </div>
+                    </>
+                    {(workModeType === 'Chief Of Staff') && (
+                      <>
+                        {applicationType === "NEW" && (
+                          <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                            // onClick={onClickApprovalFunction}
+                            >
+                              OVERRIDE FOR TEMPORARY PRIVILEGES
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </>
+              ) :
+                ""
+              }
+            </div>
+          </div >
+          <div className={style.marginTop50}></div>
+          {
+            showApplicationDeclineDialog && (
+              <ApplicationDecline
+                getApplicationDeclineDialog={getApplicationDeclineDialog}
+                getActiveApplicationView={getActiveApplicationView}
+                selectedTab={selectedTab}
+              />
+            )
+          }
+          {
+            showDocVerifyDialog && (
+              <Dialog
+                isOpen={showDocVerifyDialog}
+                onClose={() => setShowDocVerifyDialog(false)}
+                className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+                canOutsideClickClose={false}
+                canEscapeKeyClose={false}
+              >
+                <div>
+                  <div className={Classes.DIALOG_BODY}>
+                    <div className={style.spaceBetween}>
+                      <div
+                        className={style.heading}
+                      >{`${form?.basicDetails?.applicant?.name?.firstName} ${form?.basicDetails?.applicant?.name?.lastName} ${file?.fileName} Preview`}</div>
+                      <div className={style.displayInRow}>
+                        {file?.isVerified !== undefined && file?.isVerified ? (
+                          <div
+                            className={`${style.greenButton} ${style.cursorPointer} `}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                            >
+                              Verified
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={`${style.purpleButton} ${style.cursorPointer}`}
+                          >
+                            <div
+                              className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                handleDocVerify(selectedRow?.rowId);
+                                setShowDocVerifyDialog(false);
+                              }}
+                            >
+                              Verify
+                            </div>
+                          </div>
+                        )}
+                        <img
+                          src={CrossPink}
+                          alt="cross"
+                          className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft20} `}
+                          onClick={() => {
+                            setShowDocVerifyDialog(false);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className={style.marginTop20}>
+                      <iframe
+                        src={file?.fileURL}
+                        width="100%"
+                        height="600px"
+                      ></iframe>
+                    </div>
+                    <div
+                      className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
+                    >
+                      <div
+                        className={`${style.continue} ${style.marginLeft}`}
                         onClick={() => {
                           setShowDocVerifyDialog(false);
                         }}
-                      />
-                    </div>
-                  </div>
-                  <div className={style.marginTop20}>
-                    <iframe
-                      src={file?.fileURL}
-                      width="100%"
-                      height="600px"
-                    ></iframe>
-                  </div>
-                  <div
-                    className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
-                  >
-                    <div
-                      className={`${style.continue} ${style.marginLeft}`}
-                      onClick={() => {
-                        setShowDocVerifyDialog(false);
-                      }}
-                    >
-                      CLOSE
+                      >
+                        CLOSE
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Dialog>
-          )
-        }
-        {
-          showFileDisplayDialog && (
-            <FileDisplayDialog
-              getIsOpen={getIsShowFileDialog}
-              file={selectedFile}
+              </Dialog>
+            )
+          }
+          {
+            showFileDisplayDialog && (
+              <FileDisplayDialog
+                getIsOpen={getIsShowFileDialog}
+                file={selectedFile}
+              />
+            )
+          }
+          {showFileVerifyDialog && (
+            <FileVerifyDialog
+              getIsOpen={setShowFileVerifyDialog}
+              file={fileArray[selectedFileIndex]}
+              fileArray={fileArray}
+              setFileArray={setFileArray}
+              selectedFileIndex={selectedFileIndex}
+              setSelectedFileIndex={setSelectedFileIndex}
+              selectedRow={selectedRow}
+              selectedRowTableName={selectedRowTableName}
+              selectedFormId={selectedFormId}
+              setForm={setForm}
+              handleStepsVerify={handleStepsVerify}
+              setHasVerificationAttempted={setHasVerificationAttempted}
             />
-          )
-        }
-        {showFileVerifyDialog && (
-          <FileVerifyDialog
-            getIsOpen={setShowFileVerifyDialog}
-            file={fileArray[selectedFileIndex]}
-            fileArray={fileArray}
-            setFileArray={setFileArray}
-            selectedFileIndex={selectedFileIndex}
-            setSelectedFileIndex={setSelectedFileIndex}
-            selectedRow={selectedRow}
-            selectedRowTableName={selectedRowTableName}
-            selectedFormId={selectedFormId}
-            setForm={setForm}
-            handleStepsVerify={handleStepsVerify}
-            setHasVerificationAttempted={setHasVerificationAttempted}
-          />
-        )}
-        {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
+          )}
+          {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
           <div>
             <div className={Classes.DIALOG_BODY}>
               <div className={style.spaceBetween}>
@@ -11911,35 +11911,35 @@ const NewActiveApplication = ({
             </div>
           </div>
         </Dialog> */}
-        <Dialog
-          isOpen={showCurrentPrivileges}
-          onClose={() => setShowCurrentPrivileges(false)}
-          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-          canOutsideClickClose={false}
-          canEscapeKeyClose={false}
-        >
-          <div>
-            <div className={Classes.DIALOG_BODY}>
-              <div className={style.spaceBetween}>
-                <div className={style.heading}>Selected Privilege Set</div>
-                <div className={style.displayInRow}>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
-                    onClick={() => {
-                      setShowCurrentPrivileges(false);
-                    }}
-                  />
+          <Dialog
+            isOpen={showCurrentPrivileges}
+            onClose={() => setShowCurrentPrivileges(false)}
+            className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+            canOutsideClickClose={false}
+            canEscapeKeyClose={false}
+          >
+            <div>
+              <div className={Classes.DIALOG_BODY}>
+                <div className={style.spaceBetween}>
+                  <div className={style.heading}>Selected Privilege Set</div>
+                  <div className={style.displayInRow}>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyleImg} ${style.cursorPointer} ${style.marginLeft} `}
+                      onClick={() => {
+                        setShowCurrentPrivileges(false);
+                      }}
+                    />
+                  </div>
                 </div>
+                <div>{currentPrivilegesCategoryReappointment === 'Basic' ? getFields() : getFieldsAdditional()}</div>
               </div>
-              <div>{currentPrivilegesCategoryReappointment === 'Basic' ? getFields() : getFieldsAdditional()}</div>
             </div>
-          </div>
-        </Dialog>
-      </div >
-    </div>
-    {/* // )} */}
+          </Dialog>
+        </div >
+      </div>
+      {/* // )} */}
     </>
   );
 };
