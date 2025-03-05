@@ -307,7 +307,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
         console.log(medicalDirectives)
         let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
             // attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
-            attestationDueDate: basicForm?.forms?.[formIndex]?.esign?.signedDate,
+            attestationDueDate: basicForm?.forms?.[formIndex]?.esign?.signedDate || currentDate,
             mdId: innerData?.medicalDirective?.mdID,
             title: innerData?.medicalDirective?.title,
             type: innerData?.medicalDirective?.creationType,
