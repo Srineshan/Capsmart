@@ -637,7 +637,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -753,10 +753,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   // Handle refetch metadata changes
   useEffect(() => {
-    // if (reFetchMetaData === true) {
+    if (reFetchMetaData === true) {
       getTitleCounts();
-    // }
-  }, [reFetchMetaData]);
+      console.log("refetcheddddddddddd",reFetchMetaData)
+    }
+    // console.log("refetcheddddddddddd",reFetchMetaData)
+  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept]);
 
   // Handle user flow and role updates
   // useEffect(() => {

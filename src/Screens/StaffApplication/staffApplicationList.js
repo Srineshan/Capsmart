@@ -3793,6 +3793,8 @@ const StaffApplicationList = ({
                 selectedTab={selectedTab}
                 reFetchMetaData={reFetchMetaData}
                 getReFetchMetadata={getReFetchMetaData}
+                approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
+                showBulkApproveDialog={showBulkApproveDialog}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
