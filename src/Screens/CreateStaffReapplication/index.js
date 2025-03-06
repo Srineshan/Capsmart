@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef } from 'react';
-import { GET, POST } from '../../Screens/dataSaver';
+import { GET, POST, PUT } from '../../Screens/dataSaver';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +7,11 @@ import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
 import Checkbox from '@mui/material/Checkbox';
+import Resend from './../../images/Resend.png';
+import ResendDisabled from './../../images/Resend-disabled.png';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
-import { SuccessToaster } from '../../utils/toaster';
+import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
+import { Tooltip } from '@material-ui/core';
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const navigate = useNavigate();
@@ -88,7 +91,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Staff Name",
     "Staff Type",
     "Department",
-    "Reappointment"
+    // "Status",
+    "Reappointment",
+    "Action"
   ];
   const colSortValues = [false, true, false, false, true];
 
@@ -209,6 +214,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     }
   };
 
+  const handleResend = async (id) => {
+    await PUT(
+      `application-management-service/staff/${id}/resendReappointmentEmail`
+    ).then(() => {
+      SuccessToaster2("Application mail resent successfully!")
+    });
+  }
+
   const getTableValues = () => {
     const checkbox = [];
     const applicantName = [];
@@ -216,6 +229,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     const applicantType = [];
     const department = [];
     const reappointment = [];
+    const submittedStatus = [];
+    const actionList = [];
 
     tableData?.forEach((data) => {
       // Checkbox with individual checked state
@@ -255,6 +270,18 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         // </>
         `${data?.reappointmentStatus}`
       );
+      submittedStatus.push('Not Submitted')
+      actionList.push(
+        // <CommonCheckBox
+        //   checked={checkedIds.includes(data.id)}
+        //   onChange={() => handleCheckboxClick(data.id)}
+        //   color="primary"
+        //   inputProps={{ 'aria-label': `Select ${data.name}` }}
+        // />
+        data?.reappointmentStatus === "SENT" ?
+          <div className={style.justifyCenter} onClick={() => handleResend(data.id)}> <Tooltip arrow title="Click to Resend"><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
+          <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
+      );
     });
 
     return [
@@ -263,7 +290,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
+      // { type: "text", value: submittedStatus },
       { type: "text", value: reappointment },
+      { type: "icon", icon: actionList },
     ];
   };
 
@@ -273,7 +302,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   return (
     <div>
       <ApplicationHeader
-        title={"Staff Member Reappointment Credentialing and Privileging Status Tracker"}
+        title={`Staff Member Reappointment Credentialing and Privileging Status Tracker (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
       />

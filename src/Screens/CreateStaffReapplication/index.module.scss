@@ -185,8 +185,13 @@
 
 .permanentStaffGrid {
     display: grid;
-    grid-template-columns: 5% 25% 25% 21% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 5% 25% 20% 24% 15% 5%;
+    grid-gap: 1%;
+}
+
+.resentIcon {
+    height: 20px;
+    width: 20px;
 }
 
 .spaceBetween {
@@ -238,4 +243,8 @@
     padding: 20px 100px;
     height: calc(100vh - 80px);
     overflow: scroll;
+}
+
+.disabled {
+    cursor: not-allowed;
 }
