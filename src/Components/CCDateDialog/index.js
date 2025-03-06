@@ -24,6 +24,7 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
       await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`,temp)
         .then(response => {
           console.log('successfull')
+          SuccessToaster("Meeting date updated successfully.");
           onClose();
         })
         .catch((error) => {

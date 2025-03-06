@@ -70,6 +70,13 @@ export const extractNumbersFromString = (inputString) => {
   return numbersArray ? numbersArray.map(Number) : [];
 };
 
+export const formatFirstNameLastName = (firstName, lastName) => {
+  const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+  const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
+
+  return `${formattedLastName}, ${formattedFirstName}`;
+};
+
 export const GetDateFromHours = (time) => {
   time = time?.split(':') || [];
   let now = new Date();

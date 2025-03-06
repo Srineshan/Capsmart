@@ -1727,7 +1727,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
+            <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
               ? allStaffPrivilege
@@ -2115,7 +2115,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
+            <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
               ? allStaffPrivilege
@@ -2509,7 +2509,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       return (
         <>
           <div className={style.marginTop}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${privilegeData?.privilegeSetTitle?.toUpperCase()}`}</div>
+            <div className={style.cardTitle}>{`${privilegeData?.privilegeSetTitle?.toUpperCase()}`}</div>
 
             {privilegeData?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map(
               (categories, index) => (
