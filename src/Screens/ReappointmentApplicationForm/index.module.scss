@@ -5,8 +5,8 @@
     height: calc(100vh - 80px);
     overflow: auto;
     overflow-y: scroll !important;
-    scrollbar-width: thin !important;
-    scrollbar-color: gray transparent !important;
+    // scrollbar-width: thin !important;
+    scrollbar-color: gray $tableheadbg !important;
 }
 
 .screenBackground {
