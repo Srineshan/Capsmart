@@ -16,6 +16,7 @@
 
 .tableBodyScroll {
     overflow: auto;
+    overflow-x: hidden !important;
     overflow-y: scroll !important;
     scrollbar-width: thin !important;
     scrollbar-color: gray $tableheadbg !important;
