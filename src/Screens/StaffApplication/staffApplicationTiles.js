@@ -753,10 +753,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   // Handle refetch metadata changes
   useEffect(() => {
-    if (reFetchMetaData === true) {
+    // if (reFetchMetaData === true) {
       getTitleCounts();
       console.log("refetcheddddddddddd",reFetchMetaData)
-    }
+    // }
     // console.log("refetcheddddddddddd",reFetchMetaData)
   }, [showBulkApproveDialog,approvalnotesCommentsBoxDept]);
 

@@ -352,6 +352,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -468,6 +471,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
       } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
