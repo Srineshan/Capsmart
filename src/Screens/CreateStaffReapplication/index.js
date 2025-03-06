@@ -12,7 +12,7 @@ import ResendDisabled from './../../images/Resend-disabled.png';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
 import { Tooltip } from '@material-ui/core';
-import {formatFirstNameLastName } from "../../utils/formatting";
+import { formatFirstNameLastName } from "../../utils/formatting";
 
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
@@ -244,7 +244,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           inputProps={{ 'aria-label': `Select ${data.name}` }}
         />
       );
-       applicantName.push(
+      applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
@@ -295,7 +295,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   return (
     <div>
       <ApplicationHeader
-        title={`Staff Member Reappointment Credentialing and Privileging Status Tracker (${tableData?.length})`}
+        title={`Staff Reappointment Applications To Be Sent (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
       />
