@@ -6,7 +6,7 @@ import jwt from 'jwt-decode';
 import { GET } from '../dataSaver';
 import { formatInTimeZone } from 'date-fns-tz'
 import { Link } from 'react-router-dom';
-import { siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
+import { siteTimeZone, timeZoneAbbreviation,formatFirstNameLastName } from '../../utils/formatting';
 
 import style from './index.module.scss';
 
@@ -66,9 +66,22 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                     <div>
                     <Link to={'/profile'} className={style.noFontStyle}>
                         <div className={style.marginLeft20}>
-                            <div className={style.userNameStyle}>
-                                Hi, {updateProfileData ? `${updateProfileData?.name?.firstName} ${updateProfileData?.name?.lastName.toLowerCase()}` : `${currentUserDetails?.name?.firstName} ${currentUserDetails?.name?.lastName.toLowerCase()}`}
-                            </div>
+                        {/* <div className={style.userNameStyle}>
+                           Hi, {updateProfileData
+                            ? `${updateProfileData?.name?.lastName.charAt(0).toUpperCase() + updateProfileData?.name?.lastName.slice(1).toLowerCase()}, ${updateProfileData?.name?.firstName}`
+                            : `${currentUserDetails?.name?.lastName.charAt(0).toUpperCase() + currentUserDetails?.name?.lastName.slice(1).toLowerCase()}, ${currentUserDetails?.name?.firstName}`}
+                        </div> */}
+                        <div className={style.userNameStyle}>
+                            Hi, {
+                                currentUserDetails?.name?.firstName !== undefined && 
+                                currentUserDetails?.name?.lastName !== undefined
+                                ? formatFirstNameLastName(
+                                    currentUserDetails?.name?.firstName,
+                                    currentUserDetails?.name?.lastName
+                                    )
+                                : "{First Name} {Last Name}"
+                            },{" "}
+                        </div>
                             <div className={style.loginStatus}>
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                             </div>

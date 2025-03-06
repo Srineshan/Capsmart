@@ -631,7 +631,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
               <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                  : ""}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "} */}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{" , "} */}
                   </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>

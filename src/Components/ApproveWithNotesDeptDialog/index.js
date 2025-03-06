@@ -384,6 +384,7 @@ useEffect(() => {
       const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail;
   
       const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
+      const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
   
       const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
       const user = basicRole?.[0];
@@ -395,9 +396,12 @@ useEffect(() => {
       let userRolesData = [];
   
       if (isDepartmentHead) {
-        const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+        // const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
         userRolesData = basicFormRoleCos.filter(
-          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
+          user => !(
+            user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
+            user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
+          )
         );
         setIsUser(true)
       } else {
@@ -408,15 +412,27 @@ useEffect(() => {
           return departmentList.some(department => {
             const isDepartmentMatch = department?.id === applicantDepartmentId;
             if (!isDepartmentMatch) return false;
-            return department?.serviceAreaSpecific
-              ? department?.serviceAreas?.some(area => area?.id === applicantSpecialtyId)
-              : true;
+            if (department?.serviceAreaSpecific) {
+            return department?.serviceAreas?.some(
+              (area) => area?.id === applicantSpecialtyId
+            );
+          }
+          return true;
           });
         });
 
-        userRolesData = userRolesData.filter(
-          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
-        );
+        userRolesData = [...userRolesData, ...basicFormRoleCos];
+
+        userRolesData = userRolesData?.filter((user, index, self) => 
+        index === self.findIndex((u) => u?.id === user?.id)
+      );
+
+      userRolesData = userRolesData.filter(
+        user => !(
+          user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
+          user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
+        )
+      );
         setIsUser(false)
       }
   
@@ -786,12 +802,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {/* {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "} */}
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
+                  : ""}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "} */}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                 </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>

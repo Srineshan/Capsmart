@@ -16,6 +16,7 @@ import DeleteIcon from "./../../images/deleteHcRow.png";
 import Tooltip from "@mui/material/Tooltip";
 import { DELETE, TenantID, GET, PUT, POST } from "../../Screens/dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import {formatFirstNameLastName } from "./../../utils/formatting";
 import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
 // import PdfDoc from './../../images/pdfDoc.png';
@@ -230,6 +231,7 @@ const NewActiveApplication = ({
   // const userFirstName = userData?.name?.firstName || "No First Name";
   // const userLastName = userData?.name?.lastName || "No Last Name";
   const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
+  const [approvalType, setApprovalType] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -621,17 +623,24 @@ const NewActiveApplication = ({
       (workflow) => workflow?.role === "Credentialing Committee"
     );
 
-    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName || "";
-    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName || "";
+    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName;
+    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
+    let approvalType = CredCommApproverDetails?.approvalType
 
     console.log(`Approver cred: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
     // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
     console.log("applicationType:", applicationType);
+    console.log("approvalType:", approvalType);
 
     if (firstName === userFirstName && lastName === userLastName) {
       setIsApproverCred("Approve");
       console.log("levelofApprovaltrue:", isApproverCred);
+      if (!approvalType) {
+        setApprovalType(false);
+      } else {
+        setApprovalType(true);
+      }
     } else {
       setIsApproverCred("NotApproved");
       console.log("levelofApprovalfalse:", isApproverCred);
@@ -4463,8 +4472,9 @@ const NewActiveApplication = ({
     >
       <div className={style.screenBackground}></div>
 
-      <ApplicationHeader
-        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+      {/* <ApplicationHeader
+        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  
+         ${form?.basicDetails?.applicant?.name?.firstName !== undefined
           ? form?.basicDetails?.applicant?.name?.firstName
           : "{First Name}"
           } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
@@ -4473,7 +4483,25 @@ const NewActiveApplication = ({
           }, ${form?.basicDetails?.applicant?.applicantType !== undefined
             ? form?.basicDetails?.applicant?.applicantType
             : "{Applicant Type}"
-          }`}
+          }`
+        }
+        close={true}
+        closeClick={onClose}
+      /> */}
+      <ApplicationHeader
+        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${
+          form?.basicDetails?.applicant?.name?.firstName !== undefined && 
+          form?.basicDetails?.applicant?.name?.lastName !== undefined
+            ? formatFirstNameLastName(
+                form?.basicDetails?.applicant?.name?.firstName,
+                form?.basicDetails?.applicant?.name?.lastName
+              )
+            : "{First Name} {Last Name}"
+        }, ${
+          form?.basicDetails?.applicant?.applicantType !== undefined
+            ? form?.basicDetails?.applicant?.applicantType
+            : "{Applicant Type}"
+        }`}
         close={true}
         closeClick={onClose}
       />
@@ -4511,8 +4539,17 @@ const NewActiveApplication = ({
                           <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                              {
+                                form?.basicDetails?.applicant?.name?.firstName !== undefined && 
+                                form?.basicDetails?.applicant?.name?.lastName !== undefined
+                                  ? formatFirstNameLastName(
+                                      form?.basicDetails?.applicant?.name?.firstName,
+                                      form?.basicDetails?.applicant?.name?.lastName
+                                    )
+                                  : "{First Name} {Last Name}"
+                              },{" "}
+                              {/* {`${formatFirstNameLastName(form?.basicDetail?.applicant?.name?.firstName, form?.basicDetail?.applicant?.name?.lastName)}`} */}
+                                {/* {form?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + form?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase() }{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
@@ -4632,12 +4669,16 @@ const NewActiveApplication = ({
                           <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                             <div className={style.marginTop10}>
                               <span className={`${style.cardTextBoldStyle}`}>
-                                {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                                {form?.basicDetails?.applicant?.name?.firstName
-                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "} */}
+                                {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "} */}
+                                {
+                                  form?.basicDetails?.applicant?.name?.firstName !== undefined && 
+                                  form?.basicDetails?.applicant?.name?.lastName !== undefined
+                                    ? formatFirstNameLastName(
+                                        form?.basicDetails?.applicant?.name?.firstName,
+                                        form?.basicDetails?.applicant?.name?.lastName
+                                      )
+                                    : "{First Name} {Last Name}"
+                                },{" "}
                                 {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                               </span>
                               <span className={`${style.cardTextNormalStyle}`}>
@@ -10461,13 +10502,29 @@ const NewActiveApplication = ({
                   </div>
                 </>)} */}
 
-                {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                {/* {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                  <div>
+                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                      Pending Cred. Comm. Recommendation
+                    </div>
+                  </div>
+                </>) : ("")} */}
+
+                {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
                   <div>
                     <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                       Pending Cred. Comm. Recommendation
                     </div>
                   </div>
                 </>) : ("")}
+
+                {/* {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve" && approvalType === true)) ? (<>
+                  <div>
+                    <div className={`${style.textCardStyle} ${style.reviewTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                      You Reviewed this Application
+                    </div>
+                  </div>
+                </>) : ("")} */}
 
                 {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                   <div>
@@ -10484,7 +10541,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 </>) : (" ")}
-                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyle2}`}>
                       <div className={`${style.displayInCol}`}>
@@ -10492,7 +10549,7 @@ const NewActiveApplication = ({
                           className={`${style.spaceBetween} ${style.marginLeftRight20}`}
                         >
                           <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                            CC Meeting Date*
+                            CC Approval Date*
                           </span>
                         </div>
                         <CommonDateField
@@ -10542,7 +10599,7 @@ const NewActiveApplication = ({
                   </div>
                 ) : (" ")
                 }
-                {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
+                {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
                   <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                     <div className={`${style.cardLeftStyleSaveButton}`}>
                       <div className={`${style.displayInCol}`}>
@@ -10569,7 +10626,7 @@ const NewActiveApplication = ({
                               {...params}
                               inputProps={{
                                 ...params.inputProps,
-                                placeholder: 'Enter CC Approval Date',
+                                placeholder: 'Enter CC Meeting Date',
                                 readOnly: true
                               }}
                               variant="outlined"
@@ -11314,7 +11371,7 @@ const NewActiveApplication = ({
                                       {log?.title}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                      {log?.user?.name?.firstName}{log?.user?.name?.lastName && ` ${log?.user?.name?.lastName}`}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
+                                      {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
                                     </div>
                                     <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                       <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />

@@ -9,6 +9,7 @@ import style from './index.module.scss';
 import Checkbox from '@mui/material/Checkbox';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { SuccessToaster } from '../../utils/toaster';
+import {formatFirstNameLastName } from "../../utils/formatting";
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const navigate = useNavigate();
@@ -227,17 +228,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           inputProps={{ 'aria-label': `Select ${data.name}` }}
         />
       );
-
-      // Rest of the table value preparations remain the same
-      applicantName.push(
-        <>
-          {/* {data?.applicant?.name?.lastName?.toUpperCase() || ""},{" "}
-          {data?.applicant?.name?.firstName
-            ? data?.applicant?.name?.firstName?.charAt(0).toUpperCase() +
-            data?.applicant?.name?.firstName?.slice(1).toLowerCase()
-            : ""} */}
-          {data?.applicant?.name?.firstName}{" "} {data?.applicant?.name?.lastName.toLowerCase()}
-        </>
+       applicantName.push(
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
       // applicantId.push(`${data?.staffId}` || "123");
