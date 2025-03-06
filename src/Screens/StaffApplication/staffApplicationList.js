@@ -945,9 +945,10 @@ const StaffApplicationList = ({
   }, [selectedTab, sortField, sortValue, page, totalCount]);
 
   useEffect(() => {
-    getWorkflowUserData(showNotesDialog);
+    getWorkflowUserData();
     // getNotesDialog();
-    setReFetchMetaData(true);
+    getReFetchMetaData(true);
+    console.log("getReFetchMetaData",reFetchMetaData)
   }, [showNotesDialog,showCCDateDialog,approvalnotesCommentsBoxDept,showBulkApproveDialog]);
 
   // useEffect(() => {
@@ -1007,6 +1008,7 @@ const StaffApplicationList = ({
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
+        setReFetchMetaData(true);
         setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
         return response?.data?.applications || [];

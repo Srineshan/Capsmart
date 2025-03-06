@@ -753,9 +753,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
   // Handle refetch metadata changes
   useEffect(() => {
-    if (reFetchMetaData === true) {
+    // if (reFetchMetaData === true) {
       getTitleCounts();
-    }
+    // }
   }, [reFetchMetaData]);
 
   // Handle user flow and role updates
