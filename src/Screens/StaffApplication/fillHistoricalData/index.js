@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Navbar from "../../../Components/Navbar";
 import style from "./index.module.scss";
 import CommonInputField from "../../../Components/CommonFields/CommonInputField";
@@ -19,6 +19,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
 import { baseUrl } from "../../../utils/auth";
 import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
+import CommonSwitch from "../../../Components/CommonFields/CommonSwitch";
+import HistoricValidationDialog from "./historicDataValidationDialog";
 
 
 
@@ -34,7 +36,7 @@ const HistoricalData = () => {
   const [officeAddress, setOfficeAddress] = useState("");
   const [city, setCity] = useState("");
   const [province, setProvince] = useState("");
-  const [zipcode, setZipcode] = useState("");
+  const [zipCode, setZipCode] = useState(""); 
   const [homeAddress, setHomeAddress] = useState("");
   const [homeCity, setHomeCity] = useState("");
   const [homeProvince, setHomeProvince] = useState("");
@@ -43,13 +45,14 @@ const HistoricalData = () => {
   const [preferredPhone, setPreferredPhone] = useState("");
   const [physicianName, setPhysicianName] = useState("");
   const [doA, setDoA] = useState("");
+  const [isOfficeAddressSameAsHomeAddress, setIsOfficeAddressSameAsHomeAddress] = useState(false);
   const [agreement, setAgreement] = useState(false);
-
+  const formRef = useRef(null);
+  const tableRef = useRef(null);
   const [privilegeOtherList, setPrivilegeOtherList] = useState([]);
   const [privilegeCategoryList, setPrivilegeCategoryList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
   const [hospitalList, setHospitalList] = useState([]);
-  const [groupList, setGroupList] = useState([]);
   const [applicantTypeList, setApplicantTypeList] = useState([]);
   const [applicationOldData, setApplicationOldData] = useState([]);
   const [privilege, setPrivilege] = useState("");
@@ -174,41 +177,92 @@ const HistoricalData = () => {
     responseFile: {}
   });
 
-  const [CMECertificate, setCMECertificate] = useState({
-    radioValue: "",
-    file: [],
-    responseFile: {}
-  });
 
   const [coverage, setCoverage] = useState({
-    type: "",
-    individual: [],
-    group: [],
+    providerType: "",
+    providerDetails: [],
+    groupDetails: [],
   });
+
+
   const [whoCoverage, setWhoCoverage] = useState({
-    type: "",
-    individual: [],
-    group: [],
+    obstetricsProviderType: "",
+    obstetricsProviderDetails: [],
+    obstetricsGroupDetails: [],
   });
 
-
+  const [errors, setErrors] = useState({});
+  const [showValidationDialog, setShowValidationDialog] = useState(false);
+  const [warningFields, setWarningFields] = useState([]);
 
 
   const [doe, setDoe] = useState("");
   const [restrictiontext, setRestrictionText] = useState("");
   const tableHeader = ['Name', 'Applicant Type', 'Privilege', ''];
 
-
   const canadianPostalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
 
   const isValidCanadianZip = (code) => canadianPostalCodeRegex.test(code);
 
+  useEffect(() => {
+    validateFields();
+}, [firstName, lastName, email, contactNo, zipCode,dob,province,preferredPhone,city,officeAddress,homeAddress,homeZipcode,homeCity,homeProvince,applicantType,program,privilege]);
+
+
+
+
+
+
+
+  const validateFields = () => {
+    let newErrors = {};
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const phoneRegex = /^(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}$/;
+    const postalCodeRegex = /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/;
+  
+  
+    if (!firstName||!firstName.trim()) newErrors.firstName = "First Name - Required";
+    if (!lastName||!lastName.trim()) newErrors.lastName = "Last Name - Required";
+    if (!dob||!dob.trim()) newErrors.dob = "Date of Birth - Required";
+    if (!email || !email.trim()) newErrors.email = "Email - Required";
+  else if (!emailRegex.test(email)) newErrors.email = "Email - Invalid email format";
+    if (!officeAddress || !officeAddress.trim()) newErrors.officeAddress = "Office Address - Required";
+    if (!zipCode || !zipCode.trim()) newErrors.zipCode = "Postal Code - Required";
+    else if (!postalCodeRegex.test(zipCode)) newErrors.zipCode = "Postal Code - Invalid postal code format (e.g., K1A 0B1)";
+    if (!city||!city.trim()) newErrors.city = " City - Required";
+    if (!province||!province.trim()) newErrors.province = "Province - Required";
+    if (!homeAddress||!homeAddress.trim()) newErrors.homeAddress = "Home Address Line - Required";
+    if (!homeZipcode||!homeZipcode.trim()) newErrors.homeZipcode = "Postal Code - Required";
+  else if (!postalCodeRegex.test(homeZipcode)) newErrors.homeZipcode = "POstal Code - Invalid postal code format (e.g., K1A 0B1)";
+    if (!homeCity||!homeCity.trim()) newErrors.homeCity = "City - Required";
+    if (!homeProvince||!homeProvince.trim()) newErrors.homeProvince = "Province - Required";
+    if (!contactNo||!contactNo.trim()) newErrors.contactNo = "Phone Number - Required";
+  else if (!phoneRegex.test(contactNo)) newErrors.contactNo = "Phone Number - Invalid Phone Number format";
+    if (!phoneRegex.test(preferredPhone)) newErrors.preferredPhone = "CMH Phone - Invalid Phone Number format";
+    if (!applicantType||!applicantType.trim()) newErrors.applicantType = "Applicant Type - Required";
+  if (!privilege||!privilege.trim()) newErrors.privilege = "Privilege Category - Required";
+  if (!program||!program.trim()) newErrors.program = "Program - Required"
+  
+  setErrors(newErrors);
+
+  let missingFields = Object.entries(newErrors).map(([key, value]) => ({
+    key,
+    label: value
+}));
+
+setWarningFields(missingFields);
+
+return Object.keys(newErrors).length === 0;
+
+
+  };
+
   // Generic function to fetch city by zip code
-  const fetchCityByZipcode = async (zipcode, setCityCallback, setProvinceCallBack) => {
-    if (isValidCanadianZip(zipcode)) {
+  const fetchCityByZipcode = async (zipCode, setCityCallback, setProvinceCallBack) => {
+    if (isValidCanadianZip(zipCode)) {
       try {
         const response = await axios.get(
-          `https://geocoder.ca/${zipcode}?json=1`
+          `https://geocoder.ca/${zipCode}?json=1`
         );
         if (response.data && response.data.standard) {
           const fetchedCity = response.data.standard.city;
@@ -228,8 +282,8 @@ const HistoricalData = () => {
   }, [firstName, lastName]);
 
   useEffect(() => {
-    fetchCityByZipcode(zipcode, setCity, setProvince);
-  }, [zipcode]);
+    fetchCityByZipcode(zipCode, setCity, setProvince);
+  }, [zipCode]);
 
   useEffect(() => {
     fetchCityByZipcode(homeZipcode, setHomeCity, setHomeProvince);
@@ -243,71 +297,7 @@ const HistoricalData = () => {
       setDob("");
     }
   };
-  const buildPayload = (coverage, individualList, groupList) => {
-    const { type, individual, group } = coverage;
 
-    // Construct providerDetails based on type
-    let providerDetails = [];
-
-    if (type === "Individual" && individual) {
-      const individualData = individualList.find((data) => data.id === individual);
-      if (individualData) {
-        providerDetails.push({
-          id: individualData.id,
-          name: `${individualData.applicant?.name?.firstName} ${individualData.applicant?.name?.lastName}`,
-        });
-      }
-    } else if (type === "Group" && group.length > 0) {
-      providerDetails = group.map((groupId) => {
-        const groupData = groupList.find((data) => data.id === groupId);
-        return {
-          id: groupId,
-          name: groupData?.name || "",
-        };
-      });
-    }
-
-    // Return payload directly without coverageDetails wrapper
-    return {
-      providerType: type,
-      providerDetails,
-    };
-  };
-
-  const buildObstetricsPayload = (whoCoverage, individualList, groupList) => {
-    const { type, individual, group } = whoCoverage;
-
-    // Construct obstetricsProviderDetails based on type
-    let obstetricsProviderDetails = [];
-
-    if (type === "Individual" && individual.length > 0) {
-      obstetricsProviderDetails = individual.map((individualId) => {
-        const individualData = individualList.find((data) => data.id === individualId);
-        return individualData
-          ? {
-            id: individualData.id,
-            name: `${individualData.applicant?.name?.firstName} ${individualData.applicant?.name?.lastName}`,
-          }
-          : null;
-      }).filter(Boolean); // Remove any null values
-    } else if (type === "Group" && group.length > 0) {
-      obstetricsProviderDetails = group.map((groupId) => {
-        const groupData = groupList.find((data) => data.id === groupId);
-        return groupData
-          ? {
-            id: groupId,
-            name: groupData.name,
-          }
-          : null;
-      }).filter(Boolean); // Remove any null values
-    }
-
-    // Construct application payload
-    return {
-      obstetricsProviderType: type,
-      obstetricsProviderDetails,
-    };
-  };
 
   const handleAgreementChange = (e) => {
     setAgreement(e.target.checked);
@@ -367,8 +357,8 @@ const HistoricalData = () => {
     formData.append("files", filesBlob);
 
     try {
-      const response = await axios.post(
-        `${baseUrl()}/application-management-service/application/historicFileUpload`,
+      const response = await POST(
+        'application-management-service/application/historicFileUpload',
         formData,
         {
           headers: {
@@ -420,10 +410,6 @@ const HistoricalData = () => {
     setHospitalList(programs);
   };
 
-  const getGrouplist = async () => {
-    const { data: programs } = await GET("entity-service/callCoverageGroups");
-    setGroupList(programs);
-  };
 
   const getApplicationOldData = async () => {
     const { data: application } = await GET(
@@ -435,7 +421,6 @@ const HistoricalData = () => {
     getDepartments();
     getApplicantTypes();
     getHospitals();
-    getGrouplist();
     getApplicationOldData();
   }, []);
 
@@ -515,12 +500,21 @@ const HistoricalData = () => {
   const handleEditClick = (application) => {
     setIsEdit(true);
     setSelectedApplication(application);
+    formRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
+  };
+
+  const handleCancelClick = () => {
+    setIsEdit(false);
+    setSelectedApplication(null);
+    resetDialogFields();
+    tableRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
   };
 
   const handleAddClick = () => {
     setIsEdit(false);
     setSelectedApplication(null);
     resetDialogFields();
+    formRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
   };
 
 
@@ -558,8 +552,8 @@ const HistoricalData = () => {
     formData.append("files", filesBlob);
 
     try {
-      const response = await axios.post(
-        `${baseUrl()}/application-management-service/application/historicFileUpload`,
+      const response = await POST(
+        'application-management-service/application/historicFileUpload',
         formData,
         {
           headers: {
@@ -639,17 +633,31 @@ const HistoricalData = () => {
 
 
   const handleEditorChange = (event, editor, setState) => {
-    setState((prev) => ({
-      ...prev,
-      content: editor.getData(),
-    }));
+    const data = editor.getData();
+  
+    // Extract plain text content
+    const textContent = editor.editing.view.document.getRoot().getChild(0)?.getChild(0)?.data || "";
+  
+    // Allow updates only if character count is within the limit
+    if (textContent.length <= 150) {
+      setState((prev) => ({
+        ...prev,
+        content: data,
+      }));
+    }
   };
 
 
   const handleEditorRestrictionChange = (event, editor) => {
     const data = editor.getData();
-    setRestrictionText(data);
+
+    const textContent = editor.editing.view.document.getRoot()?.getChild(0)?.getChild(0)?.data || "";
+  
+    if (textContent.length <= 150) {
+      setRestrictionText(data);
+    }
   };
+  
 
   const getIndividuallist = async () => {
     try {
@@ -763,41 +771,114 @@ const HistoricalData = () => {
   };
 
 
-  const isPhysician = applicantTypeList.some(data => data.id === applicantType && data.applicantType === "Physician / Doctor");
+  const isPhysician = applicantTypeList.some(data => data.id === applicantType && data.applicantType === "Physician");
 
 
   const handleCoverageTypeChange = (currentState, setState, value) => {
     setState({
       ...currentState,
-      type: value,
-      individual: value === "Individual" ? currentState.individual : [],
-      group: value === "Group" ? currentState.group : [],
+      providerType: value,
+      providerDetails: value === "Individual" ? currentState.providerDetails : [],
+      groupDetails:
+        value === "Department/Speciality Group"
+          ? [
+              {
+                departmentId: program,
+                departmentName:
+                  departmentList.find((data) => data.id === program)?.departmentName.name || "",
+                serviceAreaId: subSpeciality,
+                serviceAreaName:
+                  serviceAreas.find((data) => data.id === subSpeciality)?.name || "",
+                departmentSpecialtyName: `${
+                  departmentList.find((data) => data.id === program)?.departmentName.name || ""
+                } - ${
+                  serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+                }`,
+              },
+            ]
+          : [],
     });
   };
+  
+
+  const handleWhoCoverageTypeChange = (currentState, setState, value) => {
+    setState({
+      ...currentState,
+      obstetricsProviderType: value,
+      obstetricsProviderDetails: value === "Individual" ? currentState.obstetricsProviderDetails : [],
+      obstetricsGroupDetails:
+        value === "Department/Speciality Group"
+          ? [
+              {
+                departmentId: program,
+                departmentName:
+                  departmentList.find((data) => data.id === program)?.departmentName.name || "",
+                serviceAreaId: subSpeciality,
+                serviceAreaName:
+                  serviceAreas.find((data) => data.id === subSpeciality)?.name || "",
+                departmentSpecialtyName: `${
+                  departmentList.find((data) => data.id === program)?.departmentName.name || ""
+                } - ${
+                  serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+                }`,
+              },
+            ]
+          : [],
+    });
+  };
+ 
+  
 
   const handleIndividualChange = (currentState, setState, value) => {
+    const selectedIndividual = individualList.find((data) => data.id === value);
     setState({
       ...currentState,
-      individual: value,
-      group: [],
+      providerDetails: selectedIndividual
+        ? [
+            {
+              id: selectedIndividual.id,
+              name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
+            },
+          ]
+        : [],
+      groupDetails: [],
     });
   };
 
-  const handleGroupChange = (currentState, setState, value) => {
+  const handleWhoIndividualChange = (currentState, setState, value) => {
+    const selectedIndividual = individualList.find((data) => data.id === value);
     setState({
       ...currentState,
-      group: value,
-      individual: [],
+      obstetricsProviderDetails: selectedIndividual
+        ? [
+            {
+              id: selectedIndividual.id,
+              name: `${selectedIndividual.applicant?.name?.firstName} ${selectedIndividual.applicant?.name?.lastName}`,
+            },
+          ]
+        : [],
+      obstetricsGroupDetails: [],
     });
   };
 
 
-  const removeGroupValue = (currentState, setState, valueToRemove) => {
-    setState({
-      ...currentState,
-      group: currentState.group.filter((value) => value !== valueToRemove),
-    });
+  const handleSwitchChange = (event) => {
+    const isChecked = event.target.checked;
+    setIsOfficeAddressSameAsHomeAddress(isChecked);
+  
+    if (isChecked) {
+      setOfficeAddress(homeAddress || ""); 
+      setZipCode(homeZipcode || ""); 
+      setCity(homeCity || "");
+      setProvince(homeProvince || "");
+    } else {
+      setOfficeAddress("");
+      setZipCode("");
+      setCity("");
+      setProvince("");
+    }
   };
+  
 
   const getTableDataValues = () => {
     let name = [];
@@ -837,7 +918,7 @@ const HistoricalData = () => {
       setOfficeAddress(selectedApplication.demographics.office.streetName);
       setCity(selectedApplication.demographics.office.city);
       setProvince(selectedApplication.demographics.office.province);
-      setZipcode(selectedApplication.demographics.office.pinCode);
+      setZipCode(selectedApplication?.demographics?.office?.pinCode);
       setContactNo(selectedApplication.demographics.homephoneno);
       setPreferredPhone(selectedApplication.demographics.cmh_admin_phoneno);
       setPrivilege(selectedApplication.privilegeCategory.status.id);
@@ -912,51 +993,21 @@ const HistoricalData = () => {
       setDoA(selectedApplication.confirmation.submissiondate);
       setAgreement(selectedApplication.confirmation.agreementToTerms);
       setApplicantType(selectedApplication.applicantType.id);
+      setCoverage({
+        providerType:selectedApplication.coverageDetails.providerType,
+        providerDetails:selectedApplication.coverageDetails.providerDetails,
+        groupDetails:selectedApplication.coverageDetails.groupDetails
+      });
+      setWhoCoverage({
+        obstetricsProviderType:selectedApplication.coverageDetails.obstetricsProviderType,
+        obstetricsGroupDetails:selectedApplication.coverageDetails.obstetricsGroupDetails,
+        obstetricsProviderDetails:selectedApplication.coverageDetails.obstetricsProviderDetails
+      })
     }
   }, [selectedApplication]);
 
 
-  useEffect(() => {
-    if (selectedApplication?.coverageDetails || selectedApplication?.obstetricsProviderDetails) {
-      // Extract data from selectedApplication
-      const {
-        coverageDetails = {},
-        obstetricsProviderDetails = []
-      } = selectedApplication;
-
-      // Process coverageDetails
-      const providerDetails = coverageDetails.providerDetails || [];
-      const providerType = coverageDetails.providerType || "";
-
-      const individualId = providerDetails.length > 0 ? providerDetails[0]?.id : "";
-      const groupIds = providerDetails.map(item => item.id);
-
-      const validIndividual = individualList.some(item => item.id === individualId) ? individualId : "";
-      const validGroupIds = groupIds.filter(id => groupList.some(item => item.id === id));
-
-      setCoverage({
-        type: providerType, // "Individual" or "Group"
-        individual: providerType === "Individual" ? [validIndividual] : [],
-        group: providerType === "Group" ? validGroupIds : [],
-      });
-
-      // Process obstetricsProviderDetails
-      const obstetricsType = selectedApplication.obstetricsProviderType || "";
-      const obstetricsIndividualId = obstetricsProviderDetails.length > 0 ? obstetricsProviderDetails[0]?.id : "";
-      const obstetricsGroupIds = obstetricsProviderDetails.map(item => item.id);
-
-      const validObstetricsIndividual = individualList.some(item => item.id === obstetricsIndividualId)
-        ? obstetricsIndividualId
-        : "";
-      const validObstetricsGroupIds = obstetricsGroupIds.filter(id => groupList.some(item => item.id === id));
-
-      setWhoCoverage({
-        type: obstetricsType, // "Individual" or "Group"
-        individual: obstetricsType === "Individual" ? [validObstetricsIndividual] : [],
-        group: obstetricsType === "Group" ? validObstetricsGroupIds : [],
-      });
-    }
-  }, [selectedApplication, individualList, groupList]);
+ 
 
 
 
@@ -974,7 +1025,7 @@ const HistoricalData = () => {
     setOfficeAddress("");
     setCity("");
     setProvince("");
-    setZipcode("");
+    setZipCode("");
     setContactNo("");
     setPreferredPhone("");
     setPrivilege("");
@@ -1049,17 +1100,20 @@ const HistoricalData = () => {
       radioValue: "",
       responseFile: {}
     });
-    setCoverage({ type: "", individual: [], group: [] });
-    setWhoCoverage({ type: "", individual: [], group: [] })
+    setCoverage({ providerType: "", providerDetails: [], groupDetails: [] });
+    setWhoCoverage({ obstetricsProviderType: "", obstetricsProviderDetails: [], obstetricsGroupDetails: [] })
     setApplicantType("");
   };
 
 
-  const SaveSubmitHandler = async (isSaveAndExit) => {
+  const SaveSubmitHandler = async () => {
 
-    const payload = buildPayload(coverage, individualList, groupList);
+    if (!validateFields()) {
+      setShowValidationDialog(true); // Show missing fields
+      ErrorToaster("Please fill all required fields.");
+      return;
+  }
 
-    const obsetetricsPayload = buildObstetricsPayload(whoCoverage, individualList, groupList);
     var application = {
       ...saveData,
       demographics: {
@@ -1073,7 +1127,7 @@ const HistoricalData = () => {
           streetName: officeAddress,
           city: city,
           province: province,
-          pincode: zipcode
+          pinCode:zipCode,
         },
         residence: {
           streetName: homeAddress,
@@ -1170,14 +1224,15 @@ const HistoricalData = () => {
       },
       continuingEducation: {
         requirementsMet: CMETranscript.radioValue,
-        transcripts: [
-          CMETranscript.responseFile]
+        transcripts: CMETranscript.radioValue ? [CMETranscript.responseFile] : []
       },
       coverageDetails: {
-        providerType: payload.providerType,
-        providerDetails: payload.providerDetails,
-        obstetricsProviderType: obsetetricsPayload.obstetricsProviderType,
-        obstetricsProviderDetails: obsetetricsPayload.obstetricsProviderDetails
+        providerType: coverage.providerType,
+        providerDetails: coverage.providerDetails,
+        groupDetails:coverage.groupDetails,
+        obstetricsProviderType: whoCoverage.obstetricsProviderType,
+        obstetricsProviderDetails: whoCoverage.obstetricsProviderDetails,
+        obstetricsGroupDetails:whoCoverage.obstetricsGroupDetails
       },
       confirmation: {
         physicianName: physicianName,
@@ -1192,6 +1247,8 @@ const HistoricalData = () => {
 
     };
 
+
+ 
     if (!isEdit) {
       await POST("application-management-service/application/createStaffFromOldData", JSON.stringify(application))
         .then((response) => {
@@ -1221,14 +1278,15 @@ const HistoricalData = () => {
   return (
     <>
       <Navbar />
-      <div className={style.applicantList}>
+      <div className={style.applicantList} ref={tableRef}>
         <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
           <button
             className={style.buttonStyle}
             onClick={() => handleAddClick()}
           >
             ADD NEW
-          </button></div>
+          </button>
+          </div>
         <TableTwo
           tableHeaderValues={tableHeader}
           tableDataValues={getTableDataValues()}
@@ -1242,7 +1300,7 @@ const HistoricalData = () => {
         />
       </div>
       <div className={style.margin10}>
-        <div className={`${style.formContainer} ${style.margin10}`}>
+        <div ref={formRef} className={`${style.formContainer} ${style.margin10}`}>
           <h2 className={style.heading}>Personal Information</h2>
           <div className={style.gridContainer}>
             <div className={style.inputGroup}>
@@ -1253,7 +1311,7 @@ const HistoricalData = () => {
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Enter First Name"
                 required
-                className={style.fullwidth}
+                className={`${style.fullwidth} ${errors["firstName"] ? style.errorField : ""}`}
               />
             </div>
             <div className={style.inputGroup}>
@@ -1263,7 +1321,6 @@ const HistoricalData = () => {
                 value={middleName}
                 onChange={(e) => setMiddleName(e.target.value)}
                 placeholder="Enter Middle Name"
-                required
                 className={style.fullwidth}
               />
             </div>
@@ -1275,7 +1332,7 @@ const HistoricalData = () => {
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Enter Last Name"
                 required
-                className={style.fullwidth}
+                className={`${style.fullwidth} ${errors["lastName"] ? style.errorField : ""}`}
               />
             </div>
             <div className={style.inputGroup}>
@@ -1286,7 +1343,7 @@ const HistoricalData = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter Email Address"
                 required
-                className={style.fullwidth}
+                className={`${style.fullwidth} ${errors["email"] ? style.errorField : ""}`}
               />
             </div>
             <div className={style.inputGroup}>
@@ -1308,76 +1365,19 @@ const HistoricalData = () => {
                       placeholder: "MM-DD-YYYY",
                       readOnly: true,
                     }}
-                    color={
-                      dob === null || dob === "" ? "error" : ""
-                    }
                     fullWidth
-                    focused={
-                      dob === null || dob === ""
-                    }
                   />
                 )}
                 minDate={new Date("1900-01-01")}
                 maxDate={new Date()}
                 required
-                className={style.fullwidth}
+                className={`${style.fullwidth} ${errors["dob"] ? style.errorField : ""}`}
               />
-
             </div>
           </div>
         </div>
         <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
           <h2 className={style.heading}>Demographic Data</h2>
-
-          {/* Office Address Section */}
-          <div className={style.inputGroup}>
-            <h3 className={style.subHeading}>Office Address</h3>
-            <div className={style.gridContainer}>
-              <div className={style.inputGroup}>
-                <CommonTextField
-                  label="Office Address"
-                  value={officeAddress}
-                  onChange={(e) => setOfficeAddress(e.target.value)}
-                  placeholder="Enter Office Address"
-                  required
-                  className={style.fullwidth}
-                />
-              </div>
-              <div className={style.inputGroup}>
-                <CommonTextField
-                  label="Postal Code"
-                  value={zipcode}
-                  onChange={(e) => setZipcode(e.target.value)}
-                  placeholder="Enter Postal Code"
-                  required
-                  className={style.fullwidth}
-                />
-              </div>
-              <div className={style.inputGroup}>
-                <CommonTextField
-                  label="City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Enter City"
-                  required
-                  className={style.fullwidth}
-                />
-              </div>
-              <div className={style.inputGroup}>
-                <CommonTextField
-                  label="Province"
-                  value={province}
-                  onChange={(e) => setProvince(e.target.value)}
-                  placeholder="Enter Province"
-                  required
-                  className={style.fullwidth}
-                />
-              </div>
-
-            </div>
-          </div>
-
-          {/* Home Address Section */}
           <div className={style.inputGroup}>
             <h3 className={style.subHeading}>Home Address</h3>
             <div className={style.gridContainer}>
@@ -1388,7 +1388,7 @@ const HistoricalData = () => {
                   onChange={(e) => setHomeAddress(e.target.value)}
                   placeholder="Enter Home Address"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["homeAddress"] ? style.errorField : ""}`}
                 />
               </div>
               <div className={style.inputGroup}>
@@ -1398,7 +1398,7 @@ const HistoricalData = () => {
                   onChange={(e) => setHomeZipcode(e.target.value)}
                   placeholder="Enter Postal Code"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["homeZipcode"] ? style.errorField : ""}`}
                 />
               </div>
               <div className={style.inputGroup}>
@@ -1408,7 +1408,7 @@ const HistoricalData = () => {
                   onChange={(e) => setHomeCity(e.target.value)}
                   placeholder="Enter City"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["homeCity"] ? style.errorField : ""}`}
                 />
               </div>
               <div className={style.inputGroup}>
@@ -1418,7 +1418,7 @@ const HistoricalData = () => {
                   onChange={(e) => setHomeProvince(e.target.value)}
                   placeholder="Enter Province"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["homeProvince"] ? style.errorField : ""}`}
                 />
               </div>
               <div className={style.inputGroup}>
@@ -1428,7 +1428,7 @@ const HistoricalData = () => {
                   onChange={(e) => handlePhoneChange(e, setContactNo)}
                   placeholder="Enter Contact No"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["contactNo"] ? style.errorField : ""}`}
                   type="tel"
                 />
               </div>
@@ -1439,10 +1439,65 @@ const HistoricalData = () => {
                   onChange={(e) => handlePhoneChange(e, setPreferredPhone)}
                   placeholder="Enter CMH Phone"
                   required
-                  className={style.fullwidth}
+                  className={`${style.fullwidth} ${errors["preferredPhone"] ? style.errorField : ""}`}
                   type="tel"
                 />
               </div>
+            </div>
+          </div>
+          <div className={style.inputGroup}>
+            <h3 className={style.subHeading}>Office Address</h3>
+            <CommonSwitch
+        checked={isOfficeAddressSameAsHomeAddress}
+        onChange={handleSwitchChange}
+        label="Same as Home Address"
+      />
+            <div className={style.gridContainer}>
+              <div className={style.inputGroup}>
+                <CommonTextField
+                  label="Office Address"
+                  value={officeAddress}
+                  onChange={(e) => setOfficeAddress(e.target.value)}
+                  placeholder="Enter Office Address"
+                  className={`${style.fullwidth} ${errors["officeAddress"] ? style.errorField : ""}`}
+                  required
+                  disabled={isOfficeAddressSameAsHomeAddress}
+                />
+              </div>
+              <div className={style.inputGroup}>
+                <CommonTextField
+                  label="Postal Code"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  placeholder="Enter Postal Code"
+                  className={`${style.fullwidth} ${errors["zipCode"] ? style.errorField : ""}`}
+                  required
+                  disabled={isOfficeAddressSameAsHomeAddress}
+                />
+              </div>
+              <div className={style.inputGroup}>
+                <CommonTextField
+                  label="City"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="Enter City"
+                  className={`${style.fullwidth} ${errors["city"] ? style.errorField : ""}`}
+                  required
+                  disabled={isOfficeAddressSameAsHomeAddress}
+                />
+              </div>
+              <div className={style.inputGroup}>
+                <CommonTextField
+                  label="Province"
+                  value={province}
+                  onChange={(e) => setProvince(e.target.value)}
+                  placeholder="Enter Province"
+                  required
+                  className={`${style.fullwidth} ${errors["province"] ? style.errorField : ""}`}
+                  disabled={isOfficeAddressSameAsHomeAddress}
+                />
+              </div>
+
             </div>
           </div>
         </div>
@@ -1451,7 +1506,7 @@ const HistoricalData = () => {
           <div className={style.gridContainer}>
             <div className={style.inputGroup}>
               <CommonSelectField
-                className={style.fullWidth}
+                className={`${style.fullwidth} ${errors["applicantType"] ? style.errorField : ""}`}
                 value={applicantType}
                 label="Applicant Type"
                 onChange={(e) => setApplicantType(e.target.value)}
@@ -1461,11 +1516,12 @@ const HistoricalData = () => {
                 firstOptionValue=""
                 required
                 disabledList={[]}
-                menuColor={[]} />
+                menuColor={[]} 
+                />
             </div>
             <div className={style.inputGroup}>
               <CommonSelectField
-                className={style.fullWidth}
+               className={`${style.fullwidth} ${errors["privilege"] ? style.errorField : ""}`}
                 value={privilege}
                 label="Privilege Category"
                 onChange={(e) => setPrivilege(e.target.value)}
@@ -1480,7 +1536,7 @@ const HistoricalData = () => {
             </div>
             <div className={style.inputGroup}>
               <CommonSelectField
-                className={style.fullWidth}
+                 className={`${style.fullwidth} ${errors["program"] ? style.errorField : ""}`}
                 value={program}
                 label="Program"
                 onChange={(e) => setProgram(e.target.value)}
@@ -1493,10 +1549,10 @@ const HistoricalData = () => {
                 menuColor={[]}
               />
             </div>
-
+            {serviceAreas.length > 0 && (
             <div className={style.inputGroup}>
               <CommonSelectField
-                className={style.fullWidth}
+                className={style.fullwidth}
                 value={subSpeciality}
                 label="Sub Speciality"
                 onChange={(e) => setSubSpeciality(e.target.value)}
@@ -1504,11 +1560,11 @@ const HistoricalData = () => {
                 labelList={serviceAreas.map((item) => item.name)}
                 firstOptionLabel="Select Sub Speciality"
                 firstOptionValue=""
-                required
                 disabledList={[]}
                 menuColor={[]}
               />
             </div>
+            )}
           </div>
         </div>
 
@@ -1521,7 +1577,6 @@ const HistoricalData = () => {
                 value={billingNo}
                 onChange={(e) => setBillingNo(e.target.value)}
                 placeholder="Enter OHIP No"
-                required
                 className={style.fullwidth} />
             </div>
             <div className={style.inputRow}>
@@ -1531,7 +1586,6 @@ const HistoricalData = () => {
                   value={cmpaNo}
                   onChange={(e) => setCmpaNo(e.target.value)}
                   placeholder="Enter CMPA No"
-                  required
                   className={style.fullwidth}
                 />
               </div>
@@ -1577,7 +1631,6 @@ const HistoricalData = () => {
                     value={cPSONo}
                     onChange={(e) => setCPSONo(e.target.value)}
                     placeholder="Enter CPSO No"
-                    required
                     className={style.fullwidth}
                   />
                 </div>
@@ -1816,6 +1869,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -1873,6 +1951,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -1928,6 +2031,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -1982,6 +2110,31 @@ const HistoricalData = () => {
                             "150px",
                             editor.editing.view.document.getRoot()
                           );
+                        });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
                         });
                       }}
                       config={{
@@ -2039,6 +2192,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -2083,12 +2261,16 @@ const HistoricalData = () => {
                 <div className={style.secondRow1}>
                   <div className={style.ckEditorWrapper}>
                     <CommonSelectField
-                      className={style.fullWidth}
+                      className={style.fullwidth}
                       value={privilegesOther.Hospital}
                       label="Select Hospital"
                       onChange={(e) => handleSelectChange("Hospital", e.target.value)}
-                      valueList={hospitalList.map((item) => item.id)}
-                      labelList={hospitalList.map((item) => item.name)}
+                      valueList={hospitalList
+                        .filter((hospital) => !hospitalPrivileges.some((priv) => priv.id === hospital.id))
+                        .map((item) => item.id)}
+                      labelList={hospitalList
+                        .filter((hospital) => !hospitalPrivileges.some((priv) => priv.id === hospital.id))
+                        .map((item) => item.name)}
                       firstOptionLabel="Select Hospital"
                       firstOptionValue=""
                       required
@@ -2099,7 +2281,7 @@ const HistoricalData = () => {
 
                   <div className={style.fileUpload}>
                     <CommonSelectField
-                      className={style.fullWidth}
+                      className={style.fullwidth}
                       value={privilegesOther.privilegeCategory}
                       label="Select Other Privilege Category"
                       onChange={(e) => handleSelectChange("privilegeCategory", e.target.value)}
@@ -2166,6 +2348,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -2220,6 +2427,31 @@ const HistoricalData = () => {
                             "150px",
                             editor.editing.view.document.getRoot()
                           );
+                        });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
                         });
                       }}
                       config={{
@@ -2276,6 +2508,31 @@ const HistoricalData = () => {
                             editor.editing.view.document.getRoot()
                           );
                         });
+                        const counterElement = document.createElement("div");
+                        counterElement.style.position = "absolute";
+                        counterElement.style.bottom = "5px";
+                        counterElement.style.right = "10px";
+                        counterElement.style.fontSize = "12px";
+                        counterElement.style.color = "#666";
+                        counterElement.style.background = "#fff";
+                        counterElement.style.padding = "2px 5px";
+                        counterElement.style.borderRadius = "4px";
+                        counterElement.style.pointerEvents = "none";
+              
+                        const editorContainer = editor.ui.view.editable.element;
+                        editorContainer.parentNode.appendChild(counterElement);
+              
+                        // Listen for changes in the editor
+                        editor.model.document.on("change:data", () => {
+                          const data = editor.getData();
+                          const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                          counterElement.innerText = `${textContent.length}/150`;
+              
+                          if (textContent.length > 150) {
+                            // Prevent further input by trimming the content
+                            editor.setData(textContent.slice(0, 150));
+                          }
+                        });
                       }}
                       config={{
                         placeholder: "Type your content here...",
@@ -2329,13 +2586,7 @@ const HistoricalData = () => {
                         placeholder: "MM-DD-YYYY",
                         readOnly: true,
                       }}
-                      color={
-                        doe === null || doe === "" ? "error" : ""
-                      }
                       fullWidth
-                      focused={
-                        doe === null || doe === ""
-                      }
                     />
                   )}
                   minDate={new Date()}
@@ -2363,6 +2614,31 @@ const HistoricalData = () => {
                           "150px",
                           editor.editing.view.document.getRoot()
                         );
+                      });
+                      const counterElement = document.createElement("div");
+                      counterElement.style.position = "absolute";
+                      counterElement.style.bottom = "5px";
+                      counterElement.style.right = "10px";
+                      counterElement.style.fontSize = "12px";
+                      counterElement.style.color = "#666";
+                      counterElement.style.background = "#fff";
+                      counterElement.style.padding = "2px 5px";
+                      counterElement.style.borderRadius = "4px";
+                      counterElement.style.pointerEvents = "none";
+            
+                      const editorContainer = editor.ui.view.editable.element;
+                      editorContainer.parentNode.appendChild(counterElement);
+            
+                      // Listen for changes in the editor
+                      editor.model.document.on("change:data", () => {
+                        const data = editor.getData();
+                        const textContent = data.replace(/<[^>]*>/g, ""); // Strip HTML to get pure text
+                        counterElement.innerText = `${textContent.length}/150`;
+            
+                        if (textContent.length > 150) {
+                          // Prevent further input by trimming the content
+                          editor.setData(textContent.slice(0, 150));
+                        }
                       });
                     }}
                     config={{
@@ -2418,45 +2694,6 @@ const HistoricalData = () => {
                 </div>
               )}
             </div>
-            <div className={style.inputGroup5}>
-              <div className={style.firstRow}>
-                <p className={style.question}>
-                  Do you have any other CME / CEU Certificates you have obtained in the past year?
-                </p>
-                <CommonRadio
-                  onChange={(event) =>
-                    handleRadioCMEChange(setCMECertificate, event.target.value)
-                  }
-                  value={CMECertificate.radioValue}
-                  radioValue={["true", "false"]}
-                  label={["Yes", "No"]}
-                  required={true}
-                  className={style.commonRadio}
-                />
-              </div>
-
-              {CMECertificate.radioValue === "true" && (
-                <div className={style.secondRow2}>
-
-                  <CommonDropZone
-                    title="Upload CME Certificate"
-                    description="Drag & drop a file here, or click to select"
-                    changeHandler={(acceptedFiles) => handleFileDropCME(setCMECertificate, acceptedFiles)}
-                  />
-                  {CMECertificate.responseFile && (
-                    <div className={style.uploadedFiles}>
-                      <h4>Uploaded File:</h4>
-                      <ul>
-
-                        <li>{CMECertificate.responseFile.fileName}</li>
-
-                      </ul>
-                    </div>
-                  )}
-
-                </div>
-              )}
-            </div>
           </div>
         </div>
         <div className={`${style.formContainer} ${style.marginTop20} ${style.margin10}`}>
@@ -2468,153 +2705,97 @@ const HistoricalData = () => {
 
               {/* Type Select and Individual/Group Fields Row */}
               <div className={style.gridContainer2}>
-                <CommonSelectField
-                  value={coverage.type}
-                  onChange={(e) =>
-                    handleCoverageTypeChange(coverage, setCoverage, e.target.value)
-                  }
-                  firstOptionLabel="Select Type"
-                  firstOptionValue=""
-                  valueList={["Individual", "Group"]}
-                  labelList={["Individual", "Group"]}
-                  className={style.fullWidth}
-                  required={true}
-                  label="Type"
-                  disabledList={[]}
-                  menuColor={[]}
-                />
+  <CommonSelectField
+    value={coverage.providerType}
+    onChange={(e) => handleCoverageTypeChange(coverage, setCoverage, e.target.value)}
+    firstOptionLabel="Select Type"
+    firstOptionValue=""
+    valueList={["Individual", "Department/Speciality Group"]}
+    labelList={["Individual", "Department/Speciality Group"]}
+    className={style.fullwidth}
+    required={true}
+    label="Type"
+    disabledList={[]}
+    menuColor={[]}
+  />
 
-                {coverage.type === "Individual" && (
-                  <CommonSelectField
-                    value={coverage.individual}
-                    onChange={(e) =>
-                      handleIndividualChange(coverage, setCoverage, e.target.value)
-                    }
-                    firstOptionLabel="Select an Individual"
-                    firstOptionValue=""
-                    valueList={individualList.map((data) => data.id)}
-                    labelList={individualList.map((data) => `${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName}`)}
-                    className={style.fullWidth}
-                    required={true}
-                    label="Select Individual"
-                    disabledList={[]}
-                    menuColor={[]}
-                  />
-                )}
+  {coverage.providerType === "Individual" && (
+    <CommonSelectField
+      value={coverage.providerDetails.length > 0 ? coverage.providerDetails[0].id : ""}
+      onChange={(e) => handleIndividualChange(coverage, setCoverage, e.target.value)}
+      firstOptionLabel="Select an Individual"
+      firstOptionValue=""
+      valueList={individualList.map((data) => data.id)}
+      labelList={individualList.map(
+        (data) =>
+          `${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName} - ${data.basicDetailReferences?.specialty?.name}`
+      )}
+      className={style.fullwidth}
+      required={true}
+      label="Select Individual"
+      disabledList={[]}
+      menuColor={[]}
+    />
+  )}
 
-                {coverage.type === "Group" && (
-                  <div>
-                    <label className={style.labels}>Group Provider*</label>
-                    <CommonMultiSelectField
-                      value={coverage.group}
-                      onChange={(e) =>
-                        handleGroupChange(coverage, setCoverage, e.target.value)
-                      }
-                      firstOptionLabel="Select Groups"
-                      firstOptionValue=""
-                      valueList={groupList.map((item) => item.id)}
-                      labelList={groupList.map((item) => item.name)}
-                      className={`${style.fullWidth} ${style.marginTop20}`}
-                      disabledList={[]}
-                    />
+  {coverage.providerType === "Department/Speciality Group" && coverage.groupDetails.length > 0 && (
+    <div>
+      <label className={style.labels2}>Group Provider*</label>
+      <h5 className={style.question}>
+        {coverage.groupDetails[0].departmentSpecialtyName}
+      </h5>
+    </div>
+  )}
+</div>
 
-                    <div className={style.selectedGroupValues}>
-                      {coverage.group.map((value, index) => {
-                        // Find the name corresponding to the selected ID
-                        const groupName = groupList.find((item) => item.id === value)?.name;
-                        return (
-                          <div key={index} className={style.valueBox}>
-                            {groupName || value}
-                            <span
-                              className={style.crossMark}
-                              onClick={() => removeGroupValue(coverage, setCoverage, value)}
-                            >
-                              &times;
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
             <div className={style.inputGroup6}>
               <p className={style.question}>If you are practicing obstetrics, who covers your patients when you are not available? </p>
 
               {/* Type Select and Individual/Group Fields Row */}
               <div className={style.gridContainer2}>
-                <CommonSelectField
-                  value={whoCoverage.type}
-                  onChange={(e) =>
-                    handleCoverageTypeChange(whoCoverage, setWhoCoverage, e.target.value)
-                  }
-                  firstOptionLabel="Select Type"
-                  firstOptionValue=""
-                  valueList={["Individual", "Group"]}
-                  labelList={["Individual", "Group"]}
-                  className={style.fullWidth}
-                  required={true}
-                  label="Type"
-                  disabledList={[]}
-                  menuColor={[]}
-                />
+  <CommonSelectField
+    value={whoCoverage.obstetricsProviderType}
+    onChange={(e) => handleWhoCoverageTypeChange(whoCoverage, setWhoCoverage, e.target.value)}
+    firstOptionLabel="Select Type"
+    firstOptionValue=""
+    valueList={["Individual", "Department/Speciality Group"]}
+    labelList={["Individual", "Department/Speciality Group"]}
+    className={style.fullwidth}
+    required={true}
+    label="Type"
+    disabledList={[]}
+    menuColor={[]}
+  />
 
-                {whoCoverage.type === "Individual" && (
-                  <CommonSelectField
-                    value={whoCoverage.individual}
-                    onChange={(e) =>
-                      handleIndividualChange(whoCoverage, setWhoCoverage, e.target.value)
-                    }
-                    firstOptionLabel="Select an Individual"
-                    firstOptionValue=""
-                    valueList={individualList.map((data) => data.id)}
-                    labelList={individualList.map((data) => `${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName}`)}
-                    className={style.fullWidth}
-                    required={true}
-                    label="Select Individual"
-                    disabledList={[]}
-                    menuColor={[]}
-                  />
-                )}
+  {whoCoverage.obstetricsProviderType === "Individual" && (
+    <CommonSelectField
+      value={whoCoverage.obstetricsProviderDetails.length > 0 ? whoCoverage.obstetricsProviderDetails[0].id : ""}
+      onChange={(e) => handleWhoIndividualChange(whoCoverage, setWhoCoverage, e.target.value)}
+      firstOptionLabel="Select an Individual"
+      firstOptionValue=""
+      valueList={individualList.map((data) => data.id)}
+      labelList={individualList.map(
+        (data) =>
+          `${data.applicant?.name?.firstName} ${data.applicant?.name?.lastName} - ${data.basicDetailReferences?.specialty?.name}`
+      )}
+      className={style.fullwidth}
+      required={true}
+      label="Select Individual"
+      disabledList={[]}
+      menuColor={[]}
+    />
+  )}
 
-                {whoCoverage.type === "Group" && (
-                  <div>
-                    <label className={style.labels}>Group Provider*</label>
-                    <CommonMultiSelectField
-                      value={whoCoverage.group}
-                      onChange={(e) =>
-                        handleGroupChange(whoCoverage, setWhoCoverage, e.target.value)
-                      }
-                      firstOptionLabel="Select Groups"
-                      firstOptionValue=""
-                      valueList={groupList.map((item) => item.id)}
-                      labelList={groupList.map((item) => item.name)}
-                      className={`${style.fullWidth} ${style.marginTop20}`}
-                      disabledList={[]}
-
-                    />
-
-                    <div className={style.selectedGroupValues}>
-                      {whoCoverage.group.map((value, index) => {
-
-                        const groupName = groupList.find((item) => item.id === value)?.name;
-                        return (
-                          <div key={index} className={style.valueBox}>
-                            {groupName || value}
-                            <span
-                              className={style.crossMark}
-                              onClick={() => removeGroupValue(whoCoverage, setWhoCoverage, value)}
-                            >
-                              &times;
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
+  {whoCoverage.obstetricsProviderType === "Department/Speciality Group" && whoCoverage.obstetricsGroupDetails.length > 0 && (
+    <div>
+      <label className={style.labels2}>Group Provider*</label>
+      <h5 className={style.question}>
+        {whoCoverage.obstetricsGroupDetails[0].departmentSpecialtyName}
+      </h5>
+    </div>
+  )}
+</div>
             </div>
           </div>
 
@@ -2662,9 +2843,7 @@ const HistoricalData = () => {
                         placeholder: "MM-DD-YYYY",
                         readOnly: true,
                       }}
-                      color={doA === null || doA === "" ? "error" : ""}
                       fullWidth
-                      focused={doA === null || doA === ""}
                     />
                   )}
                   required
@@ -2674,24 +2853,31 @@ const HistoricalData = () => {
             </div>
           </div>
         </div>
-
       </div>
       <div className={`${style.padding20} ${style.marginRight40} ${style.marginBottom20}`}>
         <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
           <button
             className={style.buttonStyle}
-            onClick={() => SaveSubmitHandler(true)}
+            onClick={() => SaveSubmitHandler()}
           >
             SAVE
           </button>
           <button
             className={`${style.outlinedButton} ${style.marginLeft20}`}
+            onClick={() => handleCancelClick()}
           >
             CANCEL
           </button>
         </div>
       </div>
+      {showValidationDialog && (
+                <HistoricValidationDialog
+                    getIsOpen={setShowValidationDialog}
+                    labelList={warningFields}
+                />
+            )}
     </>
+
   );
 };
 
