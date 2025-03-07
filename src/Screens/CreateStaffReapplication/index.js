@@ -91,10 +91,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       onChange={handleSelectAllClick}
     />,
     "Staff Name",
+    "Email",
     "Staff Type",
     "Department",
-    // "Status",
-    "Reappointment",
+    "Status",
+    // "Reappointment",
     "Action"
   ];
   const colSortValues = [false, true, false, false, true];
@@ -233,6 +234,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     const reappointment = [];
     const submittedStatus = [];
     const actionList = [];
+    const emailList = [];
 
     tableData?.forEach((data) => {
       // Checkbox with individual checked state
@@ -250,6 +252,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
       // applicantId.push(`${data?.staffId}` || "123");
       applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      emailList.push(data?.applicant?.email?.officialEmail)
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
       reappointment.push(
         // <>
@@ -261,7 +264,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         //     )
         //   )}
         // </>
-        `${data?.reappointmentStatus}`
+        `${data?.reappointmentStatus === "SENT" ? 'Sent' : data?.reappointmentStatus === "NOT_SENT" ? 'Not Sent' : data?.reappointmentStatus}`
       );
       submittedStatus.push('Not Submitted')
       actionList.push(
@@ -281,6 +284,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       { type: "checkbox", value: checkbox },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
+      { type: "text", value: emailList },
       { type: "text", value: applicantType },
       { type: "text", value: department },
       // { type: "text", value: submittedStatus },
