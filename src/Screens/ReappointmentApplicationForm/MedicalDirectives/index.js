@@ -179,6 +179,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
             setMedicalDirectives(temp)
             console.log(medicalDirectives, 'medicalDirectives')
+            console.log(allMedicalDirectives, 'medicalDirectives123')
+            console.log(...medicalDirectives?.completed, 'medicalDirectivesssss')
         } else {
             console.warn("Get Medical Directives Error");
         }
@@ -305,6 +307,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const handleContinue = async () => {
         // if (isSigned) {
         console.log(medicalDirectives)
+        const totalCount = (allMedicalDirectives?.completed?.length || 0) + 
+                   (allMedicalDirectives?.pastDue?.length || 0) + 
+                   (allMedicalDirectives?.pending?.length || 0) + 
+                   (allMedicalDirectives?.reviewInprogress?.length || 0);
+
+        const completedCount = allMedicalDirectives?.completed?.length || 0;
         let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
             attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
             mdId: innerData?.medicalDirective?.mdID,
@@ -318,7 +326,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             data: {
                 table: payload,
             },
-            acknowledged: allMedicalDirectives?.completed?.length !== 0 ? true : false,
+            unFilledFields : completedCount === totalCount ? ["Completed"] : completedCount === 0? ["notYetStarted"]  : ["inProgress"],
+            acknowledged: true,
             esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -583,7 +592,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
                         <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div>
@@ -613,7 +622,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>

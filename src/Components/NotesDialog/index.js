@@ -467,7 +467,7 @@ const handleTextChange = async (editor) => {
                 </div>
               )}
         </div>
-        <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
+        <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer}`}>
             <div  onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>

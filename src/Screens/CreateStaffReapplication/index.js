@@ -390,7 +390,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 tableDataValues={getTableValues()}
                 tableData={tableData}
                 gridStyle={style.permanentStaffGrid}
-                scrollStyle={style.contractScrollStyle}
+                scrollStyle={style.scrollStyle}
                 tableSortValues={colSortValues}
                 heading={"There are no record to display"}
                 getHandleSort={getHandleSort}

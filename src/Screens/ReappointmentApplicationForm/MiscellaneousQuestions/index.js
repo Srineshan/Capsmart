@@ -66,6 +66,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const [refresh, setRefresh] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
+  const [checkingCondition, setCheckingCondition] = useState([]);
+  let allMissingFields = [];
   useEffect(() => {
     if (basicForm && !formSchema) {
       getFormSchema()
@@ -278,9 +280,10 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   const getSkipClicked = (value) => {
     if (value) {
-      handleSubmit()
-      handleSubmitApplicationReq("skipped")
-      navigate(navigateURL);
+      // handleSubmit()
+      // handleSubmitApplicationReq("skipped")
+      // navigate(navigateURL);
+      getMissingFields("skipped")
     }
   }
 
@@ -329,25 +332,25 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
 
   console.log(covererName, providerType, basicForm?.forms?.[formIndex]?.data?.coverageDetails?.covererName)
 
-  const getMissingFields = () => {
+  const getMissingFields = (data) => {
     let missingKeys = [];
+    let hasMandatoryMissingFields = [];
     if (yesOrNoLMS === '') {
-      missingKeys.push({ label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?' })
+      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
+
     }
     if (yesOrNoSuboxone === '') {
-      missingKeys.push({ label: 'Do you prescribe Suboxone?' })
+      missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory: true } });
     }
     if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
-      missingKeys.push({ label: 'Do you wish to be MRP for your patients in the Nursery?' })
+      missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?', mandatory: true } });
     }
     if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
       basicForm?.basicDetails?.departmentSpecialty?.department !==
       "Women & Children" &&
       basicForm?.basicDetails?.departmentSpecialty?.specialty !==
       "Obstetrics & Gynecology") {
-      missingKeys.push({
-        label: "Who covers your hospital patients when you are not available?",
-      });
+      missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory: true } });
     }
     if (
       (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" && obstetricsProviderType !== "Department / Specialty Group"
@@ -358,13 +361,14 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       "Obstetrics & Gynecology"
     ) {
       missingKeys.push({
-        label:
-          "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?",
+        label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory: true }
       });
     }
-    if (missingKeys?.length !== 0) {
-      setShowValidationDialog(true)
-    } else {
+    setWarningFields(missingKeys)
+    allMissingFields = missingKeys;
+    hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+    if (data === "skipped") {
       handleSubmit()
         .then(() => {
           return getPreApplication();
@@ -377,7 +381,23 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         });
     }
 
-    setWarningFields(missingKeys)
+
+    if (data !== "skipped") {
+      if (hasMandatoryMissingFields) {
+        setShowValidationDialog(true)
+      } else {
+        handleSubmit()
+          .then(() => {
+            return getPreApplication();
+          })
+          .then(() => {
+            return handleSubmitApplicationReq();
+          })
+          .catch((error) => {
+            console.error("Error during API calls:", error);
+          });
+      }
+    }
     console.log('Metadata', missingKeys)
   }
 
@@ -391,20 +411,20 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
     let temp = {
       providerType: providerType,
       providerDetails: providerType === 'Group' ? [] : selectApplicant
-        .filter(obj => covererNameList.includes(obj.id))
+        .filter(obj => covererNameList?.includes(obj.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),
       groupDetails: providerType === 'Group' ? covererNameList : [],
       obstetricsProviderType: obstetricsProviderType,
       obstetricsProviderDetails: obstetricsProviderType === 'Group' ? [] : selectApplicantObstetrics
-        .filter(obj => obstetricsCovererNameList.includes(obj.id))
+        .filter(obj => obstetricsCovererNameList?.includes(obj?.id))
         .map(obj => ({
-          id: obj.id,
-          name: [obj.applicant?.name?.firstName, obj.applicant?.name?.middleName, obj.applicant?.name?.lastName]
+          id: obj?.id,
+          name: [obj?.applicant?.name?.firstName, obj?.applicant?.name?.middleName, obj?.applicant?.name?.lastName]
             .filter(Boolean) // Remove any empty or falsy values
             .join(' ') || 'N/A', // If all fields are empty, send 'N/A'
         })),
@@ -429,7 +449,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
         wishToBeMRP: { response: yesOrNoMRP, date: updatedDateMRP },
         coverageDetails: { covererName: covererName, obstetricsCovererName: obstetricsCovererName, providerType: providerType, obstetricsProviderType: obstetricsProviderType },
       },
-      unFilledFields: warningFields?.map(data => data?.label),
+      unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
       acknowledged: data === "skipped" ? false : true
     }
     await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)

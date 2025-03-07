@@ -5,44 +5,44 @@
   flex-direction: column;
   padding: 20px;
   background-color: #f9f9f9;
-border: 1px solid $primarycolor;
-border-radius: 5px;
+  border: 1px solid $primarycolor;
+  border-radius: 5px;
 }
 
-.margin10{
+.margin10 {
   margin: 10px;
 }
 
-  .heading {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: left;
-    color: #333;
-    margin-Top: 0;
+.heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: left;
+  color: #333;
+  margin-Top: 0;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
   }
+}
 
-  .gridContainer {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .inputGroup {
-    display: flex;
-    flex-direction: column;
-  }
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
 
 
-    .fullwidth {
-      width: 100%;
-    }
-  
-.marginTop20{
+.fullwidth {
+  width: 100%;
+}
+
+.marginTop20 {
   margin-top: 20px;
 }
 
@@ -67,40 +67,45 @@ border-radius: 5px;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 20px; 
+  gap: 20px;
   margin-bottom: 20px;
-border: 1px solid #000000;
-padding:10px;
- }
+  border: 1px solid #000000;
+  padding: 10px;
+}
 
 .inputField {
-  flex: 1; 
+  flex: 1;
 }
 
 .fileUpload {
-  flex: 2; 
+  flex: 2;
 }
+
 .inputGroup2 {
   display: flex;
   flex-direction: column;
   margin-bottom: 15px;
 }
+
 .inputGroup1 {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center everything horizontally */
+  align-items: center;
+  /* Center everything horizontally */
   border: 1px solid #000000;
   padding: 10px;
 }
 
 .headerContainer {
-  align-self: flex-start; /* Align header to the left */
+  align-self: flex-start;
+  /* Align header to the left */
   margin-bottom: 10px;
 }
 
 .uploadedFiles {
   margin-top: 10px;
-  text-align: center; /* Center the uploaded files section */
+  text-align: center;
+  /* Center the uploaded files section */
 }
 
 .uploadedFiles h4 {
@@ -123,16 +128,16 @@ padding:10px;
 .CommonDropZone {
   display: flex;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 }
 
 .inputGroup4 {
   display: grid;
-  grid-template-columns: 70% 25%; 
-  align-items: center; 
+  grid-template-columns: 70% 25%;
+  align-items: center;
   border: 1px solid #000000;
   padding: 10px;
-  gap: 5%; 
+  gap: 5%;
 }
 
 .inputGroup5 {
@@ -144,38 +149,39 @@ padding:10px;
 
 .firstRow {
   display: grid;
-  grid-template-columns: 70% 25%; 
+  grid-template-columns: 70% 25%;
   align-items: center;
   gap: 5%;
 }
 
 .firstRow1 {
   display: grid;
-  grid-template-columns: 50% 45%; 
+  grid-template-columns: 50% 45%;
   align-items: center;
   gap: 5%;
 }
 
 .secondRow {
   display: grid;
-  grid-template-columns: 50% 50%; 
+  grid-template-columns: 50% 50%;
   gap: 20px;
   margin-top: 10px;
 }
 
 .secondRow2 {
   display: grid;
-  grid-template-columns: repeat(1, 1fr); 
+  grid-template-columns: repeat(1, 1fr);
   gap: 20px;
   margin-top: 20px;
 }
 
 .secondRow1 {
   display: grid;
-  grid-template-columns: 50% 45%; 
+  grid-template-columns: 50% 45%;
   gap: 5%;
   margin-top: 20px;
 }
+
 .question {
   margin: 0;
   font-size: 1rem;
@@ -184,52 +190,57 @@ padding:10px;
 
 .commonRadio {
   display: flex;
-  gap: 5px; 
+  gap: 5px;
   margin-top: 0;
 }
 
 
 .uploadButton {
-  background-color:  #06617A;
-  color: white; 
+  background-color: #06617A;
+  color: white;
+
   &:hover {
-    background-color: darken( #06617A, 10%); 
+    background-color: darken(#06617A, 10%);
   }
 }
-.fileName{
+
+.fileName {
   font-size: 1.2rem;
   margin-top: 10px;
 }
 
 .ckEditorWrapper {
-  width: 100%; 
+  width: 100%;
 }
 
 .fileUpload {
-  width: 100%; 
+  width: 100%;
 }
 
-.question1{
-  width: 100%; 
+.question1 {
+  width: 100%;
 }
 
 @media (max-width: 768px) {
   .firstRow {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
 
   .secondRow {
-    grid-template-columns: 1fr; 
+    grid-template-columns: 1fr;
   }
+
   .ckEditorWrapper,
-  .fileUpload,.question1 {
-    width: 100%; 
+  .fileUpload,
+  .question1 {
+    width: 100%;
   }
 }
 
-.alignLeft{
+.alignLeft {
   text-align: left;
 }
+
 .gridContainer2 {
   display: grid;
   grid-template-columns: 50% 45%;
@@ -253,7 +264,7 @@ padding:10px;
 .valueBox {
   display: flex;
   align-items: center;
-  padding: 5px ;
+  padding: 5px;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -265,7 +276,7 @@ padding:10px;
   cursor: pointer;
 }
 
-.labels{
+.labels {
   text-align: left;
   margin-bottom: 10px;
 }
@@ -285,6 +296,7 @@ padding:10px;
 }
 
 .contractScrollStyle {
+  height: 300px;
   overflow: scroll;
 }
 
@@ -298,7 +310,7 @@ padding:10px;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   padding: 10px;
-  height: 100vh;
+  height: 470px;
 }
 
 .floatRight {
@@ -339,10 +351,11 @@ padding:10px;
   grid-gap: 1%;
 }
 
-.padding20{
+.padding20 {
   padding: 20px;
 }
-.marginRight40{
+
+.marginRight40 {
   margin-right: 40px;
 }
 
@@ -357,64 +370,66 @@ padding:10px;
   background-color: #f9f9f9;
   border: 1px solid #ccc;
   border-radius: 4px;
-  padding: 0.25rem 0.5rem; 
+  padding: 0.25rem 0.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.75rem; 
+  font-size: 0.75rem;
   color: #333;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
-  min-width: 120px;  
+  min-width: 120px;
 
   span {
     display: inline-block;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
   }
 
   .crossMark {
     color: #ff4d4f;
-    font-size: 0.875rem; 
+    font-size: 0.875rem;
     font-weight: bold;
     cursor: pointer;
     margin-left: 0.25rem;
+
     &:hover {
-      color: #d11a2a; 
+      color: #d11a2a;
     }
   }
 }
 
 
-.marginBottom20{
+.marginBottom20 {
   margin-bottom: 20px;
 }
+
 .gridStyle {
   display: grid;
-  grid-template-columns: 1fr;  
-  grid-template-rows: auto auto;  
-  gap: 0;  
-  
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto;
+  gap: 0;
+
   .firstRowStyle {
     display: grid;
-    grid-template-columns: 1fr;  
-    gap: 0; 
-    margin-bottom: 20px; 
-    
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin-bottom: 20px;
+
     .checkbox {
-      margin-right: 10px;  
+      margin-right: 10px;
     }
   }
 
   .secondRowStyle {
     display: grid;
-    grid-template-columns: 1fr 1fr;  
-    gap: 15px;  
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
 
     .inputField {
       display: flex;
       flex-direction: column;
-      gap: 5px;  
+      gap: 5px;
     }
   }
 }
