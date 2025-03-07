@@ -973,6 +973,10 @@ const StaffApplicationList = ({
     setPage(value);
   }
 
+  useEffect(() => {
+    setPage(1);
+  }, [selectedTab]);
+
   const getActiveUserData = async () => {
     try {
 
@@ -2148,7 +2152,13 @@ const StaffApplicationList = ({
       //       : "grey"
       // );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Credentialing Committee"));
-      const workflowCCDate = data?.logs?.find(workflowCC => (workflowCC?.role === "Credentialing Committee"));
+      const workflowCCDate = data?.logs
+      ?.filter(workflowCC => workflowCC?.role === "Credentialing Committee")
+      ?.sort((a, b) => {
+          console.log("Comparing:", a.approvedDate, "with", b.approvedDate);
+          return new Date(b.approvedDate) - new Date(a.approvedDate);
+      })[0];
+ 
        checkbox.push(
         <CommonCheckBox
             checked={checkedIds?.includes(data?.id)}
@@ -3933,7 +3943,7 @@ const StaffApplicationList = ({
             <CCDateDialog
             getCCDateDialogOpen={getCCDateDialogOpen}
             checkedIds={checkedIds}
-            onClose={() => setShowCCDateDialog(false)}
+            onClose={() => {setShowCCDateDialog(false); setCheckedIds([]);}}
             />
           )
         }
@@ -3942,7 +3952,7 @@ const StaffApplicationList = ({
             <ApprovalBulkDialog
             getBulkApproveDialogOpen={getBulkApproveDialogOpen}
             checkedIds={checkedIds}
-            onClose={() => setShowBulkApproveDialog(false)}
+            onClose={() => {setShowBulkApproveDialog(false); setCheckedIds([]);}}
             />
           )
         }

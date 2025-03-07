@@ -53,7 +53,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
       };
 
     return (
-        <div className={`${style.cardStyle} ${style.bigCalendarLeftCardWidth}`}>
+        <div className={`${style.userCardStyle} ${style.bigCalendarLeftCardWidth}`}>
             <div className={`${style.displayInRow} ${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                     <Link to={'/profile'} className={style.noFontStyle}>
@@ -85,25 +85,26 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                             <div className={style.loginStatus}>
                                 Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                             </div>
-                            <div className={style.loginStatus}>
-                                {/* {`${currentUserDetails?.roles?.[0]?.roleName}`} */}
-                                {workModeType}
-                            </div>
                         </div>
                     </Link>
-                    {currentUserDetails?.roles?.length > 1 && (
-                        <div
-                            className={`${style.workSpaceSwitchTextStyle} ${style.marginLeft20}`}
-                            onClick={handleWorkModeSelection}
-                        >
-                            Switch Workspaces
-                        </div>
-                        )}
                     </div>
-                        
-                    
                 </div>
-                <img src={ChevronRight} className={style.chevronRightStyle} onClick={() => getIsExpanded(false)} />
+                <img src={ChevronRight} className={`${style.chevronRightStyle} ${style.cursorPointer}`} onClick={() => getIsExpanded(false)} />
+            </div>
+            <div className={`${style.roleSwitchBackgroundStyle} ${
+            currentUserDetails?.roles?.length > 1 ? style.spaceBetween : style.placeCenter
+            } ${style.alignCenterText} ${style.marginTop}`}>
+            <div className={style.roleType}>
+                {workModeType}
+            </div>
+            {currentUserDetails?.roles?.length > 1 && (
+                <div
+                    className={`${style.workSpaceSwitchTextStyle} ${style.marginLeft20} ${style.cursorPointer}`}
+                    onClick={handleWorkModeSelection}
+                >
+                    Switch Workspaces
+                </div>
+            )}
             </div>
         </div>
     )
