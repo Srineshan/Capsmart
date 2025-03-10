@@ -83,9 +83,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
 
 
     const handleContentChange = () => {
-        console.log(contentRef.current.innerHTML)
+        console.log(contentRef.current.innerHTML.replaceAll("&nbsp;", ""))
         if (contentRef.current) {
-            setESignType(contentRef.current.innerHTML);
+            setESignType(contentRef.current.innerHTML.replaceAll("&nbsp;", ""));
         }
     };
 
@@ -136,7 +136,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                 return;
             }
             let temp = tempValue;
-            if (temp[baseKey].type === undefined) {
+            if (temp?.[baseKey]?.type === undefined) {
+                if (temp?.[baseKey] === undefined) {
+                    temp[baseKey] = {}
+                }
                 temp[baseKey].type = {}
             }
             temp[baseKey].type.text = eSignType;
