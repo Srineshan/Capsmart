@@ -281,6 +281,13 @@
   margin-bottom: 10px;
 }
 
+.labels2{
+  text-align: left;
+    margin-bottom: 10px;
+    align-items: start;
+    display: flex;
+    margin-top: 5px;
+}
 .docTypeImgStyle {
   height: 30px;
   width: auto;
@@ -425,4 +432,15 @@
       gap: 5px;
     }
   }
+}
+
+.errorField {
+  border: 2px solid #cc0000 !important;
+  border-radius: 5px;
+}
+
+.errorText {
+  color: red;
+  font-size: 12px;
+  margin-top: 4px;
 }

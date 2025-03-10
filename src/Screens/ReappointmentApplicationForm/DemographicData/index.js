@@ -313,11 +313,17 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             );
             missingKeys = temp;
         }
-        const emailPath = `forms[${formIndex}].data.applicant.email.officialEmail`;
+        const emailPath = `basicDetails.applicant.email.officialEmail`;
         const emailValue = getValueByPath(basicForm, emailPath);
+        console.log("Email",emailValue);
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailValue && !emailRegex.test(emailValue)) {
-            missingKeys.push({ key: emailPath, label: "Email (Invalid email Format)" });
+        if (emailValue && emailValue !== "" &&!emailRegex.test(emailValue)) {
+            missingKeys.push({ key: emailPath, label: {
+                label:"Email (Invalid email Format)",
+                mandatory:true,
+                path:emailPath
+            },
+        value:emailValue });
         }
 
         setWarningFields(missingKeys);
@@ -474,8 +480,13 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
         const phoneValue = getValueByPath(basicForm, phonePath);
         const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-        if (phoneValue && !phoneRegex.test(phoneValue)) {
-            missingKeys.push({ key: phonePath, label: "Business Phone (Invalid Canadian Format)" });
+        if (phoneValue &&phoneValue !== "" && !phoneRegex.test(phoneValue)) {
+            missingKeys.push({ key: phonePath, label: {
+                label:"Business Phone (Invalid Canadian Format)",
+                mandatory:true,
+                path:phonePath
+            },
+        value:phoneValue });
         }
 
         setWarningFieldsContact(missingKeys)
@@ -619,8 +630,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         let allMissingKeys = [];
         let keyValuePair = [];
         let hasMandatoryMissingFields = [];
-
-        // Collect metadata-based missing fields (Basic Info & Contact Info)
+        
         metadata?.forEach((data, index) => {
             keyValuePair.push({
                 key: data,
@@ -669,12 +679,22 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
         const phonePath = `forms[${formIndex}].data.contactAddress3.business.businessPhone`;
         const phoneValue = getValueByPath(basicForm, phonePath);
         if (phoneValue && !phoneRegex.test(phoneValue)) {
-            allMissingKeys.push({ key: phonePath, label: "Business Phone (Invalid Canadian Format)" });
+            allMissingKeys.push({ key: phonePath, label: {
+                label:"Business Phone (Invalid Canadian Format)" ,
+                mandatory:true,
+                path:phonePath
+            },
+        value:phoneValue});
         }
-        const emailPath = `forms[${formIndex}].data.applicant.email.officialEmail`;
+        const emailPath = `basicDetails.applicant.email.officialEmail`;
         const emailValue = getValueByPath(basicForm, emailPath);
-        if (emailValue && !emailRegex.test(emailValue)) {
-            allMissingKeys.push({ key: emailPath, label: "Business Phone (Invalid Canadian Format)" });
+        if (emailValue && emailValue !== "" && !emailRegex.test(emailValue)) {
+            allMissingKeys.push({ key: emailPath, label: {
+                label:"Email Address (Invalid Email Format)",
+                mandatory:true,
+                path:emailPath
+            },
+        value:emailValue });
         }
         // Validate specialty selection based on department
         if (

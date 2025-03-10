@@ -135,16 +135,26 @@ const MedicalHistory = ({ basicForm, setBasicForm, getPreApplication }) => {
     const emailPath = `forms[${formIndex}].data.disclosures.medicalDisclosures.emailId`;
     const emailValue = getValueByPath(basicForm, emailPath);
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (emailValue && !emailRegex.test(emailValue)) {
-        missingKeys.push({ key: emailPath, label: "Email Id (Invalid Format)" });
+    if (emailValue && emailValue!=="" && !emailRegex.test(emailValue)) {
+        missingKeys.push({ key: emailPath, label: {
+            label:"Email Id (Invalid Email Format)",
+            mandatory:true,
+            path:emailPath
+        },
+    value:emailValue });
     }
 
     
     const phonePath = `forms[${formIndex}].data.disclosures.medicalDisclosures.cellPhone`;
     const phoneValue = getValueByPath(basicForm, phonePath);
     const phoneRegex = /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/;
-    if (phoneValue && !phoneRegex.test(phoneValue)) {
-        missingKeys.push({ key: phonePath, label: "Cell Phone (Invalid Canadian Format)" });
+    if (phoneValue && phoneValue !== "" && !phoneRegex.test(phoneValue)) {
+        missingKeys.push({ key: phonePath, label: {
+            label:"Cell Phone (Invalid Canadian Format)",
+            mandatory:true,
+            path:phonePath
+        },
+    value:phoneValue });
     }
 
     
