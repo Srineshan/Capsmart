@@ -205,29 +205,22 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose }) =>
 
       return (
         <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-          <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
-            <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-              <span className={style.rejectionHeadingTextStyle}>
-              {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-              {formDetails?.basicDetails?.applicant?.name?.firstName
-              ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-              : ""}{", "}
-                {/* {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}
-                {formDetails?.basicDetails?.applicant?.name?.lastName?.toLowerCase()},{" "} */}
-              </span>
-              <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>
-                {formDetails?.providerType?.serviceProviderType}
-              </div>
-            </div>
-            <div>
-              <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>
-                {formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}
-              </span>
-            </div>
-          </div>
           <div className={style.marginTop10}>
             <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+              <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                <span className={style.rejectionHeadingTextStyle}>
+                {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                {formDetails?.basicDetails?.applicant?.name?.firstName
+                ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                  formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                : ""}{", "}
+              </span>
+              <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+            </div>
+            <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
+              <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+              <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+            </div>
               <div className={style.twoColumnGridInner}>
                 <span className={style.rejectionTextStyle}>Department:</span>
                 <span className={style.rejectionTextStyle1}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
