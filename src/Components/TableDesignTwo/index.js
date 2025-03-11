@@ -21,6 +21,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import Checkbox from '@mui/material/Checkbox';
 import CommonCheckBox from '../CommonFields/CommonCheckBox';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const useStyles = makeStyles(theme => ({
     popover: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, setSearchTermForTable }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -280,6 +281,23 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     return (
         <div className={style.tableContainer}>
+            <div className={style.searchPaginationGrid}>
+                <div className={style.marginTop10}>
+                    {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
+                        <div className={`${style.chipsContainer}`}>
+                            <div className={`${style.searchChips} ${style.displayInRow}`}>
+                                <div>{`Showing All Search Results For '${searchTermForTable}'`}</div>
+                                <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
+                                    onClick={() => setSearchTermForTable("")}
+                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
+                        </div>
+                    )}
+                </div>
+                {
+                    !hidePagination && (totalCount || tableData?.length) > 10 &&
+                    <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
+                }
+            </div>
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
                     {tableHeaderValues?.map((data, index) => (
@@ -741,11 +759,6 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                         />
                     )}
                 </div>
-
-                {
-                    !hidePagination && (totalCount || tableData?.length) > 10 &&
-                    <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
-                }
 
             </div>
         </div >
