@@ -737,3 +737,10 @@
 .cursorPointer {
   cursor: pointer;
 }
+
+.logo {
+  position: relative;
+  width: auto;
+  height: 25px;
+  object-fit: contain;
+}
