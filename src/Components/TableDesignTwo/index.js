@@ -99,6 +99,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
         APPLICANT_NAME: "Applicant Name",
         APPLICANT_NAME: "Staff for Reappointment",
+        APPLICANT_LAST_NAME: "Staff for Reappointment",
         STAFF_NAME: 'Staff Name',
         APPLICANT_TYPE: 'Applicant Type',
         APPLICANT_TYPE: 'Staff Type',
@@ -111,7 +112,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_NAME',
-        'Staff for Reappointment': 'APPLICANT_NAME',
+        'Staff for Reappointment': 'APPLICANT_LAST_NAME',
         'Staff Name': 'STAFF_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
         'Staff Type': 'APPLICANT_TYPE',

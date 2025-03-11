@@ -16,6 +16,7 @@ import DeleteIcon from "./../../images/deleteHcRow.png";
 import Tooltip from "@mui/material/Tooltip";
 import { DELETE, TenantID, GET, PUT, POST } from "../../Screens/dataSaver";
 import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
+import { formatFirstNameLastName } from "./../../utils/formatting";
 import "react-datalist-input/dist/styles.css";
 import Alert from "../../Components/AlertPopUp";
 // import PdfDoc from './../../images/pdfDoc.png';
@@ -249,6 +250,7 @@ const NewActiveApplication = ({
   // const userFirstName = userData?.name?.firstName || "No First Name";
   // const userLastName = userData?.name?.lastName || "No Last Name";
   const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
+  const [approvalType, setApprovalType] = useState(false);
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -299,20 +301,37 @@ const NewActiveApplication = ({
     getAllFormSchemas();
   }, [applicationId])
 
+  // const handleDateChange = (date, field) => {
+  //   const formattedDate = date
+  //     ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+  //     : format(new Date(date), 'yyyy-MM-dd');
+
+
+  //   if (field === 'BOD') {
+  //     setSelectedDateForBod(formattedDate);
+  //   } else if (field === 'Reappoint') {
+  //     setSelectedDateForReappoint(formattedDate);
+  //   } else if (field === 'MAC') {
+  //     setSelectedDateForMac(formattedDate);
+  //   } else if (field === 'CC') {
+  //     setSelectedDateForCC(formattedDate);
+  //   }
+
+  //   setCalendarStart(false);
+  //   setIsButtonDisabled(false);
+
+  // };
+
   const handleDateChange = (date, field) => {
     const formattedDate = date
       ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
       : format(new Date(date), 'yyyy-MM-dd');
 
 
-    if (field === 'BOD') {
-      setSelectedDateForBod(formattedDate);
-    } else if (field === 'Reappoint') {
-      setSelectedDateForReappoint(formattedDate);
-    } else if (field === 'MAC') {
-      setSelectedDateForMac(formattedDate);
-    } else if (field === 'CC') {
+    if (field === 'CC') {
       setSelectedDateForCC(formattedDate);
+    } else if (field === "ApprovedDate") {
+      setSelectedDateForReappoint(formattedDate);
     }
 
     setCalendarStart(false);
@@ -646,17 +665,24 @@ const NewActiveApplication = ({
       (workflow) => workflow?.role === "Credentialing Committee"
     );
 
-    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName || "";
-    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName || "";
+    let firstName = CredCommApproverDetails?.approverDetail?.name?.firstName;
+    let lastName = CredCommApproverDetails?.approverDetail?.name?.lastName;
+    let approvalType = CredCommApproverDetails?.approvalType
 
     console.log(`Approver cred: ${firstName} ${lastName}`);
     console.log("workModeType:", workModeType);
     // console.log("selectedTab:", selectedTab,(workModeType === 'Chief Of Staff' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve"),workModeType === 'Chief Of Staff' , selectedTab === 'level-2' , applicationType === "REAPPOINTMENT" , isApproverDept);
     console.log("applicationType:", applicationType);
+    console.log("approvalType:", approvalType);
 
     if (firstName === userFirstName && lastName === userLastName) {
       setIsApproverCred("Approve");
       console.log("levelofApprovaltrue:", isApproverCred);
+      if (!approvalType) {
+        setApprovalType(false);
+      } else {
+        setApprovalType(true);
+      }
     } else {
       setIsApproverCred("NotApproved");
       console.log("levelofApprovalfalse:", isApproverCred);
@@ -1107,7 +1133,7 @@ const NewActiveApplication = ({
   };
 
   const onClickApprovalwithoutnotesFunction = () => {
-    getApprovalwithoutNotesCommentBox(true, selectedDateForCC);
+    getApprovalwithoutNotesCommentBox(true, selectedDateForReappoint);
   };
 
   const onClickApprovalDeptFunction = () => {
@@ -1129,11 +1155,6 @@ const NewActiveApplication = ({
   const onClickCCDateSetFunction = () => {
     getApplicationDateForCC(true);
     getActiveApplicationView(false);
-  };
-
-  const onClickApproveMoveMacFunction = () => {
-    handleApplicationAcceptMac(true);
-    getApplicationMoveToNext(true)
   };
 
   const onClickRejectFunction = () => {
@@ -1214,65 +1235,6 @@ const NewActiveApplication = ({
     getPreApplication();
   };
 
-  const handleApplicationAcceptMac = async () => {
-    let role;
-    let title;
-    let notes = "";
-    let isDelegate = true;
-
-    // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2') {
-      if (workModeType === "Department Head") {
-        role = "Department Head";
-        isDelegate = false;
-        title = "Dept. Head / Chief Review"
-      } else {
-        role = "Department Head";
-        title = "Dept. Head / Chief Review"
-      }
-    } else if (selectedTab === 'level-3') {
-      if (workModeType === "Credentialing Committee") {
-        role = "Credentialing Committee";
-        title = "Credentialing Committee Review";
-        isDelegate = false;
-      } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
-        title = "Chief Of Staff Review";
-      }
-    } else if (selectedTab === 'level-4') {
-      role = "Advisory Committee";
-      title = "MAC Review";
-    } else if (selectedTab === 'level-5') {
-      role = "Board";
-      title = "BOD Approval";
-    } else if (selectedTab === 'level-1') {
-      role = "Staff Manager";
-      title = "Staff Manager Verification";
-    }
-
-    // Prepare the payload
-    let temp = {
-      role: isDelegate ? role : "",
-      notes: notes,
-      approvedDate: new Date().toISOString(),
-      title: title
-    };
-
-
-    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
-    // const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
-      .then(response => {
-        console.log('success')
-        onClose()
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-    getPreApplication();
-  };
-
   const handleApplicationReject = async () => {
     let role;
     let notes = "";
@@ -1324,6 +1286,63 @@ const NewActiveApplication = ({
     getPreApplication();
   };
 
+  const getApplicationApproveAndMoveToNext = async () => {
+    let role;
+    let title;
+    let notes = "";
+    let isDelegate = true;
+
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2') {
+      if (workModeType === "Department Head") {
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
+      } else {
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
+      }
+    } else if (selectedTab === 'level-3') {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (workModeType === "Chief Of Staff") {
+        role = "Credentialing Committee";
+        isDelegate = true;
+        title = "Credentialing Committee Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+      isDelegate = false
+    }
+
+    // Prepare the payload
+    let temp = {
+      role: isDelegate ? role : "",
+      notes: notes,
+      approvedDate: format(new Date(selectedDateForReappoint), 'yyyy-MM-dd'),
+      title: title
+    };
+
+    await PUT(`application-management-service/application/${applicationId}/workflow/completeAndMove/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
+      .then(response => {
+        console.log('successfull')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+    // getPreApplication();
+  }
+
   const getApplicationMoveToNext = async () => {
     let role;
     let title;
@@ -1346,9 +1365,9 @@ const NewActiveApplication = ({
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
-        title = "Chief Of Staff Review";
+        role = "Credentialing Committee";
+        isDelegate = true;
+        title = "Credentialing Committee Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -2081,7 +2100,7 @@ const NewActiveApplication = ({
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${allStaffPrivilege
+            <div className={style.cardTitle}>{`${allStaffPrivilege
               ?.filter((data) => data?.id === selectedPrivilege)
               ?.map((data) => data?.privilegeSetTitle)[0] !== undefined
               ? allStaffPrivilege
@@ -2466,7 +2485,7 @@ const NewActiveApplication = ({
       return (
         <>
           <div className={style.padding}>
-            <div className={style.cardTitle}>{`CAMBRIDGE MEMORIAL HOSPITAL ${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
+            <div className={style.cardTitle}>{`${staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0] !== undefined ? staffPrivilege?.filter(data => data?.id === selectedPrivilege)?.map(data => data?.privilegeSetTitle)[0]?.toUpperCase() : ''}`}</div>
 
             {
               selectedPrivilegeForDisplay?.map((data) => data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, index) => (
@@ -3675,7 +3694,7 @@ const NewActiveApplication = ({
                 </div>
               )}
             </>
-            <CommonDivider />
+            {/* <CommonDivider /> */}
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== null &&
               allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -3712,6 +3731,7 @@ const NewActiveApplication = ({
                 tableSortValues={[]}
                 heading={"There are no Record for you to manage"}
                 onClickFunction={() => { }}
+                hidePagination={true}
               />
             </div>
           </>
@@ -4497,19 +4517,36 @@ const NewActiveApplication = ({
       <div style={{
         maxHeight: 'calc(100vh - 10px)',
         overflowY: "auto",
-        // scrollbarWidth: "thin",
-        scrollbarColor: "gray #E8E9E9",
+        scrollbarWidth: "thin",
+        scrollbarColor: "gray transparent",
       }}
       // className={style.calcHeight}
       >
 
+        {/* <ApplicationHeader
+        title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  
+         ${form?.basicDetails?.applicant?.name?.firstName !== undefined
+          ? form?.basicDetails?.applicant?.name?.firstName
+          : "{First Name}"
+          } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
+            ? form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
+            : "{Last Name}"
+          }, ${form?.basicDetails?.applicant?.applicantType !== undefined
+            ? form?.basicDetails?.applicant?.applicantType
+            : "{Applicant Type}"
+          }`
+        }
+        close={true}
+        closeClick={onClose}
+      /> */}
         <ApplicationHeader
-          title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
-            ? form?.basicDetails?.applicant?.name?.firstName
-            : "{First Name}"
-            } ${form?.basicDetails?.applicant?.name?.lastName !== undefined
-              ? form?.basicDetails?.applicant?.name?.lastName.toLowerCase()
-              : "{Last Name}"
+          title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"} ${form?.basicDetails?.applicant?.name?.firstName !== undefined &&
+            form?.basicDetails?.applicant?.name?.lastName !== undefined
+            ? formatFirstNameLastName(
+              form?.basicDetails?.applicant?.name?.firstName,
+              form?.basicDetails?.applicant?.name?.lastName
+            )
+            : "{First Name} {Last Name}"
             }, ${form?.basicDetails?.applicant?.applicantType !== undefined
               ? form?.basicDetails?.applicant?.applicantType
               : "{Applicant Type}"
@@ -4551,8 +4588,17 @@ const NewActiveApplication = ({
                             <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
                                 <span className={`${style.cardTextBoldStyle}`}>
-                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                  {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                                  {
+                                    form?.basicDetails?.applicant?.name?.firstName !== undefined &&
+                                      form?.basicDetails?.applicant?.name?.lastName !== undefined
+                                      ? formatFirstNameLastName(
+                                        form?.basicDetails?.applicant?.name?.firstName,
+                                        form?.basicDetails?.applicant?.name?.lastName
+                                      )
+                                      : "{First Name} {Last Name}"
+                                  },{" "}
+                                  {/* {`${formatFirstNameLastName(form?.basicDetail?.applicant?.name?.firstName, form?.basicDetail?.applicant?.name?.lastName)}`} */}
+                                  {/* {form?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + form?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase() }{", "}
                                 {form?.basicDetails?.applicant?.name?.firstName
                                   ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
                                   form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
@@ -4672,12 +4718,16 @@ const NewActiveApplication = ({
                             <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
                               <div className={style.marginTop10}>
                                 <span className={`${style.cardTextBoldStyle}`}>
-                                  {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "}
-                                  {/* {form?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
-                                {form?.basicDetails?.applicant?.name?.firstName
-                                  ? form?.basicDetails?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-                                  form?.basicDetails?.applicant?.name?.firstName.slice(1).toLowerCase()
-                                  : ""}{", "} */}
+                                  {/* {form?.basicDetails?.applicant?.name?.firstName || ""} {form?.basicDetails?.applicant?.name?.lastName.toLowerCase() || ""},{" "} */}
+                                  {
+                                    form?.basicDetails?.applicant?.name?.firstName !== undefined &&
+                                      form?.basicDetails?.applicant?.name?.lastName !== undefined
+                                      ? formatFirstNameLastName(
+                                        form?.basicDetails?.applicant?.name?.firstName,
+                                        form?.basicDetails?.applicant?.name?.lastName
+                                      )
+                                      : "{First Name} {Last Name}"
+                                  },{" "}
                                   {/* {form?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                                 </span>
                                 <span className={`${style.cardTextNormalStyle}`}>
@@ -10525,13 +10575,29 @@ const NewActiveApplication = ({
                   </div>
                 </>)} */}
 
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                  {/* {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                  <div>
+                    <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                      Pending Cred. Comm. Recommendation
+                    </div>
+                  </div>
+                </>) : ("")} */}
+
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
                       </div>
                     </div>
                   </>) : ("")}
+
+                  {/* {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve" && approvalType === true)) ? (<>
+                  <div>
+                    <div className={`${style.textCardStyle} ${style.reviewTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
+                      You Reviewed this Application
+                    </div>
+                  </div>
+                </>) : ("")} */}
 
                   {(workModeType === 'Credentialing Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Department Head' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Advisory Committee' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") ? (<>
                     <div>
@@ -10548,7 +10614,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   </>) : (" ")}
-                  {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -10556,12 +10622,12 @@ const NewActiveApplication = ({
                             className={`${style.spaceBetween} ${style.marginLeftRight20}`}
                           >
                             <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
-                              CC Meeting Date*
+                              CC Approval Date*
                             </span>
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, 'CC')}
+                            onChange={(date) => handleDateChange(date, 'ApprovedDate')}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
@@ -10569,7 +10635,7 @@ const NewActiveApplication = ({
                             minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
-                            value={selectedDateForCC}
+                            value={selectedDateForReappoint}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -10606,7 +10672,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Credentialing Committee User' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -10633,7 +10699,7 @@ const NewActiveApplication = ({
                                 {...params}
                                 inputProps={{
                                   ...params.inputProps,
-                                  placeholder: 'Enter CC Approval Date',
+                                  placeholder: 'Enter CC Meeting Date',
                                   readOnly: true
                                 }}
                                 variant="outlined"
@@ -10665,14 +10731,14 @@ const NewActiveApplication = ({
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            onChange={(date) => handleDateChange(date, "ApprovedDate")}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
                             minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
-                            value={selectedDateForMac}
+                            value={selectedDateForReappoint}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -10689,7 +10755,7 @@ const NewActiveApplication = ({
                           />
                         </div>
                         <div>
-                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
                             <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               onClick={() => {
                                 setShowApplicationDeclineDialog(true);
@@ -10722,7 +10788,7 @@ const NewActiveApplication = ({
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, 'BOD')}
+                            onChange={(date) => handleDateChange(date, "ApprovedDate")}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
@@ -10730,7 +10796,7 @@ const NewActiveApplication = ({
                             minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
-                            value={selectedDateForBod}
+                            value={selectedDateForReappoint}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -10747,7 +10813,7 @@ const NewActiveApplication = ({
                           />
                         </div>
                         <>
-                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer}`}>
+                          <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
                             <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
                               onClick={() => {
                                 setShowApplicationDeclineDialog(true);
@@ -10756,7 +10822,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : onClickApproveMoveFunction}
+                            onClick={isButtonDisabled ? undefined : getApplicationApproveAndMoveToNext}
                           >
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED BY BOD
@@ -11290,7 +11356,7 @@ const NewActiveApplication = ({
                                           </div>
                                         )}
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                          {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {approvalFromDate[index]}
+                                          {log?.workflowUser?.name?.firstName}{log?.workflowUser?.name?.lastName}, {log?.role} on {log?.createdDate ? format(new Date(log.createdDate), "MMM dd, yyyy, H.mm") : ""}
                                         </div>
                                       </div>
                                     ))}
@@ -11378,7 +11444,7 @@ const NewActiveApplication = ({
                                         {log?.title}
                                       </div>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName && ` ${log?.user?.name?.lastName}`}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
+                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
                                       </div>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                         <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />

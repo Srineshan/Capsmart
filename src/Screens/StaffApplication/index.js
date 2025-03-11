@@ -234,7 +234,7 @@ const StaffApplication = () => {
             }
             {
                 showDeptTrackerDialog && (
-                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} />
+                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
                 )
             }
             {

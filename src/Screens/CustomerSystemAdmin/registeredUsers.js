@@ -39,7 +39,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
     const [showAddUserDialog, setShowAddUserDialog] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     let isMultiSiteEntity = sessionStorage.getItem('isMultiSiteEntity') === 'true' ? true : false;
-    const entityTableHeaderValues = isMultiSiteEntity ? ["", "USER NAME", "TITLE", "SITE NAME", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"] : ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"];
+    const entityTableHeaderValues = isMultiSiteEntity ? ["", "USER NAME", "TITLE", "SITE NAME", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "AVG DURATION PER LOGIN (MIN)", "ACTION"] : ["", "USER NAME", "TITLE", "PROXY", "SURROGATE", "LAST LOGIN DATE/TIME", "AVG LOGIN PER DAY", "ACTION"];
     const deactivatedTableHeaderValues = ["", "USER NAME", "TITLE", "SITE NAME", "DEPARTMENT", "LAST LOGIN DATE/TIME", "DEACTIVATED DATE/TIME", "DEACTIVATED BY", "ACTION"];
     const invitedTableHeaderValues = ["", "USER NAME", "USER AFFILIATION", "TITLE", "SITE NAME", "DEPARTMENT", "INVITED DATE/TIME", "INVITED BY", "ACTION"];
 
@@ -286,7 +286,7 @@ const RegisteredUsers = ({ getSelectedOption }) => {
             { "type": "text", "value": surrogate },
             { "type": "text", "value": lastLoginDateOrTime },
             { "type": "text", "value": avgLoginPerDay },
-            { "type": "text", "value": angDurationPerLogin },
+            // { "type": "text", "value": angDurationPerLogin },
             { "type": "action", "value": action },
         ] : selectedOption === 'DEACTIVATED USERS' ?
             [
@@ -347,9 +347,9 @@ const RegisteredUsers = ({ getSelectedOption }) => {
     return (
         <div>
             <LevelTwoHeader heading={'REGISTERED USER MANAGEMENT'} updatedTime={''} onCloseLevel2={onCloseLevel2} needDateFilter={false} getFrom={getFrom} getTo={getTo} hideButton={true} />
-            <div className={`${style.grid4} ${style.marginTop20}`}>
+            <div className={`${style.grid3} ${style.marginTop20}`}>
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="ENTITY REGISTERED USERS" bigNumber={userMetadata?.registeredUsers?.registeredUsersCount} smallNum1={userMetadata?.registeredUsers?.newRegisteredUsersCount} smallNum2={userMetadata?.registeredUsers?.blockedRegisteredUserCount} smallText1="NEW" smallText2="BLOCKED" currentTile="ENTITY REGISTERED USERS" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
-                <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="CONTRACTED SERVICE PROVIDER USERS" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1={userMetadata?.contractedServiceProviderUsers?.newContractedServiceProviderUsersCount} smallNum2={userMetadata?.contractedServiceProviderUsers?.blockedContractedServiceProviderUsersCount} smallText1="NEW" smallText2="BLOCKED" currentTile="CONTRACTED SERVICE PROVIDER USERS" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} />
+                {/* <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="CONTRACTED SERVICE PROVIDER USERS" bigNumber={userMetadata?.contractedServiceProviderUsers?.contractedServiceProviderUsersCount} smallNum1={userMetadata?.contractedServiceProviderUsers?.newContractedServiceProviderUsersCount} smallNum2={userMetadata?.contractedServiceProviderUsers?.blockedContractedServiceProviderUsersCount} smallText1="NEW" smallText2="BLOCKED" currentTile="CONTRACTED SERVICE PROVIDER USERS" topText='' smallNum1Color={style.greenSmallNumber} smallNum2Color={style.redSmallNumber} smallNum1SelectedColor={style.greenSmallNumberSelected} smallNum2SelectedColor={style.redSmallNumberSelected} /> */}
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="DEACTIVATED USERS" bigNumber={userMetadata?.deactivatedUsers?.usersDeactivatedInSpecifiedTimePeriod} smallNum1="" smallNum2="" currentTile="DEACTIVATED USERS" topText='' />
                 <Tile selectedContract={selectedOption} getSelectedContract={getSelectedOptionLevelTwo} tileLabel="INVITED USERS" bigNumber={userMetadata?.invitedUsers?.invitedUsers} smallNum1="" smallNum2={userMetadata?.invitedUsers?.pastDueUsers} smallText2="PAST DUE" currentTile="INVITED USERS" topText='' smallNum2Color={style.redSmallNumber} smallNum2SelectedColor={style.redSmallNumberSelected} />
             </div>
@@ -378,8 +378,8 @@ const RegisteredUsers = ({ getSelectedOption }) => {
                     </div>
                     <div className={`${style.displayInRow} ${style.marginTop20} ${style.marginRight30} ${style.cursorPointer}`}>
                         <div className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handleDownloadClicked()}>
-                            {/* <DownloadIcon sx={{ fontSize: 30, color: '#06617A' }} /> */}
-                            <img src={Download} alt='' className={style.iconSize} />
+                            <DownloadIcon sx={{ fontSize: 30, color: '#06617A' }} />
+                            {/* <img src={Download} alt='' className={style.iconSize} /> */}
                         </div>
                         <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginLeft20}`} onClick={() => handlePrint()}>
                             <PrintOutlinedIcon sx={{ fontSize: 30, color: '#06617A' }} />

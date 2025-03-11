@@ -78,7 +78,8 @@ const Navbar = () => {
   const [isSystemAdministrationAvailable, setIsSystemAdministrationAvailable] =
     useState(false);
   const [isSupportAvailable, setIsSupportAvailable] = useState(false);
-  let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
+  // let selectedWorkingMode = sessionStorage.getItem("SelectedWorkingMode");
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     if (currentUserRoles?.includes("Activity Logger")) {
@@ -363,15 +364,17 @@ const Navbar = () => {
               </Link>
             )
           } */}
-          <Link to={"/applications"} className={style.noFontStyle}>
-            <div
-              className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
-                style.activeMenuColor
-                }`}
-            >
-              <p>STAFF APPLICATIONS</p>
-            </div>
-          </Link>
+          {workModeType !== "Entity Sys Admin" && (
+            <Link to={"/applications"} className={style.noFontStyle}>
+              <div
+                className={`${style.menuStyle} ${window.location.pathname.includes("/applications") &&
+                  style.activeMenuColor
+                  }`}
+              >
+                <p>STAFF APPLICATIONS</p>
+              </div>
+            </Link>
+          )}
           <Link to={"/activeStaff"} className={style.noFontStyle}>
             <div
               onClick={handlePrivilegedStaffClick}

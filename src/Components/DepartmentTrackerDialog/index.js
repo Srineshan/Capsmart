@@ -8,7 +8,7 @@ import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
-import { fileLoadingURL,dataLoadingGIF } from "../../utils/formatting";
+import {formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
 const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationView}) => {
@@ -183,6 +183,9 @@ const headerValues = [
             }`} */}
             {data?.applicant?.name?.firstName} {data?.applicant?.name?.lastName.toLowerCase()}
         </>
+      );
+      staff.push(
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
       // staffId.push(`${data?.displayId}` || "123");

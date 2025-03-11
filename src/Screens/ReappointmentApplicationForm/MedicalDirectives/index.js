@@ -314,7 +314,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
 
         const completedCount = allMedicalDirectives?.completed?.length || 0;
         let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
-            attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
+            // attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
+            attestationDueDate: basicForm?.forms?.[formIndex]?.esign?.signedDate || currentDate,
             mdId: innerData?.medicalDirective?.mdID,
             title: innerData?.medicalDirective?.title,
             type: innerData?.medicalDirective?.creationType,

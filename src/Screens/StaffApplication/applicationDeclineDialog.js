@@ -258,16 +258,26 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
 
 
   const onClickRejectMoveFunction = () => {
+    if (workModeType === "Credentialing Committee") {
       handleApplicationReject(true)
-    .then(() => {
-      return handleApplicationRejectMove(true);
-    })
-    .then(() => {
-      console.log('Application successfully moved to next step.');
-    })
-    .catch((error) => {
-      console.error('Error processing application:', error);
-    });
+        .then(() => {
+          console.log('Application approved.');
+        })
+        .catch((error) => {
+          console.error('Error approving application:', error);
+        });
+    } else {
+      handleApplicationReject(true)
+        .then(() => {
+          return handleApplicationRejectMove(true);
+        })
+        .then(() => {
+          console.log('Application successfully moved to next step.');
+        })
+        .catch((error) => {
+          console.error('Error processing application:', error);
+        });
+    }
   };
 
   const handleApplicationReject = async () => {
@@ -299,6 +309,9 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
         role = "Credentialing Committee";
         title = "Chief Of Staff Review";
       } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
+      }  else if (workModeType === "Staff Manager") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
       }
@@ -366,6 +379,9 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -389,7 +405,7 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
       };
 
       await PUT(
-        `application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`,
+        `application-management-service/application/${id}/workflow/move?workflowAction=REJECTED&isDelegate=${isDelegate}`,
         payload
       );
 
@@ -512,9 +528,9 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
     )}
 {!isLoadingImage && (
       <Dialog isOpen={getApplicationDeclineDialog} onClose={() => getApplicationDeclineDialog(false)} className={`${style.dialogStyle} ${style.dialogPaddingBottom}`}>
-        <div className={`${Classes.DIALOG_BODY} ${style.extensionDialogBackground}`}>
+        <div className={`${style.eSignDialogBackground}`}>
           <div className={style.spaceBetween}>
-            <p className={style.extensionStyle1}>Staff Not Recommended for Reappointment</p>
+            <p className={style.heading1}>Staff Not Recommended for Reappointment</p>
             <Icon icon="cross" size={20} className={style.crossStyle} onClick={() => getApplicationDeclineDialog(false)} />
           </div>
           <div>
@@ -538,22 +554,22 @@ const ApplicationDecline = ({ getIsOpen,selectedTab,applicationType, getApplicat
                 
             </div> */}
              <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
-                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}> 
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName}{", "}
-                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                  </span>
-                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
-                </div>
-                <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                </div>
-              </div>
-              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
               <div className={style.marginTop10}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                    <span className={style.rejectionHeadingTextStyle}>
+                    {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                    {formDetails?.basicDetails?.applicant?.name?.firstName
+                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                      formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                    : ""}{", "}
+                  </span>
+                  <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                </div>
+                <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
+                  <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                  <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                </div>
                   <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
