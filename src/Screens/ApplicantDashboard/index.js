@@ -90,11 +90,9 @@ const ApplicantDashboard = () => {
   }
 
   const availableCategoryWarnings = {
-    REAPPOINTMENT_APPLICATION: style.warningRed,
-    MEDICAL_DIRECTIVE_ATTESTATION: style.warningYellow,
-    DOCUMENT_FOLLOW_UP: style.warningOrange,
-    INITIAL_APPLICATION: style.warningRed,
-    REQUEST_FOR_CLARIFICATION: style.warningRed
+    HIGH: style.warningRed,
+    LOW: style.warningYellow,
+    MEDIUM: style.warningOrange
   }
 
   const handleNextNotification = () => {
@@ -196,12 +194,9 @@ const ApplicantDashboard = () => {
         </div>
       </div> */}
         <div className={`${style.mainContent} ${style.marginTop20}`}>
-          <div className={`${style.flex}`}>
+          {/* <div className={`${style.flex}`}>
             <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div>
             <div className={style.header}>
-              {/* <div>
-                <KeyboardArrowUpOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
-              </div> */}
               <div className={`${style.spaceBetween} ${style.padding10}`}>
                 <div className={`${style.flex} ${style.alignItem}`}>
                   <img src={NotificationLogo} alt="Notification Logo" className={`${style.logoNotification}`} />
@@ -228,11 +223,8 @@ const ApplicantDashboard = () => {
                   <KeyboardArrowRightOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handleNextNotification} />
                 </div>
               </div>
-              {/* <div>
-                <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
-              </div> */}
             </div>
-          </div>
+          </div> */}
           <div className={`${style.flex}`}>
             <div className={`${style.backgroundSideBar} ${style.marginTop20}`}>
               <div
@@ -285,7 +277,7 @@ const ApplicantDashboard = () => {
             {activeSection === "tasks" ? (
               <div className={style.taskBoardShadow}>
                 <div className={style.taskBoard}>
-                  <div className={`${style.addTask} ${style.alignItem} ${style.cursorPointer}`} onClick={() => handleShowTaskNewDialog()}><AddIcon sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> <span className={style.marginLeft10}>Add New Task</span></div>
+                  {/* <div className={`${style.addTask} ${style.alignItem} ${style.cursorPointer}`} onClick={() => handleShowTaskNewDialog()}><AddIcon sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> <span className={style.marginLeft10}>Add New Task</span></div> */}
                   <div className={`${style.flexGap} ${style.marginTop10}`}>
                     <div className={`${style.padding5} ${style.pastDue}`}>
                       <div className={style.pastDueHeader}></div>
@@ -293,12 +285,12 @@ const ApplicantDashboard = () => {
                         {/* <div className={`${style.redDotStyle}`}></div> */}
                         <div className={style.columnTitlePastDue}>Past Due</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {pastDueTasks?.map((task, index) => (
                           <div key={index} className={style.taskCardSingle}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -317,7 +309,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -345,12 +337,12 @@ const ApplicantDashboard = () => {
                         {/* <div className={`${style.yellowDotStyle}`}></div> */}
                         <div className={style.columnTitleOngoing}>Ongoing</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {onGoingTasks?.map((task, index) => (
                           <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -369,7 +361,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -397,12 +389,12 @@ const ApplicantDashboard = () => {
                         {/* <div className={`${style.greyDotStyle}`}></div> */}
                         <div className={style.columnTitleNotYet}>Not Yet Started</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {notStartedTasks?.map((task, index) => (
                           <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -421,7 +413,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -455,7 +447,7 @@ const ApplicantDashboard = () => {
                           <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
                         </div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {completedTasks?.map((task, index) => (
                           <div key={index} className={style.taskCardSingle}>
                             <div className={style.spaceBetween}>
@@ -470,16 +462,16 @@ const ApplicantDashboard = () => {
                               </div>
                             </div>
                             <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
-                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                            {/* <div className={`${style.assignedBy} ${style.marginTop10}`}>
                               {task?.description}
                             </div>
                             <div className={`${style.assignedBy} ${style.marginTop5}`}>
                               Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
-                            </div>
+                            </div> */}
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlassComplete} className={style.smallLogo} alt="" />
+                                <img src={HourGlassComplete} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -494,7 +486,7 @@ const ApplicantDashboard = () => {
                                   <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
                                   <div className={style.commentStyle}> {0}</div>
                                 </div>
-                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                                {/* <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span> */}
                               </div>
                             </div>
                           </div>

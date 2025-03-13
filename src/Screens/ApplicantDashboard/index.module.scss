@@ -195,7 +195,7 @@
   // min-height: calc(100vh - 200px);
   // max-height: calc(100vh - 200px) !important;
   overflow: scroll;
-  height: calc(100vh - 170px);
+  height: calc(100vh - 110px);
   // margin-left: 10px;
 }
 
@@ -218,8 +218,10 @@
   width: 25%;
   position: relative;
   padding-top: 5px;
-  height: calc(100vh - 240px);
-  overflow: scroll;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
 }
 
 .pastDueHeader {
@@ -239,10 +241,10 @@
   width: 25%;
   position: relative;
   padding-top: 5px;
-  height: calc(100vh - 240px);
-  // height: calc(100vh - 220px);
-  overflow: scroll;
-  // height: 100vh;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
 }
 
 .ongoingHeader {
@@ -262,10 +264,10 @@
   width: 25%;
   position: relative;
   padding-top: 5px;
-  // height: calc(100vh - 220px);
-  height: calc(100vh - 240px);
-  overflow: scroll;
-  // height: 100vh;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
 }
 
 .notStartedHeader {
@@ -285,10 +287,10 @@
   width: 25%;
   position: relative;
   padding-top: 5px;
-  // height: calc(100vh - 220px);
-  height: calc(100vh - 240px);
-  overflow: scroll;
-  // height: 100vh;
+  padding-left: 15px;
+  padding-right: 15px;
+  // height: calc(100vh - 140px);
+  // overflow: scroll;
 }
 
 .completedHeader {
@@ -300,6 +302,11 @@
   height: 5px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+
+.tasksScroll {
+  height: calc(100vh - 190px);
+  overflow: scroll;
 }
 
 .columnTitlePastDue {
@@ -585,7 +592,7 @@
   flex-direction: column;
   padding: 10px;
   width: 100%;
-  height: calc(100vh - 220px);
+  height: calc(100vh - 130px);
   overflow: scroll;
 }
 
