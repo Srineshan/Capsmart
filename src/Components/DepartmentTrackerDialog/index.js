@@ -10,8 +10,9 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { format } from "date-fns";
 import {formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import WorkModeSelect from "../SwitchWorkSpaceDialog";
 
-const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationView}) => {
+const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationView,getNotesDialog}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -34,6 +35,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationVie
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [showWorkModeSelectDialog, setShowWorkModeSelectDialog] = useState(false);
 
   useEffect(() => {
     getActiveUserData()
@@ -45,20 +47,26 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationVie
   }, [applicationType]);
 
 
-  // const onClickViewFunction = (data) => {
-  //   getActiveApplicationView(true);
-  //   sessionStorage.setItem("applicationId", data?.id);
-  //   getIsOpen(false);
-  // };
+  const onClickCreateNoteFunction = (data) => {
+    getNotesDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+    getIsOpen(false);
+  };
 
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
+  const getWorkModeDialogOpen = (value,data) => {
+    setShowWorkModeSelectDialog(value)
+    // sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const onClickViewFunction = (data) => {
+    setShowWorkModeSelectDialog(true)
     getActiveApplicationView(true);
     sessionStorage.setItem("applicationId", data?.id);
-    getIsOpen(false);
+    // getIsOpen(false);
   };
 
 
@@ -81,55 +89,70 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationVie
   };
 
 const headerValues = [
-    "",
+    "No",
     "Staff",
-    // "Staff ID",
-    "Staff Type",
-    "Staff Manager",
-    "CC Status",
-    "MAC Status",
-    "BOD Status",
+    "Type",
+    "OHIP Number",
+    "Department",
+    "Reappointment",
+    "MSO",
+    "DH",
+    "COS",
+    "CC",
+    "MAC",
+    "BOD",
+    "Status",
     "Last Updated by",
     ""
   ];
-  const colSortValues = [false, false, false, false, false, false];
+  const colSortValues = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
-      data: "View",
+      data: "Go to MAC Approval",
       requiredValue: "boolean",
-      // onClick: onClickViewFunction,
-      onClick: "",
+      onClick: onClickViewFunction,
+      // onClick: "",
     },
     // {
-    //   data: "Request For Clarification",
+    //   data: "View Progress Log",
     //   requiredValue: "boolean",
-    //   isParagraph: true,
-    //   hideForRoles: "Staff Manager",
-    //   showForRoles: "Chief Of Staff",
-    //   showForRoles2: "Department Head",
+    //   onClick: onClickCreateNoteFunction,
+    //   // onClick: "",
     // },
-    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
-    // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", showForRoles2: "Chief Of Staff", showForRoles: "Department Head", },
+    {
+      data: "Create Note",
+      requiredValue: "boolean",
+      onClick: onClickCreateNoteFunction,
+      // onClick: "",
+    },
   ];
 
 
   const getActiveUserData = async () => {
     try {
-      setIsLoadingImage(true);
-      const response = await GET(
-        `application-management-service/application?sortBy=${sortValue}&sortByField=${sortField}&limit=${10}&offset=${page - 1}`
-      );
+        setIsLoadingImage(true);
 
-      setTableData(response?.data?.applications);
-      setTotalCount(response?.data?.numberOfElements);
-      setIsLoadingImage(false);
-      return response?.data?.applications;
+        // Define the statuses
+        const statuses = ["CREATED", "SUBMITTED", "APPROVED", "REJECTED", "REVIEW_INPROGRESS", "DECLINED"];
+
+        // Convert array to repeated query parameters
+        const statusParams = statuses.map(status => `applicationStatus=${status}`).join("&");
+
+        // Construct the full URL
+        const url = `application-management-service/application?sortBy=${sortValue}&sortByField=${sortField}&limit=10&offset=${page - 1}&${statusParams}`;
+
+        const response = await GET(url);
+
+        setTableData(response?.data?.applications);
+        setTotalCount(response?.data?.numberOfElements);
+        setIsLoadingImage(false);
+        return response?.data?.applications;
     } catch (error) {
-      console.error("Error fetching applications:", error);
-      return [];
+        console.error("Error fetching applications:", error);
+        return [];
     }
-  };
+};
+
 
   const getSelectedPage = (value) => {
     setPage(value);
@@ -149,90 +172,110 @@ const headerValues = [
   };
 
   const getTableValues = () => {
-    const dot = [];
+    const No = [];
     const staff = [];
-    const staffId = [];
     const staffType = [];
+    const ohipNo = [];
+    const department = [];
+    const reapointment = [];
     const staffManager = [];
+    const deptHead = [];
+    const cos = [];
     const cc = [];
     const mac = [];
     const bod = [];
+    const status = [];
     const action = [];
     const lastUpdated = [];
 
-    tableData?.forEach((data) => {
+    tableData?.map((data,index) => {
+      No.push(index + 1+".")
         const workflowStaffManagerRole = data?.completedWorkflows?.find(workflow => workflow.role === "Staff Manager");
+        const workflowDeptHeadRole = data?.completedWorkflows?.find(workflow => workflow.role === "Department Head");
         const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
         const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
         const workflowBodRole = data?.completedWorkflows?.find(workflow => workflow.role === "Board");
 
-        const color = data?.status === "REJECTED" ? "red"
-          : data?.status === "REVIEW_INPROGRESS" ? "yellow"
-          : data?.status === "COMPLETED" ? "green"
-            : "grey";
-            dot.push(color);
-        console.log("Matching workflow found:", {
-          status: data?.status,
-          assignedColor: color
-        });
-  
-      staff.push(
-        <>
-          {/* {`${data?.applicant?.name?.lastName.toUpperCase()}, ${data?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-            data?.applicant?.name?.firstName.slice(1).toLowerCase()
-            }`} */}
-            {data?.applicant?.name?.firstName} {data?.applicant?.name?.lastName.toLowerCase()}
-        </>
-      );
       staff.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
-      // staffId.push(`${data?.displayId}` || "123");
+      // ohipNo.push(`${data?.displayId}` || "123");
       staffType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
+      const color = data?.status === "REJECTED" ? "red"
+      : data?.status === "REVIEW_INPROGRESS" ? "yellow"
+      : data?.status === "COMPLETED" ? "green"
+        : "grey";
+        reapointment.push(color);
+    console.log("Matching workflow found:", {
+      status: data?.status,
+      assignedColor: color
+    });
+
       if (workflowStaffManagerRole) {
-        const color = workflowStaffManagerRole?.status === "IN_PROGRESS" ? "yellow"
-          : workflowStaffManagerRole?.status === "COMPLETED" ? "green"
+        const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "green"
             : "grey";
             staffManager.push(color);
         console.log("Matching workflow found:", {
           role: workflowStaffManagerRole.role,
-          status: workflowStaffManagerRole?.status,
+          status: workflowStaffManagerRole?.approvalType,
           assignedColor: color
         });
+      } else{
+        staffManager.push('grey');
+      }
+      if (workflowDeptHeadRole) {
+        const color = workflowDeptHeadRole?.approvalType === "RECOMMENDED" ? "green"
+            :  workflowDeptHeadRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
+            : "grey";
+            deptHead.push(color);
+        console.log("Matching workflow found:", {
+          role: workflowDeptHeadRole.role,
+          status: workflowDeptHeadRole?.approvalType,
+          assignedColor: color
+        });
+      }  else{
+        deptHead.push('grey');
       }
       if (workflowCredRole) {
-        const color = workflowCredRole?.status === "IN_PROGRESS" ? "yellow"
-          : workflowCredRole?.status === "COMPLETED" ? "green"
+        const color = workflowCredRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
+          : workflowCredRole?.approvalType === "RECOMMENDED" ? "green"
             : "grey";
             cc.push(color);
         console.log("Matching workflow found:", {
           role: workflowCredRole.role,
-          status: workflowCredRole?.status,
+          status: workflowCredRole?.approvalType,
           assignedColor: color
         });
+      }  else{
+        cc.push('grey');
       }
       if (workflowMacRole) {
-        const color = workflowMacRole?.status === "IN_PROGRESS" ? "yellow"
-          : workflowMacRole?.status === "COMPLETED" ? "green"
+        const color = workflowMacRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
+          : workflowMacRole?.approvalType === "RECOMMENDED" ? "green"
             : "grey";
             mac.push(color);
         console.log("Matching workflow found:", {
           role: workflowMacRole.role,
-          status: workflowMacRole.status,
+          status: workflowMacRole.approvalType,
           assignedColor: color
         });
+      }  else{
+        mac.push('grey');
       }
       if (workflowBodRole) {
-        const color = workflowBodRole?.status === "IN_PROGRESS" ? "yellow"
-          : workflowBodRole?.status === "COMPLETED" ? "green"
+        const color = workflowBodRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
+          : workflowBodRole?.approvalType === "RECOMMENDED" ? "green"
             : "grey";
             bod.push(color);
         console.log("Matching workflow found:", {
           role: workflowBodRole.role,
-          status: workflowBodRole.status,
+          status: workflowBodRole.approvalType,
           assignedColor: color
         });
+      }  else{
+        bod.push('grey');
       }
       lastUpdated.push(
         <>
@@ -244,14 +287,19 @@ const headerValues = [
     });
 
     return [
-      { type: "dot", value: dot },
+      { type: "text", value: No },
       { type: "text", value: staff },
-      // { type: "text", value: staffId },
       { type: "text", value: staffType },
+      { type: "text", value: ohipNo },
+      { type: "text", value: department },
+      { type: "dot", value: reapointment },
       { type: "dot", value: staffManager },
+      { type: "dot", value: deptHead },
+      { type: "dot", value: cos },
       { type: "dot", value: cc },
       { type: "dot", value: mac },
       { type: "dot", value: bod },
+      { type: "text", value: status },
       {
         type: "iconWithCount",
         value: lastUpdated
@@ -280,7 +328,8 @@ const headerValues = [
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-            Reappointments Status Tracker {" "}({" "}{totalCount|| 0 }{" "})
+            {/* Staff Reappointment Status Tracker {" "}({" "}{totalCount|| 0 }{" "}) */}
+              Staff Reappointment Status Tracker
             </div>
             <div className={style.displayInRow}>
               <img
@@ -326,6 +375,9 @@ const headerValues = [
  </div>
 </Dialog>
 {/* // )} */}
+{showWorkModeSelectDialog && (
+  <WorkModeSelect getIsOpen={getWorkModeDialogOpen} getActiveApplicationView={getActiveApplicationView} />
+)}
 </>
   );
 };

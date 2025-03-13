@@ -287,12 +287,12 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose }) =>
     >
       <div>
         <div className={style.templateHeader}>
-          <div className={style.templateHeadertext}>Staff Reappointments Approved by the Cred. Comm.</div>
+          <div className={style.templateHeadertext}>Staff Reappointment{checkedIds?.length > 1 ? "s" : ""} Approved by the Cred. Comm.</div>
           <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} />
         </div>
         {renderApplicationDetails()}
         <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-           Notes /Comments By The Cred Comm*
+           Notes / Comments By The Cred Comm*
         </div>
         <div className={`${style.marginTop10}`}>
                   <CKEditor

@@ -55,9 +55,9 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
       <div>
         <div>
           <div className={style.templateHeader}>
-            <div className={style.templateHeadertext}>
-            {checkedIds?.length} Staff Application for Presenting to CC 
-            </div>
+          <div className={style.templateHeadertext}>
+            {checkedIds?.length} Staff Application{checkedIds?.length > 1 ? "s" : ""} for Presenting to CC
+          </div>
             <img
               src={CrossPink}
               alt="cross"
