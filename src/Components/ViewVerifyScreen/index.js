@@ -1079,7 +1079,8 @@ const NewActiveApplication = ({
       'level-2': "Department Head",
       'level-3': "Credentialing Committee",
       'level-4': "Advisory Committee",
-      'level-5': "Board"
+      'level-5': "Board",
+      'clarificationsRequired' : "Staff Manager"
     };
     console.log("roleMap" + roleMap);
 
@@ -4818,7 +4819,7 @@ const NewActiveApplication = ({
                     )}
 
                     <>
-                      {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1")) ? (
+                      {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === "clarificationsRequired")) ? (
                         <div
                           className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                         >
