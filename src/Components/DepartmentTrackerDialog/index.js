@@ -89,15 +89,14 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading ,getActiveApplicationVie
   };
 
 const headerValues = [
-    "No",
+    "No.",
     "Staff",
     "Type",
     "OHIP Number",
     "Department",
     "Reappointment",
     "MSO",
-    "DH",
-    "COS",
+    "DH / COS",
     "CC",
     "MAC",
     "BOD",
@@ -139,7 +138,7 @@ const headerValues = [
         const statusParams = statuses.map(status => `applicationStatus=${status}`).join("&");
 
         // Construct the full URL
-        const url = `application-management-service/application?sortBy=${sortValue}&sortByField=${sortField}&limit=10&offset=${page - 1}&${statusParams}`;
+        const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=10&offset=${page - 1}`;
 
         const response = await GET(url);
 
@@ -205,7 +204,7 @@ const headerValues = [
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
       const color = data?.status === "REJECTED" ? "red"
       : data?.status === "REVIEW_INPROGRESS" ? "yellow"
-      : data?.status === "COMPLETED" ? "green"
+      : data?.status === "CREATED" ? "green"
         : "grey";
         reapointment.push(color);
     console.log("Matching workflow found:", {
@@ -215,7 +214,8 @@ const headerValues = [
 
       if (workflowStaffManagerRole) {
         const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "green"
-            : "grey";
+            : workflowStaffManagerRole?.approvalType === "NOT_RECOMMENDED" ? "red"
+            :"grey";
             staffManager.push(color);
         console.log("Matching workflow found:", {
           role: workflowStaffManagerRole.role,
@@ -228,7 +228,8 @@ const headerValues = [
       if (workflowDeptHeadRole) {
         const color = workflowDeptHeadRole?.approvalType === "RECOMMENDED" ? "green"
             :  workflowDeptHeadRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
-            : "grey";
+            :  workflowDeptHeadRole?.approvalType === "NOT_RECOMMENDED" ? "red" 
+            :"grey";
             deptHead.push(color);
         console.log("Matching workflow found:", {
           role: workflowDeptHeadRole.role,
@@ -241,7 +242,8 @@ const headerValues = [
       if (workflowCredRole) {
         const color = workflowCredRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
           : workflowCredRole?.approvalType === "RECOMMENDED" ? "green"
-            : "grey";
+          : workflowCredRole?.approvalType === "NOT_RECOMMENDED" ? "red"
+          :"grey";
             cc.push(color);
         console.log("Matching workflow found:", {
           role: workflowCredRole.role,
@@ -254,7 +256,8 @@ const headerValues = [
       if (workflowMacRole) {
         const color = workflowMacRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
           : workflowMacRole?.approvalType === "RECOMMENDED" ? "green"
-            : "grey";
+          : workflowMacRole?.approvalType === "NOT_RECOMMENDED" ? "red"
+          :"grey";
             mac.push(color);
         console.log("Matching workflow found:", {
           role: workflowMacRole.role,
@@ -267,7 +270,8 @@ const headerValues = [
       if (workflowBodRole) {
         const color = workflowBodRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
           : workflowBodRole?.approvalType === "RECOMMENDED" ? "green"
-            : "grey";
+          : workflowBodRole?.approvalType === "NOT_RECOMMENDED" ? "red"
+          :"grey";
             bod.push(color);
         console.log("Matching workflow found:", {
           role: workflowBodRole.role,
@@ -277,6 +281,24 @@ const headerValues = [
       }  else{
         bod.push('grey');
       }
+      if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
+        let lastApproval = data?.completedWorkflows
+          .filter(item => item.approvalType !== null) // Ensure non-null approvalType
+          .pop(); // Get the last valid approvalType entry
+      
+        if (lastApproval) {
+          const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
+          console.log(`Last Approval Type: ${formattedApprovalType}, Role: ${lastApproval.role}`);
+          status.push(`${lastApproval.role}, ${formattedApprovalType}`)
+        } else {
+          console.log("No valid approval type found.");
+          status.push("submitted")
+        }
+      } else {
+        console.log("completedWorkflows is not a valid array.");
+        status.push("created")
+      }
+      
       lastUpdated.push(
         <>
           {data?.updatedBy?.name?.firstName}<br />
@@ -295,7 +317,6 @@ const headerValues = [
       { type: "dot", value: reapointment },
       { type: "dot", value: staffManager },
       { type: "dot", value: deptHead },
-      { type: "dot", value: cos },
       { type: "dot", value: cc },
       { type: "dot", value: mac },
       { type: "dot", value: bod },

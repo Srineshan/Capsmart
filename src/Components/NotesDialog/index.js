@@ -14,6 +14,7 @@ import Dropzone from "react-dropzone";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
+import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
@@ -43,6 +44,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
   const [uploadFileData, setUploadFileData]= useState([]);
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
+  const [notesVisible, setNotesVisible] = useState(true);
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -52,6 +54,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
     borderRadius: 5,
   };
   const [errors, setErrors] = useState([]);
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -188,9 +191,10 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
    
     let temp = {
       notes: userNotes,
-      files: files
+      files: files,
+      private: notesVisible ? false : true
     };
-    const title = `${userRole}${" "}Notes/Comments`
+    const title = `${workModeType}${" "}Notes/Comments`
 
     await PUT(`application-management-service/application/${id}/addNote?title=${title}`, temp)
       .then(response => {
@@ -341,6 +345,10 @@ const handleTextChange = async (editor) => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className={`${style.marginTop10} ${style.flexCenter}`}>
+            <CommonSwitch label={notesVisible ? 'YES' : 'NO'} checked={notesVisible} onChange={(e) => setNotesVisible(e.target.checked)} labelName={'Make Notes Visible to Others'} />
+              <div className={`${style.notesVisibleText}`}>Your Note will be {notesVisible ? 'Public' : 'Private'}.</div>
             </div>
             <div className={`${style.marginTop10}`}>
               <CKEditor

@@ -11372,7 +11372,7 @@ const NewActiveApplication = ({
                               // </>
                               <>
                                 {form?.notesDetails
-                                  ?.filter(log => log.notes.notes)
+                                  ?.filter(log => ((log?.notes?.notes)))
                                   .reverse()
                                   .map((log, index) => (
                                     <div key={index}>
