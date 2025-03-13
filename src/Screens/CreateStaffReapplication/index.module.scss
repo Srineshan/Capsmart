@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .bigCardStyle {
-    height: calc(100vh - 270px);
+    height: calc(100vh - 330px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -39,7 +39,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 460px);
     overflow: scroll;
 }
 
@@ -247,4 +247,13 @@
 
 .disabled {
     cursor: not-allowed;
+}
+
+.searchFieldWidth {
+    width: 300px;
+    float: right;
+}
+
+.marginLeftRight20 {
+    margin: 0 20px !important;
 }

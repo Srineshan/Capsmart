@@ -13,6 +13,7 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
 import { Tooltip } from '@material-ui/core';
 import { formatFirstNameLastName } from "../../utils/formatting";
+import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
@@ -35,7 +36,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   // Replace sessionStorage with state
   const [checkedIds, setCheckedIds] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchData, setSearchData] = useState([]);
+  const [searchTermForTable, setSearchTermForTable] = useState('');
+  const [searchCount, setSearchount] = useState(0);
+  const [limit, setLimit] = useState(10);
   let availableApplicationStatus = {
     "CREATED": "Not Submitted",
     "SUBMITTED": "Submitted",
@@ -60,7 +65,21 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       setIsDataLoaded(false);
     });
     setCheckedIds([]);
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount, limit, searchTermForTable]);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setSearchData([]); // Clear results if input is empty
+      return;
+    }
+
+    const controller = new AbortController(); // Create an AbortController instance
+    const signal = controller.signal;
+
+    getActiveUserDataForSearch(signal); // Call API function with signal
+
+    return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+  }, [searchTerm]);
 
   useEffect(() => {
     if (isDataLoaded) {
@@ -145,7 +164,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       }
 
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${300}&offset=${page - 1}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
@@ -153,11 +172,64 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
       setTableData(response?.data?.staffs);
       setTotalCount(response?.data?.numberOfElements);
+      setSearchount(response?.data?.numberOfElements);
       return response?.data?.staffs;
     } catch (error) {
       console.error("Error fetching applications:", error);
       return [];
     }
+  };
+
+  const getActiveUserDataForSearch = async (signal) => {
+    try {
+      const queryParams = new URLSearchParams({
+        status: 'ACTIVE'
+      });
+
+      const types = ['PERMANENT', 'LOCUM'];
+      types.forEach(type => queryParams.append('type', type));
+
+      if (selectedDepartment) {
+        queryParams.append('departmentId', selectedDepartment);
+      }
+
+      if (selectedPrivilegeCategory) {
+        queryParams.append('credentialingAndPrivilegingCategoryId', selectedPrivilegeCategory);
+      }
+
+      if (selectedApplicantType) {
+        queryParams.append('applicantTypeId', selectedApplicantType);
+      }
+
+      if (applicationStatus) {
+        queryParams.append('applicationStatus', applicationStatus);
+      }
+
+      if (selectedReappointmentStatus) {
+        queryParams.append('reappointmentStatus', selectedReappointmentStatus);
+      }
+
+      const response = await GET(
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}&searchText=${searchTerm}&isPaginationRequired=${false}`, { signal }
+      );
+
+      // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+      // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
+
+      setSearchData(response?.data?.staffs?.map(item => ({
+        id: item.id,
+        name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+        desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.category}`
+      })));
+      return response?.data?.staffs;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
   };
 
   const reappointmentApplicationbulk = async () => {
@@ -233,6 +305,15 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     } else {
       setSelectedApplicantType(applicant?.[0]?.id);
     }
+  }
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  }
+
+  const handleShowForSearch = () => {
+    console.log('search', searchTerm)
+    setSearchTermForTable(searchTerm)
   }
 
   const getSelectedPage = (value) => {
@@ -462,6 +543,12 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             </div>
           </div>
         </div>
+        <div className={style.spaceBetween}>
+          <div></div>
+          <div className={`${style.searchFieldWidth} ${style.marginTop10}`}>
+            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
+          </div>
+        </div>
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
           {isLoading ? (
@@ -469,7 +556,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               <CircularProgress sx={{ color: "#06617A" }} />
             </div>
           ) : (
-            <div className={`${style.margin20}`}>
+            <div className={`${style.marginLeftRight20}`}>
               <TableTwo
                 tableHeaderValues={headerValues}
                 tableDataValues={getTableValues()}
@@ -483,11 +570,15 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 getSelectedPage={getSelectedPage}
                 totalCount={totalCount}
                 page={page}
-                hidePagination={true}
+                // hidePagination={true}
                 // Pass checkedIds as a prop
                 checkedIds={checkedIds}
                 // Optional: pass the checkbox click handler if TableTwo needs it
                 handleCheckboxClick={handleCheckboxClick}
+                searchTermForTable={searchTermForTable}
+                searchCount={searchCount}
+                setSearchTermForTable={setSearchTermForTable}
+                onLimitChange={handleLimitChange}
               />
             </div>
           )}

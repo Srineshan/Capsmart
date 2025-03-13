@@ -4,6 +4,9 @@
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 8px 24px #171A1A52;
     border-radius: 8px;
+    position: absolute;
+    z-index: 999;
+    width: inherit;
 }
 
 .searchScroll {

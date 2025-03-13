@@ -115,6 +115,7 @@ const StaffApplicationList = ({
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
+  const [limit, setLimit] = useState(10);
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -605,10 +606,20 @@ const StaffApplicationList = ({
       setIsDataLoaded(false); // Mark data as loaded
     });
     setCheckedIds([]);
-  }, [sortField, sortValue, searchTermForTable]);
+  }, [sortField, sortValue, searchTermForTable, limit]);
 
   useEffect(() => {
-    getWorkflowUserDataSearch();
+    if (searchTerm.trim() === "") {
+      setSearchData([]); // Clear results if input is empty
+      return;
+    }
+
+    const controller = new AbortController(); // Create an AbortController instance
+    const signal = controller.signal;
+
+    getWorkflowUserDataSearch(signal); // Call API function with signal
+
+    return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
   }, [searchTerm, selectedTab]);
 
   //Debug for allformapproved
@@ -1016,11 +1027,12 @@ const StaffApplicationList = ({
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
+        setSearchount(response?.data?.numberOfElements)
         setReFetchMetaData(true);
         setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
@@ -1032,7 +1044,7 @@ const StaffApplicationList = ({
     }
   };
 
-  const getWorkflowUserDataSearch = async () => {
+  const getWorkflowUserDataSearch = async (signal) => {
     try {
       let response;
       if (applicationType === "LOCUM") {
@@ -1046,7 +1058,7 @@ const StaffApplicationList = ({
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         // setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${role}&searchText=${searchTerm}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTerm}&isPaginationRequired=${false}`, { signal }
         );
         console.log("Application data", response?.data?.applications);
         setSearchData(response?.data?.applications.map(item => ({
@@ -1064,6 +1076,10 @@ const StaffApplicationList = ({
       console.error("Error fetching applications:", error);
       return [];
     }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
   };
 
   console.log("0000000000000000000000" + JSON.stringify(tableData));
@@ -3563,7 +3579,7 @@ const StaffApplicationList = ({
               <>
                 {applicationType === "REAPPOINTMENT" && (
                   <div className={style.searchFieldAlignment}>
-                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
+                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
                   </div>
                 )}
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
@@ -3952,7 +3968,9 @@ const StaffApplicationList = ({
                       // Optional: pass the checkbox click handler if TableTwo needs it
                       handleCheckboxClick={handleCheckboxClick}
                       searchTermForTable={searchTermForTable}
+                      searchCount={searchCount}
                       setSearchTermForTable={setSearchTermForTable}
+                      onLimitChange={handleLimitChange}
                     />
                   </div>
                 </div>

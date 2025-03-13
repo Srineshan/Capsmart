@@ -2,13 +2,19 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 import SearchIcon from "@mui/icons-material/Search";
-
+import CloseIcon from "@mui/icons-material/Close";
+import IconButton from "@mui/material/IconButton";
 import style from './index.module.scss'
 import CommonDivider from "../CommonDivider";
 
-const CommonSearchField = ({ searchTerm, setSearchTerm, onChange, searchData, handleShowForSearch }) => {
+const CommonSearchField = ({ searchTerm, setSearchTerm, onChange, searchData, handleShowForSearch, isOnClickAvailable, onClickFunc }) => {
     // const [searchTerm, setSearchTerm] = useState("");
     const [isFocused, setIsFocused] = useState(false);
+
+    const handleClear = () => {
+        setIsFocused(false);
+        setSearchTerm('');
+    }
     return (
         <>
             <TextField
@@ -26,13 +32,20 @@ const CommonSearchField = ({ searchTerm, setSearchTerm, onChange, searchData, ha
                             <SearchIcon />
                         </InputAdornment>
                     ),
+                    endAdornment: isFocused && (
+                        <InputAdornment position="end">
+                            <IconButton onClick={handleClear} size="small">
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
                 }}
             />
             {isFocused && (
                 <div className={style.searchDropdown}>
                     <div className={style.searchScroll}>
                         {(searchData || [])?.map(data => (
-                            <div>
+                            <div className={isOnClickAvailable ? style.cursorPointer : ''} onClick={isOnClickAvailable ? () => onClickFunc(data) : () => { }}>
                                 <div className={style.padding10}>
                                     <div className={style.marginTop10}>
                                         <div className={style.searchName}>{data?.name}</div>

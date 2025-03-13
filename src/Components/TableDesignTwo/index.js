@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, setSearchTermForTable }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -286,7 +286,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
                         <div className={`${style.chipsContainer}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
-                                <div>{`Showing All Search Results For '${searchTermForTable}'`}</div>
+                                <div>{`Showing All Search Results For '${searchTermForTable}' (${searchCount})`}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                     onClick={() => setSearchTermForTable("")}
                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
@@ -295,7 +295,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 </div>
                 {
                     !hidePagination && (totalCount || tableData?.length) > 10 &&
-                    <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} />
+                    <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />
                 }
             </div>
             <div>
