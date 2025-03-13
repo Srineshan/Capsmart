@@ -192,7 +192,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
     let temp = {
       notes: userNotes,
       files: files,
-      private: notesVisible ? false : true
+      private: notesVisible ? false : true,
     };
     const title = `${workModeType}${" "}Notes/Comments`
 
