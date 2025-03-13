@@ -32,7 +32,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const [applicationStatus, setApplicationStatus] = useState("");
+  const [applicationStatus, setApplicationStatus] = useState("CREATED");
   // Replace sessionStorage with state
   const [checkedIds, setCheckedIds] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -124,7 +124,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Staff Type",
     "Department",
     "Status",
-    "Application Status",
+    // "Application Status",
     "Action"
   ];
   const colSortValues = [false, true, false, false, true];
@@ -404,7 +404,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       { type: "text", value: applicantType },
       { type: "text", value: department },
       { type: "text", value: reappointment },
-      { type: "text", value: applicationStatusList },
+      // { type: "text", value: applicationStatusList },
       { type: "icon", icon: actionList },
     ];
   };
@@ -469,7 +469,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
               </div>
             </div>
-            <div>
+            {/* <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   Privilege Category
@@ -492,7 +492,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 />
 
               </div>
-            </div>
+            </div> */}
             <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
@@ -516,7 +516,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
               </div>
             </div>
-            <div>
+            {/* <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
                   Application Status
@@ -540,7 +540,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 />
 
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
         <div className={style.spaceBetween}>
