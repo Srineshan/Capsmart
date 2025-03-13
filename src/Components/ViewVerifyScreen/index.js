@@ -232,6 +232,7 @@ const NewActiveApplication = ({
   // const userLastName = userData?.name?.lastName || "No Last Name";
   const [hasVerificationAttempted, setHasVerificationAttempted] = useState(false);
   const [approvalType, setApprovalType] = useState(false);
+  const [ userId,setUserId ]= useState('')
   const canadaData =
     sessionStorage.getItem("canadaData") !== "undefined"
       ? JSON.parse(sessionStorage.getItem("canadaData"))
@@ -263,7 +264,7 @@ const NewActiveApplication = ({
     borderRadius: 5,
   };
 
-  console.log("dataLevel", dataLevel)
+  console.log("dataLevel", userId)
 
   useEffect(() => {
     getPreApplication();
@@ -677,6 +678,7 @@ const NewActiveApplication = ({
       const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
       console.log("userdataaaa", JSON.stringify(userData));
       sessionStorage.setItem('user', JSON.stringify(userData));
+      setUserId(userData?.id)
       setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
       setUserFirstName(`${userData?.name?.firstName}`);
       setUserLastName(`${userData?.name?.lastName}`);
@@ -4481,7 +4483,6 @@ const NewActiveApplication = ({
       }}
       // className={style.calcHeight}
       >
-        <div className={style.screenBackground}></div>
 
         {/* <ApplicationHeader
         title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  
@@ -11372,79 +11373,86 @@ const NewActiveApplication = ({
                               // </>
                               <>
                                 {form?.notesDetails
-                                  ?.filter(log => ((log?.notes?.notes)))
-                                  .reverse()
-                                  .map((log, index) => (
-                                    <div key={index}>
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                        {log?.title}
-                                      </div>
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
-                                        {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
-                                      </div>
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
-                                        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
-                                      </div>
+  ?.filter(log => {
+    // Filter logs with notes
+    if (!log?.notes?.notes) return false;
 
-                                      {/* Check if there are files */}
-                                      {log?.files && log?.files?.length > 0 && (
-                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
-                                          {log?.files?.map((file, fileIndex) => {
-                                            // let innerData = log?.files[0];
-                                            return (
-                                              <div key={fileIndex}>
-                                                <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
-                                                  {/* Display Material UI PDF icon and link */}
-                                                  <div
-                                                    className={style.cursorPointer}
-                                                    onClick={() => {
-                                                      setShowFileDisplayDialog(true);
-                                                      setselectedFile(file);
-                                                    }}
-                                                  >
-                                                    <PictureAsPdfIcon
-                                                      className={style.docsIcon}
-                                                      style={{ marginRight: '8px' }}
-                                                    />
-                                                  </div>
-                                                  <div
-                                                    className={`${style.cursorPointer} ${style.notesTitle}`}
-                                                    onClick={() => {
-                                                      setShowFileDisplayDialog(true);
-                                                      setselectedFile(file);
-                                                    }}
-                                                  >
-                                                    {file?.fileName}
-                                                  </div>
-                                                  <div>
-                                                    <DescriptionOutlinedIcon
-                                                      // className={style.docsIcon}
-                                                      style={{ marginRight: '8px' }}
-                                                    />
-                                                  </div>
-                                                </div>
-                                                {file?.title && (
-                                                  <div
-                                                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
-                                                  >
-                                                    <div>{file?.title}</div>
-                                                  </div>
-                                                )}
-                                                {/* Optional description */}
-                                                {file?.description && (
-                                                  <div
-                                                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
-                                                  >
-                                                    <div>{file?.description}</div>
-                                                  </div>
-                                                )}
-                                              </div>
-                                            );
-                                          })}
-                                        </div>
-                                      )}
-                                    </div>
-                                  ))}
+    // Skip logs that are private and do not belong to the current user
+    if (log?.private && log?.user?.id !== userId) return false;
+
+    // Include all other logs
+    return true;
+  })
+  .reverse()
+  .map((log, index) => (
+    <div key={index}>
+      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
+        {log?.title}
+      </div>
+      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
+        {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
+      </div>
+      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
+        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+      </div>
+
+      {/* Check if there are files */}
+      {log?.files && log?.files?.length > 0 && (
+        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+          {log?.files?.map((file, fileIndex) => {
+            return (
+              <div key={fileIndex}>
+                <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
+                  {/* Display Material UI PDF icon and link */}
+                  <div
+                    className={style.cursorPointer}
+                    onClick={() => {
+                      setShowFileDisplayDialog(true);
+                      setselectedFile(file);
+                    }}
+                  >
+                    <PictureAsPdfIcon
+                      className={style.docsIcon}
+                      style={{ marginRight: '8px' }}
+                    />
+                  </div>
+                  <div
+                    className={`${style.cursorPointer} ${style.notesTitle}`}
+                    onClick={() => {
+                      setShowFileDisplayDialog(true);
+                      setselectedFile(file);
+                    }}
+                  >
+                    {file?.fileName}
+                  </div>
+                  <div>
+                    <DescriptionOutlinedIcon
+                      style={{ marginRight: '8px' }}
+                    />
+                  </div>
+                </div>
+                {file?.title && (
+                  <div
+                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                  >
+                    <div>{file?.title}</div>
+                  </div>
+                )}
+                {/* Optional description */}
+                {file?.description && (
+                  <div
+                    className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                  >
+                    <div>{file?.description}</div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  ))}
                               </>
                             )}
                           </div>

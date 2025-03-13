@@ -202,11 +202,13 @@ const headerValues = [
       // ohipNo.push(`${data?.displayId}` || "123");
       staffType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
-      const color = data?.status === "REJECTED" ? "red"
-      : data?.status === "REVIEW_INPROGRESS" ? "yellow"
-      : data?.status === "CREATED" ? "green"
+      const color = data?.status === "DECLINED" ? "red"
+        : data?.formFillingStatus === "REJECTED" ? "red"
+        : data?.formFillingStatus === "IN_PROGRESS" ? "yellow"
+        : data?.formFillingStatus === "COMPLETED" ? "green"
         : "grey";
-        reapointment.push(color);
+
+      reapointment.push(color);
     console.log("Matching workflow found:", {
       status: data?.status,
       assignedColor: color
@@ -283,20 +285,27 @@ const headerValues = [
       }
       if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
         let lastApproval = data?.completedWorkflows
-          .filter(item => item.approvalType !== null) // Ensure non-null approvalType
-          .pop(); // Get the last valid approvalType entry
+          .filter(item => item.approvalType !== null)
+          .pop();
       
         if (lastApproval) {
           const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
-          console.log(`Last Approval Type: ${formattedApprovalType}, Role: ${lastApproval.role}`);
           status.push(`${lastApproval.role}, ${formattedApprovalType}`)
         } else {
-          console.log("No valid approval type found.");
-          status.push("submitted")
+          status.push("MSO Verification Not Started")
         }
       } else {
-        console.log("completedWorkflows is not a valid array.");
-        status.push("created")
+        if (data?.status === "DECLINED") {
+            status.push("Reappointment Application Declined");
+        } else {
+            if (data?.formFillingStatus === "IN_PROGRESS") {
+                status.push("Reappointment Application In-Progress");
+            } else if (data?.formFillingStatus === "PENDING") {
+                status.push("Reappointment Application Not Started");
+            } else {
+                status.push("MSO Verification Not Started");
+            }
+        }
       }
       
       lastUpdated.push(
