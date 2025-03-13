@@ -49,9 +49,9 @@
 .cursorDisabled {
   cursor: not-allowed;
   pointer-events: none;
-} 
+}
 
-.flex{
+.flex {
   display: flex;
 }
 
@@ -99,9 +99,9 @@
   align-items: center;
 }
 
-.detailsTextStyle{
+.detailsTextStyle {
   text-align: left;
-  font: normal normal 600 20px/28px Proxima Nova;
+  font: normal normal 600 20px/28px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
@@ -124,27 +124,27 @@
   padding: 10px 10px;
 }
 
-.subHeadingtextStyle{
+.subHeadingtextStyle {
   text-align: center;
-  font: normal normal 500 14px/16px Proxima Nova;
+  font: normal normal 500 14px/16px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
   opacity: 0.5;
 }
 
-.subAnswerTextStyle{
+.subAnswerTextStyle {
   text-align: center;
-  font: normal normal 500 16px/34px Proxima Nova;
+  font: normal normal 500 16px/34px proxima-nova;
   letter-spacing: 0px;
   color: #52575D;
   text-transform: capitalize;
   opacity: 1;
 }
 
-.textBoxTextStyle{
+.textBoxTextStyle {
   text-align: left;
-  font: normal normal normal 18px/24px Proxima Nova;
+  font: normal normal normal 18px/24px proxima-nova;
   letter-spacing: 0px;
   color: #94979A;
   opacity: 1;
