@@ -1549,7 +1549,9 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
@@ -1560,10 +1562,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -1634,7 +1637,7 @@ const StaffApplicationList = ({
       // },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
-        type: "iconWithCount",
+        type: "text",
         value: submitted,
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
@@ -1731,7 +1734,10 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
@@ -1750,10 +1756,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -2047,7 +2054,10 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
@@ -2058,10 +2068,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -2315,10 +2326,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -2359,7 +2371,7 @@ const StaffApplicationList = ({
       },
       { type: "dot", value: cc },
       {
-        type: "iconWithCount",
+        type: "text",
         value: submitted,
       },
       { type: "action", value: action },
@@ -2503,7 +2515,10 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
@@ -2514,10 +2529,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -2745,7 +2761,10 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "0");
       notesIcon.push(
         <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
@@ -2756,10 +2775,11 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
               <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
             </div>
@@ -3680,7 +3700,6 @@ const StaffApplicationList = ({
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                        onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3691,12 +3710,13 @@ const StaffApplicationList = ({
                                   {totalCountDept || 0}) */}
                               </div>
                               <KeyboardArrowRightIcon
-                                sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                                sx={{ fontSize: 20, color: "#06617A" }}
                               />
                             </div>
                           </div>
                         </div>
                       </div>
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`}   onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
                     </div>
                   </div>
                 ) : null}

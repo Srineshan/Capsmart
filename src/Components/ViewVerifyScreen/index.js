@@ -282,7 +282,7 @@ const NewActiveApplication = ({
     borderRadius: 5,
   };
 
-  console.log("dataLevel", dataLevel)
+  console.log("dataLevel", users?.id)
 
   useEffect(() => {
     getPreApplication();
@@ -694,6 +694,13 @@ const NewActiveApplication = ({
   console.log("Is Approver:", isApproverDept);
 
   useEffect(() => {
+    if (!showNotesDialog) {
+      getPreApplication();
+    }
+  }, [showNotesDialog]);
+
+
+  useEffect(() => {
     setUserDetails();
   }, [users?.id])
 
@@ -1080,7 +1087,7 @@ const NewActiveApplication = ({
       'level-3': "Credentialing Committee",
       'level-4': "Advisory Committee",
       'level-5': "Board",
-      'clarificationsRequired' : "Staff Manager"
+      'clarificationsRequired': "Staff Manager"
     };
     console.log("roleMap" + roleMap);
 
@@ -1686,7 +1693,7 @@ const NewActiveApplication = ({
           temp.push({
             "type": "text",
             "value": array.map(innerData =>
-              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+              <div className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
                 {innerData[data]}
               </div>
             )
@@ -1834,7 +1841,7 @@ const NewActiveApplication = ({
           temp.push({
             "type": "text",
             "value": array.map(innerData =>
-              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+              <div className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
                 {innerData[data]}
               </div>
             )
@@ -4641,8 +4648,8 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                <span className={style.cursorPointer} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}>{form?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
@@ -11437,12 +11444,16 @@ const NewActiveApplication = ({
                               // </>
                               <>
                                 {form?.notesDetails
-                                  ?.filter(log => log.notes.notes)
+                                  ?.filter(log => {
+                                    if (!log?.notes?.notes) return false;
+                                    if (log?.private && log?.user?.id !== users?.id) return false;
+                                    return true;
+                                  })
                                   .reverse()
                                   .map((log, index) => (
                                     <div key={index}>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                        {log?.title}
+                                        {log?.private && <span className={style.privateBorderText}>Private</span>}{" "}{log?.title}
                                       </div>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
                                         {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
@@ -11455,7 +11466,6 @@ const NewActiveApplication = ({
                                       {log?.files && log?.files?.length > 0 && (
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
                                           {log?.files?.map((file, fileIndex) => {
-                                            // let innerData = log?.files[0];
                                             return (
                                               <div key={fileIndex}>
                                                 <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
@@ -11483,7 +11493,6 @@ const NewActiveApplication = ({
                                                   </div>
                                                   <div>
                                                     <DescriptionOutlinedIcon
-                                                      // className={style.docsIcon}
                                                       style={{ marginRight: '8px' }}
                                                     />
                                                   </div>
