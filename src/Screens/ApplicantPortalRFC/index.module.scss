@@ -355,6 +355,12 @@
     object-fit: contain;
 }
 
+.dataLoadingStyle {
+    height: 200px;
+    width: 40%;
+    object-fit: contain;
+  }
+  
 .threeColumnGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

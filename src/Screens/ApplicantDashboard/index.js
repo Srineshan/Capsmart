@@ -163,7 +163,7 @@ const ApplicantDashboard = () => {
       }
     }
     if (task.category === 'REQUEST_FOR_CLARIFICATION') {
-      navigate(`/applicantPortalRFC/${task?.id}`);
+      navigate(`/RFC/${task?.details?.application?.clarificationId}?app=${task?.details?.application?.application?.id}&form=${task?.details?.application?.formDetails?.formId}`);
     }
   }
 
