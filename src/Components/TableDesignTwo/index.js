@@ -331,7 +331,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                             </div>
                                         )
                                             : tableData?.type === "text" ? (
-                                                <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>{tableData?.value?.[index]}</p>
+                                                <p className={`${style.tableDataFontStyle} ${tableData?.onClickFunction ? style.cursorPointer : ''} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>{tableData?.value?.[index]}</p>
                                             ) : tableData?.type === "textWithHover" ? (
                                                 <div>
                                                     <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}

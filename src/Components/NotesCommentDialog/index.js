@@ -842,11 +842,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   console.log("Updated Lastnameuserssssss", userFirstName);
   console.log("Updated Lastnameuserssssss", userLastName);
 
-  const closeAndReset = () => {
-    getIsOpen(false);
-  };
-
-
   const onClicksignFunction = () => {
     setTodayDate();
     handleSignatureClick();
@@ -1344,7 +1339,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     <Dialog
       isOpen={getIsOpen}
-      onClose={() => closeAndReset()}
+      onClose={() => getIsOpen(false)}
       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
@@ -1362,7 +1357,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  closeAndReset();
+                  getIsOpen(false);getActiveApplicationView(false);
                 }}
               />
             </div>
@@ -1497,7 +1492,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </div>
                </>
                }
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => closeAndReset()}>
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
                {workModeType === "Department Head" ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
              </div>
           </div>

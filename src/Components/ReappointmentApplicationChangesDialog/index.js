@@ -186,7 +186,7 @@ import style from "./index.module.scss";
 import {formatFirstNameLastName} from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
+const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -284,7 +284,7 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  getIsOpen(false);
+                  getIsOpen(false);getActiveApplicationView(false);
                 }}
               />
             </div>

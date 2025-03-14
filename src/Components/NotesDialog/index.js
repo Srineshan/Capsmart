@@ -473,12 +473,12 @@ const handleTextChange = async (editor) => {
                 </div>
               )}
         </div>
-        <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
-            <div  onClick={() => getIsOpen(false)}>
+        <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer}`}>
+            <div  className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>
             <div
-            className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer} ${style.marginLeft}`}
+            className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
             onClick={getApplicationNotes}
             style={{ 
               pointerEvents: isApproveEnabled ? 'auto' : 'none', 

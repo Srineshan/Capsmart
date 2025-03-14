@@ -331,7 +331,7 @@ const headerValues = [
       { type: "dot", value: bod },
       { type: "text", value: status },
       {
-        type: "iconWithCount",
+        type: "text",
         value: lastUpdated
       },
       { type: "action", value: action },
