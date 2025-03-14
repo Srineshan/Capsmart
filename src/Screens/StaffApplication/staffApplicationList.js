@@ -46,6 +46,7 @@ import CommonDivider from "../../Components/CommonFields/CommonDivider";
 import CommonInputField from "../../Components/CommonFields/CommonInputField";
 // import SearchIcon from '@mui/icons-material/Search';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLastName } from "../../utils/formatting";
+import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 
 const StaffApplicationList = ({
   isLoading,
@@ -110,6 +111,11 @@ const StaffApplicationList = ({
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [filteredIds, setFilteredIds] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchData, setSearchData] = useState([]);
+  const [searchTermForTable, setSearchTermForTable] = useState('');
+  const [searchCount, setSearchount] = useState(0);
+  const [limit, setLimit] = useState(10);
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -600,7 +606,21 @@ const StaffApplicationList = ({
       setIsDataLoaded(false); // Mark data as loaded
     });
     setCheckedIds([]);
-  }, [sortField, sortValue]);
+  }, [sortField, sortValue, searchTermForTable, limit]);
+
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setSearchData([]); // Clear results if input is empty
+      return;
+    }
+
+    const controller = new AbortController(); // Create an AbortController instance
+    const signal = controller.signal;
+
+    getWorkflowUserDataSearch(signal); // Call API function with signal
+
+    return () => controller.abort(); // Cleanup: Cancel previous request if a new one starts
+  }, [searchTerm, selectedTab]);
 
   //Debug for allformapproved
   useEffect(() => {
@@ -1012,11 +1032,12 @@ const StaffApplicationList = ({
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=10&offset=${page - 1}&role=${role}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
+        setSearchount(response?.data?.numberOfElements)
         setReFetchMetaData(true);
         setIsLoadingImage(false);
         console.log("Application data length", response?.data?.numberOfElements);
@@ -1026,6 +1047,44 @@ const StaffApplicationList = ({
       console.error("Error fetching applications:", error);
       return [];
     }
+  };
+
+  const getWorkflowUserDataSearch = async (signal) => {
+    try {
+      let response;
+      if (applicationType === "LOCUM") {
+        response = await GET(`application-management-service/staff`);
+        console.log("LOCUM data", response?.data.staffs);
+        setTableData(response?.data?.staffs);
+        setTotalCount(response?.data?.numberOfElements);
+        console.log("LOCUM data length", response?.data?.numberOfElements);
+        return response?.data.staffs || [];
+      } else {
+        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+        // setIsLoadingImage(true);
+        response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTerm}&isPaginationRequired=${false}`, { signal }
+        );
+        console.log("Application data", response?.data?.applications);
+        setSearchData(response?.data?.applications.map(item => ({
+          id: item.id,
+          name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
+          desc: `${item?.basicDetails?.departmentSpecialty?.department} | ${item?.basicDetails?.applicant?.applicantType}`
+        })));
+        // setTotalCount(response?.data?.numberOfElements);
+        // setReFetchMetaData(true);
+        // setIsLoadingImage(false);
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data?.applications || [];
+      }
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
   };
 
   console.log("0000000000000000000000" + JSON.stringify(tableData));
@@ -3373,6 +3432,15 @@ const StaffApplicationList = ({
     setIsExpanded(value);
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  }
+
+  const handleShowForSearch = () => {
+    console.log('search', searchTerm)
+    setSearchTermForTable(searchTerm)
+  }
+
   let tableHeaderValues =
     selectedTab === "level-1"
       ? applicantHeaderValues
@@ -3514,6 +3582,11 @@ const StaffApplicationList = ({
           <div>
             <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
               <>
+                {applicationType === "REAPPOINTMENT" && (
+                  <div className={style.searchFieldAlignment}>
+                    <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
+                  </div>
+                )}
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                   <div
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
@@ -3881,7 +3954,7 @@ const StaffApplicationList = ({
               ) : (
                 <div ref={componentRef} className={`${style.pagebreak}`}>
                   <div
-                    className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}
+                    className={`${style.reduceMarginTop10} ${style.marginLeftRight20} staffApplicationList`}
                     ref={PDFRef}
                   >
                     <TableTwo
@@ -3902,6 +3975,10 @@ const StaffApplicationList = ({
                       checkedIds={checkedIds}
                       // Optional: pass the checkbox click handler if TableTwo needs it
                       handleCheckboxClick={handleCheckboxClick}
+                      searchTermForTable={searchTermForTable}
+                      searchCount={searchCount}
+                      setSearchTermForTable={setSearchTermForTable}
+                      onLimitChange={handleLimitChange}
                     />
                   </div>
                 </div>
