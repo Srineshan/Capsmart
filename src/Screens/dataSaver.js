@@ -23,10 +23,11 @@ const getHeaders = () => {
     };
 }
 
-export const GET = (url) => {
+export const GET = (url, options = {}) => {
     return axios(`${baseUrl()}/${url}`, {
         method: "GET",
         headers: getHeaders(),
+        ...options,
     });
 };
 
