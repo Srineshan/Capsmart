@@ -1581,7 +1581,7 @@ const StaffApplicationList = ({
 
       data?.logs?.forEach((log) => {
         if (log?.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(log?.lastModifiedDate), "MMM dd, yyyy"));
+          submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
         }
       });
       // lastUpdated.push(
@@ -2260,7 +2260,7 @@ const StaffApplicationList = ({
       );
       ccdate.push(
         data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(data.upcomingCredCommitteeMeetingDate), "MMM dd, yyyy")
+          ? format(new Date(data.upcomingCredCommitteeMeetingDate), "MM/dd/yyyy")
           : "Not Assigned Yet"
       );
       const credCommittee = data?.completedWorkflows?.find(
@@ -2335,7 +2335,7 @@ const StaffApplicationList = ({
       notesHoverText.push(notesHoverTextArray);
       if (workflowCCDate) {
         const reviewDate = workflowCCDate?.approvedDate
-          ? format(new Date(workflowCCDate?.approvedDate), "MMM dd, yyyy")
+          ? format(new Date(workflowCCDate?.approvedDate), "MM/dd/yyyy")
           : 'Data Issue';
 
         submitted.push(reviewDate);
@@ -2343,7 +2343,7 @@ const StaffApplicationList = ({
         submitted.push('-');
       }
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       action.push(true);
@@ -3546,7 +3546,7 @@ const StaffApplicationList = ({
                       ? rejectedActionsData
                       // :[];
 
-                      : approvedActionsData;
+                      : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -3780,7 +3780,7 @@ const StaffApplicationList = ({
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
                                     {status?.createdDate
-                                      ? format(new Date(status?.createdDate), "MMM dd, yyyy")
+                                      ? format(new Date(status?.createdDate), "MM/dd/yyyy")
                                       : "-"}
                                   </div>
                                 </div>

@@ -18,13 +18,13 @@ import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
-const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
+const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNotesPrivate,showEditNotesFile }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
-  const [userNotes, setUserNotes] = useState('');
+  const [userNotes, setUserNotes] = useState(showEditNotes);
   const [logDetails, setLogDetails] = useState([]);
   const [isApproveEnabled, setIsApproveEnabled] = useState(false);
   const id = sessionStorage.getItem("applicationId");
@@ -41,10 +41,12 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
    const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
-  const [uploadFileData, setUploadFileData]= useState([]);
+  const [uploadFileData, setUploadFileData] = useState(
+    showEditNotesFile && showEditNotesFile.length > 0 ? showEditNotesFile : []
+  );
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
-  const [notesVisible, setNotesVisible] = useState(true);
+  const [notesVisible, setNotesVisible] = useState(showEditNotesPrivate? false : true);
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -68,11 +70,24 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
     console.log("uploadFileData",uploadFileData)
   }, [userNotes, documentTitle, uploadFileData]);
 
+  useEffect(() => {
+    if (showEditNotesFile?.length > 0) {
+      setDocumentTitle(showEditNotesFile.map(file => file.title || ""));
+    }
+  }, [showEditNotesFile]);
+
+  useEffect(() => {
+    if (showEditNotesFile?.length > 0) {
+      setUploadFileData(showEditNotesFile.map(file => file || ""));
+    }
+  }, [showEditNotesFile]);
+
   // useEffect(() => {
   //   getActiveApplicationView();
   //   getApplication();
   // }, []);
 
+  console.log("showEditNotesID",showEditNotesID,showEditNotes,showEditNotesPrivate,showEditNotesFile)
 
   useEffect(() => {
     setUserDetails();
@@ -117,6 +132,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
               // Merge previous data with new data
               return [...(prevData || []), ...(response?.data || [])];
             });
+            // getApplication();
             setIsLoadingImageDocs(false);
             console.log("Responseupload:", uploadFileData);
             return response?.data;
@@ -183,11 +199,18 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
 
   const getApplicationNotes = async () => {
 
-    const files = (uploadFileData || []).map((item, index) => ({
-        ...item.file,
-        description: documentDesc[index] || "",
-        title: documentTitle[index] || "",
-    }));
+    const files = [
+      ...(uploadFileData || []).map((item, index) => ({
+          ...item.file,
+          description: documentDesc[index] || "",
+          title: documentTitle[index] || "",
+      }))
+      // ...(showEditNotesFile || []).map((file, index) => ({
+      //     ...file,
+      //     description: file.description || documentDesc[index] || "",
+      //     title: file.title || documentTitle[index] || "",
+      // })),
+  ];
    
     let temp = {
       notes: userNotes,
@@ -196,7 +219,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
     };
     const title = `${workModeType}${" "}Notes/Comments`
 
-    await PUT(`application-management-service/application/${id}/addNote?title=${title}`, temp)
+    await PUT(`application-management-service/application/${id}/note/${showEditNotesID}?title=${title}`, temp)
       .then(response => {
         console.log('successfull notes added');
         onClose();
@@ -258,7 +281,7 @@ const handleTextChange = async (editor) => {
         <div className={Classes.DIALOG_BODY}>
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
-              Create A Note
+              Edit A Note
             </div>
             <div className={style.displayInRow}>
               <img
@@ -439,11 +462,11 @@ const handleTextChange = async (editor) => {
                       <div className={`${style.threeColumnGrid}`}>
                       <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
                         <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                        <div className={style.marginLeft20}>{file?.file?.fileName || showEditNotesFile?.[index]?.fileName}</div>
                       </div>
                       <div>
                       <CommonInputField
-                        value={documentTitle[index] || ""}
+                         value={documentTitle[index] || showEditNotesFile?.[index]?.title || ""}
                         onChange={(e) => {
                           const newDocumentTitle = [...documentTitle];
                           newDocumentTitle[index] = e.target.value;
@@ -456,7 +479,7 @@ const handleTextChange = async (editor) => {
                       </div>
                       <div>
                       <CommonInputField
-                        value={documentDesc[index] || ""}
+                        value={documentDesc[index] || showEditNotesFile?.[index]?.description || ""}
                         onChange={(e) => {
                           const newDocumentDesc = [...documentDesc];
                           newDocumentDesc[index] = e.target.value;
@@ -485,7 +508,7 @@ const handleTextChange = async (editor) => {
               opacity: isApproveEnabled ? 1 : 0.5 
             }}
           >
-            <div className={style.reviewButton}>SUBMIT</div>
+            <div className={style.reviewButton}>SUBMITttt</div>
           </div>
             </div>
       </div>
@@ -495,4 +518,4 @@ const handleTextChange = async (editor) => {
   );
 };
 
-export default NotesDialog;
+export default EditNotesDialog;

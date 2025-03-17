@@ -7,6 +7,7 @@ import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded';
 import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
@@ -59,11 +60,13 @@ import Dropzone from "react-dropzone";
 import TableTwo from "../../Components/TableDesignTwo";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import EditNotesDialog from "../../Components/NotesEditDialog";
 import FileVerifyDialog from "../../Components/fileVerifyDialog";
 import CommonRadio from "../../Components/CommonFields/CommonRadio";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
@@ -97,6 +100,7 @@ const NewActiveApplication = ({
   reappointmentChangesCommentsBox,
   notesCommentsBox,
   getNotesDialog,
+  getEditNotesDialog,
   showNotesDialog,
   staffView,
   getPaymentDisplayBox,
@@ -142,6 +146,11 @@ const NewActiveApplication = ({
   const [helpTextData, setHelpTextData] = useState();
   const [form1, setForm1] = useState();
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+  const [showEditNotesDialog, setShowEditNotesDialog] = useState(false);
+  const [showEditNotesID, setShowEditNotesID] = useState('');
+  const [showEditNotes, setShowEditNotes] = useState('');
+  const [showEditNotesFile, setShowEditNotesFile] = useState('');
+  const [showEditNotesPrivate, setShowEditNotesPrivate] = useState(false);
   const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
   const [selectedFile, setselectedFile] = useState(false);
   const [medicalDirectives, setMedicalDirectives] = useState([])
@@ -670,10 +679,10 @@ const NewActiveApplication = ({
   console.log("Is Approver:", isApproverDept);
 
   useEffect(() => {
-    if (!showNotesDialog) {
+    if (!showNotesDialog || !showEditNotesDialog) {
       getPreApplication();
     }
-  }, [showNotesDialog]);
+  }, [showNotesDialog,showEditNotesDialog]);
 
 
   useEffect(() => {
@@ -1091,6 +1100,15 @@ const NewActiveApplication = ({
     getNotesDialog(true);
   };
 
+  const onClickNotesEditFunction = (logID, notesEdit, privateKey,File) => {
+    // getEditNotesDialog(true);
+    setShowEditNotesDialog(true)
+    setShowEditNotesID(logID)
+    setShowEditNotes(notesEdit)
+    setShowEditNotesPrivate(privateKey)
+    setShowEditNotesFile(File)
+  };
+
   const onClickPaymentFunction = () => {
     getPaymentDisplayBox(true);
   };
@@ -1127,6 +1145,19 @@ const NewActiveApplication = ({
   const onClickRejectFunction = () => {
     handleApplicationReject(true);
   };
+
+  const handleDeleteNote = async (noteID) => {
+
+    await DELETE(`application-management-service/application/${applicationId}/note/${noteID}`)
+        .then((response) => {
+          getPreApplication()
+          SuccessToaster("Notes Deleted Successfully");
+        })
+        .catch((error) => {
+            ErrorToaster("Unexpected Error Deleting File");
+        });
+}
+
 
   const getApplicationDateForCC = async () => {
     let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
@@ -1409,6 +1440,10 @@ const NewActiveApplication = ({
 
   const getIsShowFileDialog = (value) => {
     setShowFileDisplayDialog(value);
+  }
+
+  const getIsShowEditNoteDialog = (value) => {
+    setShowEditNotesDialog(value);
   }
 
   const getIsShowFileVerifyDialog = (value) => {
@@ -1870,11 +1905,11 @@ const NewActiveApplication = ({
 
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   const reappointmentDate = form?.createdDate;
-  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
   const paymentmentDate = form?.payment?.paidDateTime;
-  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MM/dd/yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
   const isMedicalDirectives = form?.forms[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
@@ -4522,9 +4557,9 @@ const NewActiveApplication = ({
           closeClick={onClose}
         />
 
-        <div className={style.welcomeBorder}></div>
+        {/* <div className={style.marginBottom10}></div> */}
 
-        <div className={`${style.marginLeftRight50}`}>
+        <div className={`${style.marginLeftRight50} ${style.marginTop10}`}>
           {/* <div
           className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}
         >
@@ -11392,8 +11427,32 @@ const NewActiveApplication = ({
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
                                         {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
                                       </div>
+                                      <div className={`${style.gridNotes3}`}>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
                                         <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                      </div>
+                                      {log?.user?.id === users?.id && (
+                                      <div>
+                                      <Tooltip title="Edit a note" arrow>
+                                        <EditOutlinedIcon
+                                          sx={{ fontSize: 20 }}
+                                          className={`${style.notesIcon} ${style.cursorPointer}`}
+                                          onClick={() => onClickNotesEditFunction(log?.id,log?.notes?.notes,log?.private,log?.files)}
+                                        />
+                                      </Tooltip>
+                                      </div>
+                                      )}
+                                      {log?.user?.id === users?.id && (
+                                        <div>
+                                       <Tooltip title="Delete a note" arrow>
+                                        <DeleteOutlineIcon
+                                          sx={{ fontSize: 20 }}
+                                          className={`${style.notesIconDelete} ${style.cursorPointer}`}
+                                          onClick={() => handleDeleteNote(log?.id)}
+                                        />
+                                      </Tooltip>
+                                      </div>
+                                      )}
                                       </div>
 
                                       {/* Check if there are files */}
@@ -11948,6 +12007,17 @@ const NewActiveApplication = ({
               <FileDisplayDialog
                 getIsOpen={getIsShowFileDialog}
                 file={selectedFile}
+              />
+            )
+          }
+          {
+            showEditNotesDialog && (
+              <EditNotesDialog
+                getIsOpen={getIsShowEditNoteDialog}
+                showEditNotesID={showEditNotesID}
+                showEditNotes={showEditNotes}
+                showEditNotesPrivate={showEditNotesPrivate}
+                showEditNotesFile={showEditNotesFile}
               />
             )
           }

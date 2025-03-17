@@ -15,6 +15,7 @@ import PaymentDisplayDialog from '../../Components/PaymentDisplayDialog';
 import EmailDialog from '../../Components/EmailDialog';
 import CCdateDialog from '../../Components/CCDateDialog';
 import NotesDialog from "../../Components/NotesDialog";
+import NotesEditDialog from "../../Components/NotesEditDialog";
 import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
@@ -33,6 +34,7 @@ const StaffApplication = () => {
     const [paymentDisplayBox, setPaymentDisplayBox] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showEditNotesDialog, setShowEditNotesDialog] = useState(false);
     // const [showCCDateDialog, setShowCCDateDialog] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
     const [showTimerDialog, setShowTimerDialog] = useState(false);
@@ -64,6 +66,10 @@ const StaffApplication = () => {
 
     const getNotesDialog = (value) => {
         setShowNotesDialog(value);
+    };
+
+    const getEditNotesDialog = (value) => {
+        setShowEditNotesDialog(value);
     };
 
     // const getCCDateDialog = (value) => {
@@ -115,7 +121,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={ccMeetingDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} showNotesDialog={showNotesDialog} getStaffView={getStaffView} staffView = {staffView} getPaymentDisplayBox={getPaymentDisplayBox}/>
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={ccMeetingDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getEditNotesDialog={getEditNotesDialog} showNotesDialog={showNotesDialog} showEditNotesDialog={showEditNotesDialog} getStaffView={getStaffView} staffView = {staffView} getPaymentDisplayBox={getPaymentDisplayBox}/>
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -143,7 +149,9 @@ const StaffApplication = () => {
                       reappointmentChangesCommentsBox={reappointmentChangesCommentsBox}
                       showTimerDialog={showTimerDialog}
                       showNotesDialog={showNotesDialog}
+                      showEditNotesDialog={showEditNotesDialog}
                       getNotesDialog={getNotesDialog}
+                      getEditNotesDialog={getEditNotesDialog}
                     //   getCCDateDialog={getCCDateDialog}
                       getDeptTrackerDialog={getDeptTrackerDialog}
                       getloading={getloading}
@@ -180,6 +188,9 @@ const StaffApplication = () => {
             {showNotesDialog && (
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
+             {/* {showEditNotesDialog && (
+                <NotesEditDialog isLoading={isLoading} getIsOpen={getEditNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+            )} */}
             {/* {showCCDateDialog && (
                 <CCdateDialog isLoading={isLoading} getIsOpen={getCCDateDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )} */}

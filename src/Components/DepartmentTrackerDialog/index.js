@@ -107,10 +107,10 @@ const headerValues = [
   const colSortValues = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
-      data: "Go to MAC Approval",
+      data: "View",
       requiredValue: "boolean",
-      onClick: onClickViewFunction,
-      // onClick: "",
+      // onClick: onClickViewFunction,
+      onClick: "",
     },
     // {
     //   data: "View Progress Log",
@@ -118,12 +118,12 @@ const headerValues = [
     //   onClick: onClickCreateNoteFunction,
     //   // onClick: "",
     // },
-    {
-      data: "Create Note",
-      requiredValue: "boolean",
-      onClick: onClickCreateNoteFunction,
-      // onClick: "",
-    },
+    // {
+    //   data: "Create Note",
+    //   requiredValue: "boolean",
+    //   onClick: onClickCreateNoteFunction,
+    //   // onClick: "",
+    // },
   ];
 
 
@@ -311,7 +311,7 @@ const headerValues = [
       lastUpdated.push(
         <>
           {data?.updatedBy?.name?.firstName}<br />
-          {format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")}
+          {format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}
         </>
       );
       action.push(true);
