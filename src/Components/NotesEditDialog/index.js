@@ -508,7 +508,7 @@ const handleTextChange = async (editor) => {
               opacity: isApproveEnabled ? 1 : 0.5 
             }}
           >
-            <div className={style.reviewButton}>SUBMITttt</div>
+            <div className={style.reviewButton}>SUBMIT</div>
           </div>
             </div>
       </div>
