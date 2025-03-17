@@ -225,7 +225,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
-            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let registeredBusinessAddressKeys = [ `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,`forms[${formIndex}].data.contactAddress3.business.b`,`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
             let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
             missingKeys = temp;
         }
@@ -472,7 +472,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (!getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== undefined && getValueByPath(basicForm, `forms[${formIndex}].data.contactAddress3.registeredBusinessAddress`) !== null) {
-            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
+            let registeredBusinessAddressKeys = [`forms[${formIndex}].data.contactAddress3.business.b`, `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,`forms[${formIndex}].data.contactAddress3.business.businessName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.city`, `forms[${formIndex}].data.contactAddress3.business.businessAddress.province`, `forms[${formIndex}].data.contactAddress3.business.businessPhone`, `forms[${formIndex}].data.contactAddress3.business.businessWebsite`]
             let temp = missingKeys?.filter(data => !registeredBusinessAddressKeys?.includes(data?.key));
             missingKeys = temp;
         }
@@ -660,6 +660,8 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
 
         // Business Address validations
         const businessAddressKeys = [
+            `forms[${formIndex}].data.contactAddress3.isBusinessAddressSameAsHomeAddressOrMailingAddress`,
+             `forms[${formIndex}].data.contactAddress3.business.b`,
             `forms[${formIndex}].data.contactAddress3.business.businessName`,
             `forms[${formIndex}].data.contactAddress3.business.businessAddress.streetName`,
             `forms[${formIndex}].data.contactAddress3.business.businessAddress.pinCode`,

@@ -16,11 +16,13 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CommonMultiSelectField from "../../../Components/CommonFields/CommonMultiSelectField";
 import TableTwo from "../../../Components/TableDesignTwo";
 import EditIcon from '@mui/icons-material/Edit';
-import { ErrorToaster, SuccessToaster } from "../../../utils/toaster";
+import { ErrorToaster, ErrorToaster2, SuccessToaster, SuccessToaster2 } from "../../../utils/toaster";
 import { baseUrl } from "../../../utils/auth";
 import CommonCheckBox from "../../../Components/CommonFields/CommonCheckBox";
 import CommonSwitch from "../../../Components/CommonFields/CommonSwitch";
 import HistoricValidationDialog from "./historicDataValidationDialog";
+import { fileLoadingURL } from "../../../utils/formatting";
+import DatalistInput from "react-datalist-input";
 
 
 
@@ -125,12 +127,10 @@ const HistoricalData = () => {
   });
 
   const [hospitalPrivileges, setHospitalPrivileges] = useState([]);
-  const [privilegesOther, setPrivilegesOther] = useState({
-    Hospital: "",
-    privilegeCategory: "",
-    radioValue: "",
-  });
-
+  const [hospitalName,setHospitalName] = useState("");
+  const [hospitalPrivilegeCategory,setHospitalPrivilegeCategory]= useState()
+  const [privilegesOtherHospital, setPrivilegesOtherHospital] = useState("");
+  const [hospitalPrivilege, setHospitalPrivilege] = useState("");
   const [physicalHealth, setPhysicalHealth] = useState({
     radioValue: "",
     content: "",
@@ -194,8 +194,7 @@ const HistoricalData = () => {
   const [errors, setErrors] = useState({});
   const [showValidationDialog, setShowValidationDialog] = useState(false);
   const [warningFields, setWarningFields] = useState([]);
-
-
+const [isLoading, setIsLoading] = useState(false);
   const [doe, setDoe] = useState("");
   const [restrictiontext, setRestrictionText] = useState("");
   const tableHeader = ['Name', 'Applicant Type', 'Privilege', ''];
@@ -355,7 +354,7 @@ return Object.keys(newErrors).length === 0;
       type: "application/json",
     });
     formData.append("files", filesBlob);
-
+    setIsLoading(true);
     try {
       const response = await POST(
         'application-management-service/application/historicFileUpload',
@@ -381,6 +380,9 @@ return Object.keys(newErrors).length === 0;
     } catch (error) {
       console.error(`Error uploading file for ${category}:`, error);
     }
+    finally {
+      setIsLoading(false); 
+  }
 
     acceptedFiles.forEach((file) => {
       console.log(`Uploaded file for ${category}:`, file.name);
@@ -550,7 +552,7 @@ return Object.keys(newErrors).length === 0;
       type: "application/json",
     });
     formData.append("files", filesBlob);
-
+    setIsLoading(true);
     try {
       const response = await POST(
         'application-management-service/application/historicFileUpload',
@@ -572,63 +574,54 @@ return Object.keys(newErrors).length === 0;
     } catch (error) {
       console.error("Error uploading file:", error);
     }
+    finally {
+      setIsLoading(false); // Stop loading
+  }
   };
 
 
   const handleRadioPrivilegeChange = (event) => {
     const value = event.target.value;
-    setPrivilegesOther((prev) => ({
-      ...prev,
-      radioValue: value,
-      ...(value === "no" && { Hospital: "", privilegeCategory: "" }), // Reset fields
-    }));
+    setPrivilegesOtherHospital(value);
 
-    if (value === "no") {
-      setHospitalPrivileges([]); // Clear hospitalPrivileges array
+    if (value === "No") {
+      setHospitalPrivileges([]); 
     }
-  };
+};
 
-  useEffect(() => {
-    if (privilegesOther.Hospital && privilegesOther.privilegeCategory) {
-      // Find hospital and privilege category details
-      const selectedHospital = hospitalList.find(
-        (item) => item.id === privilegesOther.Hospital
-      );
-      const selectedPrivilegeCategory = privilegeOtherList.find(
-        (item) => item.id === privilegesOther.privilegeCategory
-      );
-
-      // Add the new pair to hospitalPrivileges
-      setHospitalPrivileges((prev) => [
-        ...prev,
-        {
-          id: privilegesOther.Hospital,
-          hospitalName: selectedHospital?.name || "",
-          privileges: "",
-          privilegeCategory: {
-            id: privilegesOther.privilegeCategory,
-            name: selectedPrivilegeCategory?.category || "",
-            type: selectedPrivilegeCategory?.type || "",
-          },
-        },
-      ]);
-
-      // Reset the fields for the next selection
-      setPrivilegesOther((prev) => ({
-        ...prev,
-        Hospital: "",
-        privilegeCategory: "",
-      }));
-    }
-  }, [privilegesOther.Hospital, privilegesOther.privilegeCategory]);
-
-
-  const handleSelectChange = (field, value) => {
-    setPrivilegesOther({
-      ...privilegesOther,
-      [field]: value,
+  const getItems = (data) => {
+    let temp = [];
+    data?.map((data) => {
+      temp.push({ id: data?.id, value: data?.name });
     });
+    return temp;
   };
+
+
+
+  const handleSave = () => {
+    if (hospitalName && hospitalPrivilegeCategory) {
+        const selectedHospital = hospitalList.find(
+          (item) => item.name === hospitalName
+        );
+        const selectedPrivilegeCategory = privilegeOtherList.find(
+            (item) => item.id === hospitalPrivilegeCategory.id
+        );
+
+        const newPrivilege = {
+          id: selectedHospital?.id || "",
+            hospitalName: selectedHospital?.name || "",
+            privileges: "",
+            privilegeCategory: {
+                id: selectedPrivilegeCategory.id,
+                name: selectedPrivilegeCategory?.category || "",
+                type: selectedPrivilegeCategory?.type || "",
+            },
+        };
+
+        setHospitalPrivileges((prev) => [...prev, newPrivilege]);
+    }
+};
 
 
 
@@ -746,7 +739,7 @@ return Object.keys(newErrors).length === 0;
       type: "application/json",
     });
     formData.append("files", filesBlob);
-
+    setIsLoading(true);
     try {
       const response = await POST(
         'application-management-service/application/historicFileUpload',
@@ -768,6 +761,9 @@ return Object.keys(newErrors).length === 0;
     } catch (error) {
       console.error("Error uploading file:", error);
     }
+    finally {
+      setIsLoading(false); 
+  }
   };
 
 
@@ -782,20 +778,21 @@ return Object.keys(newErrors).length === 0;
       groupDetails:
         value === "Department/Speciality Group"
           ? [
-              {
-                departmentId: program,
-                departmentName:
-                  departmentList.find((data) => data.id === program)?.departmentName.name || "",
-                serviceAreaId: subSpeciality,
-                serviceAreaName:
-                  serviceAreas.find((data) => data.id === subSpeciality)?.name || "",
-                departmentSpecialtyName: `${
-                  departmentList.find((data) => data.id === program)?.departmentName.name || ""
-                } - ${
-                  serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
-                }`,
-              },
-            ]
+            {
+              departmentId: program,
+              departmentName:
+                departmentList.find((data) => data.id === program)?.departmentName.name || "",
+              serviceAreaId: subSpeciality,
+              serviceAreaName: subSpeciality !== "" || null || undefined
+                ? serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+                : "",
+              departmentSpecialtyName: `${
+                departmentList.find((data) => data.id === program)?.departmentName.name || ""
+              }${subSpeciality !== "" || null || undefined ? ` - ${
+                serviceAreas.find((data) => data.id === subSpeciality)?.name || ""
+              }` : ""}`,
+          }
+            ] 
           : [],
     });
   };
@@ -927,7 +924,8 @@ return Object.keys(newErrors).length === 0;
       setBillingNo(selectedApplication.professionalInformation.ohipbillingNumber);
       setCmpaNo(selectedApplication.professionalInformation.cmpaNumber);
       setPrescribeSuboxone(selectedApplication.professionalInformation.prescribeSuboxone);
-      setMrpForPatients(selectedApplication.professionalInformation.mrpForNursery)
+      setMrpForPatients(selectedApplication.professionalInformation.mrpForNursery);
+      setCPSONo(selectedApplication.professionalInformation.cpsoRegistrationNumber);
       setUploadedFiles({
         CMPA: { responseFile: selectedApplication.professionalInformation.cmpaattachment },
         Malpractice: { responseFile: selectedApplication.professionalInformation.otherMalpracticeProtectionAttachement },
@@ -966,7 +964,7 @@ return Object.keys(newErrors).length === 0;
         content: selectedApplication.professionalIssues.pendingActions.remarks,
         responseFile: selectedApplication.professionalIssues.pendingActions.attachment
       });
-      setPrivilegesOther({ radioValue: selectedApplication.professionalIssues.otherHospitalPrivilegesExist });
+      setPrivilegesOtherHospital( selectedApplication.professionalIssues.otherHospitalPrivilegesExist );
       setHospitalPrivileges(selectedApplication.professionalIssues.hospitalPrivileges);
       setTerminatedReason({
         radioValue: selectedApplication.professionalIssues.privilegesReduced.response,
@@ -1077,7 +1075,7 @@ return Object.keys(newErrors).length === 0;
       content: "",
       responseFile: {}
     });
-    setPrivilegesOther({ radioValue: "" });
+    setPrivilegesOtherHospital("");
     setHospitalPrivileges([]);
     setTerminatedReason({
       radioValue: "",
@@ -1110,7 +1108,7 @@ return Object.keys(newErrors).length === 0;
 
     if (!validateFields()) {
       setShowValidationDialog(true); // Show missing fields
-      ErrorToaster("Please fill all required fields.");
+      ErrorToaster2("Please fill all required fields.");
       return;
   }
 
@@ -1213,7 +1211,7 @@ return Object.keys(newErrors).length === 0;
           remarks: voluntary.content,
           attachment: voluntary.responseFile
         },
-        otherHospitalPrivilegesExist: privilegesOther.radioValue,
+        otherHospitalPrivilegesExist: privilegesOtherHospital,
         hospitalPrivileges: hospitalPrivileges,
         bloodyEasyLiteTraining: uploadedFiles.BloodyEasy.responseFile,
 
@@ -1252,7 +1250,8 @@ return Object.keys(newErrors).length === 0;
     if (!isEdit) {
       await POST("application-management-service/application/createStaffFromOldData", JSON.stringify(application))
         .then((response) => {
-          SuccessToaster("Historical Data Added Successfully");
+          SuccessToaster2("Historical Data Added Successfully");
+          tableRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
           resetDialogFields();
           getApplicationOldData();
         })
@@ -1266,7 +1265,8 @@ return Object.keys(newErrors).length === 0;
         JSON.stringify(application)
       )
         .then((response) => {
-          SuccessToaster("Historical Data Updated Successfully");
+          SuccessToaster2("Historical Data Updated Successfully");
+          tableRef.current?.scrollIntoView({ behavior: "instant", block: "start" });
           resetDialogFields();
           getApplicationOldData();
         })
@@ -1277,8 +1277,20 @@ return Object.keys(newErrors).length === 0;
   };
   return (
     <>
+    {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <div className={style.uploadContainer}>
+                        <div className={style.fileImportingMsg}>We are importing your documents.</div>
+                        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                        <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
+                    </div>
+                </div>
+            )}
+    <div ref={tableRef}>
       <Navbar />
-      <div className={style.applicantList} ref={tableRef}>
+      <div className={style.applicantList} >
         <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
           <button
             className={style.buttonStyle}
@@ -1299,6 +1311,7 @@ return Object.keys(newErrors).length === 0;
           onClickFunction={() => { }}
           hidePagination={true}
         />
+      </div>
       </div>
       <div className={style.margin10}>
         <div ref={formRef} className={`${style.formContainer} ${style.margin10}`}>
@@ -1511,8 +1524,14 @@ return Object.keys(newErrors).length === 0;
                 value={applicantType}
                 label="Applicant Type"
                 onChange={(e) => setApplicantType(e.target.value)}
-                valueList={applicantTypeList.map((item) => item.id)}
-                labelList={applicantTypeList.map((item) => item.applicantType)}
+                valueList={applicantTypeList
+    .slice() // Create a shallow copy to avoid mutating the original array
+    .sort((a, b) => a.applicantType.localeCompare(b.applicantType))
+    .map((item) => item.id)}
+                 labelList={applicantTypeList
+    .slice() // Create a shallow copy
+    .sort((a, b) => a.applicantType.localeCompare(b.applicantType))
+    .map((item) => item.applicantType)}
                 firstOptionLabel="Select Applicant Type"
                 firstOptionValue=""
                 required
@@ -1526,8 +1545,14 @@ return Object.keys(newErrors).length === 0;
                 value={privilege}
                 label="Privilege Category"
                 onChange={(e) => setPrivilege(e.target.value)}
-                valueList={privilegeCategoryList.map((item) => item.id)}
-                labelList={privilegeCategoryList.map((item) => item.category)}
+                  valueList={privilegeCategoryList
+    .slice()
+    .sort((a, b) => a.category.localeCompare(b.category))
+    .map((item) => item.id)}
+  labelList={privilegeCategoryList
+    .slice()
+    .sort((a, b) => a.category.localeCompare(b.category))
+    .map((item) => item.category)}
                 firstOptionLabel="Select Privilege"
                 firstOptionValue=""
                 required
@@ -1541,8 +1566,14 @@ return Object.keys(newErrors).length === 0;
                 value={program}
                 label="Program"
                 onChange={(e) => setProgram(e.target.value)}
-                valueList={departmentList.map((item) => item.id)}
-                labelList={departmentList.map((item) => item.departmentName.name)}
+                valueList={departmentList
+                  .slice()
+                  .sort((a, b) => a.departmentName.name.localeCompare(b.departmentName.name))
+                  .map((item) => item.id)}
+                  labelList={departmentList
+                    .slice()
+                    .sort((a, b) => a.departmentName.name.localeCompare(b.departmentName.name))
+                    .map((item) => item.departmentName.name)}
                 firstOptionLabel="Select Program"
                 firstOptionValue=""
                 required
@@ -1557,8 +1588,14 @@ return Object.keys(newErrors).length === 0;
                 value={subSpeciality}
                 label="Sub Speciality"
                 onChange={(e) => setSubSpeciality(e.target.value)}
-                valueList={serviceAreas.map((item) => item.id)}
-                labelList={serviceAreas.map((item) => item.name)}
+                valueList={serviceAreas
+                  .slice()
+                  .sort((a, b) => a.name.localeCompare(b.name))
+                  .map((item) => item.id)}
+                  labelList={serviceAreas
+                    .slice()
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map((item) => item.name)}
                 firstOptionLabel="Select Sub Speciality"
                 firstOptionValue=""
                 disabledList={[]}
@@ -2250,7 +2287,7 @@ return Object.keys(newErrors).length === 0;
                 </p>
                 <CommonRadio
                   onChange={handleRadioPrivilegeChange}
-                  value={privilegesOther.radioValue}
+                  value={privilegesOtherHospital}
                   radioValue={["Yes", "No"]}
                   label={["Yes", "No"]}
                   required={true}
@@ -2258,45 +2295,51 @@ return Object.keys(newErrors).length === 0;
                 />
               </div>
 
-              {privilegesOther.radioValue === "Yes" && (
+              {privilegesOtherHospital === "Yes" && (
+                <>
                 <div className={style.secondRow1}>
                   <div className={style.ckEditorWrapper}>
-                    <CommonSelectField
-                      className={style.fullwidth}
-                      value={privilegesOther.Hospital}
-                      label="Select Hospital"
-                      onChange={(e) => handleSelectChange("Hospital", e.target.value)}
-                      valueList={hospitalList
-                        .filter((hospital) => !hospitalPrivileges.some((priv) => priv.id === hospital.id))
-                        .map((item) => item.id)}
-                      labelList={hospitalList
-                        .filter((hospital) => !hospitalPrivileges.some((priv) => priv.id === hospital.id))
-                        .map((item) => item.name)}
-                      firstOptionLabel="Select Hospital"
-                      firstOptionValue=""
-                      required
-                      disabledList={[]}
-                      menuColor={[]} />
-
+                      <div className={`${style.lableStyle}`}>
+                                            {'Hospital Name*'}
+                                          </div>
+                  <DatalistInput
+  value={hospitalName || ""}
+  onSelect={(item) => setHospitalName( item.value)}
+  items={getItems(hospitalList)}
+  placeholder="Select Hospital"
+  onChange={(e) => {setHospitalName(e.target.value);}}
+  required
+  className={`${style.fullwidth} ${style.marginTop10} ${style.leftAlign}`}
+/>
                   </div>
 
-                  <div className={style.fileUpload}>
-                    <CommonSelectField
-                      className={style.fullwidth}
-                      value={privilegesOther.privilegeCategory}
-                      label="Select Other Privilege Category"
-                      onChange={(e) => handleSelectChange("privilegeCategory", e.target.value)}
-                      valueList={privilegeOtherList.map((item) => item.id)}
-                      labelList={privilegeOtherList.map((item) => item.category)}
-                      firstOptionLabel="Select Other Privilege Category"
-                      firstOptionValue=""
-                      required
-                      disabledList={[]}
-                      menuColor={[]} />
-                  </div>
+                 <div className={style.chipsContainer}>
+                                       {privilegeOtherList.map(data => (
+                                         <div className={`${style.privilegeCategoryChips} ${hospitalPrivilege === data?.category ? style.privilegeCategoryChipsSelected : ''} 
+                                         ${style.cursorPointer}
+                                          `} onClick={() => {
+                                             setHospitalPrivilege(data?.category);
+                                             setHospitalPrivilegeCategory({
+                                               "id": data?.id,
+                                               "name": data?.category,
+                                               "type": data?.type
+                                             })
+                                           }}>{data?.category}</div>
+                                       ))}
+                                     </div>
                 </div>
-              )}
-              {hospitalPrivileges.length > 0 && (
+                <div className={`${style.padding20} ${style.marginRight20}`}>
+        <div className={`${style.floatRight}`}>
+          <button
+            className={style.buttonStyle}
+            onClick={handleSave}
+          >
+           Save & Add More
+          </button>
+        </div>
+      </div>
+
+      {hospitalPrivileges.length > 0 && (
                 <div className={style.hospitalPrivilegesList}>
                   {hospitalPrivileges.map((item, index) => (
                     <div key={index} className={style.valueBox}>
@@ -2317,6 +2360,9 @@ return Object.keys(newErrors).length === 0;
                   ))}
                 </div>
               )}
+                  </>
+              )}
+              
             </div>
 
             <div className={style.inputGroup5}>
@@ -2711,8 +2757,16 @@ return Object.keys(newErrors).length === 0;
     onChange={(e) => handleCoverageTypeChange(coverage, setCoverage, e.target.value)}
     firstOptionLabel="Select Type"
     firstOptionValue=""
-    valueList={["Individual", "Department/Speciality Group"]}
-    labelList={["Individual", "Department/Speciality Group"]}
+    valueList={
+      individualList.length > 0
+        ? ["Individual", "Department/Speciality Group"]
+        : ["Department/Speciality Group"]
+    }
+    labelList={
+      individualList.length > 0
+        ? ["Individual", "Department/Speciality Group"]
+        : ["Department/Speciality Group"]
+    }
     className={style.fullwidth}
     required={true}
     label="Type"
@@ -2760,8 +2814,16 @@ return Object.keys(newErrors).length === 0;
     onChange={(e) => handleWhoCoverageTypeChange(whoCoverage, setWhoCoverage, e.target.value)}
     firstOptionLabel="Select Type"
     firstOptionValue=""
-    valueList={["Individual", "Department/Speciality Group"]}
-    labelList={["Individual", "Department/Speciality Group"]}
+    valueList={
+      individualList.length > 0
+        ? ["Individual", "Department/Speciality Group"]
+        : ["Department/Speciality Group"]
+    }
+    labelList={
+      individualList.length > 0
+        ? ["Individual", "Department/Speciality Group"]
+        : ["Department/Speciality Group"]
+    }
     className={style.fullwidth}
     required={true}
     label="Type"

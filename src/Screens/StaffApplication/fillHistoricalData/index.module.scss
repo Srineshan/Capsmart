@@ -404,6 +404,26 @@
   margin-bottom: 20px;
 }
 
+.lableStyle {
+  text-align: left;
+  font: normal normal 500 15px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+  // text-transform: capitalize;
+  opacity: 1;
+  margin-top: 5px;
+  max-width: 85%;
+  margin-bottom: 15px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.leftAlign {
+  text-align: left !important;
+}
+
 .gridStyle {
   display: grid;
   grid-template-columns: 1fr;
@@ -443,4 +463,89 @@
   color: red;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+
+.uploadContainer {
+  background-color: #FFF;
+  padding: 40px;
+  border-radius: 20px;
+  transition: all 5s ease-in-out;
+}
+
+.fileImportingMsg {
+  text-align: center;
+  font: normal normal bold 20px/28px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 60%;
+  object-fit: contain;
+
+  @media (max-width: 1130px) {
+      width: 20%;
+  }
+}
+
+.chipsContainer {
+  width: 100%;
+  padding: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  grid-gap: 10px;
+}
+
+.privilegeCategoryChips {
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  font: normal normal normal $labelvaluetext proxima-nova;
+  border: 1px solid $primarycolor;
+  border-radius: 23px;
+  padding: 5px 10px;
+  color: $primarycolor;
+}
+
+.privilegeCategoryChips:hover {
+  background: #DBE8EA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000029;
+  border: 0.5px solid #06617A;
+  border-radius: 23px;
+  padding: 5px 10px;
+  opacity: 1;
+}
+
+.privilegeCategoryChipsSelected {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  border: 1px solid $primarycolor;
+  color: $secondarycolor;
+}
+
+.cursorPointer {
+  cursor: pointer !important;
 }
