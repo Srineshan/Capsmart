@@ -127,9 +127,12 @@
 
 .verticalAlignCenter {
     display: flex;
-    justify-content: center;
     align-items: center;
     height: 100%;
+}
+
+.documentStatusWidth {
+    min-width: 300px;
 }
 
 // .objectFitContain {
@@ -305,10 +308,10 @@
 .detailsColumn {
     display: grid;
     grid-template-rows: 70% auto; // Allows the first row (text fields) to expand dynamically
-    gap: 10px;  
-    height: 100%;  
+    gap: 10px;
+    height: 100%;
 
-    &.expanded {  
+    &.expanded {
         grid-template-rows: auto auto;
     }
 }
@@ -319,7 +322,7 @@
     gap: 5px;
     margin-top: 10px;
     width: 60%;
-    margin-left: auto;  
+    margin-left: auto;
 }
 
 @media (max-width: 768px) {
@@ -329,6 +332,16 @@
     }
 }
 
+.lableStyle {
+    text-align: left;
+    font: normal normal normal 15px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+    // text-transform: capitalize;
+    opacity: 1;
+    margin-top: 5px;
+}
+
 .extractedFields {
     padding: 15px;
     border-radius: 5px;
@@ -336,7 +349,7 @@
 
 .filePreview {
     width: 100%;
-    min-height:400px;
+    min-height: 400px;
     border: none;
     object-fit: contain;
     margin-bottom: 0;
@@ -353,4 +366,13 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
+}
+
+.reduceMargin {
+    margin-top: -10px;
+}
+
+.disabled {
+    opacity: 0.5;
+    cursor: not-allowed !important;
 }

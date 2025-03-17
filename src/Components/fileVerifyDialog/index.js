@@ -10,6 +10,10 @@ import style from './index.module.scss';
 import LoadingScreen from "../LoadingScreen";
 import Tooltip from "@mui/material/Tooltip";
 import CommonTextField from '../CommonFields/CommonTextField';
+import CommonSelectField from '../CommonFields/CommonSelectField';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import CommonDropZone from '../CommonFields/CommonDropZone';
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm, handleStepsVerify, setHasVerificationAttempted }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -21,7 +25,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [isLoading, setIsLoading] = useState(false);
     const [fields, setFields] = useState([]);
     const [metaData, setMetaData] = useState({});
-
+    const [documentStatus, setDocumentStatus] = useState('')
+    const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     useEffect(() => {
         if (file?.fileURL) {
             setIsLoading(true);
@@ -119,6 +124,32 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setForm(basicForm);
     };
 
+    const changeHandler = async (event) => {
+        setIsLoading(true);
+        console.log(event, 'Test');
+
+        const formData = new FormData();
+        let fileNameArray = [];
+        event?.forEach(file => {
+            fileNameArray.push({ "fileName": file?.name });
+            formData.append('documents', file); // Append each file individually
+        });
+
+        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+            type: "application/json"
+        }));
+        console.log(fileNameArray)
+        try {
+            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            setIsLoading(false);
+            return response?.data;
+        } catch (error) {
+            console.error(error);
+            setIsLoading(false);
+            return null;
+        }
+    };
+
     const handleDocVerify = async () => {
         let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
 
@@ -196,8 +227,79 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         <div className={`${style.textStyle}`}>Your required to verify the {fileArray.length} associated Documents that are part of this application </div>
                         <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
                             <div className={`${style.heading}`}>{file?.documentType}</div>
-                            <div className={`${style.heading}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
+                            <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
+                                <div className={style.reduceMargin}>
+                                    <CommonSelectField
+                                        value={documentStatus}
+                                        onChange={(e) => setDocumentStatus(e.target.value)}
+                                        className={style.documentStatusWidth}
+                                        firstOptionLabel={"Select Document Status"}
+                                        firstOptionValue={""}
+                                        valueList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']}
+                                        labelList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']}
+                                        disabledList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']?.map(data => false)}
+                                    />
+                                </div>
+                                <div className={`${style.heading} ${style.marginLeft}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
+                            </div>
                         </div>
+                        {documentStatus === "Reject and replace Document Provided" && (
+                            <div className={style.marginTop10}>
+                                <div className={style.lableStyle}>Reason for Replacing Document that could not be identified (Mandatory)</div>
+                                <CKEditor
+                                    editor={ClassicEditor}
+                                    data={reasonForReplacingDocument}
+                                    onChange={(event, editor) => {
+                                        const data = editor.getData();
+                                        setReasonForReplacingDocument(data);
+                                    }}
+                                    onReady={(editor) => {
+                                        editor.editing.view.change(
+                                            (writer) => {
+                                                writer.setStyle(
+                                                    "height",
+                                                    "80px",
+                                                    editor.editing.view.document.getRoot()
+                                                );
+                                            }
+                                        );
+                                    }}
+                                    config={{
+                                        placeholder:
+                                            "Insert any privilege competency and qualification information...",
+                                        toolbar: {
+                                            shouldNotGroupWhenFull: true,
+                                            sticky: true,
+                                            items: [
+                                                'undo', 'redo',
+                                                '|',
+                                                'heading',
+                                                '|',
+                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                '|',
+                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                '|',
+                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                            ],
+                                        },
+                                        autoGrow: false,
+                                    }}
+                                />
+                                <div className={`${style.marginTop10} `}>
+                                    <Tooltip arrow title="Add the reason to enable document replace" followCursor
+                                        {...(reasonForReplacingDocument !== "" && { open: false })}>
+                                        <CommonDropZone
+                                            title={"Replace This Document"}
+                                            description={
+                                                "Upload your files or drag & drop from your document cabinet"
+                                            }
+                                            changeHandler={changeHandler}
+                                            files={[]}
+                                        />
+                                    </Tooltip>
+                                </div>
+                            </div>
+                        )}
                         {/* {!isLoading && (
                     <div className={style.marginTop}>
                         {file?.fileType === 'application/pdf' ? (
