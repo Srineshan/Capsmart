@@ -189,10 +189,10 @@ const StaffApplication = () => {
                 <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask} />
             )}
             {notesCommentsBox && (
-                <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} selectedTab={selectedTab} />
+                <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {reappointmentChangesCommentsBox && (
-                <ReappointmentApplicationChangesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab} />
+                <ReappointmentApplicationChangesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getReappointmentChangesCommentBox} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
             {approvalnotesCommentsBox && (
                 <ApprovalWithNotesDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
@@ -234,7 +234,7 @@ const StaffApplication = () => {
             }
             {
                 showDeptTrackerDialog && (
-                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} />
+                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
                 )
             }
             {

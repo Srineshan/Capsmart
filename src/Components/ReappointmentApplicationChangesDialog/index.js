@@ -183,10 +183,10 @@ import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
-import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import {formatFirstNameLastName} from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 
-const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
+const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab}) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -284,7 +284,7 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  getIsOpen(false);
+                  getIsOpen(false);getActiveApplicationView(false);
                 }}
               />
             </div>
@@ -305,12 +305,12 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {/* {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "} */}
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
+                  : ""}{", "}
+                   {/* {`${formatFirstNameLastName(formDetails?.basicDetail?.applicant?.name?.firstName, formDetails?.basicDetail?.applicant?.name?.lastName)}`} */}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                 </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>

@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .bigCardStyle {
-    height: calc(100vh - 270px);
+    height: calc(100vh - 330px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -39,7 +39,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 400px);
+    height: calc(100vh - 460px);
     overflow: scroll;
 }
 
@@ -138,8 +138,8 @@
 
 .numberOfContractorsGrid {
     display: grid;
-    grid-template-columns: 21% 21% 21% 21%;
-    grid-gap: 5%;
+    grid-template-columns: 32% 33% 32%;
+    grid-gap: 1%;
 }
 
 .contractTimeCommitmentGrid {
@@ -185,8 +185,13 @@
 
 .permanentStaffGrid {
     display: grid;
-    grid-template-columns: 5% 25% 25% 21% 20%;
-    grid-gap: 10px;
+    grid-template-columns: 5% 20% 20% 15% 20% 8% 5%;
+    grid-gap: 1%;
+}
+
+.resentIcon {
+    height: 20px;
+    width: 20px;
 }
 
 .spaceBetween {
@@ -238,4 +243,17 @@
     padding: 20px 100px;
     height: calc(100vh - 80px);
     overflow: scroll;
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.searchFieldWidth {
+    width: 300px;
+    float: right;
+}
+
+.marginLeftRight20 {
+    margin: 0 20px !important;
 }

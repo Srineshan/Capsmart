@@ -1,15 +1,33 @@
 @import "../../index.scss";
 
 .eSignDialog {
-  height: 75%;
+  height: 50%;
   overflow: hidden;
-  width: 70% !important;
+  width: 50% !important;
 }
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
   padding: 20px 40px 0px 40px;
-  border-radius: 20px !important;
+  // border-radius: 20px !important;
+}
+
+// .padding {
+//   padding: 20px 40px 0px 40px;
+// }
+
+.marginDialog {
+  margin-top: -10px !important;
+  // margin-bottom: -30px !important;
+}
+
+.backGroundStyle {
+  background: #044354 0% 0% no-repeat padding-box !important;
+  padding: 20px 40px 20px 40px;
+  opacity: 1;
+  width: 100%;
+  overflow-y: hidden;
+  // height: 100vh;
 }
 
 .spaceBetween {
@@ -17,24 +35,11 @@
   justify-content: space-between;
 }
 
-.flexCenter{
-  display: flex;
-  align-items: center;
-}
-
-.notesVisibleText{
-  text-align: left;
-  font: italic normal medium 16px/24px Proxima Nova;
-  letter-spacing: 0px;
-  color: #737575;
-  opacity: 1;
-}
-
 .heading {
-  text-align: left;
-  font: normal normal bold 24px proxima-nova;
+  text-align: center;
+  font: normal normal normal 32px/40px proxima-nova;
   letter-spacing: 0px;
-  color: #06617A;
+  color: #EDEDF3;
   text-transform: capitalize;
   opacity: 1;
 }
@@ -42,11 +47,18 @@
 .displayInRow {
   display: flex;
   flex-direction: row;
+  justify-content: space-around;
+}
+
+.displayInCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .crossStyle {
-  height: 24px;
-  width: 24px;
+  height: 100px;
+  width: 100px;
 }
 
 .cursorPointer {
@@ -186,7 +198,7 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 40% 45%;
+  grid-template-columns: 40% 40%;
   grid-gap: 20px;
   justify-items: start;
 }
@@ -235,7 +247,7 @@
 }
 
 .uploadBorderStyle {
-  background: $secondarycolor 0% 0% no-repeat padding-box;
+  background: #F5F5F8 0% 0% no-repeat padding-box;
   border: 0.800000011920929px dashed #173790;
   border-radius: 4px;
   opacity: 1;
@@ -299,4 +311,45 @@
   border: $primarycolor;
   outline: none;
   width: 100%;
+}
+
+.poweredBy {
+  text-align: center;
+  font: normal normal normal 12px/19px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  opacity: 0.74;
+}
+
+.alignText {
+  text-align: center;
+  font: normal normal normal 20px proxima-nova;
+}
+
+.justifyItem {
+  justify-items: center;
+}
+
+.roleTitle {
+  text-align: center;
+  font: normal normal normal 20px/40px proxima-nova;
+  letter-spacing: 0px;
+  color: #9AAFB5;
+  opacity: 1;
+}
+
+.roleTitleHover {
+  text-align: center;
+  font: normal normal normal 20px/40px proxima-nova;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  opacity: 1;
+}
+
+.backgroundRoleColor {
+//   background: #1E5666 0% 0% no-repeat padding-box;
+//   box-shadow: 0px 8px 16px #171A1A52;
+//   border-radius: 20px;
+  opacity: 1;
+  padding-top: 40px;
 }

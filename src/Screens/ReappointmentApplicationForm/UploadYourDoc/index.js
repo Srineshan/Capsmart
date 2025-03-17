@@ -20,7 +20,7 @@ import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
 import DeleteIcon from './../../../images/deleteHcRow.png';
-import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import { ErrorToaster, ErrorToaster2, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import style from './index.module.scss';
@@ -578,7 +578,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const handleContinue = async (skip) => {
         if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0 && tempValue?.table !== undefined) {
-            ErrorToaster('Please select the missing document type for the uploaded documents')
+            ErrorToaster2('Please select the missing document type for the uploaded documents')
         }
         else {
             setIsLoading(true);

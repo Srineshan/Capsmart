@@ -140,6 +140,20 @@ useEffect(() => {
   }
 }, [userSelectRole,userSelectRoleDept, selectedRoleCred,selectedRoleDept]);
 
+useEffect(() => {
+  if (userSelectRoleDept?.length === 1) {
+    const singleUser = userSelectRoleDept[0];
+    setSelectedRoleDept(singleUser?.id);
+  }
+}, [userSelectRoleDept]);
+
+useEffect(() => {
+  if (userSelectRole?.length === 1) {
+    const singleUser = userSelectRole[0];
+    setSelectedRoleCred(singleUser?.id);
+  }
+}, [userSelectRole]);
+
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
@@ -384,6 +398,7 @@ useEffect(() => {
       const applicantEmailId = formDetails?.basicDetails?.applicant?.email?.officialEmail;
   
       const { data: basicFormRole } = await GET(`user/role?role=Department Head`);
+      const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
   
       const { data: basicRole } = await GET(`user?email=${applicantEmailId}`);
       const user = basicRole?.[0];
@@ -395,9 +410,12 @@ useEffect(() => {
       let userRolesData = [];
   
       if (isDepartmentHead) {
-        const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
+        // const { data: basicFormRoleCos } = await GET(`user/role?role=Chief Of Staff`);
         userRolesData = basicFormRoleCos.filter(
-          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
+          user => !(
+            user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
+            user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
+          )
         );
         setIsUser(true)
       } else {
@@ -408,15 +426,27 @@ useEffect(() => {
           return departmentList.some(department => {
             const isDepartmentMatch = department?.id === applicantDepartmentId;
             if (!isDepartmentMatch) return false;
-            return department?.serviceAreaSpecific
-              ? department?.serviceAreas?.some(area => area?.id === applicantSpecialtyId)
-              : true;
+            if (department?.serviceAreaSpecific) {
+            return department?.serviceAreas?.some(
+              (area) => area?.id === applicantSpecialtyId
+            );
+          }
+          return true;
           });
         });
 
-        userRolesData = userRolesData.filter(
-          user => !(user?.name?.firstName === applicantFirstName && user?.name?.lastName === applicantLastName)
-        );
+        userRolesData = [...userRolesData, ...basicFormRoleCos];
+
+        userRolesData = userRolesData?.filter((user, index, self) => 
+        index === self.findIndex((u) => u?.id === user?.id)
+      );
+
+      userRolesData = userRolesData.filter(
+        user => !(
+          user?.name?.firstName?.toLowerCase() === applicantFirstName?.toLowerCase() &&
+          user?.name?.lastName?.toLowerCase() === applicantLastName?.toLowerCase()
+        )
+      );
         setIsUser(false)
       }
   
@@ -764,6 +794,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
     >
       <div>
         <div className={Classes.DIALOG_BODY}>
+          <span className={`${style.Subheading}`}>{isUser ? "Applicant is designated as Department Head" : ""}</span>
           <div className={style.spaceBetween}>
           <div className={`${style.heading}`}>
             {isUser ? "SEND TO CHIEF / DEP COS FOR REVIEW" : "SEND TO DEPARTMENT HEAD FOR REVIEW"}
@@ -786,12 +817,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                 <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
                   <span className={style.rejectionHeadingTextStyle}>
-                  {/* {formDetails?.basicDetails?.applicant?.name?.lastName?.toUpperCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
                   {formDetails?.basicDetails?.applicant?.name?.firstName
                   ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                     formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "} */}
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
+                  : ""}{", "}
+                  {/* {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "} */}
                   {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
                 </span>
                 <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
@@ -860,7 +891,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             Provide notes, if any, for the Department Head regarding this application(Optional)
             </div> */}
             <div  className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            {isUser ? " Provide notes, if any, for the Chief / Dep COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
+            {isUser ? " Provide notes, if any, for the Chief / Deputy COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
           </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -1057,8 +1088,6 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     className={style.fullWidth}
                     firstOptionLabel={''}
                     firstOptionValue={''}
-                    // valueList={["HIGH", "NO"]}
-                    // labelList={['High Priority', 'No Priority']}
                     valueList={userSelectRole?.map(data => data?.id)}
                     // labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                     labelList={userSelectRole?.map(data => {
@@ -1086,12 +1115,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
       
               </div>
              
-            <div className={`${style.marginTop}  ${style.reviewButtonContainer} ${style.cursorPointer}`}>
-            <div  onClick={() => getIsOpen(false)}>
+            <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
+            <div  className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>
             <div
-            className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer} ${style.marginLeft}`}
+            className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
             onClick={onClickApproveMoveFunction}
             style={{ 
               pointerEvents: isApproveEnabled ? 'auto' : 'none', 

@@ -842,11 +842,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   console.log("Updated Lastnameuserssssss", userFirstName);
   console.log("Updated Lastnameuserssssss", userLastName);
 
-  const closeAndReset = () => {
-    getIsOpen(false);
-  };
-
-
   const onClicksignFunction = () => {
     setTodayDate();
     handleSignatureClick();
@@ -1344,7 +1339,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     <Dialog
       isOpen={getIsOpen}
-      onClose={() => closeAndReset()}
+      onClose={() => getIsOpen(false)}
       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
@@ -1362,7 +1357,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  closeAndReset();
+                  getIsOpen(false);getActiveApplicationView(false);
                 }}
               />
             </div>
@@ -1389,22 +1384,22 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
             </div> */}
              <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop10}`}>
-                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}{", "}
-                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                  </span>
-                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
-                </div>
-                <div>
-                <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                </div>
-              </div>
-              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
               <div className={style.marginTop10}>
                 <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                  <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
+                    <span className={style.rejectionHeadingTextStyle}>
+                    {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                    {formDetails?.basicDetails?.applicant?.name?.firstName
+                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                      formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                    : ""}{", "}
+                  </span>
+                  <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
+                </div>
+                <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
+                  <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                  <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                </div>
                   <div className={`${style.twoColumnGridInner}`}>
                     <span className={`${style.rejectionTextStyle}`}>Department:</span>
                     <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
@@ -1497,7 +1492,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </div>
                </>
                }
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => closeAndReset()}>
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
                {workModeType === "Department Head" ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
              </div>
           </div>

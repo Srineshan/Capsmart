@@ -18,7 +18,7 @@ import jwt from "jwt-decode";
 import style from "./index.module.scss";
 import CrossPink from "../../images/crossPink.png";
 
-const WorkModeDialog = ({ getIsOpen }) => {
+const WorkModeDialog = ({ getIsOpen,onClose,getActiveApplicationView  }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get("user");
   const users = jwt(userDetails);
@@ -44,7 +44,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
   const handleWorkModeSelection = (role) => {
     setWorkModeType(role);
     sessionStorage.setItem("workModeType", role);
-    window.location.pathname = "/applications"
+    // window.location.pathname = "/applications"
+    getActiveApplicationView(true)
+    sessionStorage.getItem("applicationId");
   };
 
   const handleWorkModeSelectionSys = (role) => {
@@ -55,16 +57,16 @@ const WorkModeDialog = ({ getIsOpen }) => {
 
   return (
     <>
-      {/* <Dialog
+      <Dialog
         isOpen={getIsOpen}
-        onClose={() => getIsOpen(false)}
+        onClose={() => onClose()}
         className={`${style.eSignDialog} ${style.eSignDialogBackground} ${style.marginDialog} ${style.backGroundStyle}`}
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
-      > */}
+      >
         <div className={`${style.backGroundStyle}`}>
           <div className={`${style.displayInCol}`}>
-            <div className={`${style.heading}  ${style.padding}`}>Select The Workspace You Would Like To Work In</div>
+            <div className={`${style.heading}  ${style.padding}`}>Switching Your Workspace</div>
             {/* <img
               src={CrossPink}
               alt="cross"
@@ -137,7 +139,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Credentialing Committee User"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Staff Manager's Credentialing Committee Workspace</p>
+                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee User</p>
                 </div>
               )}
               {userRole?.includes("Chief Of Staff") && (
@@ -171,12 +173,9 @@ const WorkModeDialog = ({ getIsOpen }) => {
                 </div>
               )}
             </div>
-            <div>
-              <p className={`${style.poweredBy}`}>© {new Date().getFullYear()} HapiCare,Inc. - All Rights Reserved</p>
-            </div>
           </div>
         </div>
-      {/* </Dialog> */}
+      </Dialog>
     </>
   );
 };

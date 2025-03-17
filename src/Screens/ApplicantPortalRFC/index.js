@@ -31,7 +31,7 @@ import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CommonTextField from '../../Components/CommonFields/CommonTextField';
 import CommonPhoneField from '../../Components/CommonFields/CommonPhoneField';
 import CommonDateField from '../../Components/CommonFields/CommonDateField';
-import { fileLoadingURL } from '../../utils/formatting';
+import { dataLoadingGIF, fileLoadingURL } from '../../utils/formatting';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 
@@ -40,7 +40,7 @@ const ApplicantPortalRFC = () => {
     //   const [applicationId, setApplicationId] = useState(
     //       sessionStorage.getItem("applicationId")
     //     );
-    const { taskId } = useParams()
+    const { clarificationId } = useParams()
     const applicationId = '67b8140e3d08146b499af66c'
     const [form, setForm] = useState();
     const [userNotes, setUserNotes] = useState('');
@@ -69,6 +69,7 @@ const ApplicantPortalRFC = () => {
     const [uploadFileData, setUploadFileData] = useState([]);
     const [documentDesc, setDocumentDesc] = useState("");
     const [documentTitle, setDocumentTitle] = useState("");
+    const [taskId, setTaskId] = useState("");
     const [taskById, setTaskById] = useState({});
 
     useEffect(() => {
@@ -77,9 +78,13 @@ const ApplicantPortalRFC = () => {
         }
     }, [taskById?.details?.application?.application?.id]);
 
+    // useEffect(() => {
+    //     getTaskInfo()
+    // }, [taskId])
+
     useEffect(() => {
-        getTaskInfo()
-    }, [taskId])
+        getTaskInfoByParams()
+    }, [clarificationId])
 
     useEffect(() => {
         setFormIndex(form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc"))
@@ -94,25 +99,42 @@ const ApplicantPortalRFC = () => {
         }
     }
 
-    const getPreApplication = async () => {
-        const { data: basicForm } = await GET(
-            `application-management-service/application/${taskById?.details?.application?.application?.id}`
-        );
-        setForm(basicForm);
-        setClarificationSubject(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationTitle)
-        setClarificationDescription(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
-        setUploadFileData(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
-        setUserNotes(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.clarificationDescription)
-        setDocumentTitle(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.title))
-        setDocumentDesc(basicForm?.forms?.filter(data => data?.id === taskById?.details?.application?.formDetails?.formId)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === taskById?.details?.application?.clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.description))
-    }
-
-    const getTaskInfo = async () => {
-        if (taskId !== undefined) {
-            const { data: task } = await GET(`task-management-service/task/${taskId}`)
+    const getTaskInfoByParams = async () => {
+        const query = new URLSearchParams(window.location.search);
+        const applicationIdFromParam = query.get("app");
+        const formIdFromParam = query.get("form");
+        if (clarificationId !== undefined) {
+            const { data: task } = await GET(`task-management-service/task/byParams?taskCategory=REQUEST_FOR_CLARIFICATION&applicationId=${applicationIdFromParam}&formId=${formIdFromParam}&clarificationId=${clarificationId}`)
             setTaskById(task);
         }
     }
+
+    const getPreApplication = async () => {
+        setIsLoading(true)
+        const query = new URLSearchParams(window.location.search);
+        const applicationIdFromParam = query.get("app");
+        const formIdFromParam = query.get("form");
+        const { data: basicForm } = await GET(
+            `application-management-service/application/${applicationIdFromParam}`
+        );
+        setForm(basicForm);
+        setClarificationSubject(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationTitle)
+        setClarificationDescription(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
+        if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse !== null) {
+            setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
+            setUserNotes(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationDescription)
+            setDocumentTitle(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.title))
+            setDocumentDesc(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.description))
+        }
+        setIsLoading(false)
+    }
+
+    // const getTaskInfo = async () => {
+    //     if (taskId !== undefined) {
+    //         const { data: task } = await GET(`task-management-service/task/${taskId}`)
+    //         setTaskById(task);
+    //     }
+    // }
 
     const getIsDocRequired = (shortName) => {
         let documentData = form?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
@@ -292,88 +314,90 @@ const ApplicantPortalRFC = () => {
         navigate("/applicantDashboard");
     };
 
-    const getApplicantValues = (array) => {
-        let temp = [];
-        console.log(array, 'array')
-        Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-            if (data === "file") {
-                temp.push({
-                    "type": "icon", "icon": array?.map(innerData => {
-                        const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
-                            (<Tooltip title="Click to Open" arrow>
-                                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-                            ) : innerData?.fileType?.startsWith("image/") ?
-                                (<Tooltip title="Click to Open" arrow>
-                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
-                    }), 'isShowHoverText': false
-                });
-            } else {
-                if (data === "documentType") {
-                    temp.push({
-                        "type": "field", "field": array?.map((innerData, innerIndex) => <CommonSelectField
-                            value={innerData[data]}
-                            onChange={(e) => handleChange(e.target.value, innerIndex)}
-                            className={style.fullWidth}
-                            // firstOptionLabel={fieldData.label}
-                            // firstOptionValue={fieldData.label}
-                            valueList={getDropDownValues(innerData[data]) || []}
-                            labelList={getDropDownValues(innerData[data]) || []}
-                            disabledList={getDropDownValues(innerData[data])?.map(data => false)}
-                        />)
-                    });
-                } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
-                } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
-                } else {
-                    temp.push({
-                        "type": "text",
-                        "value": array?.map(innerData => {
-                            const rowId = innerData?.rowId;
-                            return innerData[data] && (
-                                <Tooltip title="Click to Open" arrow>
-                                    <span
-                                        onClick={() => {
-                                            setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
-                                        }}
-                                    >
-                                        {innerData[data]}
-                                    </span>
-                                </Tooltip>
-                            );
-                        })
-                    });
-                }
-            }
-            if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-                temp.push({
-                    "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
-                    ), 'isShowHoverText': false
-                });
-            }
-            if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-                temp.push({
-                    type: "icon", icon: array?.map(innerData => {
-                        const rowId = innerData?.rowId;
-                        return (
-                            <Tooltip title="Click to Edit" arrow>
-                                <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
-                            </Tooltip>
-                        );
-                    }),
-                    isShowHoverText: false
-                });
-            }
-        })
-        console.log(temp, array, form?.documentsRequired?.map(data => data?.document?.shortName))
-        return temp;
-    }
+    // const getApplicantValues = (array) => {
+    //     let temp = [];
+    //     console.log(array, 'array')
+    //     Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
+    //         if (data === "file") {
+    //             temp.push({
+    //                 "type": "icon", "icon": array?.map(innerData => {
+    //                     const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
+    //                         (<Tooltip title="Click to Open" arrow>
+    //                             <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+    //                         ) : innerData?.fileType?.startsWith("image/") ?
+    //                             (<Tooltip title="Click to Open" arrow>
+    //                                 <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
+    //                 }), 'isShowHoverText': false
+    //             });
+    //         } else {
+    //             if (data === "documentType") {
+    //                 temp.push({
+    //                     "type": "field", "field": array?.map((innerData, innerIndex) => <CommonSelectField
+    //                         value={innerData[data]}
+    //                         onChange={(e) => handleChange(e.target.value, innerIndex)}
+    //                         className={style.fullWidth}
+    //                         // firstOptionLabel={fieldData.label}
+    //                         // firstOptionValue={fieldData.label}
+    //                         valueList={getDropDownValues(innerData[data]) || []}
+    //                         labelList={getDropDownValues(innerData[data]) || []}
+    //                         disabledList={getDropDownValues(innerData[data])?.map(data => false)}
+    //                     />)
+    //                 });
+    //             } else if (data === "valid") {
+    //                 temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+    //             } else if (data === "verified") {
+    //                 temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
+    //             } else {
+    //                 temp.push({
+    //                     "type": "text",
+    //                     "value": array?.map(innerData => {
+    //                         const rowId = innerData?.rowId;
+    //                         return innerData[data] && (
+    //                             <Tooltip title="Click to Open" arrow>
+    //                                 <span
+    //                                     onClick={() => {
+    //                                         setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
+    //                                     }}
+    //                                 >
+    //                                     {innerData[data]}
+    //                                 </span>
+    //                             </Tooltip>
+    //                         );
+    //                     })
+    //                 });
+    //             }
+    //         }
+    //         if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+    //             // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+    //             temp.push({
+    //                 "type": "icon", "icon": array?.map(innerData =>
+    //                     <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
+    //                 ), 'isShowHoverText': false
+    //             });
+    //         }
+    //         if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+    //             // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+    //             temp.push({
+    //                 type: "icon", icon: array?.map(innerData => {
+    //                     const rowId = innerData?.rowId;
+    //                     return (
+    //                         <Tooltip title="Click to Edit" arrow>
+    //                             <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+    //                         </Tooltip>
+    //                     );
+    //                 }),
+    //                 isShowHoverText: false
+    //             });
+    //         }
+    //     })
+    //     console.log(temp, array, form?.documentsRequired?.map(data => data?.document?.shortName))
+    //     return temp;
+    // }
 
     const getClarificationResponse = async (saveInProgress) => {
-
+        const query = new URLSearchParams(window.location.search);
+        const applicationIdFromParam = query.get("app");
+        const formIdFromParam = query.get("form");
         const files = (uploadFileData || []).map((item, index) => ({
             ...item.file || item,
             description: documentDesc[index] || "",
@@ -388,6 +412,8 @@ const ApplicantPortalRFC = () => {
             attachedDocuments: files
         };
 
+        console.log(taskById, 'taskById')
+
         if (saveInProgress) {
             if (taskById?.status === "NOT_STARTED") {
                 await PUT(`task-management-service/task/${taskById?.id}/updateStatus?status=ON_GOING`)
@@ -396,7 +422,7 @@ const ApplicantPortalRFC = () => {
             await PUT(`task-management-service/task/${taskById?.id}/updateStatus?status=COMPLETED`)
         }
 
-        await PUT(`application-management-service/application/${taskById?.details?.application?.application?.id}/form/${taskById?.details?.application?.formDetails?.formId}/clarification/${taskById?.details?.application?.clarificationId}/response`, temp)
+        await PUT(`application-management-service/application/${applicationIdFromParam}/form/${formIdFromParam}/clarification/${clarificationId}/response`, temp)
             .then(response => {
                 console.log('successfull notes added');
                 getPreApplication();
@@ -517,6 +543,13 @@ const ApplicantPortalRFC = () => {
                     <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
+            {isLoading && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.dataLoadingStyle} />
+                </div>
+            )}
             <ApplicationHeader
                 title={`${form?.creationType === "NEW" ? "Clarification Required For New Application For" : "Clarification Required For Reappointment Application For"}   ${form?.basicDetails?.applicant?.name?.firstName !== undefined
                     ? form?.basicDetails?.applicant?.name?.firstName
@@ -613,9 +646,9 @@ const ApplicantPortalRFC = () => {
                                     accept="image/*"
                                 />
                             </div>
-                            {uploadFileData.length > 0 && (
+                            {uploadFileData?.length > 0 && (
                                 <div>
-                                    {uploadFileData.map((file, index) => (
+                                    {uploadFileData?.map((file, index) => (
                                         <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
                                             <div className={`${style.threeColumnGrid}`}>
                                                 <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.verticalAlignCenter}`}>

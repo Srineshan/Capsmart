@@ -1,15 +1,32 @@
 @import "../../index.scss";
 
-.eSignDialog {
-  height: 75%;
-  overflow: hidden;
-  width: 70% !important;
+.heading {
+  text-align: left;
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: capitalize;
+  opacity: 1;
 }
 
-.eSignDialogBackground {
-  background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
-  border-radius: 20px !important;
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginLeft {
+  margin-left: 20px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+
+.marginLeft2 {
+  margin-left: 4px;
 }
 
 .spaceBetween {
@@ -17,31 +34,46 @@
   justify-content: space-between;
 }
 
-.flexCenter{
-  display: flex;
-  align-items: center;
-}
-
-.notesVisibleText{
-  text-align: left;
-  font: italic normal medium 16px/24px Proxima Nova;
-  letter-spacing: 0px;
-  color: #737575;
-  opacity: 1;
-}
-
-.heading {
-  text-align: left;
-  font: normal normal bold 24px proxima-nova;
-  letter-spacing: 0px;
-  color: #06617A;
-  text-transform: capitalize;
-  opacity: 1;
-}
-
 .displayInRow {
   display: flex;
   flex-direction: row;
+}
+
+.displayInRowCenter {
+  align-items: center;
+}
+
+.marginBottom10 {
+  margin-bottom: 10px !important;
+}
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 80% !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 40px 20px 40px;
+  // padding: 20px;
+  border-radius: 20px !important;
+}
+
+.templateHeader {
+  display: grid;
+  justify-content: space-between;
+  grid-template-columns: 90% 5%;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.templateHeadertext {
+  text-align: left;
+  font: normal normal bold 22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
 }
 
 .crossStyle {
@@ -53,40 +85,10 @@
   cursor: pointer;
 }
 
-.marginLeft {
-  margin-left: 20px;
-}
-
-.marginTop10 {
-  margin-top: 10px;
-}
-
-.marginTop {
-  margin-top: 20px;
-}
-
-.reviewButtonContainer {
+.actionButtons {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
+  justify-content: end;
 
-.cancelButton {
-  background: #FFFFFF 0% 0% no-repeat padding-box;
-  box-shadow: 0px 3px 6px #00000029;
-  border: 0.5px solid $primarycolor;
-  border-radius: 8px;
-  opacity: 1;
-  padding: 10px 20px;
-}
-
-.cancelButtonTextStyle {
-  text-align: center;
-  font: normal normal bold 18px/30px proxima-nova;
-  letter-spacing: 0px;
-  color: $primarycolor;
-  text-transform: uppercase;
-  opacity: 1;
 }
 
 .reviewButtonStyle {
@@ -94,7 +96,7 @@
   box-shadow: 0px 3px 6px #00000029;
   border-radius: 8px;
   opacity: 1;
-  padding: 10px 20px;
+  padding: 5px 15px;
 }
 
 .reviewButton {
@@ -104,10 +106,6 @@
   color: #FFFFFF;
   text-transform: uppercase;
   opacity: 1;
-}
-
-.marginBottom {
-  margin-bottom: 20px;
 }
 
 .rejectionBorderStyle {
@@ -124,14 +122,6 @@
   border: 1px solid #0F0B3129;
   border-radius: 8px;
   padding: 15px 0px;
-}
-
-.marginLeftRight20 {
-  margin: 0 20px !important;
-}
-
-.displayInRowCenter {
-  align-items: center;
 }
 
 .rejectionHeadingTextStyle {
@@ -152,12 +142,13 @@
   opacity: 1;
 }
 
-.marginLeft2 {
-  margin-left: 2px;
-}
-
-.marginLeft20 {
-  margin-left: 20px;
+.rejectionTextStyle1 {
+  text-align: left;
+  font: normal normal medium 20px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+  opacity: 1;
 }
 
 .rejectionSubHeadingTextStyle {
@@ -168,20 +159,21 @@
   opacity: 1;
 }
 
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.alignCenter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .twoColumnGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 10px;
-}
-
-.threeColumnGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 10px;
-}
-
-.marginBottom10 {
-  margin-bottom: 10px !important;
 }
 
 .twoColumnGridInner {
@@ -191,17 +183,30 @@
   justify-items: start;
 }
 
-.rejectionTextStyle1 {
+.commentsNotesHeadingFontStyle {
   text-align: left;
-  font: normal normal medium 20px/24px proxima-nova;
+  font: normal normal normal 15px / 17px proxima-nova;
   letter-spacing: 0px;
-  color: #171A1A;
+  color: #171a1a;
   text-transform: capitalize;
   opacity: 1;
 }
 
-.marginLeft2 {
-  margin-left: 4px;
+.uploadBorderStyle {
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
+.uploadTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: black;
+  opacity: 1;
+  padding: 5px;
 }
 
 .verticalAlignCenter {
@@ -234,21 +239,14 @@
   object-fit: contain;
 }
 
-.uploadBorderStyle {
-  background: $secondarycolor 0% 0% no-repeat padding-box;
-  border: 0.800000011920929px dashed #173790;
-  border-radius: 4px;
-  opacity: 1;
-  // padding: 5px;
+.alignItem {
+  align-self: center;
 }
 
-.uploadTextStyle {
-  text-align: left;
-  font: normal normal normal 18px/26px proxima-nova;
-  letter-spacing: 0px;
-  color: black;
-  opacity: 1;
-  padding: 5px;
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
 }
 
 .referenceCardStyle {
@@ -260,6 +258,14 @@
   padding: 3px;
 }
 
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
 .referenceCardStyleDescription {
   // background: #dddddf 0% 0% no-repeat padding-box;
   // box-shadow: 0px 3px 18px #0F0B3129;
@@ -269,34 +275,3 @@
   // padding: 3px;
 }
 
-.alignItem {
-  align-self: center;
-}
-
-.marginBottom20 {
-  margin-bottom: 20px;
-}
-
-.docsIcon {
-  text-align: left;
-  font: normal normal normal 20px/24px la-solid-900;
-  letter-spacing: 0px;
-  color: $primarycolor;
-  opacity: 1;
-}
-
-// .searchInput {
-//   flex: 1;
-//   border: none;
-//   font-size: 14px;
-//   outline: $primarycolor;
-//   padding: 0 5px;
-//   background: transparent;
-// }
-
-.searchInput {
-  background: transparent;
-  border: $primarycolor;
-  outline: none;
-  width: 100%;
-}

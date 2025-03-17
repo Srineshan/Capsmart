@@ -613,7 +613,7 @@ body::-webkit-scrollbar {
   box-shadow: 0px 10px 20px #c4c8d066;
   border-radius: 16px;
   opacity: 1;
-  cursor: pointer;
+  // cursor: pointer;
   padding: 15px;
 }
 
@@ -964,7 +964,7 @@ body::-webkit-scrollbar {
 
 .credUserStaffReappointGrid {
   display: grid;
-  grid-template-columns: 5% 20% 10% 22% 10% 9% 5% 8% 3%;
+  grid-template-columns: 5% 20% 10% 22% 9% 9% 6% 8% 3%;
   grid-gap: 1%;
 }
 
@@ -1187,6 +1187,7 @@ body::-webkit-scrollbar {
   box-shadow: 0px 3px 18px #0F0B3129;
   border: 1px solid #0F0B3129;
   border-radius: 8px;
+  padding: 15px 0px;
 }
 
 .extensionOptionsStyle {
@@ -4220,7 +4221,7 @@ input[type="number"] {
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+  padding: 20px 40px 20px 40px;
   border-radius: 20px !important;
 }
 
@@ -4243,6 +4244,16 @@ input[type="number"] {
   font: normal normal bold 20px/28px proxima-nova;
   color: $primarycolor;
   text-transform: capitalize;
+}
+
+.heading1 {
+  text-align: left;
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  text-transform: capitalize;
+  opacity: 1;
+
 }
 
 .marginCenter {
@@ -4998,7 +5009,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  font-family: 'Proxima Nova', Arial, sans-serif;
+  font-family: 'proxima nova', Arial, sans-serif;
 }
 
 .row {
@@ -5213,4 +5224,34 @@ input[type="number"] {
   border-radius: 4px;
   opacity: 0.9;
   // padding: 3px;
+}
+
+.searchFieldAlignment {
+  margin-right: 18px;
+}
+
+.privateBorderText {
+  background: #FFBFBE1A 0% 0% no-repeat padding-box;
+  border: 1px solid #FFBFBE;
+  border-radius: 3px;
+  opacity: 1;
+  text-align: left;
+  font: italic normal 600 10px/12px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFB4B2;
+  text-transform: capitalize;
+  padding: 1px;
+}
+
+.viewCurrentStatusText {
+  text-align: center;
+  font: normal normal bold 12px proxima-nova;
+  padding: 5px;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  text-transform: uppercase;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
 }

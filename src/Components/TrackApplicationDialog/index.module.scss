@@ -2,7 +2,7 @@
 
 .heading {
   text-align: left;
-  font: normal normal 600 22px/20px Proxima Nova;
+  font: normal normal 600 22px/20px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   text-transform: capitalize;
@@ -42,11 +42,11 @@
 
 .threeColumnGrid {
   display: grid;
-  grid-template-columns:5% 88% 3%;
+  grid-template-columns: 5% 88% 3%;
   grid-gap: 10px;
 }
 
-.flex{
+.flex {
   display: flex;
 }
 
@@ -152,7 +152,7 @@
 }
 
 
-.backgroundCardStyle{
+.backgroundCardStyle {
   background-color: rgba(255, 230, 255, 0.2);
   border: 1px solid #9AAFB5;
   border-radius: 4px;
@@ -161,7 +161,7 @@
   padding: 10px;
 }
 
-.backgroundBorderGreen{
+.backgroundBorderGreen {
   background: #14B15A0A 0% 0% no-repeat padding-box;
   border: 1px solid #14B15A;
   border-radius: 4px;
@@ -170,7 +170,7 @@
   padding: 10px;
 }
 
-.backgroundBorderRed{
+.backgroundBorderRed {
   background: #FF65620F 0% 0% no-repeat padding-box;
   border: 1px solid #FF6562;
   border-radius: 4px;
@@ -179,7 +179,7 @@
   padding: 10px;
 }
 
-.backgroundBorderYellow{
+.backgroundBorderYellow {
   background: #FFC1000F 0% 0% no-repeat padding-box;
   border: 1px solid #FFC100;
   border-radius: 4px;
@@ -188,39 +188,39 @@
   padding: 10px;
 }
 
-.HeadingFontStyle{
+.HeadingFontStyle {
   text-align: left;
-  font: normal normal bold 16px/30px Proxima Nova;
+  font: normal normal bold 16px/30px proxima-nova;
   letter-spacing: 0px;
   color: #737575;
   opacity: 1;
 }
 
-.HeadingFontStyleGreen{
+.HeadingFontStyleGreen {
   text-align: left;
-  font: normal normal bold 16px/20px Proxima Nova;
+  font: normal normal bold 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: #14B15A;
   opacity: 1;
 }
 
-.logo{
+.logo {
   width: 20px;
   height: 20px;
 }
 
-.dateOfSubmissionTextStyle{
+.dateOfSubmissionTextStyle {
   text-align: left;
-  font: normal normal 600 10px/18px Proxima Nova;
+  font: normal normal 600 10px/18px proxima-nova;
   letter-spacing: 1px;
   color: #737575;
   text-transform: uppercase;
   opacity: 1;
 }
 
-.NotesTextStyle{
+.NotesTextStyle {
   text-align: left;
-  font: italic normal normal 14px/20px Proxima Nova;
+  font: italic normal normal 14px/20px proxima-nova;
   letter-spacing: 0px;
   color: #171A1A;
   opacity: 1;
@@ -242,20 +242,18 @@
   content: "";
   position: absolute;
   left: 12px;
-  top: 10px; 
+  top: 10px;
   width: 3px;
   height: calc(100% - 5px);
-  background: repeating-linear-gradient(
-    to bottom,
-    #ccc 0px,
-    #ccc 6px,
-    transparent 10px,
-    transparent 14px
-  );
+  background: repeating-linear-gradient(to bottom,
+      #ccc 0px,
+      #ccc 6px,
+      transparent 10px,
+      transparent 14px);
 }
 
 .taskItem:last-child::before {
-  display: none; 
+  display: none;
 }
 
 
@@ -264,47 +262,58 @@
   z-index: 2;
 }
 
-.checkBoxBackGroundGreen{
+.checkBoxBackGroundGreen {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 2px solid #4CAF50; /* Green border */
-  border-radius: 4px; /* Rounded corners */
-  background-color: white; /* Background color */
+  border: 2px solid #4CAF50;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
 }
 
-.checkBoxBackGroundYellow{
+.checkBoxBackGroundYellow {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 2px solid #FFC100; /* Green border */
-  border-radius: 4px; /* Rounded corners */
-  background-color: white; /* Background color */
+  border: 2px solid #FFC100;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
 }
 
-.checkBoxBackGroundRed{
+.checkBoxBackGroundRed {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 2px solid #FF6562; /* Green border */
-  border-radius: 4px; /* Rounded corners */
-  background-color: white; /* Background color */
+  border: 2px solid #FF6562;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
 }
 
-.checkBoxBackGroundGrey{
+.checkBoxBackGroundGrey {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 26px;
   height: 26px;
-  border: 2px solid #9AAFB5; /* Green border */
-  border-radius: 4px; /* Rounded corners */
-  background-color: white; /* Background color */
+  border: 2px solid #9AAFB5;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
 }
-
