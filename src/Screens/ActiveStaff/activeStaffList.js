@@ -408,7 +408,7 @@ const ActiveStaffList = ({
 
       // taskListStatus.push(data?.tasks.completedCount + "/" + data?.tasks.totalCount);
       lastUpdated.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
       );
       lastUpdatedBy.push(["-"]);
       // const lastUpdatedDate = new Date(data?.lastModifiedDate);
