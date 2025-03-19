@@ -119,7 +119,7 @@ const StaffApplicationList = ({
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9999);
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -919,7 +919,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     const allIds = tableData
-      .filter((data) =>
+      ?.filter((data) =>
         data?.completedWorkflows?.some(
           (workflow) =>
             workflow?.role === "Credentialing Committee" &&
@@ -933,11 +933,11 @@ const StaffApplicationList = ({
   }, [tableData]);
 
   const handleCheckboxClick = (id) => {
-    if (!filteredIds.includes(id)) return;
+    if (!filteredIds?.includes(id)) return;
 
     setCheckedIds((prevCheckedIds) => {
-      return prevCheckedIds.includes(id)
-        ? prevCheckedIds.filter((checkedId) => checkedId !== id)
+      return prevCheckedIds?.includes(id)
+        ? prevCheckedIds?.filter((checkedId) => checkedId !== id)
         : [...prevCheckedIds, id];
     });
     console.log("Idscheckedss" + checkedIds)
