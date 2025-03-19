@@ -1,7 +1,7 @@
 @import "../../index.scss";
 
 .bigCardStyle {
-    height: calc(100vh - 330px);
+    height: calc(100vh - 280px);
     overflow: scroll;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 10px 20px #C4C8D066;
@@ -39,7 +39,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 460px);
+    height: calc(100vh - 410px);
     overflow: scroll;
 }
 

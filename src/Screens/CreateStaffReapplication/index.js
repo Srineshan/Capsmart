@@ -40,7 +40,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9999);
   let availableApplicationStatus = {
     "CREATED": "Not Submitted",
     "SUBMITTED": "Submitted",

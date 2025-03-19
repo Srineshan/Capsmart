@@ -52,7 +52,7 @@
   margin-top: 20px;
 }
 
-.marginRight5{
+.marginRight5 {
   margin-right: 5px;
 }
 
@@ -138,7 +138,7 @@
   object-fit: contain;
 }
 
-.departmentContainer{
+.departmentContainer {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #171A1A29;
   border-radius: 4px;
@@ -146,14 +146,15 @@
   padding: 10px;
   width: 30%;
   position: absolute;
-  right:7%;
+  right: 7%;
   z-index: 10;
 }
 
-.fullWidth{
+.fullWidth {
   width: 100%;
 }
-.filterBackground{
+
+.filterBackground {
   background-color: rgba(6, 97, 122, 0.1);
   border-radius: 20px;
   padding: 5px;
@@ -161,10 +162,16 @@
   align-items: center;
 }
 
-.filtertextStyle{
+.filtertextStyle {
   text-align: left;
   font: italic normal medium 14px/22px proxima-nova;
   letter-spacing: 0px;
   color: #06617A;
   opacity: 1;
+}
+
+.searchFieldWidth {
+  width: 300px;
+  margin-right: 15px;
+  margin-top: -10px;
 }
