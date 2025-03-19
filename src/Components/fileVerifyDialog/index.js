@@ -14,8 +14,9 @@ import CommonSelectField from '../CommonFields/CommonSelectField';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonDropZone from '../CommonFields/CommonDropZone';
+import CommonDivider from '../CommonFields/CommonDivider';
 
-const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, setForm, handleStepsVerify, setHasVerificationAttempted }) => {
+const FileVerifyDialog = ({ getIsOpen, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -23,10 +24,17 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const PDFRef = createRef();
     const [applicationId, setApplicationId] = useState(sessionStorage.getItem("applicationId"));
     const [isLoading, setIsLoading] = useState(false);
+    const [replaceRowId, setReplaceRowId] = useState('')
+    const [fileToDisplay, setFileToDisplay] = useState([]);
     const [fields, setFields] = useState([]);
     const [metaData, setMetaData] = useState({});
-    const [documentStatus, setDocumentStatus] = useState('')
+    const [documentStatus, setDocumentStatus] = useState('');
+    const [file, setFile] = useState({});
+    const [fileArray, setFileArray] = useState([]);
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
+    const availableDocumentStatus = {
+        'ACCEPT_DOCUMENT': 'Accept Alternate Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
+    }
     useEffect(() => {
         if (file?.fileURL) {
             setIsLoading(true);
@@ -74,6 +82,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     // };
 
     const handlePrevious = () => {
+        setReasonForReplacingDocument('')
+        setDocumentStatus('')
+        setReplaceRowId('')
         if (selectedFileIndex > 0) {
             setIsLoading(true);
             setSelectedFileIndex(selectedFileIndex - 1);
@@ -82,6 +93,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     };
 
     const handleNext = () => {
+        setReasonForReplacingDocument('')
+        setDocumentStatus('')
+        setReplaceRowId('')
         if (selectedFileIndex < fileArray.length - 1) {
             setIsLoading(true);
             setSelectedFileIndex(selectedFileIndex + 1);
@@ -114,6 +128,18 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             `document-management-service/document/${file?.rowId}`
         );
         console.log(response);
+        setFileToDisplay(response?.file);
+        setFields(response?.fields);
+        setMetaData(response?.metaData)
+    }
+
+    const getDocumentFromReplace = async (id) => {
+        const { data: response } = await GET(
+            `document-management-service/document/${id}`
+        );
+        console.log(response);
+        setReplaceRowId(response?.id)
+        setFileToDisplay(response?.file);
         setFields(response?.fields);
         setMetaData(response?.metaData)
     }
@@ -131,17 +157,22 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         const formData = new FormData();
         let fileNameArray = [];
         event?.forEach(file => {
-            fileNameArray.push({ "fileName": file?.name });
+            // fileNameArray.push({ "fileName": file?.name });
             formData.append('documents', file); // Append each file individually
         });
 
-        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+        formData.append('files', new Blob([JSON.stringify({ "fileName": event?.[0]?.name })], {
+            type: "application/json"
+        }));
+
+        formData.append('notes', new Blob([JSON.stringify({ notes: reasonForReplacingDocument })], {
             type: "application/json"
         }));
         console.log(fileNameArray)
         try {
-            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            const response = await POST(`application-management-service/application/${applicationId}/replaceDocument?isLLMRequired=${true}&documentStatus=${documentStatus}&oldDocumentId=${file?.rowId}&documentType=${file?.documentType}`, formData);
             setIsLoading(false);
+            getDocumentFromReplace(response?.data?.id);
             return response?.data;
         } catch (error) {
             console.error(error);
@@ -157,7 +188,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             formId: selectedFormId,
             contentToVerify: "DATA",
             tableName: selectedRowTableName,
-            rowId: file?.rowId,
+            rowId: documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? replaceRowId : file?.rowId,
         };
 
         await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${verificationStatus}`, temp)
@@ -174,6 +205,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
                 setFileArray(updatedFileArray);
 
+                // if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+                //     getPreApplicationForReplace(true);
+                // }
+
                 const allVerified = updatedFileArray.every(file => file.isVerified);
 
                 if (allVerified) {
@@ -189,6 +224,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
         getPreApplication();
     };
+
+    console.log(fileToDisplay, file)
 
 
 
@@ -224,26 +261,40 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 />
                             </div>
                         </div>
-                        <div className={`${style.textStyle}`}>Your required to verify the {fileArray.length} associated Documents that are part of this application </div>
+                        <div className={`${style.textStyle}`}>Your required to verify the {fileArray?.length} associated Documents that are part of this application </div>
                         <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
                             <div className={`${style.heading}`}>{file?.documentType}</div>
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
-                                <div className={style.reduceMargin}>
-                                    <CommonSelectField
-                                        value={documentStatus}
-                                        onChange={(e) => setDocumentStatus(e.target.value)}
-                                        className={style.documentStatusWidth}
-                                        firstOptionLabel={"Select Document Status"}
-                                        firstOptionValue={""}
-                                        valueList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']}
-                                        labelList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']}
-                                        disabledList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']?.map(data => false)}
-                                    />
-                                </div>
+                                {file?.isVerified ? (
+                                    <div className={`${style.heading} ${style.marginLeft}`}>{availableDocumentStatus[form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.documentStatus]}</div>
+                                ) : (
+                                    <div className={style.reduceMargin}>
+                                        <CommonSelectField
+                                            value={documentStatus}
+                                            onChange={(e) => setDocumentStatus(e.target.value)}
+                                            className={style.documentStatusWidth}
+                                            firstOptionLabel={"Select Document Status"}
+                                            firstOptionValue={""}
+                                            valueList={['ACCEPT_DOCUMENT', 'REJECT_DOCUMENT', 'REJECT_AND_REPLACE_DOCUMENT']}
+                                            labelList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']}
+                                            disabledList={['Accept Alternate Document Provided', 'Reject Alternate Document Provided', 'Reject and replace Document Provided']?.map(data => false)}
+                                        />
+                                    </div>
+                                )}
                                 <div className={`${style.heading} ${style.marginLeft}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
                             </div>
                         </div>
-                        {documentStatus === "Reject and replace Document Provided" && (
+                        {form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== null && (
+                            <div>
+                                <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing Document by MSO</div>
+                                <div className={style.dividerStyle}></div>
+                                <div
+                                    className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
+                                    dangerouslySetInnerHTML={{ __html: form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.notes?.notes }}
+                                />
+                            </div>
+                        )}
+                        {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                             <div className={style.marginTop10}>
                                 <div className={style.lableStyle}>Reason for Replacing Document that could not be identified (Mandatory)</div>
                                 <CKEditor
@@ -285,19 +336,21 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         autoGrow: false,
                                     }}
                                 />
-                                <div className={`${style.marginTop10} `}>
-                                    <Tooltip arrow title="Add the reason to enable document replace" followCursor
-                                        {...(reasonForReplacingDocument !== "" && { open: false })}>
-                                        <CommonDropZone
-                                            title={"Replace This Document"}
-                                            description={
-                                                "Upload your files or drag & drop from your document cabinet"
-                                            }
-                                            changeHandler={changeHandler}
-                                            files={[]}
-                                        />
-                                    </Tooltip>
-                                </div>
+                                {reasonForReplacingDocument !== "" && (
+                                    <div className={`${style.marginTop10} `}>
+                                        <Tooltip arrow title="Add the reason to enable document replace" followCursor
+                                            {...(reasonForReplacingDocument !== "" && { open: false })}>
+                                            <CommonDropZone
+                                                title={"Replace This Document"}
+                                                description={
+                                                    "Upload your files or drag & drop from your document cabinet"
+                                                }
+                                                changeHandler={changeHandler}
+                                                files={[]}
+                                            />
+                                        </Tooltip>
+                                    </div>
+                                )}
                             </div>
                         )}
                         {/* {!isLoading && (
@@ -360,10 +413,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 {!isLoading && (
                                     <div className={style.height}>
                                         {file?.fileType === 'application/pdf' ? (
-                                            <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
-                                        ) : file?.fileType?.startsWith("image/") ? (
-                                            <img src={file?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                                        ) : <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                            <iframe src={`${fileToDisplay?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                        ) : fileToDisplay?.fileType?.startsWith("image/") ? (
+                                            <img src={fileToDisplay?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                        ) : <iframe src={`${fileToDisplay?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
                                     </div>
                                 )}
                             </div>
@@ -407,19 +460,23 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 </div>
                                             </div>
                                         </Tooltip>) : (
-                                        <Tooltip title="Click To Verify">
+                                        <Tooltip title={documentStatus === "" ? "Select document status to verify" : (documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && replaceRowId === "") ? "Document Replacement Pending" : "Click To Verify"}>
                                             <div
                                                 className={`${style.purpleButtonVerify}`}
                                                 onClick={() => {
-                                                    handleDocVerify();
-                                                    if (selectedFileIndex === fileArray?.length - 1) {
-                                                        setTimeout(() => getIsOpen(false), 500);
-                                                    } else {
-                                                        handleNext();
+                                                    if (documentStatus !== "") {
+                                                        if ((documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && replaceRowId !== "") || documentStatus === "ACCEPT_DOCUMENT" || documentStatus === "REJECT_DOCUMENT") {
+                                                            handleDocVerify();
+                                                            if (selectedFileIndex === fileArray?.length - 1) {
+                                                                setTimeout(() => getIsOpen(false), 500);
+                                                            } else {
+                                                                handleNext();
+                                                            }
+                                                        }
                                                     }
                                                 }}
                                             >
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${documentStatus === "" ? style.disabledButton : documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}>
                                                     VERIFY
                                                 </div>
                                             </div>

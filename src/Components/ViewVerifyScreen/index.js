@@ -377,12 +377,16 @@ const NewActiveApplication = ({
 
   // };
 
-  const getPreApplication = async () => {
+  const getPreApplication = async (isReplace) => {
     try {
       setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
       setForm(basicForm);
       setIsLoadingImage(false)
+      // if (isReplace) {
+      console.log('enteredFromReplace', form?.forms?.[form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.table)
+      setFileArray(form?.forms?.[form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.table)
+      // }
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -12191,9 +12195,11 @@ const NewActiveApplication = ({
               selectedRow={selectedRow}
               selectedRowTableName={selectedRowTableName}
               selectedFormId={selectedFormId}
+              form={form}
               setForm={setForm}
               handleStepsVerify={handleStepsVerify}
               setHasVerificationAttempted={setHasVerificationAttempted}
+              getPreApplicationForReplace={getPreApplication}
             />
           )}
           {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
