@@ -16,7 +16,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommonDropZone from '../CommonFields/CommonDropZone';
 import CommonDivider from '../CommonFields/CommonDivider';
 
-const FileVerifyDialog = ({ getIsOpen, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
+const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -29,8 +29,6 @@ const FileVerifyDialog = ({ getIsOpen, selectedFileIndex, setSelectedFileIndex, 
     const [fields, setFields] = useState([]);
     const [metaData, setMetaData] = useState({});
     const [documentStatus, setDocumentStatus] = useState('');
-    const [file, setFile] = useState({});
-    const [fileArray, setFileArray] = useState([]);
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Alternate Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
