@@ -478,7 +478,7 @@ import { GET } from './../../Screens/dataSaver';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 
-const StaffApplicationTopTiles = () => {
+const StaffApplicationTopTiles = (searchTermForTable) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -493,12 +493,19 @@ const StaffApplicationTopTiles = () => {
   const applicationId = "66dc44ec788741fedc982b01";
   const workModeType = sessionStorage.getItem('workModeType')
 
+  useEffect(() => {
+    getTitleCounts('REAPPOINTMENT');
+    // getUserRoleType('REAPPOINTMENT')
+  }, [searchTermForTable]);
+
+console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
+
   const getTitleCounts = async (type) => {
     try {
       setIsLoading(true);
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&role=${role}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${type}&role=${role}&searchText=${searchTermForTable?.searchTermForTable}`
       );
 
       if (response?.data) {
@@ -551,7 +558,7 @@ const StaffApplicationTopTiles = () => {
       await Promise.all([
         getTitleCounts('NEW'),
         getTitleCounts('REAPPOINTMENT'),
-        getUserRoleType('NEW'),
+        // getUserRoleType('NEW'),
         getUserRoleType('REAPPOINTMENT')
       ]);
     };

@@ -113,7 +113,7 @@ const headerValues = [
     "Type",
     // "OHIP Number",
     "Department",
-    "Reappointment",
+    "Reappointment Application",
     "MSO",
     "DH / COS",
     "CC",
@@ -296,32 +296,37 @@ const headerValues = [
       }
       if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
         let lastApproval = data?.completedWorkflows
-          .filter(item => item.approvalType !== null)
-          .pop();
-      
+            .filter(item => item.approvalType !== null)
+            .pop();
+    
         if (lastApproval) {
-          const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
-          status.push(`${lastApproval.role}, ${formattedApprovalType}`)
+            const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
+            status.push(`${lastApproval.role}, ${formattedApprovalType}`);
         } else {
-          if (data?.formFillingStatus === "IN_PROGRESS") {
-            status.push("Reappointment Application In-Progress");
-        } else{
-          status.push("MSO Verification Not Started")
-        }
-        } 
-      } else {
-        if (data?.status === "DECLINED") {
-            status.push("Reappointment Application Declined");
-        } else {
-            if (data?.formFillingStatus === "IN_PROGRESS") {
+            if (data?.status === "DECLINED") {
+                status.push("Reappointment Application Declined");
+            } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+                status.push("Reappointment Application Submitted");
+            } else if (data?.formFillingStatus === "IN_PROGRESS") {
                 status.push("Reappointment Application In-Progress");
-            } else if (data?.formFillingStatus === "PENDING") {
-                status.push("Reappointment Application Not Started");
             } else {
                 status.push("MSO Verification Not Started");
             }
         }
-      }
+    } else {
+        if (data?.status === "DECLINED") {
+            status.push("Reappointment Application Declined");
+        } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+            status.push("Reappointment Application Submitted");
+        } else if (data?.formFillingStatus === "IN_PROGRESS") {
+            status.push("Reappointment Application In-Progress");
+        } else if (data?.formFillingStatus === "PENDING") {
+            status.push("Reappointment Application Not Started");
+        } else {
+            status.push("MSO Verification Not Started");
+        }
+    }
+    
       
       lastUpdated.push(
         <>

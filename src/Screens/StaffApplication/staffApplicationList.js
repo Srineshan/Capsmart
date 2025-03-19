@@ -968,7 +968,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1033,7 +1033,7 @@ const StaffApplicationList = ({
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${showAssignee ? `&assignedUserIds=${users?.id}` : ""}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
@@ -3870,6 +3870,7 @@ const StaffApplicationList = ({
                 selectedTab={selectedTab}
                 applicationCreationType={applicationCreationType}
                 getApplicationCreationType={getApplicationCreationType}
+                searchTermForTable={searchTermForTable}
               />
             </div>
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
@@ -3889,12 +3890,13 @@ const StaffApplicationList = ({
                 getReFetchMetadata={getReFetchMetaData}
                 approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
                 showBulkApproveDialog={showBulkApproveDialog}
+                searchTermForTable={searchTermForTable}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
 
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
-                {workModeType === "Credentialing Committee" && (
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
                   <>
                   {showAssignee && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
@@ -3912,7 +3914,7 @@ const StaffApplicationList = ({
                     </div>
                   )}
                   </>
-                )}
+                ) : ""}
                 {workModeType === "Staff Manager" && (
                   <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
@@ -3955,7 +3957,7 @@ const StaffApplicationList = ({
                   />
                 </div>
                 )}
-                {workModeType === "Credentialing Committee" && (
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
                   <div
                     className={`${style.alignCenter} ${style.cursorPointer
                       } ${style.marginRight20}`}
@@ -3974,7 +3976,7 @@ const StaffApplicationList = ({
                     />
                     </Tooltip>
                   </div>
-                )}
+                )  : ""}
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
