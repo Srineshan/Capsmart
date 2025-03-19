@@ -52,6 +52,10 @@
   margin-top: 20px;
 }
 
+.marginRight5{
+  margin-right: 5px;
+}
+
 .reviewButtonContainer {
   display: flex;
   justify-content: center;
@@ -99,7 +103,8 @@
 
 .permanentStaffGrid {
   display: grid;
-  grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  // grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  grid-template-columns: 3% 9% 8% 9% 11% 4% 4% 3% 4% 4% 16% 10% 4%;
   grid-gap: 10px;
 }
 
@@ -131,4 +136,35 @@
   height: auto;
   width: 20%;
   object-fit: contain;
+}
+
+.departmentContainer{
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #171A1A29;
+  border-radius: 4px;
+  opacity: 1;
+  padding: 10px;
+  width: 30%;
+  position: absolute;
+  right:7%;
+  z-index: 10;
+}
+
+.fullWidth{
+  width: 100%;
+}
+.filterBackground{
+  background-color: rgba(6, 97, 122, 0.1);
+  border-radius: 20px;
+  padding: 5px;
+  max-height: min-content;
+  align-items: center;
+}
+
+.filtertextStyle{
+  text-align: left;
+  font: italic normal medium 14px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
 }
