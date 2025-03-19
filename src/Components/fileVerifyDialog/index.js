@@ -258,10 +258,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 {!isLoading && (
                                     <div className={style.height}>
                                         {file?.fileType === 'application/pdf' ? (
-                                            <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                            <iframe src={`${file?.fileURL}`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
                                         ) : file?.fileType?.startsWith("image/") ? (
                                             <img src={file?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                                        ) : <iframe src={`${file?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                        ) : <iframe src={`${file?.fileURL}`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
                                     </div>
                                 )}
                             </div>

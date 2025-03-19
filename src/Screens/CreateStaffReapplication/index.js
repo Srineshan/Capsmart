@@ -516,6 +516,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
               </div>
             </div>
+            <div className={`${style.searchFieldWidth} ${style.alignBottom}`}>
+              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
+            </div>
             {/* <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
@@ -543,12 +546,12 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             </div> */}
           </div>
         </div>
-        <div className={style.spaceBetween}>
+        {/* <div className={style.spaceBetween}>
           <div></div>
           <div className={`${style.searchFieldWidth} ${style.marginTop10}`}>
             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
           </div>
-        </div>
+        </div> */}
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
           {isLoading ? (

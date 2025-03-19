@@ -138,7 +138,7 @@
 
 .numberOfContractorsGrid {
     display: grid;
-    grid-template-columns: 32% 33% 32%;
+    grid-template-columns: 24% 24% 24% 24%;
     grid-gap: 1%;
 }
 
@@ -256,4 +256,8 @@
 
 .marginLeftRight20 {
     margin: 0 20px !important;
+}
+
+.alignBottom {
+    margin-top: auto;
 }
