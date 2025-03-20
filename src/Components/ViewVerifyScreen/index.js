@@ -3835,6 +3835,44 @@ const NewActiveApplication = ({
         ) : (
           <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
         );
+      case "ScheduleA":
+        const fileURLScheduleA = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return fileURLScheduleA ? (
+          <>
+            <iframe
+              src={`${form?.forms?.[formIndex]?.uploadedFiles[
+                form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+              ]?.fileURL}#toolbar=0&view=FitH`
+              }
+              width="100%"
+              height="600px"
+            // style={{ width: "100%", height: "600px", objectFit: "cover }}
+            ></iframe>
+          </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
+        );
+      case "ScheduleB":
+        const fileURLScheduleB = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return fileURLScheduleB ? (
+          <>
+            <iframe
+              src={`${form?.forms?.[formIndex]?.uploadedFiles[
+                form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+              ]?.fileURL}#toolbar=0&view=FitH`
+              }
+              width="100%"
+              height="600px"
+            // style={{ width: "100%", height: "600px", objectFit: "cover }}
+            ></iframe>
+          </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
+        );
       case "ProfessionalConduct":
         return (
           <>

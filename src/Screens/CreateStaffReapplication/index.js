@@ -155,7 +155,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -201,7 +201,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -516,9 +516,6 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
               </div>
             </div>
-            <div className={`${style.searchFieldWidth} ${style.alignBottom}`}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
-            </div>
             {/* <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
@@ -582,6 +579,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 searchCount={searchCount}
                 setSearchTermForTable={setSearchTermForTable}
                 onLimitChange={handleLimitChange}
+                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
               />
             </div>
           )}

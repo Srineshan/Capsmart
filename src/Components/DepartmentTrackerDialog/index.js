@@ -350,38 +350,38 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       }
       if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
         let lastApproval = data?.completedWorkflows
-            .filter(item => item.approvalType !== null)
-            .pop();
-    
+          .filter(item => item.approvalType !== null)
+          .pop();
+
         if (lastApproval) {
-            const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
-            status.push(`${lastApproval.role}, ${formattedApprovalType}`);
+          const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
+          status.push(`${lastApproval.role}, ${formattedApprovalType}`);
         } else {
-            if (data?.status === "DECLINED") {
-                status.push("Reappointment Application Declined");
-            } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-                status.push("Reappointment Application Submitted");
-            } else if (data?.formFillingStatus === "IN_PROGRESS") {
-                status.push("Reappointment Application In-Progress");
-            } else {
-                status.push("MSO Verification Not Started");
-            }
-        }
-    } else {
-        if (data?.status === "DECLINED") {
+          if (data?.status === "DECLINED") {
             status.push("Reappointment Application Declined");
-        } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+          } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
             status.push("Reappointment Application Submitted");
-        } else if (data?.formFillingStatus === "IN_PROGRESS") {
+          } else if (data?.formFillingStatus === "IN_PROGRESS") {
             status.push("Reappointment Application In-Progress");
-        } else if (data?.formFillingStatus === "PENDING") {
-            status.push("Reappointment Application Not Started");
-        } else {
+          } else {
             status.push("MSO Verification Not Started");
+          }
         }
-    }
-    
-      
+      } else {
+        if (data?.status === "DECLINED") {
+          status.push("Reappointment Application Declined");
+        } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+          status.push("Reappointment Application Submitted");
+        } else if (data?.formFillingStatus === "IN_PROGRESS") {
+          status.push("Reappointment Application In-Progress");
+        } else if (data?.formFillingStatus === "PENDING") {
+          status.push("Reappointment Application Not Started");
+        } else {
+          status.push("MSO Verification Not Started");
+        }
+      }
+
+
       lastUpdated.push(
         <>
           {data?.updatedBy?.name?.firstName}<br />
@@ -436,9 +436,6 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 Staff Reappointment Status
               </div>
               <div className={style.displayInRow}>
-                <div className={`${style.searchFieldWidth}`}>
-                  <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
-                </div>
                 {selectedDepartment && (
                   <div className={`${style.filterBackground} ${style.displayInRow}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -528,6 +525,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                         searchCount={searchCount}
                         setSearchTermForTable={setSearchTermForTable}
                         onLimitChange={handleLimitChange}
+                        searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
                       />
                     </div>
                   )}
