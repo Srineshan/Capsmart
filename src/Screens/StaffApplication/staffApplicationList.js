@@ -47,6 +47,10 @@ import CommonInputField from "../../Components/CommonFields/CommonInputField";
 // import SearchIcon from '@mui/icons-material/Search';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
+import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import { Tooltip } from "@material-ui/core";
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 
 const StaffApplicationList = ({
   isLoading,
@@ -115,7 +119,7 @@ const StaffApplicationList = ({
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(9999);
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -538,6 +542,8 @@ const StaffApplicationList = ({
   const [showCheckListDialog, setShowCheckListDialog] = useState(false);
   const [reFetchMetaData, setReFetchMetaData] = useState(false);
   const [isApproved, setIsApproved] = useState([]);
+  const [showFilter, setShowFilter] = useState(false);
+  const [showAssignee, setShowAssignee] = useState(false);
   // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   // const [applicationType, setApplicationType] = useState(() => 
   //   sessionStorage.getItem('applicationCreationType') || 'NEW'
@@ -913,7 +919,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     const allIds = tableData
-      .filter((data) =>
+      ?.filter((data) =>
         data?.completedWorkflows?.some(
           (workflow) =>
             workflow?.role === "Credentialing Committee" &&
@@ -927,11 +933,11 @@ const StaffApplicationList = ({
   }, [tableData]);
 
   const handleCheckboxClick = (id) => {
-    if (!filteredIds.includes(id)) return;
+    if (!filteredIds?.includes(id)) return;
 
     setCheckedIds((prevCheckedIds) => {
-      return prevCheckedIds.includes(id)
-        ? prevCheckedIds.filter((checkedId) => checkedId !== id)
+      return prevCheckedIds?.includes(id)
+        ? prevCheckedIds?.filter((checkedId) => checkedId !== id)
         : [...prevCheckedIds, id];
     });
     console.log("Idscheckedss" + checkedIds)
@@ -962,7 +968,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1027,7 +1033,7 @@ const StaffApplicationList = ({
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${showAssignee ? `&assignedUserIds=${users?.id}` : ""}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
@@ -2199,7 +2205,7 @@ const StaffApplicationList = ({
     ccdate = [];
     lastUpdatedOn = [];
     ccMember = [];
-
+    dotTooltipValues= [];
     action = [];
 
     tableData?.map((data) => {
@@ -2265,12 +2271,16 @@ const StaffApplicationList = ({
       if (credCommittee) {
         if (credCommittee.approvalType === "RECOMMENDED_WITH_NOTES") {
           cc.push('yellow');
+          dotTooltipValues.push("Recommended with Notes")
         } else if (credCommittee.approvalType === "NOT_RECOMMENDED") {
           cc.push('red');
+          dotTooltipValues.push("Not Recommended")
         } else if (credCommittee.approvalType === "RECOMMENDED") {
           cc.push('green');
+          dotTooltipValues.push("Recommended")
         } else {
           cc.push('grey');
+          dotTooltipValues.push("Not yet Started")
         }
       }
 
@@ -2352,7 +2362,7 @@ const StaffApplicationList = ({
         type: "text",
         value: ccMember,
       },
-      { type: "dot", value: cc },
+      { type: "dot", value: cc,tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
         value: submitted,
@@ -3672,7 +3682,7 @@ const StaffApplicationList = ({
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                        onClick={() => onClickDepttrackerDialog()}
+                        // onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3683,13 +3693,14 @@ const StaffApplicationList = ({
                                   {totalCountDept || 0}) */}
                               </div>
                               <KeyboardArrowRightIcon
-                                sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                                sx={{ fontSize: 20, color: "#06617A" }}
                               />
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
+                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`}   onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
                   </div>
                 ) : null}
 
@@ -3859,6 +3870,7 @@ const StaffApplicationList = ({
                 selectedTab={selectedTab}
                 applicationCreationType={applicationCreationType}
                 getApplicationCreationType={getApplicationCreationType}
+                searchTermForTable={searchTermForTable}
               />
             </div>
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
@@ -3878,12 +3890,33 @@ const StaffApplicationList = ({
                 getReFetchMetadata={getReFetchMetaData}
                 approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
                 showBulkApproveDialog={showBulkApproveDialog}
+                searchTermForTable={searchTermForTable}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
 
-              <div className={`${style.spaceBetween} ${style.marginLeft} `}>
-                <div
+              <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
+                  <>
+                  {showAssignee && (
+                    <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
+                      <Tooltip title="Remove" arrow>
+                      <CancelOutlinedIcon
+                        sx={{
+                          fontSize: 15,
+                          color: "#06617A",
+                        }}
+                        className={style.cursorPointer}
+                        onClick={() => setShowAssignee(false)}
+                      />
+                      </Tooltip>
+                    </div>
+                  )}
+                  </>
+                ) : ""}
+                {workModeType === "Staff Manager" && (
+                  <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
                     } ${style.marginRight20}`}
                   style={{
@@ -3902,6 +3935,8 @@ const StaffApplicationList = ({
 
                   />
                 </div>
+                )}
+                {workModeType === "Staff Manager" && (
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
                     } ${style.marginRight20}`}
@@ -3921,6 +3956,27 @@ const StaffApplicationList = ({
 
                   />
                 </div>
+                )}
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
+                  <div
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      opacity:1,
+                    }}
+                    onClick={() => setShowFilter(!showFilter)}
+                  >
+                    <Tooltip title="Filter" arrow>
+                    <FilterAltOutlinedIcon
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
+    
+                    />
+                    </Tooltip>
+                  </div>
+                )  : ""}
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -3935,6 +3991,15 @@ const StaffApplicationList = ({
                 </div>
               </div>
             </div>
+             {showFilter && (
+                <div className={style.filterContainer}>
+                  <div>
+                  <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                  <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                  </div>
+                  </div>
+                </div>
+              )}
 
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (
