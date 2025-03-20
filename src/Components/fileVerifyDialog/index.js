@@ -61,6 +61,15 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setIsExpanded(!isExpanded);
     };
 
+
+    // Fetch the new file data when selectedFileIndex changes
+    useEffect(() => {
+        if (fileArray.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray.length) {
+            getDocument();
+        }
+    }, [selectedFileIndex, fileArray]);
+
+
     //Looping Condition
 
     // const handlePrevious = () => {
@@ -85,7 +94,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setReplaceRowId('')
         if (selectedFileIndex > 0) {
             setIsLoading(true);
-            setSelectedFileIndex(selectedFileIndex - 1);
+            setSelectedFileIndex(prevIndex => prevIndex - 1);
             setIsLoading(false);
         }
     };
@@ -96,7 +105,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setReplaceRowId('')
         if (selectedFileIndex < fileArray.length - 1) {
             setIsLoading(true);
-            setSelectedFileIndex(selectedFileIndex + 1);
+            setSelectedFileIndex(prevIndex => prevIndex + 1);
             setIsLoading(false);
         }
     };
@@ -122,13 +131,16 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
 
     const getDocument = async () => {
+        if (fileArray.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray.length) {
+        const currentFile = fileArray[selectedFileIndex];
         const { data: response } = await GET(
-            `document-management-service/document/${file?.rowId}`
+            `document-management-service/document/${currentFile?.rowId}`
         );
         console.log(response);
         setFileToDisplay(response?.file);
         setFields(response?.fields);
         setMetaData(response?.metaData)
+    }
     }
 
     const getDocumentFromReplace = async (id) => {
@@ -136,6 +148,19 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             `document-management-service/document/${id}`
         );
         console.log(response);
+        const updatedFileArray = fileArray.map((fileItem, index) => {
+            if (index === selectedFileIndex) {
+                return {
+                    ...fileItem,
+                    rowId: response.id, 
+                    fileURL: response.fileURL, 
+                    fileType: response.fileType, 
+                };
+            }
+            return fileItem;
+        });
+
+        setFileArray(updatedFileArray)
         setReplaceRowId(response?.id)
         setFileToDisplay(response?.file);
         setFields(response?.fields);
@@ -170,7 +195,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         try {
             const response = await POST(`application-management-service/application/${applicationId}/replaceDocument?isLLMRequired=${true}&documentStatus=${documentStatus}&oldDocumentId=${file?.rowId}&documentType=${file?.documentType}`, formData);
             setIsLoading(false);
-            getDocumentFromReplace(response?.data?.id);
+            await getDocumentFromReplace(response?.data?.id);
             return response?.data;
         } catch (error) {
             console.error(error);
