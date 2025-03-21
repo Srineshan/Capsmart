@@ -1543,7 +1543,7 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.shortName) : ["-"];
       const docHoverTextArray = documentDetails?.length > 0
         ? documentDetails?.map((doc, index) => {
           const verifiedIndicator = doc?.documentStatus
@@ -1553,7 +1553,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0 -10px 0px' }} />
@@ -1779,7 +1779,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2118,7 +2118,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2414,7 +2414,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2647,7 +2647,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2891,7 +2891,7 @@ const StaffApplicationList = ({
           return (
             <div key={index} className={style.fullWidth}>
               <span>
-                {verifiedIndicator} {doc?.documentType}
+                {verifiedIndicator} {doc?.shortName}
               </span>
               {index !== documentDetails.length - 1 && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -3387,7 +3387,7 @@ const StaffApplicationList = ({
       onClick: onClickViewAndVerifyApproveFromCCFunction,
       conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+    // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
   const applicationActionsData = applicationType === "NEW" ? [
@@ -4052,7 +4052,7 @@ const StaffApplicationList = ({
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div> */}
-            <div className={style.marginLeft20}>
+            <div className={`${style.marginLeft20} ${style.spaceBetween}`}>
               <StaffApplicationTopTiles
                 getSelectedTab={getSelectedTab}
                 selectedTab={selectedTab}
@@ -4060,29 +4060,6 @@ const StaffApplicationList = ({
                 getApplicationCreationType={getApplicationCreationType}
                 searchTermForTable={searchTermForTable}
               />
-            </div>
-            <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
-            {/* <CommonDivider /> */}
-            {/* <CommonDivider /> */}
-            {/* <StaffApplicationTopTiles
-              getSelectedTab={getSelectedTab}
-              selectedTab={selectedTab}
-            /> */}
-            <div
-              className={`${style.spaceBetween} ${style.marginTop10} ${style.marginLeft20}`}
-            >
-              <StaffApplicationTiles
-                getSelectedTab={getSelectedTab}
-                selectedTab={selectedTab}
-                reFetchMetaData={reFetchMetaData}
-                getReFetchMetadata={getReFetchMetaData}
-                approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
-                showBulkApproveDialog={showBulkApproveDialog}
-                searchTermForTable={searchTermForTable}
-              // applicationCreationType={applicationCreationType}
-              // getApplicationCreationType = {getApplicationCreationType}
-              />
-
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (
                   <>
@@ -4101,6 +4078,10 @@ const StaffApplicationList = ({
                         </Tooltip>
                       </div>
                     )}
+                  </>
+                ) : ""}
+                {workModeType === "Staff Manager" ? (
+                  <>
                     {selectedDepartment && (
                       <div className={`${style.filterBackground} ${style.displayInRow}`}>
                         <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -4185,16 +4166,19 @@ const StaffApplicationList = ({
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
                 >
-                  <PrintOutlinedIcon
-                    sx={{
-                      fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#06617A",
-                    }}
-                    onClick={handlePrintClick}
-                  />
+                  <Tooltip title="Print" arrow>
+                    <PrintOutlinedIcon
+                      sx={{
+                        fontSize: isPrintClicked ? 20 : 25,
+                        color: isPrintClicked ? "#fff" : "#06617A",
+                      }}
+                      onClick={handlePrintClick}
+                    />
+                  </Tooltip>
                 </div>
               </div>
             </div>
+            <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
             {showFilter && (
               <div className={style.filterContainer}>
                 {workModeType !== "Staff Manager" && (
@@ -4220,6 +4204,52 @@ const StaffApplicationList = ({
                 </div>
               </div>
             )}
+            {/* <CommonDivider /> */}
+            {/* <CommonDivider /> */}
+            {/* <StaffApplicationTopTiles
+              getSelectedTab={getSelectedTab}
+              selectedTab={selectedTab}
+            /> */}
+            <div
+              className={`${style.spaceBetween} ${style.marginTop10} ${style.marginLeft20}`}
+            >
+              <StaffApplicationTiles
+                getSelectedTab={getSelectedTab}
+                selectedTab={selectedTab}
+                reFetchMetaData={reFetchMetaData}
+                getReFetchMetadata={getReFetchMetaData}
+                approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
+                showBulkApproveDialog={showBulkApproveDialog}
+                searchTermForTable={searchTermForTable}
+              // applicationCreationType={applicationCreationType}
+              // getApplicationCreationType = {getApplicationCreationType}
+              />
+            </div>
+            {/* {showFilter && (
+                <div className={style.filterContainer}>
+                  {workModeType !== "Staff Manager" && (
+                    <div>
+                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <CommonSelectField
+                      value={selectedDepartment}
+                      onChange={(e) => setSelectedDepartment(e.target.value)}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={departmentList?.map(data => data?.id)}
+                      labelList={departmentList?.map(data => data?.departmentName?.name)}
+                      disabledList={departmentList?.map(data => false)}
+                      label={'Department'}
+                      required={false}
+                    />
+                  </div>
+                </div>
+            )} */}
 
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (

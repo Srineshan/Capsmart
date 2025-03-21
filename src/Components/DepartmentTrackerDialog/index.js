@@ -391,7 +391,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         } else if (data?.formFillingStatus === "IN_PROGRESS") {
             status.push("Reappointment Application In-Progress");
           } else {
-            status.push("MSO Verification Not Started");
+            status.push("Reappointment Application Not Started");
           }
         }
 
