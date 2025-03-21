@@ -101,8 +101,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         APPLICANT_NAME: "Applicant Name",
         APPLICANT_NAME: "Staff for Reappointment",
         APPLICANT_LAST_NAME: "Staff for Reappointment",
+        APPLICANT_LAST_NAME: "Staff",
         STAFF_LAST_NAME: 'Staff Name',
         APPLICANT_TYPE: 'Applicant Type',
+        APPLICANT_TYPE: 'Type',
         APPLICANT_TYPE: 'Staff Type',
         CREATED_DATE: 'created date',
         LAST_UPDATED: 'Last Updated',
@@ -114,9 +116,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_NAME',
         'Staff for Reappointment': 'APPLICANT_LAST_NAME',
+        'Staff': 'APPLICANT_LAST_NAME',
         'Staff Name': 'STAFF_LAST_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
         'Staff Type': 'APPLICANT_TYPE',
+        'Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
         'Submitted': 'SUBMITTED_DATE',
@@ -328,13 +332,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.tableBodyScroll} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""}
                             ${isUploadYourDocTable && hasVerificationAttempted && (data?.isVerified === false || data?.isVerified === null || data?.isVerified === undefined || data?.isVerified == null) ? style.redBorder : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "darkgreen" ? style.darkGreen : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     )

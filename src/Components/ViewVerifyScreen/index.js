@@ -7,6 +7,8 @@ import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded';
 import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
@@ -275,6 +277,13 @@ const NewActiveApplication = ({
     getMedicalDirectives()
     getAllFormSchemas();
   }, [applicationId])
+
+  useEffect(() => {
+    if (form?.upcomingCredCommitteeMeetingDate) {
+      setSelectedDateForReappoint(new Date(form?.upcomingCredCommitteeMeetingDate));
+      setIsButtonDisabled(false);
+    }
+  }, [form?.upcomingCredCommitteeMeetingDate]);
 
   // const handleDateChange = (date, field) => {
   //   const formattedDate = date
@@ -1860,8 +1869,8 @@ const NewActiveApplication = ({
 
   console.log("relevantForm" + JSON.stringify(relevantForm))
 
-  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
-  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log?.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog?.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
@@ -5753,13 +5762,17 @@ const NewActiveApplication = ({
                                                     {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                       isMatch ? (
                                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Revert Verification">
+                                                          <Tooltip title="Click To Revert Verification" arrow>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                               onClick={() => {
                                                                 handleStepsVerifyRevoke(form?.forms[index]?.id);
                                                               }}
                                                             >
-                                                              Verified
+                                                              Verified <RestartAltOutlinedIcon sx={{
+                                                                fontSize: 20,
+                                                                color: "#ffffff",
+                                                                marginLeft: "10px",
+                                                              }} />
                                                             </div>
                                                           </Tooltip>
                                                         </div>
@@ -5767,7 +5780,7 @@ const NewActiveApplication = ({
                                                         (
                                                           form?.forms[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click To Verify">
+                                                              <Tooltip title="Click To Verify" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => {
@@ -5780,13 +5793,17 @@ const NewActiveApplication = ({
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click To Revert Verification">
+                                                              <Tooltip title="Click To Revert Verification" arrow>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => {
                                                                     handleStepsVerifyRevoke(form?.forms[index]?.id);
                                                                   }}
                                                                 >
-                                                                  Verified
+                                                                  Verified <RestartAltOutlinedIcon sx={{
+                                                                    fontSize: 20,
+                                                                    color: "#ffffff",
+                                                                    marginLeft: "10px",
+                                                                  }} />
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
@@ -6859,7 +6876,11 @@ const NewActiveApplication = ({
                                                 {!staffView && (
                                                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                      Verified
+                                                      Verified <LockOutlinedIcon sx={{
+                                                        fontSize: 20,
+                                                        color: "#ffffff",
+                                                        marginLeft: "10px",
+                                                      }} />
                                                     </div>
                                                   </div>
                                                 )}
@@ -10568,8 +10589,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={form?.upcomingCredCommitteeMeetingDate ? new Date(form?.upcomingCredCommitteeMeetingDate) : sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (
@@ -10626,8 +10648,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForCC}
                             renderInput={(params) => (
@@ -10672,7 +10695,7 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
                             minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}                        
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (

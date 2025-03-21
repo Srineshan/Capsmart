@@ -295,7 +295,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         </div>
                                     </div>
                                     {file?.isVerified ? (
-                                        <Tooltip title="Click To Revert Verification">
+                                        <Tooltip title="Click To Revert Verification" arrow>
                                             <div
                                                 className={`${style.greenButtonVerify}`}
                                                 onClick={handleDocVerify}
@@ -305,7 +305,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 </div>
                                             </div>
                                         </Tooltip>) : (
-                                        <Tooltip title="Click To Verify">
+                                        <Tooltip title="Click To Verify" arrow>
                                             <div
                                                 className={`${style.purpleButtonVerify}`}
                                                 onClick={() => {

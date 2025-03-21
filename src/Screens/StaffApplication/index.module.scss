@@ -936,7 +936,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
-  grid-template-columns: 3% 25% 11% 30% 6% 5% 9% 6%;
+  grid-template-columns: 3% 18% 12% 26% 10% 7% 4% 7% 5%;
   grid-gap: 1%;
 }
 
@@ -958,13 +958,13 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
-  grid-template-columns: 2% 26% 11% 30% 7% 5% 8% 6%;
+  grid-template-columns: 2% 21% 11% 28% 9% 6% 4% 7% 4%;
   grid-gap: 1%;
 }
 
 .credUserStaffReappointGrid {
   display: grid;
-  grid-template-columns: 5% 20% 10% 22% 9% 9% 6% 8% 3%;
+  grid-template-columns: 5% 16% 10% 17% 10% 6% 5% 8% 10% 6%;
   grid-gap: 1%;
 }
 
@@ -5270,4 +5270,8 @@ input[type="number"] {
   letter-spacing: 0px;
   color: #06617A;
   opacity: 1;
+}
+
+.Bold{
+  font-weight: 500;
 }

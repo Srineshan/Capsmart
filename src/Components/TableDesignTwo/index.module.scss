@@ -72,7 +72,7 @@
 }
 
 .tableData {
-    background: #FFFFFF 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     min-height: 50px;
     width: 100%;
     // margin-left: 2%;
@@ -97,8 +97,13 @@
 }
 
 .green {
+    color: $statuslightgreen;
+}
+
+.darkGreen {
     color: $statusgreen;
 }
+
 
 .yellow {
     color: $statusyellow;
@@ -117,6 +122,13 @@
     width: 12px;
     border-radius: 50%;
     background-color: $statuslightgreen;
+}
+
+.darkGreenDotStyle {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background-color: $statusgreen;
 }
 
 .purpleDotStyle {
@@ -261,7 +273,7 @@
     display: flex;
     align-items: center;
     color: #F5F9FD;
-    max-width: 250px;
+    max-width: 280px;
 }
 
 .siteCard {
