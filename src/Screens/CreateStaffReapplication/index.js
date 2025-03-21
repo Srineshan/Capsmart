@@ -551,12 +551,13 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div> */}
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
-          <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
+          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
             <div className={`${style.filterType}`}>
-              Sent Count: {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
+              Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
             </div>
+            <div className={style.verticalBorder}></div>
             <div className={`${style.filterType}`}>
-              Not Sent Count: {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
+              Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
             </div>
           </div>
           {isLoading ? (

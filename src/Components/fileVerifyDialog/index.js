@@ -411,7 +411,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 />
                             </div>
                         </div>
-                        <div className={`${style.textStyle}`}>Your required to verify the {fileArray?.length} associated Documents that are part of this application </div>
+                        <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
                         <div className={` ${style.spaceBetween} ${style.centerALign} ${style.titleBackgroundColorStyle} ${style.marginTop}`}>
                             <div className={`${style.heading}`}>{file?.documentType}</div>
                             <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
