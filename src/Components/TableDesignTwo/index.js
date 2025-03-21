@@ -98,19 +98,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
-        APPLICANT_NAME: "Applicant Name",
-        APPLICANT_NAME: "Staff for Reappointment",
-        APPLICANT_LAST_NAME: "Staff for Reappointment",
-        APPLICANT_LAST_NAME: "Staff",
-        STAFF_LAST_NAME: 'Staff Name',
-        APPLICANT_TYPE: 'Applicant Type',
-        APPLICANT_TYPE: 'Type',
-        APPLICANT_TYPE: 'Staff Type',
-        CREATED_DATE: 'created date',
-        LAST_UPDATED: 'Last Updated',
-        SUBMITTED_DATE: 'Submitted',
-        APPLICANT_ID: 'Applicant ID',
-        REAPPOINTMENT_STATUS: 'Reappointment'
+        APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
+        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff"],
+        STAFF_LAST_NAME: ['Staff Name'],
+        APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
+        CREATED_DATE: ['created date'],
+        LAST_UPDATED: ['Last Updated'],
+        SUBMITTED_DATE: ['Submitted'],
+        APPLICANT_ID: ['Applicant ID'],
+        REAPPOINTMENT_STATUS: ['Reappointment']
     }
 
     const availableSortValueEnum = {
@@ -319,9 +315,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                             ) : (
                                 <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                             )}
-                            {tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'ASCENDING') ? (
+                            {tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'ASCENDING') ? (
                                 <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
-                            ) : tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'DESCENDING') ? (
+                            ) : tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'DESCENDING') ? (
                                 <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
                             ) : tableSortValues?.[index] && (
                                 <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />

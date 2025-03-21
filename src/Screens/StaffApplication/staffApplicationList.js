@@ -683,10 +683,10 @@ const StaffApplicationList = ({
   }, [users?.id, workModeType])
 
   const getDepartmentList = async () => {
-      const { data: department } = await GET(
-        `entity-service/department`
-      );
-      setDepartmentList(department);
+    const { data: department } = await GET(
+      `entity-service/department`
+    );
+    setDepartmentList(department);
   }
 
   const setUserDetails = async () => {
@@ -931,7 +931,7 @@ const StaffApplicationList = ({
   }
 
   useEffect(() => {
-      getDepartmentList();
+    getDepartmentList();
   }, [showFilter])
 
   useEffect(() => {
@@ -1048,11 +1048,11 @@ const StaffApplicationList = ({
         return response?.data.staffs || [];
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
-        const shouldIncludeAssignee = showAssignee && 
-        (workModeType === "Department Head" || 
-         workModeType === "Chief Of Staff" || 
-         workModeType === "Credentialing Committee");
-         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const shouldIncludeAssignee = showAssignee &&
+          (workModeType === "Department Head" ||
+            workModeType === "Chief Of Staff" ||
+            workModeType === "Credentialing Committee");
+        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
         setIsLoadingImage(true);
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${assignedUserIdsParam}`
@@ -1544,26 +1544,26 @@ const StaffApplicationList = ({
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc, index) => {
-      const verifiedIndicator = doc?.documentStatus 
-        ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
-        : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
 
-      return (
-        <div key={index} className={style.fullWidth}>
-          <span>
-            {verifiedIndicator} {doc?.documentType}
-          </span>
-          {index !== documentDetails.length - 1 && (
-            <hr style={{ margin: '5px 0 -10px 0px' }} />
-          )}
-        </div>
-      );
-    }) 
-  : ["-"];
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
 
-docsHoverText.push(docHoverTextArray);
+      docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
       //     style={{ fontSize: 20, color: `#2C2C2C` }}
@@ -1610,8 +1610,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -1771,23 +1771,23 @@ docsHoverText.push(docHoverTextArray);
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc,index) => {
-          const verifiedIndicator = doc?.documentStatus 
-            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
           return (
-            <div  key={index} className={style.fullWidth}>
-            <span>
-              {verifiedIndicator} {doc?.documentType}
-            </span>
-            {index !== documentDetails.length - 1 && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
-        }) 
-      : ["-"];
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
@@ -1831,8 +1831,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2110,23 +2110,23 @@ docsHoverText.push(docHoverTextArray);
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc,index) => {
-          const verifiedIndicator = doc?.documentStatus 
-            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
           return (
-            <div  key={index} className={style.fullWidth}>
-            <span>
-              {verifiedIndicator} {doc?.documentType}
-            </span>
-            {index !== documentDetails.length - 1 && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
-        }) 
-      : ["-"];
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2164,8 +2164,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2406,23 +2406,23 @@ docsHoverText.push(docHoverTextArray);
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc,index) => {
-          const verifiedIndicator = doc?.documentStatus 
-            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
           return (
-            <div  key={index} className={style.fullWidth}>
-            <span>
-              {verifiedIndicator} {doc?.documentType}
-            </span>
-            {index !== documentDetails.length - 1 && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
-        }) 
-      : ["-"];
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2460,8 +2460,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2639,23 +2639,23 @@ docsHoverText.push(docHoverTextArray);
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc?.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc,index) => {
-          const verifiedIndicator = doc?.documentStatus 
-            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
           return (
-            <div  key={index} className={style.fullWidth}>
-            <span>
-              {verifiedIndicator} {doc?.documentType}
-            </span>
-            {index !== documentDetails.length - 1 && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
-        }) 
-      : ["-"];
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
@@ -2686,8 +2686,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2883,23 +2883,23 @@ docsHoverText.push(docHoverTextArray);
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
       // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
-      const docHoverTextArray = documentDetails?.length > 0 
-      ? documentDetails?.map((doc,index) => {
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
           const verifiedIndicator = doc?.documentStatus
-            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} /> 
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
             : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
           return (
-            <div  key={index} className={style.fullWidth}>
-            <span>
-              {verifiedIndicator} {doc?.documentType}
-            </span>
-            {index !== documentDetails.length - 1 && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.documentType}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
-        }) 
-      : ["-"];
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2944,8 +2944,8 @@ docsHoverText.push(docHoverTextArray);
               <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
-              <hr style={{ margin: '5px 0px -10px 0' }} />
-            )}
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -4086,39 +4086,39 @@ docsHoverText.push(docHoverTextArray);
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (
                   <>
-                  {showAssignee && (
-                    <div className={`${style.filterBackground} ${style.displayInRow}`}>
-                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
-                      <Tooltip title="Remove" arrow>
-                      <CancelOutlinedIcon
-                        sx={{
-                          fontSize: 15,
-                          color: "#06617A",
-                        }}
-                        className={style.cursorPointer}
-                        onClick={() => setShowAssignee(false)}
-                      />
-                      </Tooltip>
-                    </div>
-                  )}
-                  {selectedDepartment && (
-                    <div className={`${style.filterBackground} ${style.displayInRow}`}>
-                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                      <Tooltip title="Remove" arrow>
-                      <CancelOutlinedIcon
-                        sx={{
-                          fontSize: 15,
-                          color: "#06617A",
-                        }}
-                        className={style.cursorPointer}
-                        onClick={() => setSelectedDepartment()}
-                      />
-                      </Tooltip>
-                    </div>
-                  )}
+                    {showAssignee && (
+                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
+                        <Tooltip title="Remove" arrow>
+                          <CancelOutlinedIcon
+                            sx={{
+                              fontSize: 15,
+                              color: "#06617A",
+                            }}
+                            className={style.cursorPointer}
+                            onClick={() => setShowAssignee(false)}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                    {selectedDepartment && (
+                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                        <Tooltip title="Remove" arrow>
+                          <CancelOutlinedIcon
+                            sx={{
+                              fontSize: 15,
+                              color: "#06617A",
+                            }}
+                            className={style.cursorPointer}
+                            onClick={() => setSelectedDepartment()}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
                   </>
                 ) : ""}
-               {workModeType === "Staff Manager" && selectedTab === "level-3" && (
+                {workModeType === "Staff Manager" && selectedTab === "level-3" && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
@@ -4131,12 +4131,12 @@ docsHoverText.push(docHoverTextArray);
                       }}
                     >
                       <Tooltip title="Update CC Approval Status" arrow>
-                      <PeopleOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
-                        }}
-                      />
+                        <PeopleOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
                       </Tooltip>
                     </div>
 
@@ -4151,17 +4151,17 @@ docsHoverText.push(docHoverTextArray);
                       }}
                     >
                       <Tooltip title="Designate CC Meeting Date" arrow>
-                      <EventAvailableOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
-                        }}
-                      />
+                        <EventAvailableOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
                       </Tooltip>
                     </div>
                   </>
                 )}
-                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager"  ? (
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
                   <div
                     className={`${style.alignCenter} ${style.cursorPointer
                       } ${style.marginRight20}`}
@@ -4195,29 +4195,28 @@ docsHoverText.push(docHoverTextArray);
                 </div>
               </div>
             </div>
-             {showFilter && (
-                <div className={style.filterContainer}>
-                  {workModeType !== "Staff Manager" && (
-                    <div>
-                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                      </div>
-                    </div>
-                  )}
+            {showFilter && (
+              <div className={style.filterContainer}>
+                {workModeType !== "Staff Manager" && (
                   <div>
-                    <CommonSelectField
-                      value={selectedDepartment}
-                      onChange={(e) => setSelectedDepartment(e.target.value)}
-                      className={style.fullWidth}
-                      firstOptionLabel={'All'}
-                      firstOptionValue={''}
-                      valueList={departmentList?.map(data => data?.id)}
-                      labelList={departmentList?.map(data => data?.departmentName?.name)}
-                      disabledList={departmentList?.map(data => false)}
-                      label={'Department'}
-                      required={false}
-                    />
+                    <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                    </div>
                   </div>
+                )}
+                <div>
+                  <CommonSelectField
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={departmentList?.map(data => data?.id)}
+                    labelList={departmentList?.map(data => data?.departmentName?.name)}
+                    disabledList={departmentList?.map(data => false)}
+                    label={'Department'}
+                    required={false}
+                  />
                 </div>
               </div>
             )}
