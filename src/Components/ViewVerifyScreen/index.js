@@ -4936,7 +4936,7 @@ const NewActiveApplication = ({
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
                           <div className={style.greyDotTextStyle}>
-                            Overall Verification & Acceptance Status
+                            MSO Verification & Acceptance Status
                           </div>
                         </div>
                       </div>

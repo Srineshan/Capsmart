@@ -321,6 +321,17 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     };
 
     const handleDocVerify = async () => {
+        if ((isEdited || changedData === null) && documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+            let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${replaceRowId}&manuallyUpdated=${true}`;
+            await PUT(baseUrl, changedData !== null ? changedData : {})
+                .then(response => {
+                    console.log(response)
+                    getPreApplication()
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        }
         let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
 
         let temp = {
@@ -515,23 +526,23 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             />
                                         </div>
                                     )}
-                                    {/* {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? (
+                                    {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? (
                                         <div className={`${style.twoCol} ${style.marginTop}`}>
                                             {fields?.map((field, index) => renderFields(field, index))}
                                         </div>
-                                    ) : ( */}
-                                    <div className={`${style.twoCol}`}>
-                                        {fields?.map((field, index) => (
-                                            <div>
-                                                <div className={`${style.lableStyle} ${style.marginTop10}`}>{field.label}</div>
-                                                <div className={style.dividerStyle}></div>
-                                                <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
-                                                    {metaData !== null ? metaData[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaData[field?.name]), 'dd/MM/yyyy') : metaData[field?.name] : "" : ""}
+                                    ) : (
+                                        <div className={`${style.twoCol}`}>
+                                            {fields?.map((field, index) => (
+                                                <div>
+                                                    <div className={`${style.lableStyle} ${style.marginTop10}`}>{field.label}</div>
+                                                    <div className={style.dividerStyle}></div>
+                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
+                                                        {metaData !== null ? metaData[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaData[field?.name]), 'dd/MM/yyyy') : metaData[field?.name] : "" : ""}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {/* )} */}
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                                 <div>
                                     <div className={`${style.displayInRow} ${style.marginTop}`}>
@@ -540,16 +551,18 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             CLOSE
                                         </div>
                                     </div> */}
-                                        <div
-                                            className={`${style.purpleButtonVerify}`}
-                                            onClick={() => {
-                                                setDocumentStatus('REJECT_AND_REPLACE_DOCUMENT')
-                                            }}
-                                        >
-                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                Reject & Replace Document
+                                        {!file?.isVerified && (
+                                            <div
+                                                className={`${style.purpleButtonVerify}`}
+                                                onClick={() => {
+                                                    setDocumentStatus('REJECT_AND_REPLACE_DOCUMENT')
+                                                }}
+                                            >
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    Reject & Replace
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                         <div>
                                             {file?.isVerified ? (
                                                 <Tooltip arrow title="Click To Revert Verification">
