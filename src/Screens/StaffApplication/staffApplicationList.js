@@ -2205,7 +2205,7 @@ const StaffApplicationList = ({
     ccdate = [];
     lastUpdatedOn = [];
     ccMember = [];
-    dotTooltipValues= [];
+    dotTooltipValues = [];
     action = [];
 
     tableData?.map((data) => {
@@ -2362,7 +2362,7 @@ const StaffApplicationList = ({
         type: "text",
         value: ccMember,
       },
-      { type: "dot", value: cc,tooltipValue: dotTooltipValues },
+      { type: "dot", value: cc, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
         value: submitted,
@@ -3597,14 +3597,16 @@ const StaffApplicationList = ({
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
                     <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                      <AddCircleOutlineIcon
-                        sx={{ fontSize: 20, color: "white" }}
-                        onClick={() =>
-                          applicationType === "NEW"
-                            ? navigate("/createStaffMemberApplication")
-                            : navigate("/createStaffReapplication")
-                        }
-                      />
+                      {applicationType === "NEW" && (
+                        <AddCircleOutlineIcon
+                          sx={{ fontSize: 20, color: "white" }}
+                          onClick={() =>
+                            applicationType === "NEW"
+                              ? navigate("/createStaffMemberApplication")
+                              : navigate("/createStaffReapplication")
+                          }
+                        />
+                      )}
                       <div
                         className={`${style.alignCenter} ${style.marginLeft10}`}
                         onClick={() =>
@@ -3614,7 +3616,7 @@ const StaffApplicationList = ({
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
-                          ? "Trigger Reappointment"
+                          ? "Staff for Reappointment"
                           : "Create New Application"}
                       </div>
                     </div>
@@ -3682,7 +3684,7 @@ const StaffApplicationList = ({
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                        // onClick={() => onClickDepttrackerDialog()}
+                      // onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3700,7 +3702,7 @@ const StaffApplicationList = ({
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`}   onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
                   </div>
                 ) : null}
 
@@ -3898,85 +3900,85 @@ const StaffApplicationList = ({
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
                   <>
-                  {showAssignee && (
-                    <div className={`${style.filterBackground} ${style.displayInRow}`}>
-                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
-                      <Tooltip title="Remove" arrow>
-                      <CancelOutlinedIcon
-                        sx={{
-                          fontSize: 15,
-                          color: "#06617A",
-                        }}
-                        className={style.cursorPointer}
-                        onClick={() => setShowAssignee(false)}
-                      />
-                      </Tooltip>
-                    </div>
-                  )}
+                    {showAssignee && (
+                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
+                        <Tooltip title="Remove" arrow>
+                          <CancelOutlinedIcon
+                            sx={{
+                              fontSize: 15,
+                              color: "#06617A",
+                            }}
+                            className={style.cursorPointer}
+                            onClick={() => setShowAssignee(false)}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
                   </>
                 ) : ""}
                 {workModeType === "Staff Manager" && (
                   <div
-                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
-                  style={{
-                    pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                    opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                  }}
-                  onClick={() => {
-                    setShowBulkApproveDialog(true);
-                  }}
-                >
-                  <PeopleOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
+                    className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                      opacity: checkedIds?.length > 0 ? 1 : 0.5,
                     }}
+                    onClick={() => {
+                      setShowBulkApproveDialog(true);
+                    }}
+                  >
+                    <PeopleOutlinedIcon
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
 
-                  />
-                </div>
+                    />
+                  </div>
                 )}
                 {workModeType === "Staff Manager" && (
-                <div
-                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
-                  style={{
-                    pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                    opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                  }}
-                  onClick={() => {
-                    setShowCCDateDialog(true);
-                  }}
-                >
-                  <EventAvailableOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
+                  <div
+                    className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                      opacity: checkedIds?.length > 0 ? 1 : 0.5,
                     }}
+                    onClick={() => {
+                      setShowCCDateDialog(true);
+                    }}
+                  >
+                    <EventAvailableOutlinedIcon
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
 
-                  />
-                </div>
+                    />
+                  </div>
                 )}
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
                   <div
                     className={`${style.alignCenter} ${style.cursorPointer
                       } ${style.marginRight20}`}
                     style={{
-                      opacity:1,
+                      opacity: 1,
                     }}
                     onClick={() => setShowFilter(!showFilter)}
                   >
                     <Tooltip title="Filter" arrow>
-                    <FilterAltOutlinedIcon
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
-    
-                    />
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+
+                      />
                     </Tooltip>
                   </div>
-                )  : ""}
+                ) : ""}
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -3991,15 +3993,15 @@ const StaffApplicationList = ({
                 </div>
               </div>
             </div>
-             {showFilter && (
-                <div className={style.filterContainer}>
-                  <div>
+            {showFilter && (
+              <div className={style.filterContainer}>
+                <div>
                   <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                  <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                  </div>
+                    <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (

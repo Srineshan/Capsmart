@@ -415,7 +415,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   return (
     <div>
       <ApplicationHeader
-        title={`Staff Reappointment Applications To Be Sent (${tableData?.length})`}
+        title={`Eligible Staff for Reapointment applications (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
       />
@@ -554,6 +554,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div> */}
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
+          <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
+            <div className={`${style.filterType}`}>
+              Sent Count: {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
+            </div>
+            <div className={`${style.filterType}`}>
+              Not Sent Count: {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
+            </div>
+          </div>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <CircularProgress sx={{ color: "#06617A" }} />
