@@ -213,6 +213,10 @@ const Navbar = () => {
     setAnchorElGuide(null);
   };
 
+  const sendEmail = (email) => {
+      window.location.href = `mailto:${email}`;
+  };
+
   const idTools = open ? "mouse-over-popover" : undefined;
 
   const handleClickHelp = (event) => {
@@ -691,7 +695,7 @@ const Navbar = () => {
             aria-owns={openGuide ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
-            <div className={`${style.alignContent} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="large"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
             <Popover
               id={"mouse-over-popover"}
               open={openGuide}
@@ -699,23 +703,42 @@ const Navbar = () => {
               onClose={handleCloseGuide}
               anchorOrigin={{
                 vertical: "bottom",
-                horizontal: "left",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
               }}
               classes={{
                 paper: classes.popoverContent,
               }}
               PaperProps={{
+                style: { width: "200px" },
                 onMouseEnter: handleClickGuide,
                 onMouseLeave: handleCloseGuide,
               }}
             >
-              <div className={style.optionsCardStyle}>
-                <Link
-                  // to={ `/entitySetup/${TenantID}/appSubscription` }
-                  className={style.noFontStyle}
+              <div className={style.helpCardStyle}>
+                {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? (
+                   <div
+                   className={style.noFontStyle1}
+                 >
+                   <div className={`${style.options1} ${style.cursorPointer}`} 
+                    onClick={() => window.open(
+                     workModeType === "Department Head"
+                       ? 'https://xd.adobe.com/view/f679ea78-f822-432c-85b2-07b5599aa84e-a32a/?fullscreen' 
+                       : 'https://xd.adobe.com/view/90b13ba5-0ca0-4681-8d9e-abd451dc2f38-c5e2/?fullscreen'
+                   )}
+                   >
+                     Step-By-Step Guide for Reappointment Application Review</div>
+                 </div>
+
+                ) : ""}
+                <div
+                  className={style.noFontStyle1}
                 >
-                  <div className={style.options}>ENTITY MANAGEMENT</div>
-                </Link>
+                  <div className={`${style.options1} ${style.cursorPointer}`} onClick={() => sendEmail("capmanager_support@hapicare.com")}>Send Support Ticket By Email</div>
+                </div>
               </div>
             </Popover>
           </div>
