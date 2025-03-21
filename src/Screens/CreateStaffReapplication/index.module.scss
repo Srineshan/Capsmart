@@ -261,3 +261,10 @@
 .alignBottom {
     margin-top: auto;
 }
+
+.verticalBorder {
+    width: 1px;
+    height: 18px;
+    background-color: $buttonBorder;
+    margin: 0 10px;
+}

@@ -289,7 +289,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         <div className={style.tableContainer}>
             <div className={style.searchPaginationGrid}>
                 <div className={style.marginTop10}>
-                    <div className={style.searchTextStyle}>{`Showing ${searchCount} Results`}</div>
+                    {/* <div className={style.searchTextStyle}>{`Showing ${searchCount} Results`}</div> */}
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
                         <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
