@@ -158,7 +158,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     "Last Updated by",
     ""
   ];
-  const colSortValues = [false, true, true, false, false, false, false, false, false, false, false, false, false, false, false];
+  const colSortValues = [false, true, true, true, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
       data: "View",

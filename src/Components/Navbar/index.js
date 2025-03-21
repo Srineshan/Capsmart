@@ -57,8 +57,11 @@ const Navbar = () => {
   const openHelp = Boolean(anchorElHelp);
   const popoverAnchorHelp = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
+  const [anchorElGuide, setAnchorElGuide] = useState(null);
   const openTools = Boolean(anchorElTools);
+  const openGuide = Boolean(anchorElGuide);
   const popoverAnchorTools = useRef(null);
+  const popoverAnchorGuide = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
@@ -198,8 +201,20 @@ const Navbar = () => {
     setAnchorElTools(event.currentTarget);
   };
 
+  const handleClickGuide = (event) => {
+    setAnchorElGuide(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
+  };
+
+  const handleCloseGuide = () => {
+    setAnchorElGuide(null);
+  };
+
+  const sendEmail = (email) => {
+      window.location.href = `mailto:${email}`;
   };
 
   const idTools = open ? "mouse-over-popover" : undefined;
@@ -659,7 +674,7 @@ const Navbar = () => {
           </div> */}
         </div>
 
-        <div className={style.displayInRow}>
+        <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />
@@ -672,7 +687,61 @@ const Navbar = () => {
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
-          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+          {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
+          <div
+            ref={popoverAnchorGuide}
+            onMouseEnter={(e) => handleClickGuide(e)}
+            onMouseLeave={() => handleCloseGuide()}
+            aria-owns={openGuide ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="large"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openGuide}
+              anchorEl={popoverAnchorGuide.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                style: { width: "200px" },
+                onMouseEnter: handleClickGuide,
+                onMouseLeave: handleCloseGuide,
+              }}
+            >
+              <div className={style.helpCardStyle}>
+                {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? (
+                   <div
+                   className={style.noFontStyle1}
+                 >
+                   <div className={`${style.options1} ${style.cursorPointer}`} 
+                    onClick={() => window.open(
+                     workModeType === "Department Head"
+                       ? 'https://xd.adobe.com/view/f679ea78-f822-432c-85b2-07b5599aa84e-a32a/?fullscreen' 
+                       : 'https://xd.adobe.com/view/90b13ba5-0ca0-4681-8d9e-abd451dc2f38-c5e2/?fullscreen'
+                   )}
+                   >
+                     Step-By-Step Guide for Reappointment Application Review</div>
+                 </div>
+
+                ) : ""}
+                <div
+                  className={style.noFontStyle1}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer}`} onClick={() => sendEmail("capmanager_support@hapicare.com")}>Send Support Ticket By Email</div>
+                </div>
+              </div>
+            </Popover>
+          </div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
