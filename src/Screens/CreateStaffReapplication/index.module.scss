@@ -39,7 +39,7 @@
 }
 
 .scrollStyle {
-    height: calc(100vh - 410px);
+    height: calc(100vh - 430px);
     overflow: scroll;
 }
 
@@ -138,7 +138,7 @@
 
 .numberOfContractorsGrid {
     display: grid;
-    grid-template-columns: 24% 24% 24% 24%;
+    grid-template-columns: 33% 32% 33%;
     grid-gap: 1%;
 }
 

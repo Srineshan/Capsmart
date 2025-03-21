@@ -155,7 +155,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -201,7 +201,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -299,7 +299,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     const { data: applicant } = await GET(
       `entity-service/applicantType`
     );
-    setApplicantType(applicant);
+    setApplicantType(applicant?.filter(data => data?.id !== "66dc4517788741fedc982f05"));
     if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
       setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
     } else {
@@ -380,7 +380,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         //     )
         //   )}
         // </>
-        `${data?.reappointmentStatus === "SENT" ? 'Sent' : data?.reappointmentStatus === "NOT_SENT" ? 'Not Sent' : data?.reappointmentStatus === "RE_SENT" ? 'Re-Sent' : data?.reappointmentStatus}`
+        `${data?.reappointmentStatus === "SENT" ? 'Sent' : data?.reappointmentStatus === "NOT_SENT" ? 'Not Sent' : data?.reappointmentStatus === "RE_SENT" ? 'Retriggered' : data?.reappointmentStatus}`
       );
       applicationStatusList.push(availableApplicationStatus[data?.onGoingApplication?.status])
       actionList.push(
@@ -415,7 +415,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   return (
     <div>
       <ApplicationHeader
-        title={`Staff Reappointment Applications To Be Sent (${tableData?.length})`}
+        title={`Eligible Staff for Reapointment applications (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
       />
@@ -509,15 +509,12 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                   firstOptionLabel={'All'}
                   firstOptionValue={''}
                   valueList={["NOT_SENT", "SENT", "RE_SENT"]}
-                  labelList={['Not Sent', 'Sent', "Re-Sent"]}
+                  labelList={['Not Sent', 'Sent', "Retriggered"]}
                   disabledList={false}
                   required={false}
                 />
 
               </div>
-            </div>
-            <div className={`${style.searchFieldWidth} ${style.alignBottom}`}>
-              <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
             </div>
             {/* <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
@@ -554,6 +551,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         </div> */}
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
+          <div className={`${style.spaceBetween} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
+            <div className={`${style.filterType}`}>
+              Sent Count: {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
+            </div>
+            <div className={`${style.filterType}`}>
+              Not Sent Count: {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
+            </div>
+          </div>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <CircularProgress sx={{ color: "#06617A" }} />
@@ -582,6 +587,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 searchCount={searchCount}
                 setSearchTermForTable={setSearchTermForTable}
                 onLimitChange={handleLimitChange}
+                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
               />
             </div>
           )}

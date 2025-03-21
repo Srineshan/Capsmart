@@ -267,6 +267,7 @@ const AddUserInCustomerAdmin = ({ getManageUserDialog, isEdit, userId }) => {
             site?.departmentList?.departments?.filter(dept => selectedDepartments?.includes(dept?.id))?.map(dept => {
                 dept.departmentResponsibility = deptTitle;
                 dept.serviceAreas = dept?.serviceAreas?.filter(item1 => selectedSpecialtys?.some(item2 => item1?.id === item2))
+                dept.serviceAreaSpecific = selectedSpecialtys?.length !== 0 ? true : false;
                 deptData.push(dept);
             });
             site.departmentList.departments = deptData;

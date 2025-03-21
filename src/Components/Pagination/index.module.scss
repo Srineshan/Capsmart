@@ -6,11 +6,10 @@
 }
 
 .paginationStyle {
-  font: normal normal 600 12px/15px proxima-nova;
+  font: normal normal 600 14px/15px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   opacity: 1;
-  margin-top: 10px;
 }
 
 .displayInRow {
@@ -50,4 +49,17 @@
 .disabledLook {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.paginationCount {
+  border: 1px solid rgba(0, 0, 0, 0.23);
+  padding: 0px 5px;
+  height: 30px;
+  border-radius: 4px;
 }

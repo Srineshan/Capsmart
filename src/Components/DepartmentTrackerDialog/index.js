@@ -366,9 +366,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       }
       if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
         let lastApproval = data?.completedWorkflows
-            .filter(item => item.approvalType !== null)
-            .pop();
-    
+          .filter(item => item.approvalType !== null)
+          .pop();
+
         if (lastApproval) {
             const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
             status.push(`${lastApproval?.role}, ${formattedApprovalType}`);
@@ -390,14 +390,11 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
             status.push("Reappointment Application Not Submitted");
         } else if (data?.formFillingStatus === "IN_PROGRESS") {
             status.push("Reappointment Application In-Progress");
-        } else if (data?.formFillingStatus === "PENDING") {
-            status.push("Reappointment Application Not Started");
-        } else {
+          } else {
             status.push("MSO Verification Not Started");
+          }
         }
-    }
-    
-      
+
       lastUpdated.push(
         <>
           {data?.updatedBy?.name?.firstName}<br />
@@ -452,9 +449,6 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 Staff Reappointment Status
               </div>
               <div className={style.displayInRow}>
-                <div className={`${style.searchFieldWidth}`}>
-                  <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
-                </div>
                 {selectedDepartment && (
                   <div className={`${style.filterBackground} ${style.displayInRow}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -573,6 +567,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                         searchCount={searchCount}
                         setSearchTermForTable={setSearchTermForTable}
                         onLimitChange={handleLimitChange}
+                        searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
                       />
                     </div>
                   )}

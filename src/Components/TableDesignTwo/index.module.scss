@@ -472,7 +472,7 @@
 
 .searchPaginationGrid {
     display: grid;
-    grid-template-columns: 60% 40%;
+    grid-template-columns: 35% 30% 35%;
 }
 
 .chipsContainer {
@@ -488,4 +488,16 @@
     border-radius: 23px;
     padding: 5px 10px;
     color: $primarycolor;
+}
+
+.searchTextStyle {
+    font: normal normal 600 16px/18px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 1;
+    text-align: left;
+}
+
+.alignBottom {
+    margin-top: auto;
 }

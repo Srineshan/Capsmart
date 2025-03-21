@@ -2320,7 +2320,7 @@ docsHoverText.push(docHoverTextArray);
     ccdate = [];
     lastUpdatedOn = [];
     ccMember = [];
-    dotTooltipValues= [];
+    dotTooltipValues = [];
     action = [];
 
     tableData?.map((data) => {
@@ -2494,7 +2494,7 @@ docsHoverText.push(docHoverTextArray);
         type: "text",
         value: ccMember,
       },
-      { type: "dot", value: cc,tooltipValue: dotTooltipValues },
+      { type: "dot", value: cc, tooltipValue: dotTooltipValues },
       {
         type: "iconWithCount",
         value: notes,
@@ -3783,14 +3783,16 @@ docsHoverText.push(docHoverTextArray);
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
                     <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                      <AddCircleOutlineIcon
-                        sx={{ fontSize: 20, color: "white" }}
-                        onClick={() =>
-                          applicationType === "NEW"
-                            ? navigate("/createStaffMemberApplication")
-                            : navigate("/createStaffReapplication")
-                        }
-                      />
+                      {applicationType === "NEW" && (
+                        <AddCircleOutlineIcon
+                          sx={{ fontSize: 20, color: "white" }}
+                          onClick={() =>
+                            applicationType === "NEW"
+                              ? navigate("/createStaffMemberApplication")
+                              : navigate("/createStaffReapplication")
+                          }
+                        />
+                      )}
                       <div
                         className={`${style.alignCenter} ${style.marginLeft10}`}
                         onClick={() =>
@@ -3800,7 +3802,7 @@ docsHoverText.push(docHoverTextArray);
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
-                          ? "Trigger Reappointment"
+                          ? "Staff for Reappointment"
                           : "Create New Application"}
                       </div>
                     </div>
@@ -3868,7 +3870,7 @@ docsHoverText.push(docHoverTextArray);
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                        // onClick={() => onClickDepttrackerDialog()}
+                      // onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3886,7 +3888,7 @@ docsHoverText.push(docHoverTextArray);
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`}   onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
                   </div>
                 ) : null}
 
@@ -4164,21 +4166,21 @@ docsHoverText.push(docHoverTextArray);
                     className={`${style.alignCenter} ${style.cursorPointer
                       } ${style.marginRight20}`}
                     style={{
-                      opacity:1,
+                      opacity: 1,
                     }}
                     onClick={() => setShowFilter(!showFilter)}
                   >
                     <Tooltip title="Filter" arrow>
-                    <FilterAltOutlinedIcon
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
-    
-                    />
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+
+                      />
                     </Tooltip>
                   </div>
-                )  : ""}
+                ) : ""}
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -4217,7 +4219,8 @@ docsHoverText.push(docHoverTextArray);
                     />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (
