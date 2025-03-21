@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -98,25 +98,25 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
-        APPLICANT_NAME: "Applicant Name",
-        APPLICANT_NAME: "Staff for Reappointment",
-        APPLICANT_LAST_NAME: "Staff for Reappointment",
-        STAFF_LAST_NAME: 'Staff Name',
-        APPLICANT_TYPE: 'Applicant Type',
-        APPLICANT_TYPE: 'Staff Type',
-        CREATED_DATE: 'created date',
-        LAST_UPDATED: 'Last Updated',
-        SUBMITTED_DATE: 'Submitted',
-        APPLICANT_ID: 'Applicant ID',
-        REAPPOINTMENT_STATUS: 'Reappointment'
+        APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
+        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff"],
+        STAFF_LAST_NAME: ['Staff Name'],
+        APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
+        CREATED_DATE: ['created date'],
+        LAST_UPDATED: ['Last Updated'],
+        SUBMITTED_DATE: ['Submitted'],
+        APPLICANT_ID: ['Applicant ID'],
+        REAPPOINTMENT_STATUS: ['Reappointment']
     }
 
     const availableSortValueEnum = {
         'Applicant Name': 'APPLICANT_NAME',
         'Staff for Reappointment': 'APPLICANT_LAST_NAME',
+        'Staff': 'APPLICANT_LAST_NAME',
         'Staff Name': 'STAFF_LAST_NAME',
         'Applicant Type': 'APPLICANT_TYPE',
         'Staff Type': 'APPLICANT_TYPE',
+        'Type': 'APPLICANT_TYPE',
         'created date': 'CREATED_DATE',
         'Last Updated': 'LAST_UPDATED',
         'Submitted': 'SUBMITTED_DATE',
@@ -283,8 +283,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         <div className={style.tableContainer}>
             <div className={style.searchPaginationGrid}>
                 <div className={style.marginTop10}>
+                    {/* <div className={style.searchTextStyle}>{`Showing ${searchCount} Results`}</div> */}
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
-                        <div className={`${style.chipsContainer}`}>
+                        <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
                                 <div>{`Showing All Search Results For '${searchTermForTable}' (${searchCount})`}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
@@ -292,6 +293,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
                         </div>
                     )}
+                </div>
+                <div className={style.alignBottom}>
+                    {searchField}
                 </div>
                 {
                     !hidePagination && (totalCount || tableData?.length) > 10 &&
@@ -311,9 +315,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                             ) : (
                                 <div className={`${data === "" && style.marginLeft30} ${style.tableHeaderFontStyle}`}>{data}</div>
                             )}
-                            {tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'ASCENDING') ? (
+                            {tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'ASCENDING') ? (
                                 <img src={AscendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'ASCENDING')} />
-                            ) : tableSortValues?.[index] && (data === availableSortValue[sortValue?.sortByField] && sortValue?.sortBy === 'DESCENDING') ? (
+                            ) : tableSortValues?.[index] && (availableSortValue[sortValue?.sortByField]?.includes(data) && sortValue?.sortBy === 'DESCENDING') ? (
                                 <img src={DescendingSort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'DESCENDING')} />
                             ) : tableSortValues?.[index] && (
                                 <img src={Sort} alt="" className={`${style.sortImgStyle} ${style.cursorPointer}`} onClick={() => getHandleSort(availableSortValueEnum[data], 'NONE')} />
@@ -328,13 +332,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                 <div className={`${scrollStyle} ${style.tableBodyScroll} ${style.pagebreak}`}>
                     {(tableData?.length !== 0 && tableData?.length !== undefined) ? tableData?.map((data, index) => (
                         <>
-                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""} ${index % 2 === 0 ? style.alternativeBackground : ''}
+                            <div className={`${style.tableData} ${style.marginTop5} ${gridStyle} ${clickedIndex === index ? style.tableDataClicked : ""}
                             ${isUploadYourDocTable && hasVerificationAttempted && (data?.isVerified === false || data?.isVerified === null || data?.isVerified === undefined || data?.isVerified == null) ? style.redBorder : ''}`} key={index}>
                                 {tableDataValues?.map((tableData, tableDataIndex) => (
                                     tableData?.type === "dot" ? (
                                         <div className={`${style.displayInRow} ${style.justifySpaceAround} ${style.verticalAlignCenter1}`}>
                                             <Tooltip title={tableData?.tooltipValue?.[index]} arrow>
-                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
+                                                <div className={`${tableData?.value?.[index] === "green" ? style.green : tableData?.value?.[index] === "darkgreen" ? style.darkGreen : tableData?.value?.[index] === "yellow" ? style.yellow : tableData?.value?.[index] === "grey" ? style.grey : tableData?.value?.[index] === "red" ? style.red : ''} ${tableData?.value?.[index] === "green" ? style.greenDotStyle : tableData?.value?.[index] === "darkgreen" ? style.darkGreenDotStyle : tableData?.value?.[index] === "yellow" ? style.yellowDotStyle : tableData?.value?.[index] === "red" ? style.redDotStyle : tableData?.value?.[index] === "grey" ? style.greyDotStyle : tableData?.value?.[index] === 'purple' ? style.purpleDotStyle : ''}`}></div>
                                             </Tooltip>
                                         </div>
                                     )

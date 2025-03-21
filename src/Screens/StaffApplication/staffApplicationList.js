@@ -43,7 +43,7 @@ import LoadingScreen from "../../Components/LoadingScreen";
 import CommonCheckBox from "../../Components/CommonFields/CommonCheckBox";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import CommonDivider from "../../Components/CommonFields/CommonDivider";
-import CommonInputField from "../../Components/CommonFields/CommonInputField";
+import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 // import SearchIcon from '@mui/icons-material/Search';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
@@ -120,6 +120,9 @@ const StaffApplicationList = ({
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const [departmentList, setDepartmentList] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -185,6 +188,7 @@ const StaffApplicationList = ({
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Dept / Division & Specialty",
+    "Assign To",
     "Docs",
     "CRs",
     "Notes",
@@ -217,6 +221,7 @@ const StaffApplicationList = ({
     // "Commitee",
     // "Board",
     // "CEO",
+    "Assign To",
     "Docs",
     "CRs",
     "Notes",
@@ -240,12 +245,13 @@ const StaffApplicationList = ({
     // "Commitee",
     // "Board",
     // "CEO",
-    "CC Meeting Date",
     "Assigned CC Member",
-    "CC Status",
+    "Review Status",
+    "Notes",
     // "Dept. Head",
     // "Submitted",
     "Reviewed On",
+    "CC Meeting Date",
     "",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
@@ -401,8 +407,8 @@ const StaffApplicationList = ({
 
   const credUserColSortValues = [
     false,
-    false,
-    false,
+    true,
+    true,
     false,
     false,
     false,
@@ -543,7 +549,7 @@ const StaffApplicationList = ({
   const [reFetchMetaData, setReFetchMetaData] = useState(false);
   const [isApproved, setIsApproved] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
-  const [showAssignee, setShowAssignee] = useState(false);
+  const [showAssignee, setShowAssignee] = useState(true);
   // const [applicationCreationType, setApplicationCreationType] = useState('NEW');
   // const [applicationType, setApplicationType] = useState(() => 
   //   sessionStorage.getItem('applicationCreationType') || 'NEW'
@@ -675,6 +681,13 @@ const StaffApplicationList = ({
   useEffect(() => {
     setUserDetails();
   }, [users?.id, workModeType])
+
+  const getDepartmentList = async () => {
+    const { data: department } = await GET(
+      `entity-service/department`
+    );
+    setDepartmentList(department);
+  }
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -918,6 +931,10 @@ const StaffApplicationList = ({
   }
 
   useEffect(() => {
+    getDepartmentList();
+  }, [showFilter])
+
+  useEffect(() => {
     const allIds = tableData
       ?.filter((data) =>
         data?.completedWorkflows?.some(
@@ -1031,9 +1048,14 @@ const StaffApplicationList = ({
         return response?.data.staffs || [];
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+        const shouldIncludeAssignee = showAssignee &&
+          (workModeType === "Department Head" ||
+            workModeType === "Chief Of Staff" ||
+            workModeType === "Credentialing Committee");
+        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${showAssignee ? `&assignedUserIds=${users?.id}` : ""}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${assignedUserIdsParam}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
@@ -1275,6 +1297,7 @@ const StaffApplicationList = ({
   let deptHead = [];
   let checkbox = [];
   let ccMember = [];
+  let dhMember = [];
 
   const getApplicantValues = applicationType === "NEW" ? () => {
     dot = [];
@@ -1520,7 +1543,26 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.shortName) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
+
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -1561,12 +1603,15 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index}>
+            <div key={index} className={style.fullWidth}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -1656,6 +1701,7 @@ const StaffApplicationList = ({
     applicantId = [];
     applicantType = [];
     department = [];
+    dhMember = []
     docs = [];
     docsHoverText = [];
     docsIcon = [];
@@ -1709,12 +1755,39 @@ const StaffApplicationList = ({
       department.push(
         `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
       );
+
+      const DeptHead = data?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Department Head"
+      );
+
+      if (DeptHead?.approverDetail) {
+        dhMember.push(
+          `${DeptHead.approverDetail.name?.firstName || ""} ${DeptHead.approverDetail.name?.lastName || ""}`
+        );
+      }
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       // docsHoverText.push([
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails?.map(doc => doc?.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#b0a6a6' }} />);
@@ -1751,12 +1824,15 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index}>
+            <div key={index} className={style.fullWidth}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -1790,6 +1866,10 @@ const StaffApplicationList = ({
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
+      {
+        type: "text",
+        value: dhMember,
+      },
       {
         type: "iconWithCount",
         value: docs,
@@ -1987,6 +2067,7 @@ const StaffApplicationList = ({
     cos = [];
     cc = [];
     ccdate = [];
+    ccMember = [];
     lastUpdatedOn = [];
 
     action = [];
@@ -2028,7 +2109,24 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2059,17 +2157,30 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index}>
+            <div key={index} className={style.fullWidth}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
+
+      const credCommittee = data?.completedWorkflows?.find(
+        (workflow) => workflow?.role === "Credentialing Committee"
+      );
+
+      if (credCommittee?.approverDetail) {
+        ccMember.push(
+          `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
+        );
+      }
       // cr.push(data?.logs[data.logs.length - 1]?.role)
       // cos.push(data?.boardStatus || "green");
       // cos.push(data?.logs[data.logs.length - 1].workflowAction === "SUBMITTED"
@@ -2134,6 +2245,10 @@ const StaffApplicationList = ({
       { type: "text", value: applicantType },
 
       { type: "text", value: department },
+      {
+        type: "text",
+        value: ccMember,
+      },
       {
         type: "iconWithCount",
         value: docs,
@@ -2205,7 +2320,7 @@ const StaffApplicationList = ({
     ccdate = [];
     lastUpdatedOn = [];
     ccMember = [];
-    dotTooltipValues= [];
+    dotTooltipValues = [];
     action = [];
 
     tableData?.map((data) => {
@@ -2230,6 +2345,7 @@ const StaffApplicationList = ({
           onChange={() => handleCheckboxClick(data?.id, data)}
           color="primary"
           inputProps={{ 'aria-label': `Select ${data?.name}` }}
+          disabled={true}
         />
       );
       if (workflow) {
@@ -2248,15 +2364,15 @@ const StaffApplicationList = ({
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
 
-      applicantType.push(data?.providerType.serviceProviderType);
+      applicantType.push(data?.providerType?.serviceProviderType);
       // applicantId.push(data?.displayId);
       department.push(
         `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
       );
       ccdate.push(
         data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(data.upcomingCredCommitteeMeetingDate), "MMM dd, yyyy")
-          : "Not Assigned Yet"
+          ? format(new Date(data?.upcomingCredCommitteeMeetingDate), "MMM dd, yyyy")
+          : "-"
       );
       const credCommittee = data?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Credentialing Committee"
@@ -2269,14 +2385,14 @@ const StaffApplicationList = ({
       }
 
       if (credCommittee) {
-        if (credCommittee.approvalType === "RECOMMENDED_WITH_NOTES") {
-          cc.push('yellow');
+        if (credCommittee?.approvalType === "RECOMMENDED_WITH_NOTES") {
+          cc.push('green');
           dotTooltipValues.push("Recommended with Notes")
-        } else if (credCommittee.approvalType === "NOT_RECOMMENDED") {
+        } else if (credCommittee?.approvalType === "NOT_RECOMMENDED") {
           cc.push('red');
           dotTooltipValues.push("Not Recommended")
-        } else if (credCommittee.approvalType === "RECOMMENDED") {
-          cc.push('green');
+        } else if (credCommittee?.approvalType === "RECOMMENDED") {
+          cc.push('darkgreen');
           dotTooltipValues.push("Recommended")
         } else {
           cc.push('grey');
@@ -2289,7 +2405,24 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2320,12 +2453,15 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index}>
+            <div key={index} className={style.fullWidth}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2356,16 +2492,23 @@ const StaffApplicationList = ({
       { type: "text", value: department },
       {
         type: "text",
-        value: ccdate,
-      },
-      {
-        type: "text",
         value: ccMember,
       },
-      { type: "dot", value: cc,tooltipValue: dotTooltipValues },
+      { type: "dot", value: cc, tooltipValue: dotTooltipValues },
+      {
+        type: "iconWithCount",
+        value: notes,
+        hoverText: notesHoverText,
+        isShowHoverText: true,
+        icon: notesIcon,
+      },
       {
         type: "iconWithCount",
         value: submitted,
+      },
+      {
+        type: "text",
+        value: ccdate,
       },
       { type: "action", value: action },
     ]
@@ -2495,7 +2638,24 @@ const StaffApplicationList = ({
       // } else { ccapproval.push("-") }
       docs.push(data?.documents?.verifiedCount + "/" + data?.documents?.uploadedCount || "");
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc?.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc?.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
 
       if (data?.documents?.uploadedCount === 0 || data?.documents?.verifiedCount === 0) {
@@ -2519,12 +2679,15 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -2534,10 +2697,6 @@ const StaffApplicationList = ({
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       // ]);
-      notesHoverText.push(notesHoverTextArray);
-
-
-
       // cosapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       // );
@@ -2723,7 +2882,24 @@ const StaffApplicationList = ({
       //   "Immunization History Verification From PCP pending",
       // ]);
       const documentDetails = data?.documents?.documentDetails || [];
-      const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      // const docHoverTextArray = documentDetails?.length > 0 ? documentDetails.map(doc => doc.documentType) : ["-"];
+      const docHoverTextArray = documentDetails?.length > 0
+        ? documentDetails?.map((doc, index) => {
+          const verifiedIndicator = doc?.documentStatus
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : <CircleIcon style={{ color: '#FFCA27', fontSize: '12px', marginRight: '5px' }} />
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {doc?.shortName}
+              </span>
+              {index !== documentDetails.length - 1 && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       docsHoverText.push(docHoverTextArray);
       // docsIcon.push(
       //   <TextSnippetOutlinedIcon
@@ -2761,12 +2937,15 @@ const StaffApplicationList = ({
           const firstName = note?.user?.name?.firstName || '';
           const title = note?.title;
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
-          const noteContent = `(${firstName}) ${title} ${createdDate}`;
+          const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index}>
+            <div key={index} className={style.fullWidth}>
               {noteContent}
-              <div>{text}</div>
+              <div className={style.Bold}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
+              {index !== validNotes.length && (
+                <hr style={{ margin: '5px 0px -10px 0' }} />
+              )}
             </div>
           );
         }).reverse()
@@ -3191,17 +3370,24 @@ const StaffApplicationList = ({
 
   const credUserActionsData = [
     {
+      data: "Modify CC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetFunction,
+      conditionToShow: `data?.upcomingCredCommitteeMeetingDate`,
+    },
+    {
       data: "Designate CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
+      conditionToShow: `!data?.upcomingCredCommitteeMeetingDate`,
     },
     {
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
     },
-    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+    // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
 
   const applicationActionsData = applicationType === "NEW" ? [
@@ -3597,14 +3783,16 @@ const StaffApplicationList = ({
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
                     <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                      <AddCircleOutlineIcon
-                        sx={{ fontSize: 20, color: "white" }}
-                        onClick={() =>
-                          applicationType === "NEW"
-                            ? navigate("/createStaffMemberApplication")
-                            : navigate("/createStaffReapplication")
-                        }
-                      />
+                      {applicationType === "NEW" && (
+                        <AddCircleOutlineIcon
+                          sx={{ fontSize: 20, color: "white" }}
+                          onClick={() =>
+                            applicationType === "NEW"
+                              ? navigate("/createStaffMemberApplication")
+                              : navigate("/createStaffReapplication")
+                          }
+                        />
+                      )}
                       <div
                         className={`${style.alignCenter} ${style.marginLeft10}`}
                         onClick={() =>
@@ -3614,7 +3802,7 @@ const StaffApplicationList = ({
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
-                          ? "Trigger Reappointment"
+                          ? "Staff for Reappointment"
                           : "Create New Application"}
                       </div>
                     </div>
@@ -3682,7 +3870,7 @@ const StaffApplicationList = ({
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                        // onClick={() => onClickDepttrackerDialog()}
+                      // onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3700,7 +3888,7 @@ const StaffApplicationList = ({
                         </div>
                       </div>
                     </div>
-                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`}   onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
                   </div>
                 ) : null}
 
@@ -3780,7 +3968,7 @@ const StaffApplicationList = ({
                                   isLabelVisible={false}
                                   height="5px"
                                   bgColor="#06617A"
-                                  baseBgColor="#E9E9F0"
+                                  baseBgColor="#9AAFB5"
                                   className={style.marginLeft20}
                                 />
                                 <div className={style.spaceBetween}>
@@ -3864,7 +4052,7 @@ const StaffApplicationList = ({
           >
             {applicationType === "NEW" ? "STAFF APPLICATIONS" : "STAFF REAPPOINTMENTS"}
           </div> */}
-            <div className={style.marginLeft20}>
+            <div className={`${style.marginLeft20} ${style.spaceBetween}`}>
               <StaffApplicationTopTiles
                 getSelectedTab={getSelectedTab}
                 selectedTab={selectedTab}
@@ -3872,8 +4060,150 @@ const StaffApplicationList = ({
                 getApplicationCreationType={getApplicationCreationType}
                 searchTermForTable={searchTermForTable}
               />
+              <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (
+                  <>
+                    {showAssignee && (
+                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
+                        <Tooltip title="Remove" arrow>
+                          <CancelOutlinedIcon
+                            sx={{
+                              fontSize: 15,
+                              color: "#06617A",
+                            }}
+                            className={style.cursorPointer}
+                            onClick={() => setShowAssignee(false)}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </>
+                ) : ""}
+                {workModeType === "Staff Manager" ? (
+                  <>
+                    {selectedDepartment && (
+                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                        <Tooltip title="Remove" arrow>
+                          <CancelOutlinedIcon
+                            sx={{
+                              fontSize: 15,
+                              color: "#06617A",
+                            }}
+                            className={style.cursorPointer}
+                            onClick={() => setSelectedDepartment()}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </>
+                ) : ""}
+                {workModeType === "Staff Manager" && selectedTab === "level-3" && (
+                  <>
+                    <div
+                      className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                      style={{
+                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                      }}
+                      onClick={() => {
+                        setShowBulkApproveDialog(true);
+                      }}
+                    >
+                      <Tooltip title="Update CC Approval Status" arrow>
+                        <PeopleOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+
+                    <div
+                      className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                      style={{
+                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                      }}
+                      onClick={() => {
+                        setShowCCDateDialog(true);
+                      }}
+                    >
+                      <Tooltip title="Designate CC Meeting Date" arrow>
+                        <EventAvailableOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                  </>
+                )}
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
+                  <div
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      opacity: 1,
+                    }}
+                    onClick={() => setShowFilter(!showFilter)}
+                  >
+                    <Tooltip title="Filter" arrow>
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
+
+                      />
+                    </Tooltip>
+                  </div>
+                ) : ""}
+                <div
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight}`}
+                >
+                  <Tooltip title="Print" arrow>
+                    <PrintOutlinedIcon
+                      sx={{
+                        fontSize: isPrintClicked ? 20 : 25,
+                        color: isPrintClicked ? "#fff" : "#06617A",
+                      }}
+                      onClick={handlePrintClick}
+                    />
+                  </Tooltip>
+                </div>
+              </div>
             </div>
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
+            {showFilter && (
+              <div className={style.filterContainer}>
+                {workModeType !== "Staff Manager" && (
+                  <div>
+                    <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <CommonSelectField
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={departmentList?.map(data => data?.id)}
+                    labelList={departmentList?.map(data => data?.departmentName?.name)}
+                    disabledList={departmentList?.map(data => false)}
+                    label={'Department'}
+                    required={false}
+                  />
+                </div>
+              </div>
+            )}
             {/* <CommonDivider /> */}
             {/* <CommonDivider /> */}
             {/* <StaffApplicationTopTiles
@@ -3894,112 +4224,32 @@ const StaffApplicationList = ({
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
-
-              <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
-                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
-                  <>
-                  {showAssignee && (
-                    <div className={`${style.filterBackground} ${style.displayInRow}`}>
-                      <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
-                      <Tooltip title="Remove" arrow>
-                      <CancelOutlinedIcon
-                        sx={{
-                          fontSize: 15,
-                          color: "#06617A",
-                        }}
-                        className={style.cursorPointer}
-                        onClick={() => setShowAssignee(false)}
-                      />
-                      </Tooltip>
+            </div>
+            {/* {showFilter && (
+                <div className={style.filterContainer}>
+                  {workModeType !== "Staff Manager" && (
+                    <div>
+                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                      </div>
                     </div>
                   )}
-                  </>
-                ) : ""}
-                {workModeType === "Staff Manager" && (
-                  <div
-                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
-                  style={{
-                    pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                    opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                  }}
-                  onClick={() => {
-                    setShowBulkApproveDialog(true);
-                  }}
-                >
-                  <PeopleOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
-                    }}
-
-                  />
-                </div>
-                )}
-                {workModeType === "Staff Manager" && (
-                <div
-                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
-                  style={{
-                    pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                    opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                  }}
-                  onClick={() => {
-                    setShowCCDateDialog(true);
-                  }}
-                >
-                  <EventAvailableOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
-                    }}
-
-                  />
-                </div>
-                )}
-                {workModeType === "Credentialing Committee" || workModeType === "Department Head" ? (
-                  <div
-                    className={`${style.alignCenter} ${style.cursorPointer
-                      } ${style.marginRight20}`}
-                    style={{
-                      opacity:1,
-                    }}
-                    onClick={() => setShowFilter(!showFilter)}
-                  >
-                    <Tooltip title="Filter" arrow>
-                    <FilterAltOutlinedIcon
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
-    
-                    />
-                    </Tooltip>
-                  </div>
-                )  : ""}
-                <div
-                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
-                    } ${style.cursorPointer} ${style.marginRight}`}
-                >
-                  <PrintOutlinedIcon
-                    sx={{
-                      fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#06617A",
-                    }}
-                    onClick={handlePrintClick}
-                  />
-                </div>
-              </div>
-            </div>
-             {showFilter && (
-                <div className={style.filterContainer}>
                   <div>
-                  <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                  <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                  </div>
+                    <CommonSelectField
+                      value={selectedDepartment}
+                      onChange={(e) => setSelectedDepartment(e.target.value)}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={departmentList?.map(data => data?.id)}
+                      labelList={departmentList?.map(data => data?.departmentName?.name)}
+                      disabledList={departmentList?.map(data => false)}
+                      label={'Department'}
+                      required={false}
+                    />
                   </div>
                 </div>
-              )}
+            )} */}
 
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (

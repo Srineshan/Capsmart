@@ -7,6 +7,8 @@ import CompletedIcon from "./../../images/completedIcon.png";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 import CircleRoundedIcon from '@mui/icons-material/CircleRounded';
 import RedWarning from "./../../images/redWarning.png";
 import Verified from "./../../images/verifiedImage.png";
@@ -276,6 +278,13 @@ const NewActiveApplication = ({
     getAllFormSchemas();
   }, [applicationId])
 
+  useEffect(() => {
+    if (form?.upcomingCredCommitteeMeetingDate) {
+      setSelectedDateForReappoint(new Date(form?.upcomingCredCommitteeMeetingDate));
+      setIsButtonDisabled(false);
+    }
+  }, [form?.upcomingCredCommitteeMeetingDate]);
+
   // const handleDateChange = (date, field) => {
   //   const formattedDate = date
   //     ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
@@ -377,12 +386,16 @@ const NewActiveApplication = ({
 
   // };
 
-  const getPreApplication = async () => {
+  const getPreApplication = async (isReplace) => {
     try {
       setIsLoadingImage(true);
       const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
       setForm(basicForm);
       setIsLoadingImage(false)
+      // if (isReplace) {
+      console.log('enteredFromReplace', form?.forms?.[form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.table)
+      setFileArray(form?.forms?.[form?.forms?.findIndex(data => data?.schemaCategory === "UploadYourDoc")]?.data?.table)
+      // }
     } catch (error) {
       console.error('Error fetching application:', error);
     }
@@ -436,6 +449,8 @@ const NewActiveApplication = ({
       console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
     }
   }, [form, formIndex]);
+
+  console.log("selectedPrivilegeForDisplay", selectedAdditionalPrivilegeForDisplay);
 
   useEffect(() => {
     if (form?.completedWorkflows) {
@@ -1860,8 +1875,8 @@ const NewActiveApplication = ({
 
   console.log("relevantForm" + JSON.stringify(relevantForm))
 
-  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
-  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log?.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog?.lastModifiedDate : null;
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
@@ -3574,84 +3589,86 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 </div>
-                <div className={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? style.disabled : ''}>
-                  <div className={`${style.checkGrid}`}>
-                    {allFormSchemas?.[index]?.formSchema?.disclaimer?.content !== undefined && (
-                      <span>
-                        <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
-                          // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
-                          bigCheckbox={true} />
-                      </span>
-                    )}
-                    <div
-                      className={`${style.leftAlign} ${style.marginTop10}`}
-                      dangerouslySetInnerHTML={{ __html: allFormSchemas?.[index]?.formSchema?.disclaimer?.content }}
-                    />
+                {form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? (
+                  <div>
+                    <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
+                    <div className={style.marginTop10}>
+                      <CKEditor
+                        editor={ClassicEditor}
+                        data={form?.forms?.[formIndex]?.data?.notes !== undefined ? form?.forms?.[formIndex]?.data?.notes : ''}
+                        // onChange={(event, editor) => {
+                        //   const data = editor.getData();
+                        //   setNotes(data);
+                        // }}
+                        onReady={(editor) => {
+                          editor.editing.view.change((writer) => {
+                            writer.setStyle(
+                              "height",
+                              "150px",
+                              editor.editing.view.document.getRoot()
+                            );
+                          });
+                        }}
+                        config={{
+                          placeholder: "Type your content here...",
+                          toolbar: {
+                            shouldNotGroupWhenFull: true,
+                            sticky: true,
+                            items: [
+                              'undo', 'redo',
+                              '|',
+                              'heading',
+                              '|',
+                              'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                              '|',
+                              'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                              '|',
+                              'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                            ],
+                          },
+                          autoGrow: false,
+                        }}
+                      />
+                    </div>
                   </div>
-                  {form?.forms?.[formIndex]?.esign?.name !== undefined && (
-                    <div className={style.eSignGrid}>
+                ) : (
+                  <div className={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? style.disabled : ''}>
+                    <div className={`${style.checkGrid}`}>
+                      {allFormSchemas?.[index]?.formSchema?.disclaimer?.content !== undefined && (
+                        <span>
+                          <CommonCheckBox checked={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.acknowledged}
+                            // onChange={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? () => { } : (e) => handleIsChecked(e.target.checked)} 
+                            bigCheckbox={true} />
+                        </span>
+                      )}
                       <div
-                      >
-                        <ESignature
-                          userName={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? '' : form?.forms?.[formIndex]?.esign?.name !== undefined ? form?.forms?.[formIndex]?.esign?.name : ""}
-                          encData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? "" : form?.forms?.[formIndex]?.esign?.esign !== undefined ? form?.forms?.[formIndex]?.esign?.esign : ""}
-                          showData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.esign?.esign !== undefined}
-                          showDatais={true}
-                        />
-                      </div>
-                      <div className={style.verticalAlignCenter}>
-                        <div className={style.displayInRow}>
-                          <div className={style.dateTitle}>Date: </div>
-                          <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.[formIndex]?.esign?.signedDate ? (form?.forms?.[formIndex]?.esign?.signedDate !== '' && form?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? form?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                        className={`${style.leftAlign} ${style.marginTop10}`}
+                        dangerouslySetInnerHTML={{ __html: allFormSchemas?.[index]?.formSchema?.disclaimer?.content }}
+                      />
+                    </div>
+                    {form?.forms?.[formIndex]?.esign?.name !== undefined && (
+                      <div className={style.eSignGrid}>
+                        <div
+                        >
+                          <ESignature
+                            userName={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? '' : form?.forms?.[formIndex]?.esign?.name !== undefined ? form?.forms?.[formIndex]?.esign?.name : ""}
+                            encData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? "" : form?.forms?.[formIndex]?.esign?.esign !== undefined ? form?.forms?.[formIndex]?.esign?.esign : ""}
+                            showData={form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 ? false : form?.forms?.[formIndex]?.esign?.esign !== undefined}
+                            showDatais={true}
+                          />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Date: </div>
+                            <div className={`${style.date} ${style.marginLeft}`}>{form?.forms?.[formIndex]?.esign?.signedDate ? (form?.forms?.[formIndex]?.esign?.signedDate !== '' && form?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? form?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              {form?.forms?.[formIndex]?.data?.cmeTranscripts?.creditOrHours < 25 && (
-                <div>
-                  <div className={style.lableStyle}>Indicate why you were not able to complete the required number of Credits / Hours*</div>
-                  <div className={style.marginTop10}>
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={form?.forms?.[formIndex]?.data?.notes !== undefined ? form?.forms?.[formIndex]?.data?.notes : ''}
-                      // onChange={(event, editor) => {
-                      //   const data = editor.getData();
-                      //   setNotes(data);
-                      // }}
-                      onReady={(editor) => {
-                        editor.editing.view.change((writer) => {
-                          writer.setStyle(
-                            "height",
-                            "150px",
-                            editor.editing.view.document.getRoot()
-                          );
-                        });
-                      }}
-                      config={{
-                        placeholder: "Type your content here...",
-                        toolbar: {
-                          shouldNotGroupWhenFull: true,
-                          sticky: true,
-                          items: [
-                            'undo', 'redo',
-                            '|',
-                            'heading',
-                            '|',
-                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                            '|',
-                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                            '|',
-                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                          ],
-                        },
-                        autoGrow: false,
-                      }}
-                    />
+                    )}
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+
             </>
             {/* <CommonDivider /> */}
             {allFormSchemas?.[index]?.formSchema?.schema?.properties !== undefined &&
@@ -3821,6 +3838,44 @@ const NewActiveApplication = ({
           form?.forms?.[formIndex]?.uploadedFiles?.length - 1
         ]?.fileURL;
         return fileURL ? (
+          <>
+            <iframe
+              src={`${form?.forms?.[formIndex]?.uploadedFiles[
+                form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+              ]?.fileURL}#toolbar=0&view=FitH`
+              }
+              width="100%"
+              height="600px"
+            // style={{ width: "100%", height: "600px", objectFit: "cover }}
+            ></iframe>
+          </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
+        );
+      case "ScheduleA":
+        const fileURLScheduleA = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return fileURLScheduleA ? (
+          <>
+            <iframe
+              src={`${form?.forms?.[formIndex]?.uploadedFiles[
+                form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+              ]?.fileURL}#toolbar=0&view=FitH`
+              }
+              width="100%"
+              height="600px"
+            // style={{ width: "100%", height: "600px", objectFit: "cover }}
+            ></iframe>
+          </>
+        ) : (
+          <div className={style.acknowledgmentErrorTextStyle}>No Data To Show</div>
+        );
+      case "ScheduleB":
+        const fileURLScheduleB = form?.forms?.[formIndex]?.uploadedFiles?.[
+          form?.forms?.[formIndex]?.uploadedFiles?.length - 1
+        ]?.fileURL;
+        return fileURLScheduleB ? (
           <>
             <iframe
               src={`${form?.forms?.[formIndex]?.uploadedFiles[
@@ -4028,7 +4083,7 @@ const NewActiveApplication = ({
                         <div className={style.privilegeHeading}>
                           {form?.forms?.[formIndex]?.data?.departmentChangeYesOrNo === "No" ? (
                             <div className={style.privilegeHeading}>
-                              Same as Before
+                              {form?.basicDetails?.departmentSpecialty?.department}
                             </div>
                           ) : (
                             <div className={style.privilegeHeading}>
@@ -4185,7 +4240,7 @@ const NewActiveApplication = ({
                                 </div>
                                 {form?.privileges?.additionalPrivileges?.map(data => (
                                   <div
-                                    className={`${style.privilegeHeading} ${style.cursorPointer}`}
+                                    className={`${style.privilegeHeading}`}
                                   // onClick={() => { setShowCurrentPrivileges(true); setCurrentPrivilegesCategory('Additional'); setSelectedPrivilege(data?.id) }}
                                   >{data?.privilegeSetTitle} {data?.privilegeDetails?.corePrivileges?.esign?.signedDate !== undefined && (<span className={style.signedOnText}>signed on {data?.privilegeDetails?.corePrivileges?.esign?.signedDate}</span>)}</div>
                                 ))}
@@ -4344,6 +4399,88 @@ const NewActiveApplication = ({
                     </>
                   )}
                 </div>
+                {(data?.privilegeDetails
+                  ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+                  ?.length !== 0 &&
+                  data?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+                    ?.length !== undefined) && (
+                    <div>
+                      <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
+                        Advanced Privileges
+                      </div>
+                      <div key={dataIndex}>
+                        <div
+                          className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                        >
+                          {data?.privilegeSetTitle}
+                        </div>
+                        {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories) => {
+                          return (
+                            <div>
+                              <div className={style.flex}>
+                                <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                              </div>
+                              <>{
+                                categories?.privileges?.map(privileges => (
+                                  <div className={style.privilegeCodeGrid}>
+                                    <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                    <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                  </div>
+
+                                ))
+                              }
+                              </>
+                            </div>
+                          )
+                        })}
+                        <div className={style.twoCol}>
+                          <>
+                            <div>
+                              <ESignature
+                                userName={
+                                  data?.privilegeDetails
+                                    ?.restrictedPrivileges?.esign !== null
+                                    ? data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign?.name
+                                    : ""
+                                }
+                                encData={
+                                  data?.privilegeDetails
+                                    ?.restrictedPrivileges?.esign !== null
+                                    ? data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign?.esign
+                                    : ""
+                                }
+                                showData={
+                                  data?.privilegeDetails
+                                    ?.restrictedPrivileges?.esign !== null &&
+                                    data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign !== undefined
+                                    ? true
+                                    : false
+                                }
+                                showDatais={true}
+                              />
+                            </div>
+                            <div className={style.verticalAlignCenter}>
+                              <div className={style.displayInRow}>
+                                <div className={style.dateTitle}>Date: </div>
+                                <div className={`${style.date} ${style.marginLeft}`}>
+                                  {data?.privilegeDetails
+                                    ?.restrictedPrivileges?.esign !== null
+                                    ? data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign?.signedDate
+                                    : ""}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                 {dataIndex !== selectedPrivilegeForDisplay.length - 1 && (
                   <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
                 )}
@@ -4351,6 +4488,157 @@ const NewActiveApplication = ({
             ))}
             <>
               {(selectedAdditionalPrivilegeForDisplay?.length > 0 ||
+                selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.corePrivileges) && (
+                  <>
+                    <div className={`${style.cardTitle} ${style.marginTop30}`}>
+                      Requested Additional Privilege Sets for Reappointment
+                    </div>
+                    <div className={`${style.borderStyleTiles}`}></div>
+                  </>
+                )}
+              {/* <div className={`${style.borderStyleTiles}`}></div> */}
+
+              {selectedAdditionalPrivilegeForDisplay?.map((data, dataIndex) => (
+                <div key={dataIndex}>
+                  <div
+                    className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                  >
+                    {data?.privilegeSetTitle}
+                  </div>
+                  {data?.privilegeDetails?.corePrivileges?.privilegesByCategories?.map((categories, catIndex) => (
+                    <div key={catIndex} >
+                      <div className={`${style.flex}`}>
+                        <div className={style.itemLeft}>
+                          <strong>{categories?.category || ""}</strong>
+                        </div>
+                      </div>
+                      {categories?.privileges?.map((privilege, privIndex) => (
+                        <div key={privIndex} className={style.privilegeCodeGrid}>
+                          <div className={style.itemLeft}>
+                            <strong>{privilege?.privilegeId || ""}</strong>
+                          </div>
+                          <div className={style.itemLeft}>{privilege?.title || ""}</div>
+                        </div>
+                      ))}
+
+                    </div>
+                  ))}
+                  <div className={style.twoCol}>
+                    {data && (
+                      <>
+                        <div>
+                          <ESignature
+                            userName={
+                              data?.privilegeDetails?.corePrivileges?.esign?.name || ""
+                            }
+                            encData={
+                              data?.privilegeDetails?.corePrivileges?.esign?.esign || ""
+                            }
+                            showData={!!data?.privilegeDetails?.corePrivileges?.esign}
+                            showDatais={true}
+                          />
+                        </div>
+                        <div className={style.verticalAlignCenter}>
+                          <div className={style.displayInRow}>
+                            <div className={style.dateTitle}>Date:</div>
+                            <div className={`${style.date} ${style.marginLeft}`}>
+                              {
+                                data?.privilegeDetails?.corePrivileges?.esign?.signedDate ||
+                                ""
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  {(data?.privilegeDetails
+                    ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+                    ?.length !== 0 &&
+                    data?.privilegeDetails
+                      ?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges
+                      ?.length !== undefined) && (
+                      <div>
+                        <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
+                          Advanced Privileges
+                        </div>
+                        <div key={dataIndex}>
+                          <div
+                            className={`${style.privilegeHeading1} ${style.marginTop10} ${style.marginLeft30} ${style.marginBottom20}`}
+                          >
+                            {data?.privilegeSetTitle}
+                          </div>
+                          {data?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.map((categories) => {
+                            return (
+                              <div>
+                                <div className={style.flex}>
+                                  <div className={style.itemLeft}><strong>{categories?.category === null ? '' : categories?.category}</strong></div>
+                                </div>
+                                <>{
+                                  categories?.privileges?.map(privileges => (
+                                    <div className={style.privilegeCodeGrid}>
+                                      <div className={style.itemLeft}><strong>{privileges?.privilegeId || ''}</strong></div>
+                                      <div className={style.itemLeft}>{privileges?.title || ''}</div>
+                                    </div>
+
+                                  ))
+                                }
+                                </>
+                              </div>
+                            )
+                          })}
+                          <div className={style.twoCol}>
+                            <>
+                              <div>
+                                <ESignature
+                                  userName={
+                                    data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign !== null
+                                      ? data?.privilegeDetails
+                                        ?.restrictedPrivileges?.esign?.name
+                                      : ""
+                                  }
+                                  encData={
+                                    data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign !== null
+                                      ? data?.privilegeDetails
+                                        ?.restrictedPrivileges?.esign?.esign
+                                      : ""
+                                  }
+                                  showData={
+                                    data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign !== null &&
+                                      data?.privilegeDetails
+                                        ?.restrictedPrivileges?.esign !== undefined
+                                      ? true
+                                      : false
+                                  }
+                                  showDatais={true}
+                                />
+                              </div>
+                              <div className={style.verticalAlignCenter}>
+                                <div className={style.displayInRow}>
+                                  <div className={style.dateTitle}>Date: </div>
+                                  <div className={`${style.date} ${style.marginLeft}`}>
+                                    {data?.privilegeDetails
+                                      ?.restrictedPrivileges?.esign !== null
+                                      ? data?.privilegeDetails
+                                        ?.restrictedPrivileges?.esign?.signedDate
+                                      : ""}
+                                  </div>
+                                </div>
+                              </div>
+                            </>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  {dataIndex !== selectedAdditionalPrivilegeForDisplay?.length - 1 && (
+                    <div className={`${style.borderStyleTiles} ${style.marginTop10}`}></div>
+                  )}
+                </div>
+              ))}
+              {/* {(selectedAdditionalPrivilegeForDisplay?.length > 0 ||
                 selectedAdditionalPrivilegeForDisplay?.privilegeDetails?.restrictedPrivileges) && (
                   <div className={`${style.cardTitle} ${style.advanceBoxStyle} ${style.marginTop30}`}>
                     Advanced Privileges
@@ -4384,28 +4672,28 @@ const NewActiveApplication = ({
                     )
                   })}
                   <div className={style.twoCol}>
-                    {selectedAdditionalPrivilegeForDisplay?.[0] && (
+                    {data && (
                       <>
                         <div>
                           <ESignature
                             userName={
-                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              data?.privilegeDetails
                                 ?.restrictedPrivileges?.esign !== null
-                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ? data?.privilegeDetails
                                   ?.restrictedPrivileges?.esign?.name
                                 : ""
                             }
                             encData={
-                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              data?.privilegeDetails
                                 ?.restrictedPrivileges?.esign !== null
-                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ? data?.privilegeDetails
                                   ?.restrictedPrivileges?.esign?.esign
                                 : ""
                             }
                             showData={
-                              selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              data?.privilegeDetails
                                 ?.restrictedPrivileges?.esign !== null &&
-                                selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                data?.privilegeDetails
                                   ?.restrictedPrivileges?.esign !== undefined
                                 ? true
                                 : false
@@ -4417,9 +4705,9 @@ const NewActiveApplication = ({
                           <div className={style.displayInRow}>
                             <div className={style.dateTitle}>Date: </div>
                             <div className={`${style.date} ${style.marginLeft}`}>
-                              {selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                              {data?.privilegeDetails
                                 ?.restrictedPrivileges?.esign !== null
-                                ? selectedAdditionalPrivilegeForDisplay[0]?.privilegeDetails
+                                ? data?.privilegeDetails
                                   ?.restrictedPrivileges?.esign?.signedDate
                                 : ""}
                             </div>
@@ -4432,7 +4720,7 @@ const NewActiveApplication = ({
                     <div className={`${style.borderStyleTiles}  ${style.marginTop10}`}></div>
                   )}
                 </div>)
-                )}
+                )} */}
               {/* <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                 Application Payment Status
                 <span className={`${style.marginLeft30}  ${form?.payment?.paymentCompleted ? style.paidTextStyle : style.unpaidTextStyle}`}>
@@ -4657,7 +4945,7 @@ const NewActiveApplication = ({
                         <div className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.statusCardHeight} ${style.displayInCol}`}>
                           <div className={`${statusStyle} ${style.marginCenter}`}></div>
                           <div className={style.greyDotTextStyle}>
-                            Overall Verification & Acceptance Status
+                            MSO Verification & Acceptance Status
                           </div>
                         </div>
                       </div>
@@ -5753,13 +6041,17 @@ const NewActiveApplication = ({
                                                     {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                       isMatch ? (
                                                         <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Revert Verification">
+                                                          <Tooltip title="Click To Revert Verification" arrow>
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                               onClick={() => {
                                                                 handleStepsVerifyRevoke(form?.forms[index]?.id);
                                                               }}
                                                             >
-                                                              Verified
+                                                              Verified <RestartAltOutlinedIcon sx={{
+                                                                fontSize: 20,
+                                                                color: "#ffffff",
+                                                                marginLeft: "10px",
+                                                              }} />
                                                             </div>
                                                           </Tooltip>
                                                         </div>
@@ -5767,7 +6059,7 @@ const NewActiveApplication = ({
                                                         (
                                                           form?.forms[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click To Verify">
+                                                              <Tooltip title="Click To Verify" arrow>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => {
@@ -5780,13 +6072,17 @@ const NewActiveApplication = ({
                                                             </div>
                                                           ) : (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click To Revert Verification">
+                                                              <Tooltip title="Click To Revert Verification" arrow>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => {
                                                                     handleStepsVerifyRevoke(form?.forms[index]?.id);
                                                                   }}
                                                                 >
-                                                                  Verified
+                                                                  Verified <RestartAltOutlinedIcon sx={{
+                                                                    fontSize: 20,
+                                                                    color: "#ffffff",
+                                                                    marginLeft: "10px",
+                                                                  }} />
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
@@ -6859,7 +7155,11 @@ const NewActiveApplication = ({
                                                 {!staffView && (
                                                   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}>
-                                                      Verified
+                                                      Verified <LockOutlinedIcon sx={{
+                                                        fontSize: 20,
+                                                        color: "#ffffff",
+                                                        marginLeft: "10px",
+                                                      }} />
                                                     </div>
                                                   </div>
                                                 )}
@@ -10568,8 +10868,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={form?.upcomingCredCommitteeMeetingDate ? new Date(form?.upcomingCredCommitteeMeetingDate) : sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (
@@ -10626,8 +10927,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForCC}
                             renderInput={(params) => (
@@ -10672,7 +10974,7 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
                             minDate={sub(new Date(), { years: 3 })}
-                            // maxDate={add(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}                        
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (
@@ -11954,9 +12256,11 @@ const NewActiveApplication = ({
               selectedRow={selectedRow}
               selectedRowTableName={selectedRowTableName}
               selectedFormId={selectedFormId}
+              form={form}
               setForm={setForm}
               handleStepsVerify={handleStepsVerify}
               setHasVerificationAttempted={setHasVerificationAttempted}
+              getPreApplicationForReplace={getPreApplication}
             />
           )}
           {/* <Dialog isOpen={showCurrentPrivileges} onClose={() => setShowCurrentPrivileges(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>

@@ -51,7 +51,7 @@ const TopTileApplication = ({
       <div className={`${style.spaceBetweenColumn} ${style.padding5}`}>
         <div>
           <div className={`${style.spaceBetween} ${style.alignCenterNumber}  ${selectedTab === currentTile ? style.selectedApplicationText : style.headingForContracts}`}>{tileLabel}
-            <span className={`${style.countDesign}`}>{tileCount}</span>
+            <span className={`${style.countDesign}`}>{`${tileCount} Submitted`}</span>
             {/* <Tooltip className={` ${style.center}`} title={`${currentTile} ${tileCount}`}>
               <InfoOutlinedIcon fontSize="small" className={style.center} />
             </Tooltip> */}

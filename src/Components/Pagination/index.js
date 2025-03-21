@@ -17,7 +17,7 @@ const Pagination = ({ selectedPage, selectPage, totalCount, onLimitChange }) => 
   const [limit, setLimit] = useState(9999);
   let isLastPage = (page * limit) >= count;
   let isFirstPage = page === 1;
-  const startCount = page === 1 ? 1 : (page * limit) - (limit - 1);
+  const startCount = (page === 1 || limit === 9999) ? 1 : (page * limit) - (limit - 1);
   const endCount = isLastPage ? count : page * limit;
   const rowsPerPageOptions = [10, 20, 50, `All (${count})`];
 
@@ -50,30 +50,48 @@ const Pagination = ({ selectedPage, selectPage, totalCount, onLimitChange }) => 
   }
   return (
     <div className={style.spaceBetween}>
-      <p></p>
+      <div></div>
       <div className={style.displayInRow}>
-        <div className={`${style.paginationStyle} ${style.marginLeft}`}>Rows per page:</div>
-        <FormControl sx={{ minWidth: 70 }} size="small">
-          <Select
-            value={limit === 9999 ? `All (${count})` : limit}
-            onChange={(e) => { setLimit(e.target.value === `All (${count})` ? 9999 : e.target.value); onLimitChange(e.target.value === `All (${count})` ? 9999 : e.target.value) }}
-            displayEmpty
-            size="small"
-            variant="standard"
-            sx={{ fontSize: 12, padding: "4px 8px", height: "auto" }}
-          >
-            {rowsPerPageOptions.map((option) => (
-              <MenuItem key={option} value={option} sx={{ fontSize: 12 }}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <p className={`${style.paginationStyle} ${style.marginLeft30}`}>{startCount !== count ? `${startCount} - ${endCount} of ${count}` : `${startCount} of ${count}`}</p>
-        <FirstPageIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isFirstPage ? style.disabledLook : ''} ${style.marginLeft30}`} onClick={() => { updatePageCount('first'); }} />
-        <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isFirstPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('decrement'); }} />
-        <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isLastPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('increment'); }} />
-        <LastPageIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${style.marginRight} ${isLastPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('last'); }} />
+        <div className={`${style.paginationStyle} ${style.verticalAlignCenter}`}>Show</div>
+        <div className={`${style.paginationStyle} ${style.marginLeft}  ${style.verticalAlignCenter}`}>
+          <FormControl sx={{ minWidth: 70 }} size="small" >
+            <Select
+              value={limit === 9999 ? `All (${count})` : limit}
+              onChange={(e) => { setLimit(e.target.value === `All (${count})` ? 9999 : e.target.value); onLimitChange(e.target.value === `All (${count})` ? 9999 : e.target.value) }}
+              displayEmpty
+              size="small"
+              // variant="standard"
+              sx={{
+                fontSize: 12,
+                padding: "4px 8px",
+                height: "32px",
+                minHeight: "32px",
+                "& .MuiSelect-select": {
+                  padding: "4px 4px",
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  borderColor: "rgba(0, 0, 0, 0.23)",
+                },
+              }}
+            >
+              {rowsPerPageOptions.map((option) => (
+                <MenuItem key={option} value={option} sx={{ fontSize: 12 }}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+        <div className={style.verticalAlignCenter}>
+          <FirstPageIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isFirstPage ? style.disabledLook : ''} ${style.marginLeft}`} onClick={() => { updatePageCount('first'); }} />
+          <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isFirstPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('decrement'); }} />
+          <div className={style.paginationCount}>
+            {/* <p className={`${style.paginationStyle} ${style.verticalAlignCenter}`}>{startCount !== count ? `${startCount} - ${endCount} of ${count}` : `${startCount} of ${count}`}</p> */}
+            <p className={`${style.paginationStyle} ${style.verticalAlignCenter}`}>{`Page ${page} of ${Math.ceil(totalCount / limit)}`}</p>
+          </div>
+          <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isLastPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('increment'); }} />
+          <LastPageIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} ${style.cursor} ${isLastPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('last'); }} />
+        </div>
         {/* <Icon icon="chevron-left" className={`${style.margin} ${style.cursor} ${style.border} ${isFirstPage ? style.disabledLook : ''} ${style.marginLeft}`} onClick={() => { updatePageCount('decrement'); }} />
         <Icon icon="chevron-right" className={`${style.margin} ${style.cursor} ${style.border} ${style.marginRight} ${isLastPage ? style.disabledLook : ''}`} onClick={() => { updatePageCount('increment'); }} /> */}
         {
