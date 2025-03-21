@@ -127,7 +127,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     // "Application Status",
     "Action"
   ];
-  const colSortValues = [false, true, false, false, true];
+  const colSortValues = [false, true, false, true, true, true, false];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {

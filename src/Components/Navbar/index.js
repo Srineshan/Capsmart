@@ -57,8 +57,11 @@ const Navbar = () => {
   const openHelp = Boolean(anchorElHelp);
   const popoverAnchorHelp = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
+  const [anchorElGuide, setAnchorElGuide] = useState(null);
   const openTools = Boolean(anchorElTools);
+  const openGuide = Boolean(anchorElGuide);
   const popoverAnchorTools = useRef(null);
+  const popoverAnchorGuide = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
   const [logo, setLogo] = useState(sessionStorage?.getItem("logo"));
   const [isActivityServiceLogAvailable, setIsActivityServiceLogAvailable] =
@@ -198,8 +201,16 @@ const Navbar = () => {
     setAnchorElTools(event.currentTarget);
   };
 
+  const handleClickGuide = (event) => {
+    setAnchorElGuide(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
+  };
+
+  const handleCloseGuide = () => {
+    setAnchorElGuide(null);
   };
 
   const idTools = open ? "mouse-over-popover" : undefined;
@@ -659,7 +670,7 @@ const Navbar = () => {
           </div> */}
         </div>
 
-        <div className={style.displayInRow}>
+        <div className={`${style.displayInRow} ${style.centerAlignCenter}`}>
           {/* {!window.location.pathname.includes('reportTypeOverview') && (
                     <>
                         <img src={File} alt="print" className={style.icons} />
@@ -672,7 +683,42 @@ const Navbar = () => {
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
           <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
-          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+          {/* <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div> */}
+          <div
+            ref={popoverAnchorGuide}
+            onMouseEnter={(e) => handleClickGuide(e)}
+            onMouseLeave={() => handleCloseGuide()}
+            aria-owns={openGuide ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.alignContent} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openGuide}
+              anchorEl={popoverAnchorGuide.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                onMouseEnter: handleClickGuide,
+                onMouseLeave: handleCloseGuide,
+              }}
+            >
+              <div className={style.optionsCardStyle}>
+                <Link
+                  // to={ `/entitySetup/${TenantID}/appSubscription` }
+                  className={style.noFontStyle}
+                >
+                  <div className={style.options}>ENTITY MANAGEMENT</div>
+                </Link>
+              </div>
+            </Popover>
+          </div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}

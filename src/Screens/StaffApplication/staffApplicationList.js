@@ -384,7 +384,7 @@ const StaffApplicationList = ({
     true,
     // true,
     true,
-    false,
+    true,
     false,
     false,
     false,
@@ -397,7 +397,7 @@ const StaffApplicationList = ({
     true,
     // true,
     true,
-    false,
+    true,
     false,
     false,
     false,
@@ -409,11 +409,13 @@ const StaffApplicationList = ({
     false,
     true,
     true,
+    true,
+    true,
     false,
     false,
     false,
     false,
-    false,
+    true,
     false
   ]
   const applicationColSortValues = applicationType === "NEW" ? [
@@ -433,8 +435,8 @@ const StaffApplicationList = ({
     true,
     // true,
     true,
-    false,
-    false,
+    true,
+    true,
     false,
     false,
     false,
@@ -454,7 +456,7 @@ const StaffApplicationList = ({
     true,
     // true,
     true,
-    false,
+    true,
     false,
     false,
     false,
@@ -474,7 +476,7 @@ const StaffApplicationList = ({
     true,
     // true,
     true,
-    false,
+    true,
     false,
     false,
     false,
@@ -985,7 +987,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee,selectedDepartment]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1053,9 +1055,10 @@ const StaffApplicationList = ({
             workModeType === "Chief Of Staff" ||
             workModeType === "Credentialing Committee");
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const departmentParam = selectedDepartment ? `&departmentSpecialties=${selectedDepartment}` : "";
         setIsLoadingImage(true);
         response = await GET(
-          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${assignedUserIdsParam}`
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
         );
         console.log("Application data", response?.data?.applications);
         setTableData(response?.data?.applications);
@@ -4080,8 +4083,6 @@ const StaffApplicationList = ({
                     )}
                   </>
                 ) : ""}
-                {workModeType === "Staff Manager" ? (
-                  <>
                     {selectedDepartment && (
                       <div className={`${style.filterBackground} ${style.displayInRow}`}>
                         <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -4097,8 +4098,6 @@ const StaffApplicationList = ({
                         </Tooltip>
                       </div>
                     )}
-                  </>
-                ) : ""}
                 {workModeType === "Staff Manager" && selectedTab === "level-3" && (
                   <>
                     <div

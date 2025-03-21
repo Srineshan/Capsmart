@@ -59,6 +59,10 @@
     align-content: center;
 }
 
+.alignContent{
+    align-content: center;
+}
+
 .activeMenuColor {
     color: $primarycolor;
     border-bottom: 2px solid $primarycolor;
@@ -133,6 +137,10 @@
 .centerAlign {
     align-self: center;
     margin: 0 20px;
+}
+
+.centerAlignCenter{
+    align-items: center;
 }
 
 .logoutStyle:hover {

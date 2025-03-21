@@ -100,13 +100,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
         APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
         APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff"],
+        DEPARTMENT:["Dept / Division & Specialty", "Department"],
         STAFF_LAST_NAME: ['Staff Name'],
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
         CREATED_DATE: ['created date'],
         LAST_UPDATED: ['Last Updated'],
         SUBMITTED_DATE: ['Submitted'],
         APPLICANT_ID: ['Applicant ID'],
-        REAPPOINTMENT_STATUS: ['Reappointment']
+        REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
+        CC_MEETING_DATE: ['CC Meeting Date']
     }
 
     const availableSortValueEnum = {
@@ -121,7 +123,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Last Updated': 'LAST_UPDATED',
         'Submitted': 'SUBMITTED_DATE',
         'Applicant ID': 'APPLICANT_ID',
-        'Reappointment': 'REAPPOINTMENT_STATUS'
+        'Reappointment': 'REAPPOINTMENT_STATUS',
+        'Dept / Division & Specialty': 'DEPARTMENT',
+        'Department': 'DEPARTMENT',
+        'CC Meeting Date':'CC_MEETING_DATE',
+        'Status': 'REAPPOINTMENT_STATUS'
     }
 
 
