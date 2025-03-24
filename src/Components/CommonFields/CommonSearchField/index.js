@@ -26,7 +26,7 @@ const CommonSearchField = ({ searchTerm, setSearchTerm, onChange, searchData, ha
                 onFocus={() => setIsFocused(true)}
                 // onBlur={() => setIsFocused(false)}
                 fullWidth
-                sx={{ height: "32px" }}
+                sx={{ height: "32px", maxWidth: '280px' }}
                 InputProps={{
                     sx: { height: "32px", padding: "0px 5px" },
                     startAdornment: (

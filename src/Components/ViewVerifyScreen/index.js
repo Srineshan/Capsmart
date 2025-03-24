@@ -308,7 +308,7 @@ const NewActiveApplication = ({
 
   const handleDateChange = (date, field) => {
     const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
+      ? format(new Date(date), "yyyy-MM-dd'T'00:00")
       : format(new Date(date), 'yyyy-MM-dd');
 
 
