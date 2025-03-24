@@ -100,7 +100,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
         APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
         APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff"],
-        DEPARTMENT:["Dept / Division & Specialty", "Department"],
+        DEPARTMENT: ["Dept / Division & Specialty", "Department"],
         STAFF_LAST_NAME: ['Staff Name'],
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
         CREATED_DATE: ['created date'],
@@ -126,7 +126,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Reappointment': 'REAPPOINTMENT_STATUS',
         'Dept / Division & Specialty': 'DEPARTMENT',
         'Department': 'DEPARTMENT',
-        'CC Meeting Date':'CC_MEETING_DATE',
+        'CC Meeting Date': 'CC_MEETING_DATE',
         'Status': 'REAPPOINTMENT_STATUS'
     }
 
@@ -300,13 +300,15 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                         </div>
                     )}
                 </div>
-                <div className={style.alignBottom}>
-                    {searchField}
+                <div className={style.container}>
+                    <div className={`${style.alignBottom}`}>
+                        {searchField}
+                    </div>
+                    {
+                        !hidePagination && (totalCount || tableData?.length) > 10 &&
+                        <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />
+                    }
                 </div>
-                {
-                    !hidePagination && (totalCount || tableData?.length) > 10 &&
-                    <Pagination selectPage={getSelectedPage} totalCount={totalCount || tableData?.length} selectedPage={page || 1} onLimitChange={onLimitChange} />
-                }
             </div>
             <div>
                 <div className={`${style.tableHeader} ${gridStyle} ${style.marginTop10}`}>
