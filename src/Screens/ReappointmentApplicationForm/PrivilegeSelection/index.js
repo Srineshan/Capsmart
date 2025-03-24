@@ -298,7 +298,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
       basicForm?.forms?.findIndex((data) => data?.schemaCategory === atob(step))
     );
     fetchPaymentListData();
-  }, [basicForm, step]);
+  }, [basicForm, step, selectedValue]);
 
   useEffect(() => {
     sessionStorage.removeItem("hasReloaded");

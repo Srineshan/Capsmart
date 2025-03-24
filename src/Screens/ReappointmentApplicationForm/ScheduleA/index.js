@@ -99,7 +99,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'scheduleA.pdf'
         };
         const formData = new FormData();
 
@@ -114,7 +114,7 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
             try {
                 const response = await POST(`application-management-service/application/${applicationId}/files`, formData);
                 console.log(response?.data);
-                uploadedFile = response?.data;
+                uploadedFile = response?.data?.file;
             } catch (error) {
                 console.error(error);
                 return null;

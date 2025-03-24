@@ -841,11 +841,11 @@ const App = ({ props }) => {
   // }, [window.location.pathname]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
   }, [logo, title]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
     if (TenantID !== undefined && TenantID !== '' && TenantID) {
       getLogo();
     }
@@ -871,7 +871,9 @@ const App = ({ props }) => {
 
   const changeFavicon = () => {
     const favicon = document.getElementById("favicon");
-    favicon.href = logo;
+    if (logo !== null) {
+      favicon.href = logo;
+    }
     document.title = title;
   };
 

@@ -94,14 +94,15 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
             <div className={`${style.roleSwitchBackgroundStyle} ${currentUserDetails?.roles?.length > 1 ? style.spaceBetween : style.placeCenter
                 } ${style.alignCenterText} ${style.marginTop}`}>
                 <div className={style.roleType}>
-                    {workModeType}
+                    <div>{workModeType}</div>
+                    <div>Workspace</div>
                 </div>
                 {currentUserDetails?.roles?.length > 1 && (
                     <div
                         className={`${style.workSpaceSwitchTextStyle} ${style.marginLeft20} ${style.cursorPointer}`}
                         onClick={handleWorkModeSelection}
                     >
-                        Switch Workspaces
+                        Switch Workspace
                     </div>
                 )}
             </div>

@@ -936,7 +936,7 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 10% 16% 6% 6% 6% 10% 14% 6%;
   // grid-template-columns: 2% 20% 14% 15% 7% 7% 7% 16% 6%;
-  grid-template-columns: 3% 25% 11% 30% 6% 5% 9% 6%;
+  grid-template-columns: 3% 18% 12% 26% 10% 7% 4% 7% 5%;
   grid-gap: 1%;
 }
 
@@ -958,13 +958,13 @@ body::-webkit-scrollbar {
   display: grid;
   // grid-template-columns: 2% 18% 12% 13% 6% 6% 7% 13% 12% 3% 2%;
   // grid-template-columns: 2% 18% 11% 13% 5% 6% 7% 13% 12% 3% 2%;
-  grid-template-columns: 2% 26% 11% 30% 7% 5% 8% 6%;
+  grid-template-columns: 2% 21% 11% 28% 9% 6% 4% 7% 4%;
   grid-gap: 1%;
 }
 
 .credUserStaffReappointGrid {
   display: grid;
-  grid-template-columns: 5% 17% 10% 22% 10% 9% 6% 10% 3%;
+  grid-template-columns: 5% 16% 10% 17% 10% 6% 5% 8% 10% 6%;
   grid-gap: 1%;
 }
 
@@ -5226,8 +5226,53 @@ input[type="number"] {
   // padding: 3px;
 }
 
+.viewCurrentStatusText {
+  text-align: center;
+  font: normal normal bold 12px proxima-nova;
+  padding: 5px;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  text-transform: uppercase;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+}
+
 .searchFieldAlignment {
   margin-right: 18px;
+}
+
+.filterContainer {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 10px 20px #171A1A29;
+  border-radius: 4px;
+  opacity: 1;
+  padding: 0px 10px 10px 10px;
+  width: 25%;
+  position: absolute;
+  right: 2%;
+  z-index: 10;
+}
+
+.filterBackground {
+  background-color: rgba(6, 97, 122, 0.1);
+  border-radius: 20px;
+  padding: 5px;
+  max-height: min-content;
+  align-items: center;
+}
+
+.filtertextStyle {
+  text-align: left;
+  font: italic normal medium 14px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  opacity: 1;
+}
+
+.Bold {
+  font-weight: 500;
 }
 
 .privateBorderText {

@@ -637,7 +637,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -659,6 +659,8 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const applicationId = "66dc44ec788741fedc982b01";
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
+
+  console.log("searchTermForTable",searchTermForTable)
 
   // Listen for session storage changes
   useEffect(() => {
@@ -709,7 +711,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     try {
       let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${role}`
+        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${role}&searchText=${searchTermForTable}`
       );
       setCounts(response?.data);
       getReFetchMetaData(false);
@@ -758,7 +760,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       console.log("refetcheddddddddddd",reFetchMetaData)
     // }
     // console.log("refetcheddddddddddd",reFetchMetaData)
-  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept]);
+  }, [showBulkApproveDialog,approvalnotesCommentsBoxDept,searchTermForTable]);
 
   // Handle user flow and role updates
   // useEffect(() => {
@@ -869,9 +871,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
-          label = "Applicants to Verify";
+          label = "Applicants To Verify";
         } else if (applicationType === "REAPPOINTMENT") {
-          label = "Reappointments to Process";
+          label = "Reappointments To Process";
         }else {
           label = value.tabDisplayName;
         }
@@ -892,13 +894,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
      else if (workModeType === "Chief Of Staff") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
-        label: "Reappointments to Process",
+        label: "Reappointments To Process",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
-        label: "Reappointments to Process",
+        label: "Reappointments To Process",
       }));
     }
     // else if (workModeType === "Chief Of Staff") {
@@ -910,7 +912,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     else if (workModeType === "Credentialing Committee") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
-        label: "Reappointments to Review",
+        label: "Reappointments To Review",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {

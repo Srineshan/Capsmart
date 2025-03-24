@@ -1758,6 +1758,7 @@ const ApplicationFieldCard = ({
                         }`}
                       placement="bottom-start"
                       followCursor
+                      arrow
                     >
                       <div className={style.lableReadOnlyStyle}>
                         {getValueByPath(
@@ -2666,7 +2667,7 @@ const ApplicationFieldCard = ({
                   <div className={style.uploadButton2}>
                     <div className={style.uploadGrid2}>
 
-                      <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                      <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow>
                         <span
                           className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                           onClick={() => {
@@ -2788,7 +2789,7 @@ const ApplicationFieldCard = ({
                   getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
                     <div className={style.uploadButton2}>
                       <div className={style.uploadGrid2}>
-                        <Tooltip title="Click to View File" placement="bottom-start" followCursor>
+                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow>
                           <span
                             className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                             onClick={() => {
