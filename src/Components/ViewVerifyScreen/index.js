@@ -280,10 +280,12 @@ const NewActiveApplication = ({
 
   useEffect(() => {
     if (form?.upcomingCredCommitteeMeetingDate) {
-      setSelectedDateForReappoint(new Date(form?.upcomingCredCommitteeMeetingDate));
+      setSelectedDateForReappoint(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
   }, [form?.upcomingCredCommitteeMeetingDate]);
+  
 
   // const handleDateChange = (date, field) => {
   //   const formattedDate = date
