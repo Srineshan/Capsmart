@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds,filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -357,6 +357,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     onChange={() => handleCheckboxClick(data?.id, data)}
                                                     color="primary"
                                                     inputProps={{ 'aria-label': `Select ${data?.name}` }}
+                                                    disabled={filteredIds?.length > 0 ? !filteredIds.includes(data?.id) : false}
                                                 />
                                             </div>
                                         )
