@@ -36,10 +36,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [fields, setFields] = useState([]);
     const [metaData, setMetaData] = useState({});
     const [documentStatus, setDocumentStatus] = useState('ACCEPT_DOCUMENT');
+    const [rejectClarificationType, setRejectClarificationType] = useState('ACCEPT_DOCUMENT');
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
     const [isEdited, setIsEdited] = useState(false);
+    const [rejectSubject, setRejectSubject] = useState('');
+    const [rejectClarification, setRejectClarification] = useState('');
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
     }
@@ -288,6 +291,38 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         const { data: basicForm } = await GET(`application-management-service/application/${applicationId}`);
         setForm(basicForm);
     };
+
+    const handleSubmitRequestForClarification = async () => {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        let clarificationRequiredForTitle = form?.forms?.[form?.forms?.findIndex(data => data?.id === selectedFormId)]?.[0]?.title
+        let temp = {
+            clarificationRequiredFor: clarificationRequiredForTitle,
+            clarificationTitle: rejectSubject,
+            clarificationDescription: rejectClarification,
+            clarificationRequiredFrom: "APPLICANT",
+            clarificationRequestedBy: {
+                id: user?.id,
+                name: {
+                    firstName: user?.name?.firstName,
+                    lastName: user?.name?.lastName,
+                    middleName: user?.name?.middleName
+                },
+                email: {
+                    officialEmail: user?.email?.officialEmail
+                },
+                title: {
+                    title: user?.title?.title
+                }
+            },
+        }
+        await POST(`application-management-service/application/${applicationId}/form/${selectedFormId}/clarificationRequest`, temp)
+            .then(response => {
+                console.log("onetwo", response)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
 
     const changeHandler = async (event) => {
         setIsLoading(true);
@@ -563,6 +598,18 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 </div>
                                             </div>
                                         )}
+                                        {!file?.isVerified && (
+                                            <div
+                                                className={`${style.purpleButtonVerify}`}
+                                                onClick={() => {
+                                                    setDocumentStatus('REJECT_DOCUMENT')
+                                                }}
+                                            >
+                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                    Reject
+                                                </div>
+                                            </div>
+                                        )}
                                         <div>
                                             {file?.isVerified ? (
                                                 <Tooltip arrow title="Click To Revert Verification">
@@ -599,6 +646,116 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         </div>
 
                                     </div>
+                                    {documentStatus === "REJECT_DOCUMENT" && (
+                                        <>
+                                            <div className={style.marginTop}>
+                                                <div className={style.heading}>Request For Required Document</div>
+                                                <div className={` ${style.marginTop10}`}>
+                                                    <CommonSelectField
+                                                        value={rejectClarificationType}
+                                                        onChange={(e) => setRejectClarificationType(e.target.value)}
+                                                        className={style.documentStatusWidth}
+                                                        // firstOptionLabel={"Select Clarification Type"}
+                                                        // firstOptionValue={""}
+                                                        label={'Clarification Type'}
+                                                        valueList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']}
+                                                        labelList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']}
+                                                        disabledList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']?.map(data => false)}
+                                                    />
+                                                </div>
+                                                <div className={style.marginTop10}>
+                                                    <CommonTextField
+                                                        className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle} ${style.fullWidth}`}
+                                                        value={rejectSubject}
+                                                        onChange={(e) => setRejectSubject(e.target.value)}
+                                                        placeholder="Enter Clarification Subject Here"
+                                                        label={"Clarification Required Subject*"}
+                                                    />
+                                                </div>
+
+                                            </div>
+                                            <div className={style.marginTop10}>
+                                                <div className={style.lableStyle}>Specify the clarification that is needed*</div>
+                                                <CKEditor
+                                                    editor={ClassicEditor}
+                                                    data={rejectClarification}
+                                                    onChange={(event, editor) => {
+                                                        const data = editor.getData();
+                                                        setRejectClarification(data);
+                                                    }}
+                                                    onReady={(editor) => {
+                                                        editor.editing.view.change(
+                                                            (writer) => {
+                                                                writer.setStyle(
+                                                                    "height",
+                                                                    "80px",
+                                                                    editor.editing.view.document.getRoot()
+                                                                );
+                                                            }
+                                                        );
+                                                    }}
+                                                    config={{
+                                                        placeholder:
+                                                            "Insert here...",
+                                                        toolbar: {
+                                                            shouldNotGroupWhenFull: true,
+                                                            sticky: true,
+                                                            items: [
+                                                                'undo', 'redo',
+                                                                '|',
+                                                                'heading',
+                                                                '|',
+                                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                                '|',
+                                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                                '|',
+                                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                            ],
+                                                        },
+                                                        autoGrow: false,
+                                                    }}
+                                                />
+                                                {reasonForReplacingDocument !== "" && (
+                                                    <div className={`${style.marginTop10} `}>
+                                                        <Tooltip arrow title="Add the reason to enable document replace" followCursor
+                                                            {...(reasonForReplacingDocument !== "" && { open: false })}>
+                                                            <CommonDropZone
+                                                                title={"Replace This Document"}
+                                                                description={
+                                                                    "Upload your files or drag & drop from your document cabinet"
+                                                                }
+                                                                changeHandler={changeHandler}
+                                                                files={[]}
+                                                            />
+                                                        </Tooltip>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <Tooltip arrow title={replaceRowId === "" ? "Document Replacement Pending" : "Click To Verify"}>
+                                                <div
+                                                    className={`${style.purpleButtonVerify} ${style.marginTop} ${replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}
+                                                    onClick={() => {
+                                                        if (replaceRowId !== "") {
+                                                            handleDocVerify();
+                                                            if (selectedFileIndex === fileArray?.length - 1) {
+                                                                setTimeout(() => getIsOpen(false), 500);
+                                                            } else {
+                                                                if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+                                                                    setTimeout(() => getIsOpen(false), 500);
+                                                                } else {
+                                                                    handleNext();
+                                                                }
+                                                            }
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                        SAVE & CONTINUE
+                                                    </div>
+                                                </div>
+                                            </Tooltip>
+                                        </>
+                                    )}
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                                         <>
                                             <div className={style.marginTop}>
@@ -623,7 +780,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                     }}
                                                     config={{
                                                         placeholder:
-                                                            "Insert any privilege competency and qualification information...",
+                                                            "Insert here...",
                                                         toolbar: {
                                                             shouldNotGroupWhenFull: true,
                                                             sticky: true,
