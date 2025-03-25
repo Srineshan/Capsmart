@@ -328,11 +328,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const handleSubmitRequestForClarification = async () => {
         const user = JSON.parse(sessionStorage.getItem('user'));
         let clarificationRequiredForTitle = form?.forms?.[form?.forms?.findIndex(data => data?.id === selectedFormId)]?.[0]?.title
+        console.log(form?.forms?.[form?.forms?.findIndex(data => data?.id === selectedFormId)]?.[0]?.title, form?.forms?.findIndex(data => data?.id === selectedFormId), selectedFormId)
         let temp = {
             clarificationRequiredFor: clarificationRequiredForTitle,
             clarificationTitle: rejectSubject,
             clarificationDescription: rejectClarification,
             clarificationRequiredFrom: "APPLICANT",
+            clarificationRequestType: rejectClarificationType,
             clarificationRequestedBy: {
                 id: user?.id,
                 name: {
@@ -400,6 +402,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                     console.log(error)
                 })
         }
+        if (documentStatus === "REJECT_DOCUMENT") {
+            await handleSubmitRequestForClarification();
+        }
         let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
 
         let temp = {
@@ -409,7 +414,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             rowId: documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? replaceRowId : file?.rowId,
         };
 
-        await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${verificationStatus}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${documentStatus !== "REJECT_DOCUMENT" ? verificationStatus : "UNVERIFIED"}&documentStatus=${documentStatus}`, temp)
             .then((response) => {
                 console.log("success");
 
@@ -700,10 +705,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         className={style.documentStatusWidth}
                                                         // firstOptionLabel={"Select Clarification Type"}
                                                         // firstOptionValue={""}
-                                                        label={'Clarification Type'}
-                                                        valueList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']}
-                                                        labelList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']}
-                                                        disabledList={['Follow-up with Applicant', 'Request Original Document', 'Request Updated Document']?.map(data => false)}
+                                                        label={'Clarification Type*'}
+                                                        valueList={['REQUEST_ORIGINAL_DOCUMENT', 'REQUEST_UPDATED_DOCUMENT']}
+                                                        labelList={['Request Original Document', 'Request Updated Document']}
+                                                        disabledList={['Request Original Document', 'Request Updated Document']?.map(data => false)}
                                                     />
                                                 </div>
                                                 <div className={style.marginTop10}>
@@ -758,37 +763,16 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         autoGrow: false,
                                                     }}
                                                 />
-                                                {reasonForReplacingDocument !== "" && (
-                                                    <div className={`${style.marginTop10} `}>
-                                                        <Tooltip arrow title="Add the reason to enable document replace" followCursor
-                                                            {...(reasonForReplacingDocument !== "" && { open: false })}>
-                                                            <CommonDropZone
-                                                                title={"Replace This Document"}
-                                                                description={
-                                                                    "Upload your files or drag & drop from your document cabinet"
-                                                                }
-                                                                changeHandler={changeHandler}
-                                                                files={[]}
-                                                            />
-                                                        </Tooltip>
-                                                    </div>
-                                                )}
                                             </div>
-                                            <Tooltip arrow title={replaceRowId === "" ? "Document Replacement Pending" : "Click To Verify"}>
+                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Enter Clarification Details" : "Click To Continue"}>
                                                 <div
-                                                    className={`${style.purpleButtonVerify} ${style.marginTop} ${replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}
+                                                    className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={() => {
-                                                        if (replaceRowId !== "") {
-                                                            handleDocVerify();
-                                                            if (selectedFileIndex === fileArray?.length - 1) {
-                                                                setTimeout(() => getIsOpen(false), 500);
-                                                            } else {
-                                                                if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
-                                                                    setTimeout(() => getIsOpen(false), 500);
-                                                                } else {
-                                                                    handleNext();
-                                                                }
-                                                            }
+                                                        handleDocVerify();
+                                                        if (selectedFileIndex === fileArray?.length - 1) {
+                                                            setTimeout(() => getIsOpen(false), 500);
+                                                        } else {
+                                                            handleNext();
                                                         }
                                                     }}
                                                 >
