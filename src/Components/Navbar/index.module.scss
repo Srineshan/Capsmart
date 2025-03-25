@@ -9,7 +9,7 @@
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 60px;
+    height: 40px;
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 5px 20px #52575D29;
     opacity: 1;
@@ -34,17 +34,17 @@
     top: 10px;
     left: 22px;
     width: auto;
-    height: 40px;
+    height: 20px;
     object-fit: contain;
     margin-right: 80px;
 }
 
 .menuStyle {
-    margin-top: 20px;
+    margin-top: 12px;
     padding: 0 15px;
-    font: normal normal 500 15px/20px proxima-nova;
+    font: normal normal 500 13px/18px proxima-nova;
     letter-spacing: 1.5px;
-    padding-bottom: 5px;
+    padding-bottom: 0px;
     color: #646D82;
     cursor: pointer;
 }
@@ -53,7 +53,7 @@
     // margin: 25px 0 0 30px;
     padding: 0 15px;
     // font: normal normal bold 15px/25px proxima-nova;
-    font: normal normal 600 20px proxima-nova;
+    font: normal normal 600 13px/18px proxima-nova;
     letter-spacing: 1.5px;
     color: #646D82;
     align-content: center;
@@ -62,9 +62,9 @@
 .activeMenuColor {
     color: $primarycolor;
     border-bottom: 2px solid $primarycolor;
-    padding-bottom: 8px;
-    font: normal normal 600 $navbartext proxima-nova;
-    margin-top: 20px;
+    padding-bottom: 0px;
+    font: normal normal 600 13px/18px proxima-nova;
+    margin-top: 12px;
 }
 
 .icons {
@@ -75,8 +75,8 @@
 }
 
 .logoutIcons {
-    width: 40px;
-    height: 40px;
+    width: 20px;
+    height: 20px;
     // margin: 20px 20px 0 -10px;
     cursor: pointer;
     align-self: center;

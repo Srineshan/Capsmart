@@ -3,7 +3,7 @@
 .eSignDialog {
   height: 75%;
   overflow: hidden;
-  width: 70% !important;
+  width: 80% !important;
 }
 
 .eSignDialogBackground {
@@ -123,7 +123,7 @@
 
 .rejectionHeadingTextStyle {
   text-align: left;
-  font: normal normal bold 16px proxima-nova;
+  font: normal normal bold 15px proxima-nova;
   letter-spacing: 0px;
   color: #2C2C2C;
   text-transform: capitalize;
@@ -173,9 +173,9 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 40% 45%;
-  grid-gap: 20px;
-  justify-items: start;
+  grid-template-columns: 45% 45%;
+  grid-gap: 2%;
+  align-items: center;
 }
 
 .rejectionTextStyle1 {
@@ -286,4 +286,29 @@
   border: $primarycolor;
   outline: none;
   width: 100%;
+}
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.gridItem1 {
+  display: flex;
+  gap: 0;
+  align-items: center;
 }

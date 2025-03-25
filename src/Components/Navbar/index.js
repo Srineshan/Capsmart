@@ -671,8 +671,8 @@ const Navbar = () => {
           <img src={NotificationsIcon} alt="print" className={style.icons} />
           <img src={RedBackground} alt="print" className={style.notificationIcon} />
           <img src={NotificationCount} alt="print" className={style.notificationCount} /> */}
-          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="large" /></div>
-          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="large" /></div>
+          <div className={`${style.centerAlign} ${style.iconSize}`}><SettingsOutlinedIcon fontSize="small" /></div>
+          <div className={`${style.centerAlign} ${style.iconSize}`}><HelpOutlineOutlinedIcon fontSize="small" /></div>
           <div
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
@@ -685,7 +685,7 @@ const Navbar = () => {
             className={style.logoutIcons}
             onClick={logout}
           /> */}
-          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 40 }} />
+          <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 20 }} />
         </div>
       </div>
     </div>
