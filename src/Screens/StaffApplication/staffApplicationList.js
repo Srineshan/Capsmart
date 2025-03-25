@@ -66,6 +66,7 @@ const StaffApplicationList = ({
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
   approvalnotesCommentsBoxDept,
+  activeApplicationTask,
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
@@ -994,7 +995,7 @@ const StaffApplicationList = ({
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog,activeApplicationTask]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -2975,10 +2976,6 @@ const StaffApplicationList = ({
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       // ]);
-      notesHoverText.push(notesHoverTextArray);
-
-
-
       // cosapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       // );
@@ -3572,8 +3569,13 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    { data:  "Go to Task List",
+      requiredValue: "boolean", 
+      onClick: onClickProcessingTaskFunction, 
+      hideForRoles: "Department Head", 
+      hideForRoles2: "Credentialing Committee",
+      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
     //   requiredValue: "boolean",
@@ -4237,6 +4239,7 @@ const StaffApplicationList = ({
                 approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
                 showBulkApproveDialog={showBulkApproveDialog}
                 searchTermForTable={searchTermForTable}
+                activeApplicationTask={activeApplicationTask}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
