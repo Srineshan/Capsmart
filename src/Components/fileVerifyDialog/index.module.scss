@@ -14,6 +14,10 @@
     margin-left: 20px;
 }
 
+.marginBottom {
+    margin-bottom: 20px;
+}
+
 .marginLeft10 {
     margin-left: 10px;
 }
@@ -242,6 +246,10 @@
     cursor: not-allowed;
 }
 
+.cursorNotAllowed {
+    cursor: not-allowed;
+}
+
 .threeColGrid {
     display: grid;
     grid-template-columns: 70% 20% 10%;
@@ -393,4 +401,31 @@
 
 .fullWidth {
     width: 100%;
+}
+
+.icon {
+    height: 20px;
+    width: 20px;
+    object-fit: contain;
+}
+
+.imageContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.defaultImg,
+.hoverImg {
+    width: 20px;
+    /* Adjust as needed */
+    height: auto;
+    display: block;
+}
+
+.hoverImg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
 }
