@@ -35,9 +35,8 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
   console.log("ID1234",checkedIds)
 
   const handleDateChange = (date, field) => {
-      const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'HH:mm:ss'Z'")
-      : format(new Date(date), 'yyyy-MM-dd');
+      const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
+  
   
       setSelectedDateForCC(formattedDate);
       setCalendarStartForCC(false);

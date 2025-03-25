@@ -1603,9 +1603,11 @@ const StaffApplicationList = ({
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
@@ -1820,9 +1822,11 @@ const StaffApplicationList = ({
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       // const notesHoverTextArray = validNotes?.length > 0
       //   ? validNotes.map(note => {
@@ -2165,9 +2169,11 @@ const StaffApplicationList = ({
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
@@ -2357,14 +2363,14 @@ const StaffApplicationList = ({
           console.log("Comparing:", a.approvedDate, "with", b.approvedDate);
           return new Date(b.approvedDate) - new Date(a.approvedDate);
         })[0];
-
+      const isDisabled = !workflow?.approvalType;
       checkbox.push(
         <CommonCheckBox
           checked={checkedIds?.includes(data?.id)}
           onChange={() => handleCheckboxClick(data?.id, data)}
           color="primary"
           inputProps={{ 'aria-label': `Select ${data?.name}` }}
-          disabled={true}
+          disabled={isDisabled}
         />
       );
       if (workflow) {
@@ -2375,7 +2381,8 @@ const StaffApplicationList = ({
         console.log("Matching workflow found:", {
           role: workflow?.role,
           status: workflow?.currentLevelStatus,
-          assignedColor: color
+          assignedColor: color,
+          assignedType: workflow?.approvalType
         });
       }
 
@@ -2390,8 +2397,8 @@ const StaffApplicationList = ({
       );
       ccdate.push(
         data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(data.upcomingCredCommitteeMeetingDate), "MM/dd/yyyy")
-          : "Not Assigned Yet"
+          ? format(new Date(`${data?.upcomingCredCommitteeMeetingDate}T00:00`), "MM/dd/yyyy")
+          : "-"
       );
       const credCommittee = data?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Credentialing Committee"
@@ -2462,9 +2469,11 @@ const StaffApplicationList = ({
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
       const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
@@ -2489,7 +2498,7 @@ const StaffApplicationList = ({
       notesHoverText.push(notesHoverTextArray);
       if (workflowCCDate) {
         const reviewDate = workflowCCDate?.approvedDate
-          ? format(new Date(workflowCCDate?.approvedDate), "MM/dd/yyyy")
+          ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
           : 'Data Issue';
 
         submitted.push(reviewDate);
@@ -2692,9 +2701,11 @@ const StaffApplicationList = ({
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
@@ -2954,9 +2965,11 @@ const StaffApplicationList = ({
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
-      notes.push(validNotes?.length || "0");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
-        <NoteAltOutlinedIcon style={{ fontSize: 20, color: `#2C2C2C` }} />
+        validNotes.length > 0 ? (
+          <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
+        ) : ("")
       );
       const notesHoverTextArray = validNotes?.length > 0
         ? validNotes.map((note, index) => {
@@ -4306,6 +4319,7 @@ const StaffApplicationList = ({
                       totalCount={totalCount}
                       page={page}
                       checkedIds={checkedIds}
+                      filteredIds={filteredIds}
                       // Optional: pass the checkbox click handler if TableTwo needs it
                       handleCheckboxClick={handleCheckboxClick}
                       searchTermForTable={searchTermForTable}
