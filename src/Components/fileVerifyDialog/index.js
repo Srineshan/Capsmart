@@ -2,6 +2,12 @@ import React, { useState, useCallback, useRef, createRef, useEffect } from 'reac
 import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes, TextArea } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
+import ArrowDefaultLeft from "../../images/arrowDefaultLeft.png";
+import ArrowDefaultRight from "../../images/arrowDefaultRight.png";
+import ArrowDisabledLeft from "../../images/arrowDisabledLeft.png";
+import ArrowDisabledRight from "../../images/arrowDisabledRight.png";
+import ArrowHoverLeft from "../../images/arrowHoverLeft.png";
+import ArrowHoverRight from "../../images/arrowHoverRight.png";
 import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
@@ -35,11 +41,16 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [fileToDisplay, setFileToDisplay] = useState([]);
     const [fields, setFields] = useState([]);
     const [metaData, setMetaData] = useState({});
+    const [fileToDisplayAlternative, setFileToDisplayAlternative] = useState([]);
+    const [fieldsAlternative, setFieldsAlternative] = useState([]);
+    const [metaDataAlternative, setMetaDataAlternative] = useState({});
     const [documentStatus, setDocumentStatus] = useState('ACCEPT_DOCUMENT');
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
     const [isEdited, setIsEdited] = useState(false);
+    const [arrowLeftOnHover, setArrowLeftOnHover] = useState(false);
+    const [arrowRightOnHover, setArrowRightOnHover] = useState(false);
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
     }
@@ -69,6 +80,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
     useEffect(() => {
         getDocument();
+        getDocumentAlternative();
     }, [file]);
 
     const toggleExpand = () => {
@@ -106,6 +118,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setReasonForReplacingDocument('')
         setDocumentStatus('')
         setReplaceRowId('')
+        setFileToDisplayAlternative([]);
+        setFieldsAlternative([]);
+        setMetaDataAlternative({});
         if (selectedFileIndex > 0) {
             setIsLoading(true);
             setSelectedFileIndex(prevIndex => prevIndex - 1);
@@ -117,6 +132,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setReasonForReplacingDocument('')
         setDocumentStatus('')
         setReplaceRowId('')
+        setFileToDisplayAlternative([]);
+        setFieldsAlternative([]);
+        setMetaDataAlternative({});
         if (selectedFileIndex < fileArray.length - 1) {
             setIsLoading(true);
             setSelectedFileIndex(prevIndex => prevIndex + 1);
@@ -256,6 +274,21 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             setFileToDisplay(response?.file);
             setFields(response?.fields);
             setMetaData(response?.metaData)
+        }
+    }
+
+    const getDocumentAlternative = async () => {
+        if (fileArray.length > 0 && selectedFileIndex >= 0 && selectedFileIndex < fileArray.length) {
+            const currentFile = fileArray[selectedFileIndex];
+            if (form?.documents?.alternateDocuments[form?.documents?.alternateDocuments?.findIndex(data => data?.replacedByRowId === currentFile?.rowId)]?.rowId !== undefined) {
+                const { data: response } = await GET(
+                    `document-management-service/document/${form?.documents?.alternateDocuments[form?.documents?.alternateDocuments?.findIndex(data => data?.replacedByRowId === currentFile?.rowId)]?.rowId}`
+                );
+                console.log(response);
+                setFileToDisplayAlternative(response?.file);
+                setFieldsAlternative(response?.fields);
+                setMetaDataAlternative(response?.metaData)
+            }
         }
     }
 
@@ -431,18 +464,22 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         />
                                     </div>
                                 )} */}
-                                <div className={` ${selectedFileIndex === 0 ? style.disabledButton : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
-                                    <div className={`${style.alignCenter}`}>
-                                        <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} />
+                                <div className={` ${selectedFileIndex === 0 ? style.cursorNotAllowed : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
+                                    <div className={`${style.alignCenter}`} onFocus={() => setArrowLeftOnHover(true)} onBlur={() => setArrowLeftOnHover(false)}>
+                                        {/* <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
+                                        <img src={arrowLeftOnHover ? ArrowHoverLeft : selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={style.icon} />
+                                        {/* <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={`${style.icon} ${style.hoverImg}`} />
+                                        <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowDefaultLeft} className={`${style.icon} ${style.defaultImg}`} /> */}
                                     </div>
                                 </div>
                                 <div className={`${style.heading} ${style.marginLeft10}`}>Document {selectedFileIndex + 1} of {fileArray.length}</div>
                                 <div
-                                    className={` ${selectedFileIndex === fileArray?.length - 1 ? style.disabledButton : style.cursorPointer} ${style.marginLeft10}`}
+                                    className={` ${selectedFileIndex === fileArray?.length - 1 ? style.cursorNotAllowed : style.cursorPointer} ${style.marginLeft10}`}
                                     onClick={handleNext}
                                 >
-                                    <div className={`${style.alignCenter}`}>
-                                        <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} />
+                                    <div className={`${style.alignCenter}`} onFocus={() => setArrowRightOnHover(true)} onBlur={() => setArrowRightOnHover(false)}>
+                                        {/* <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
+                                        <img src={arrowRightOnHover ? ArrowHoverRight : selectedFileIndex === fileArray?.length - 1 ? ArrowDisabledRight : ArrowHoverRight} className={style.icon} />
                                     </div>
                                 </div>
                             </div>
@@ -516,6 +553,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             </div>
                             <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
                                 <div className={style.extractedFields}>
+                                    {fileToDisplayAlternative?.length !== 0 && (
+                                        <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
+                                    )}
                                     {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== null && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.notes?.notes !== null) && (
                                         <div>
                                             <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing Document by MSO</div>
@@ -563,41 +603,42 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 </div>
                                             </div>
                                         )}
-                                        <div>
-                                            {file?.isVerified ? (
-                                                <Tooltip arrow title="Click To Revert Verification">
-                                                    <div
-                                                        className={`${style.greenButtonVerify}`}
-                                                        onClick={handleDocVerify}
-                                                    >
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                            VERIFIED
+                                        {documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && (
+                                            <div>
+                                                {file?.isVerified ? (
+                                                    <Tooltip arrow title="Click To Revert Verification">
+                                                        <div
+                                                            className={`${style.greenButtonVerify}`}
+                                                            onClick={handleDocVerify}
+                                                        >
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                                VERIFIED
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Tooltip>) : (
-                                                <Tooltip arrow title={"Click To Verify"}>
-                                                    <div
-                                                        className={`${style.purpleButtonVerify}`}
-                                                        onClick={() => {
-                                                            handleDocVerify();
-                                                            if (selectedFileIndex === fileArray?.length - 1) {
-                                                                setTimeout(() => getIsOpen(false), 500);
-                                                            } else {
-                                                                if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+                                                    </Tooltip>) : (
+                                                    <Tooltip arrow title={"Click To Verify"}>
+                                                        <div
+                                                            className={`${style.purpleButtonVerify}`}
+                                                            onClick={() => {
+                                                                handleDocVerify();
+                                                                if (selectedFileIndex === fileArray?.length - 1) {
                                                                     setTimeout(() => getIsOpen(false), 500);
                                                                 } else {
-                                                                    handleNext();
+                                                                    if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+                                                                        setTimeout(() => getIsOpen(false), 500);
+                                                                    } else {
+                                                                        handleNext();
+                                                                    }
                                                                 }
-                                                            }
-                                                        }}
-                                                    >
-                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                            Accept Document
+                                                            }}
+                                                        >
+                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                                Accept Document
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                </Tooltip>)}
-                                        </div>
-
+                                                    </Tooltip>)}
+                                            </div>
+                                        )}
                                     </div>
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                                         <>
@@ -686,6 +727,40 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 </div>
                             </div>
                         </div>
+                        {fileToDisplayAlternative?.length !== 0 && (
+                            <>
+                                <CommonDivider />
+                                <div className={style.gridContainer}>
+                                    <div className={style.fileColumn}>
+                                        {!isLoading && (
+                                            <div className={style.height}>
+                                                {file?.fileType === 'application/pdf' ? (
+                                                    <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                                ) : fileToDisplayAlternative?.fileType?.startsWith("image/") ? (
+                                                    <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                                ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
+                                        <div className={style.extractedFields}>
+                                            <div className={`${style.heading} ${style.marginBottom}`}>Alternate Document</div>
+                                            <div className={`${style.twoCol}`}>
+                                                {fieldsAlternative?.map((field, index) => (
+                                                    <div>
+                                                        <div className={`${style.lableStyle} ${style.marginTop10}`}>{field.label}</div>
+                                                        <div className={style.dividerStyle}></div>
+                                                        <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
+                                                            {metaDataAlternative !== null ? metaDataAlternative[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaDataAlternative[field?.name]), 'dd/MM/yyyy') : metaDataAlternative[field?.name] : "" : ""}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </Dialog >
