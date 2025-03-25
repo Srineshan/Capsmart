@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, POST } from "../../Screens/dataSaver";
+import { GET, POST,PUT } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
@@ -12,8 +12,9 @@ import { ErrorToaster, SuccessToaster } from "./../../utils/toaster";
 import style from "./index.module.scss";
 import { format } from "date-fns";
 import CommonSelectField from "../CommonFields/CommonSelectField";
+import jsPDF from "jspdf";
 
-const TaskStatusDialog = ({ getIsOpen }) => {
+const TaskStatusDialog = ({ getIsOpen,selectedTab }) => {
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [selectedOption, setSelectedOption] = useState({});
   const [task, setTask] = useState([]);
@@ -21,12 +22,111 @@ const TaskStatusDialog = ({ getIsOpen }) => {
   // const applicationId = "66fe243d635f001b562ab97a";
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
+  const [name, setName] = useState();
+  const [pdfBase64, setPdfBase64] = useState(null);
+  const [privilege, setPrivilege] = useState('');
+  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState({});
+  const workModeType = sessionStorage.getItem('workModeType')
+  const base64String = pdfBase64?.split(',')[1]; // Remove prefix
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getPreApplication();
-    getApplication();
+    // getApplication();
   }, []);
+
+  useEffect(() => {
+    if(pdfBase64 !== null) {
+    const fixedBase64 = base64String?.replace(/-/g, '+')?.replace(/_/g, '/')
+    setFile(base64ToFile(fixedBase64, "generated.pdf", "application/pdf"));
+    }
+  }, [pdfBase64]);
+
+   useEffect(() => {
+      const fetchData = async () => {
+          if (id) {
+              await getApplication();
+          }
+      };
+  
+      fetchData();
+  }, [id]); 
+
+  useEffect(() => {
+      if (formDetails?.basicDetails?.applicant?.name) {
+          const { firstName, lastName } = formDetails.basicDetails.applicant.name;
+          const formattedName = `${lastName?.charAt(0).toUpperCase() + lastName?.slice(1).toLowerCase()}, ${
+              firstName ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() : ""
+          }`;
+
+          setName(formattedName);
+          setPrivilege(formDetails?.basicDetails?.applicant?.applicantType || "-");
+
+      }
+  }, [formDetails]);
+
+   useEffect(() => {
+      if (name && privilege) {
+          generatePDF();
+      }
+  }, [name, privilege]);
+
+  const onClose = () => {
+    getIsOpen(false);
+  };
+
+  const getApplicationMoveToNext = async () => {
+      let role;
+      let title;
+      let isDelegate = true;
+  
+      // Determine role based on selectedTab and applicationType
+      if (selectedTab === 'level-2') {
+        if (workModeType === "Department Head") {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+        } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+        }
+      } else if (selectedTab === 'level-3') {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review";
+          isDelegate = false;
+        } else if (workModeType === "Chief Of Staff") {
+          role = "Credentialing Committee";
+          isDelegate = true;
+          title = "Credentialing Committee Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        role = "Advisory Committee";
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        role = "Board";
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        role = "Staff Manager";
+        title = "Staff Manager Verification";
+      }
+
+      let temp = {
+        role: isDelegate ? role : "",
+        approvedDate: new Date().toISOString(),
+        title: title
+      };
+  
+      await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)
+        .then(response => {
+          console.log('successfull')
+          onClose()
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+    }
 
   const handleChange = (taskId, event, label) => {
     const status = event.target.value;
@@ -62,16 +162,27 @@ const TaskStatusDialog = ({ getIsOpen }) => {
       `application-management-service/application/${id}/tasks`
     );
     setTask(tasks);
+    if (tasks?.length > 0 && tasks?.every(task => task?.taskStatus === "COMPLETED")) {
+      await getApplicationMoveToNext();
+      console.log("MovetoStaff")
+    }
+    console.log("taskstate",tasks)
   };
 
-  const tasksendapplication = async (taskId, status, label) => {
-    let data = {
-      status: status,
-      label: label
-    };
-    console.log(taskId, status, label);
+  const tasksendapplication = async (taskId) => {
+    const formData = new FormData();
+    formData.append('documents', file); 
+    const fileData = { fileName: `generated.pdf` };
+    formData.append('files', new Blob([JSON.stringify({ ...fileData })], {
+      type: "application/json"
+    }));
 
-    await POST(`application-management-service/application/${id}/task/${taskId}/execute`, data)
+  //  formData.append('taskStatusLabel', new Blob([JSON.stringify({ status:'', label: ''})], {
+  //     type: "application/json"
+  //  }));
+    console.log("taskId",taskId);
+
+    await POST(`application-management-service/application/${id}/task/${taskId}/execute`, formData)
       .then(response => {
         SuccessToaster('Task Update Successfully');
         console.log(response?.data);
@@ -82,6 +193,47 @@ const TaskStatusDialog = ({ getIsOpen }) => {
         ErrorToaster('Task Update Failed');
       })
   }
+
+  const generatePDF = () => {
+      const doc = new jsPDF();
+      doc.setFontSize(16);
+      doc.text("User Information", 20, 20);
+      doc.text(`Name: ${name}`, 20, 40);
+      doc.text(`Type: ${privilege}`, 20, 60);
+      doc.text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.", 20, 80);
+      doc.text("Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", 20, 100);
+      doc.text("Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.", 20, 120);
+
+      const generatedFileName = "generated.pdf";
+      setFileName(generatedFileName);
+      
+      // Generate PDF as base64 string
+      const pdfBase64 = doc.output('datauristring');
+      setPdfBase64(pdfBase64);
+
+      console.log("Base64:", pdfBase64, "Filename:", generatedFileName , selectedTab);
+  };
+
+ const base64ToFile = (base64String, fileName, contentType) => {
+  if(base64String !== null || base64String !== "" || base64String !== undefined ) {
+    const byteCharacters = atob(base64String);
+    const byteArrays = [];
+  
+    for (let i = 0; i < byteCharacters.length; i += 512) {
+        const slice = byteCharacters.slice(i, i + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let j = 0; j < slice.length; j++) {
+            byteNumbers[j] = slice.charCodeAt(j);
+        }
+        byteArrays.push(new Uint8Array(byteNumbers));
+    }
+  
+    return new File(byteArrays, fileName, { type: contentType });
+  }
+}
+
+// console.log("cleanBase64",cleanBase64)
+
 
   // const isTaskClickable = (taskData) => {
   //   const dependentTasks = taskData?.constraintDependedTasks;
@@ -274,7 +426,7 @@ const TaskStatusDialog = ({ getIsOpen }) => {
                     ) : (
                       <div
                         className={style.Resend}
-                        onClick={() => tasksendapplication(taskData?.id, taskData?.statusLabels?.status, taskData?.statusLabels?.label)}
+                        onClick={() => tasksendapplication(taskData?.id)}
                       >
                         {isNotCompleted ? taskData?.activityExecutionPromptLabel?.text : "Resend"}
                       </div>
