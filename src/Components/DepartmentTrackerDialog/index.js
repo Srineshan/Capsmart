@@ -45,14 +45,17 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const [searchCount, setSearchount] = useState(0);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [showWorkModeSelectDialog, setShowWorkModeSelectDialog] = useState(false);
-  const [showDepartmentsFilter, setShowDepartmentsFilter] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [applicantType, setApplicantType] = useState([]);
+  const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
+  const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   const [limit, setLimit] = useState(9999);
   useEffect(() => {
     getActiveUserData()
-  }, [sortField, sortValue, page, totalCount, selectedDepartment, limit, searchTermForTable]);
+  }, [sortField, sortValue, page, totalCount, selectedDepartment,selectedApplicantType, limit, searchTermForTable]);
 
   // useEffect(() => {
   //   sessionStorage.setItem("fromSummary", false);
@@ -72,7 +75,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
 
   useEffect(() => {
     getDepartmentList();
-  }, [showDepartmentsFilter])
+    getApplicantType();
+  }, [showFilter])
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -107,6 +111,18 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     setDepartmentList(department);
   }
 
+  const getApplicantType = async () => {
+      const { data: applicant } = await GET(
+        `entity-service/applicantType`
+      );
+      setApplicantType(applicant);
+      // if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
+      //   setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
+      // } else {
+      //   setSelectedApplicantType(applicant?.[0]?.id);
+      // }
+    }
+
 
   const setUserDetails = async () => {
     const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -129,7 +145,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const headerValues = [
     "No.",
     "Staff",
-    "Type",
+    "Staff Type",
     // "OHIP Number",
     "Department",
     "Reappointment Application",
@@ -142,7 +158,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     "Last Updated by",
     ""
   ];
-  const colSortValues = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
+  const colSortValues = [false, true, true, true, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
       data: "View",
@@ -172,7 +188,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const getActiveUserData = async () => {
     try {
       setIsLoadingImage(true);
-      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${selectedDepartment ? `&departmentId=${selectedDepartment}` : ''}`;
+      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${selectedDepartment ? `&departmentId=${selectedDepartment}` : ''}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
 
       const response = await GET(url);
 
@@ -270,7 +286,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       const color = data?.status === "DECLINED" ? "red"
         : data?.formFillingStatus === "REJECTED" ? "red"
           : data?.formFillingStatus === "IN_PROGRESS" ? "yellow"
-            : data?.formFillingStatus === "COMPLETED" ? "green"
+            : data?.formFillingStatus === "COMPLETED" ? "darkgreen"
               : "grey";
 
       reapointment.push(color);
@@ -280,7 +296,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       });
 
       if (workflowStaffManagerRole) {
-        const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "green"
+        const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "darkgreen"
           : workflowStaffManagerRole?.approvalType === "NOT_RECOMMENDED" ? "red"
             : "grey";
         staffManager.push(color);
@@ -293,8 +309,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         staffManager.push('grey');
       }
       if (workflowDeptHeadRole) {
-        const color = workflowDeptHeadRole?.approvalType === "RECOMMENDED" ? "green"
-          : workflowDeptHeadRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
+        const color = workflowDeptHeadRole?.approvalType === "RECOMMENDED" ? "darkgreen"
+          : workflowDeptHeadRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "green"
             : workflowDeptHeadRole?.approvalType === "NOT_RECOMMENDED" ? "red"
               : "grey";
         deptHead.push(color);
@@ -307,8 +323,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         deptHead.push('grey');
       }
       if (workflowCredRole) {
-        const color = workflowCredRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
-          : workflowCredRole?.approvalType === "RECOMMENDED" ? "green"
+        const color = workflowCredRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "green"
+          : workflowCredRole?.approvalType === "RECOMMENDED" ? "darkgreen"
             : workflowCredRole?.approvalType === "NOT_RECOMMENDED" ? "red"
               : "grey";
         cc.push(color);
@@ -321,8 +337,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         cc.push('grey');
       }
       if (workflowMacRole) {
-        const color = workflowMacRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
-          : workflowMacRole?.approvalType === "RECOMMENDED" ? "green"
+        const color = workflowMacRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "green"
+          : workflowMacRole?.approvalType === "RECOMMENDED" ? "darkgreen"
             : workflowMacRole?.approvalType === "NOT_RECOMMENDED" ? "red"
               : "grey";
         mac.push(color);
@@ -335,8 +351,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         mac.push('grey');
       }
       if (workflowBodRole) {
-        const color = workflowBodRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "yellow"
-          : workflowBodRole?.approvalType === "RECOMMENDED" ? "green"
+        const color = workflowBodRole?.approvalType === "RECOMMENDED_WITH_NOTES" ? "green"
+          : workflowBodRole?.approvalType === "RECOMMENDED" ? "darkgreen"
             : workflowBodRole?.approvalType === "NOT_RECOMMENDED" ? "red"
               : "grey";
         bod.push(color);
@@ -350,17 +366,17 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       }
       if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
         let lastApproval = data?.completedWorkflows
-            .filter(item => item.approvalType !== null)
-            .pop();
-    
+          .filter(item => item.approvalType !== null)
+          .pop();
+
         if (lastApproval) {
-            const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
-            status.push(`${lastApproval.role}, ${formattedApprovalType}`);
+            const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+            status.push(`${lastApproval?.role}, ${formattedApprovalType}`);
         } else {
             if (data?.status === "DECLINED") {
                 status.push("Reappointment Application Declined");
             } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-                status.push("Reappointment Application Submitted");
+                status.push("Reappointment Application Not Submitted");
             } else if (data?.formFillingStatus === "IN_PROGRESS") {
                 status.push("Reappointment Application In-Progress");
             } else {
@@ -371,17 +387,14 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         if (data?.status === "DECLINED") {
             status.push("Reappointment Application Declined");
         } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-            status.push("Reappointment Application Submitted");
+            status.push("Reappointment Application Not Submitted");
         } else if (data?.formFillingStatus === "IN_PROGRESS") {
             status.push("Reappointment Application In-Progress");
-        } else if (data?.formFillingStatus === "PENDING") {
+          } else {
             status.push("Reappointment Application Not Started");
-        } else {
-            status.push("MSO Verification Not Started");
+          }
         }
-    }
-    
-      
+
       lastUpdated.push(
         <>
           {data?.updatedBy?.name?.firstName}<br />
@@ -436,9 +449,6 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 Staff Reappointment Status
               </div>
               <div className={style.displayInRow}>
-                <div className={`${style.searchFieldWidth}`}>
-                  <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
-                </div>
                 {selectedDepartment && (
                   <div className={`${style.filterBackground} ${style.displayInRow}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
@@ -454,13 +464,28 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     </Tooltip>
                   </div>
                 )}
+                 {selectedApplicantType && (
+                  <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
+                    <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
+                    <Tooltip title="Remove" arrow>
+                      <CancelOutlinedIcon
+                        sx={{
+                          fontSize: 15,
+                          color: "#06617A",
+                        }}
+                        className={style.cursorPointer}
+                        onClick={() => setSelectedApplicantType()}
+                      />
+                    </Tooltip>
+                  </div>
+                )}
                 <div
                   className={`${style.alignCenter} ${style.cursorPointer
                     } ${style.marginRight20}`}
                   style={{
                     opacity: 1,
                   }}
-                  onClick={() => setShowDepartmentsFilter(!showDepartmentsFilter)}
+                  onClick={() => setShowFilter(!showFilter)}
                 >
                   <Tooltip title="Filter" arrow>
                     <FilterAltOutlinedIcon
@@ -483,7 +508,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
               </div>
             </div>
             {/* Expandable Department List */}
-            {showDepartmentsFilter && (
+            {showFilter && (
               <div className={style.departmentContainer}>
                 <div>
                   <CommonSelectField
@@ -496,6 +521,20 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     labelList={departmentList?.map(data => data?.departmentName?.name)}
                     disabledList={departmentList?.map(data => false)}
                     label={'Department'}
+                    required={false}
+                  />
+                </div>
+                <div>
+                  <CommonSelectField
+                    value={selectedApplicantType}
+                    onChange={(e) => setSelectedApplicantType(e.target.value)}
+                    className={style.fullWidth}
+                    firstOptionLabel={'All'}
+                    firstOptionValue={''}
+                    valueList={applicantType?.map(data => data?.id)}
+                    labelList={applicantType?.map(data => data?.applicantType)}
+                    disabledList={applicantType?.map(data => false)}
+                    label={'Staff Type'}
                     required={false}
                   />
                 </div>
@@ -528,6 +567,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                         searchCount={searchCount}
                         setSearchTermForTable={setSearchTermForTable}
                         onLimitChange={handleLimitChange}
+                        searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
                       />
                     </div>
                   )}

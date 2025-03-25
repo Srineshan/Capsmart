@@ -1,11 +1,5 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  createRef,
-  useEffect,
-} from "react";
-import { Dialog, Classes } from "@blueprintjs/core";
+import React, { useState, useCallback, useRef, createRef, useEffect } from 'react';
+import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "../../images/crossPink.png";
 import FullscreenSharpIcon from "@mui/icons-material/FullscreenSharp";
 import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
@@ -24,21 +18,20 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   const [isLoading, setIsLoading] = useState(false);
   const fileRef = useRef(null);
 
-  useEffect(() => {
-    console.log("filesssssssssssssssss", file);
-    // getPreApplicationTask();
-  }, []);
+    useEffect(() => {
+        console.log("filesssssssssssssssss", file);
+        // getPreApplicationTask();
+    }, []);
 
-  useEffect(() => {
-    if (file?.fileURL) {
-      setIsLoading(true);
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [file?.fileURL]);
-  
+    useEffect(() => {
+        if (file?.fileURL) {
+            setIsLoading(true);
+            const timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [file?.fileURL]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);

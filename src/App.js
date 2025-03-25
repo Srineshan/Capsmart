@@ -761,7 +761,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -801,7 +801,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -836,11 +836,11 @@ const App = ({ props }) => {
   // }, [window.location.pathname]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
   }, [logo, title]);
 
   useEffect(() => {
-    changeFavicon();
+    // changeFavicon();
     if (TenantID !== undefined && TenantID !== '' && TenantID) {
       getLogo();
     }
@@ -866,7 +866,9 @@ const App = ({ props }) => {
 
   const changeFavicon = () => {
     const favicon = document.getElementById("favicon");
-    favicon.href = logo;
+    if (logo !== null) {
+      favicon.href = logo;
+    }
     document.title = title;
   };
 

@@ -871,9 +871,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
-          label = "Applicants to Verify";
+          label = "Applicants To Verify";
         } else if (applicationType === "REAPPOINTMENT") {
-          label = "Reappointments to Process";
+          label = "Reappointments To Process";
         }else {
           label = value.tabDisplayName;
         }
@@ -894,13 +894,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
      else if (workModeType === "Chief Of Staff") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
-        label: "Reappointments to Process",
+        label: "Reappointments To Process",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
-        label: "Reappointments to Process",
+        label: "Reappointments To Process",
       }));
     }
     // else if (workModeType === "Chief Of Staff") {
@@ -912,7 +912,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     else if (workModeType === "Credentialing Committee") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
-        label: "Reappointments to Review",
+        label: "Reappointments To Review",
       }));
     }
     else if (workModeType === "Credentialing Committee User") {

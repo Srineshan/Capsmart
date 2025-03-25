@@ -77,7 +77,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                   userRole?.length % 2 === 0 ? style.twoColumnGrid :
                   style.threeColumnGrid
                 } 
-                ${style.padding}
+                ${style.padding} ${style.placeCenter}
               `}
              >
               {userRole?.includes("Staff Manager") && (
@@ -122,7 +122,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Credentialing Committee"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee</p>
+                  <p className={`${hoveredRole === "Credentialing Committee" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Credentialing Committee</p>
                 </div>
               )}
               {userRole?.includes("Credentialing Committee User") && (
@@ -152,7 +152,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Chief Of Staff"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle}`}>Chief Of Staff</p>
+                  <p className={`${hoveredRole === "Chief Of Staff" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>Chief Of Staff</p>
                 </div>
               )}
                  {userRole?.includes("Entity Sys Admin") && (
@@ -167,7 +167,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Entity Sys Admin"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle}`}>System Administrator</p>
+                  <p className={`${hoveredRole === "Entity Sys Admin" ? style.roleTitleHover : style.roleTitle} ${style.marginTop10}`}>System Administrator</p>
                 </div>
               )}
             </div>
