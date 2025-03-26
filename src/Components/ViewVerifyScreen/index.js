@@ -3621,6 +3621,7 @@ const NewActiveApplication = ({
                             );
                           });
                         }}
+                        disabled
                         config={{
                           placeholder: "Type your content here...",
                           toolbar: {
@@ -11072,7 +11073,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
+                            onClick={isButtonDisabled ? undefined : getApplicationApproveAndMoveToNext}
                           >
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED BY BOD
