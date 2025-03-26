@@ -124,7 +124,13 @@ const StaffApplicationList = ({
   const [limit, setLimit] = useState(9999);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
+  const selectedServiceAreaName = 
+  departmentList?.serviceAreas?.find(serviceArea => 
+    serviceArea?.id === selectedServiceArea
+  )?.name || "";
+
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -136,7 +142,7 @@ const StaffApplicationList = ({
   //   }
   //   // console.log("allIdsall" + checkedIds)
   // };
-
+console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServiceArea, "name",selectedServiceAreaName)
   const handleSelectAllClick = () => {
     if (checkedIds?.length === tableData?.length) {
       // If all are already selected, deselect all
@@ -567,6 +573,36 @@ const StaffApplicationList = ({
   //   'level-2' :0,
   // });
 
+  const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name, // Department name without indentation
+      type: 'department'
+    };
+  
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft20}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+  
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept",selectedValue)
+  }
+
   useEffect(() => {
     sessionStorage.removeItem("applicationIdForDialog");
     getPreApplication();
@@ -989,7 +1025,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee,selectedDepartment]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee,selectedDepartment,selectedServiceArea]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1090,7 +1126,7 @@ const StaffApplicationList = ({
             workModeType === "Chief Of Staff" ||
             workModeType === "Credentialing Committee");
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam = selectedDepartment ? `&departmentSpecialties=${selectedDepartment}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
         setIsLoadingImage(true);
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
@@ -4146,7 +4182,7 @@ const StaffApplicationList = ({
                               color: "#06617A",
                             }}
                             className={style.cursorPointer}
-                            onClick={() => setSelectedDepartment()}
+                            onClick={() => {setSelectedDepartment();setSelectedServiceArea()}}
                           />
                         </Tooltip>
                       </div>
@@ -4242,15 +4278,19 @@ const StaffApplicationList = ({
                 )}
                 <div>
                   <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    value={
+                      selectedServiceArea 
+                        ? `${selectedDepartment}|${selectedServiceArea}` 
+                        : selectedDepartment
+                    }  
+                    onChange={handleChange}
                     className={style.fullWidth}
                     firstOptionLabel={'All'}
                     firstOptionValue={''}
-                    valueList={departmentList?.map(data => data?.id)}
-                    labelList={departmentList?.map(data => data?.departmentName?.name)}
-                    disabledList={departmentList?.map(data => false)}
-                    label={'Department'}
+                    valueList={transformedOptions.map(option => option?.value)}
+                    labelList={transformedOptions.map(option => option?.label)}
+                    disabledList={transformedOptions.map(() => false)}
+                    label={'Dept / Division & Specialty'}
                     required={false}
                   />
                 </div>
@@ -4278,32 +4318,6 @@ const StaffApplicationList = ({
               // getApplicationCreationType = {getApplicationCreationType}
               />
             </div>
-            {/* {showFilter && (
-                <div className={style.filterContainer}>
-                  {workModeType !== "Staff Manager" && (
-                    <div>
-                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <CommonSelectField
-                      value={selectedDepartment}
-                      onChange={(e) => setSelectedDepartment(e.target.value)}
-                      className={style.fullWidth}
-                      firstOptionLabel={'All'}
-                      firstOptionValue={''}
-                      valueList={departmentList?.map(data => data?.id)}
-                      labelList={departmentList?.map(data => data?.departmentName?.name)}
-                      disabledList={departmentList?.map(data => false)}
-                      label={'Department'}
-                      required={false}
-                    />
-                  </div>
-                </div>
-            )} */}
-
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (
                 <div
