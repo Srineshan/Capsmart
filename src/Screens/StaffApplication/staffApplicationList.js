@@ -120,6 +120,7 @@ const StaffApplicationList = ({
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
+  const [reappointCount, setReappointCount] = useState(0);
   const [limit, setLimit] = useState(9999);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -1007,6 +1008,10 @@ const StaffApplicationList = ({
   }, [rejectionTab, showApplicationRejectionDialog]);
 
   useEffect(() => {
+    getActiveUserDataReappointment();
+  }, []);
+
+  useEffect(() => {
     getDeclineData();
   }, [showApplicationApprovedDeclineDialog]);
 
@@ -1022,6 +1027,35 @@ const StaffApplicationList = ({
   useEffect(() => {
     setPage(1);
   }, [selectedTab]);
+
+  const getActiveUserDataReappointment = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          status: 'ACTIVE'
+        });
+  
+        const types = ['PERMANENT', 'LOCUM'];
+        types.forEach(type => queryParams.append('type', type));
+        queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
+        queryParams.append('applicationStatus', "CREATED");
+  
+  
+        const response = await GET(
+          `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
+        );
+  
+        // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+        // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
+  
+        // setTableData(response?.data?.staffs);
+        // setTotalCount(response?.data?.numberOfElements);
+        setReappointCount(response?.data?.numberOfElements);
+        return response?.data?.staffs;
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        return [];
+      }
+    };
 
   const getActiveUserData = async () => {
     try {
@@ -3824,7 +3858,7 @@ const StaffApplicationList = ({
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
-                          ? "Staff for Reappointment"
+                          ? `Staff for Reappointment (${reappointCount})`
                           : "Create New Application"}
                       </div>
                     </div>

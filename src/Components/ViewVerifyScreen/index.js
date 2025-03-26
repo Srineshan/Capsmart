@@ -3621,6 +3621,7 @@ const NewActiveApplication = ({
                             );
                           });
                         }}
+                        disabled
                         config={{
                           placeholder: "Type your content here...",
                           toolbar: {
