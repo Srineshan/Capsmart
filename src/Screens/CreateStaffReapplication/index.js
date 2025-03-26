@@ -125,7 +125,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Staff Type",
     "Department",
     "Status",
-    "Complete %",
+    "Completed %",
     "Date Sent",
     // "Reminder Status",
     // "Application Status",
