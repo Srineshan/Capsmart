@@ -3603,12 +3603,12 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    { data:  "Go to Task List",
-      requiredValue: "boolean", 
-      onClick: onClickProcessingTaskFunction, 
-      hideForRoles: "Department Head", 
-      hideForRoles2: "Credentialing Committee",
-      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
+    // { data:  "Go to Task List",
+    //   requiredValue: "boolean", 
+    //   onClick: onClickProcessingTaskFunction, 
+    //   hideForRoles: "Department Head", 
+    //   hideForRoles2: "Credentialing Committee",
+    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
