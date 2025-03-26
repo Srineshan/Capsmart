@@ -312,11 +312,13 @@ const NewActiveApplication = ({
   }, [applicationId])
 
   useEffect(() => {
-    if (form?.upcomingCredCommitteeMeetingDate) {
-      setSelectedDateForReappoint(new Date(form?.upcomingCredCommitteeMeetingDate));
+    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && form?.upcomingCredCommitteeMeetingDate) {
+      setSelectedDateForReappoint(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-  }, [form?.upcomingCredCommitteeMeetingDate]);
+  }, [workModeType,selectedTab,form?.upcomingCredCommitteeMeetingDate]);
+  
 
   // const handleDateChange = (date, field) => {
   //   const formattedDate = date
@@ -349,6 +351,10 @@ const NewActiveApplication = ({
       setSelectedDateForCC(formattedDate);
     } else if (field === "ApprovedDate") {
       setSelectedDateForReappoint(formattedDate);
+    } else if (field === "ApprovedDateMac") {
+      setSelectedDateForMac(formattedDate);
+    } else if (field === "ApprovedDateBod") {
+      setSelectedDateForBod(formattedDate);
     }
 
     setCalendarStart(false);
@@ -1176,6 +1182,10 @@ const NewActiveApplication = ({
     getApprovalwithoutNotesCommentBox(true, selectedDateForReappoint);
   };
 
+  const onClickApprovalwithoutnotesMACFunction = () => {
+    getApprovalwithoutNotesCommentBox(true, selectedDateForMac);
+  };
+
   const onClickApprovalDeptFunction = () => {
     getApprovalNotesCommentBoxDept(true);
   };
@@ -1264,20 +1274,22 @@ const NewActiveApplication = ({
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
       title = "Staff Manager Verification";
+      isDelegate = false;
     }
 
     // Prepare the payload
     let temp = {
       role: isDelegate ? role : "",
       notes: notes,
-      approvedDate: new Date().toISOString(),
+      // approvedDate: new Date().toISOString(),
+      approvedDate: format(new Date(selectedDateForBod), 'yyyy-MM-dd'),
       title: title
     };
 
 
     // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
     // const requestData = { ...temp, notes: "" };
-    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=APPROVED`, temp)
+    await PUT(`application-management-service/application/${applicationId}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
       .then(response => {
         console.log('success')
         onClose()
@@ -3692,6 +3704,7 @@ const NewActiveApplication = ({
                             );
                           });
                         }}
+                        disabled
                         config={{
                           placeholder: "Type your content here...",
                           toolbar: {
@@ -11071,14 +11084,14 @@ const NewActiveApplication = ({
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, "ApprovedDate")}
+                            onChange={(date) => handleDateChange(date, "ApprovedDateMac")}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
                             minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}                        
                             maxDate={getJune30thOfCurrentYear()}
-                            value={selectedDateForReappoint}
+                            value={selectedDateForMac}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -11104,7 +11117,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesFunction}
+                            onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesMACFunction}
                           >
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               RECOMMENDED BY MAC
@@ -11128,7 +11141,7 @@ const NewActiveApplication = ({
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, "ApprovedDate")}
+                            onChange={(date) => handleDateChange(date, "ApprovedDateBod")}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
@@ -11136,7 +11149,7 @@ const NewActiveApplication = ({
                             minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
-                            value={selectedDateForReappoint}
+                            value={selectedDateForBod}
                             renderInput={(params) => (
                               <TextField
                                 {...params}

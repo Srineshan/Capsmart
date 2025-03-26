@@ -21,6 +21,7 @@ import ResolveDialog from "../../Components/ResolveDialog";
 import RequestOverrideDialog from "../../Components/RequestOverrideDialog";
 import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
+import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const StaffApplication = () => {
@@ -51,6 +52,8 @@ const StaffApplication = () => {
     const [clarificationRequestFormMode, setClarificationRequestFormMode] = useState({});
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [ccMeetingDateSet, setCcMeetingDateSet] = useState();
+    const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
+
     const getSelectedTab = (value) => {
         setSelectedTab(value);
     }
@@ -101,6 +104,10 @@ const StaffApplication = () => {
 
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
+    };
+
+    const getPdfGenerateBox = (value) => {
+        setShowPdfGenerateBox(value);
     };
 
     const getTimerDialog = (value) => {
@@ -165,6 +172,7 @@ const StaffApplication = () => {
                         getEmailDialogBox={getEmailDialogBox}
                         getPaymentDisplayBox={getPaymentDisplayBox}
                         emailDialogBox={emailDialogBox}
+                        activeApplicationTask={activeApplicationTask}
                         approvalnotesCommentsBox={approvalnotesCommentsBox}
                         approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox}
                         approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
@@ -177,13 +185,18 @@ const StaffApplication = () => {
                         getDocumentClarificationDialog={getDocumentClarificationDialog}
                         getResolveDialog={getResolveDialog}
                         getRequestOverrideDialog={getRequestOverrideDialog}
+                        //   getCCDateDialog={getCCDateDialog}
                         getDeptTrackerDialog={getDeptTrackerDialog}
+                        getPdfGenerateBox={getPdfGenerateBox}
                         getloading={getloading}
                         getStaffView={getStaffView}
                         staffView={staffView}
                         ccDateSetMode={ccDateSetMode}
                     />
                 </Fragment>
+            )}
+            {activeApplicationTask && (
+                <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask} selectedTab={selectedTab} />
             )}
             {activeApplicationTask && (
                 <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask} />
@@ -232,16 +245,18 @@ const StaffApplication = () => {
                     <RequestOverrideDialog isLoading={isLoading} getIsOpen={getRequestOverrideDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
                 )
             }
-            {
-                showDeptTrackerDialog && (
-                    <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
-                )
-            }
-            {
-                showTimerDialog && (
-                    <IdleTimer getIsOpen={getTimerDialog} />
-                )
-            }
+            {/* {showCCDateDialog && (
+                <CCdateDialog isLoading={isLoading} getIsOpen={getCCDateDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+            )} */}
+            {showDeptTrackerDialog && (
+                <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
+            )}
+            {showTimerDialog && (
+                <IdleTimer getIsOpen={getTimerDialog} />
+            )}
+            {showPdfGenrateBox && (
+                <PDFGenerateBox isLoading={isLoading} getloading={getloading} getIsOpen={getPdfGenerateBox} />
+            )}
         </>
     )
 }
