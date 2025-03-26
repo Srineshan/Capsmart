@@ -301,6 +301,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }, [basicForm, step, selectedValue]);
 
   useEffect(() => {
+    fetchPaymentListData();
+  }, [selectedDepartment, selectedSpeciality])
+
+  useEffect(() => {
     sessionStorage.removeItem("hasReloaded");
   }, []);
 
