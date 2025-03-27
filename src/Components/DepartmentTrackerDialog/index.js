@@ -58,7 +58,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
-      label: department?.departmentName?.name, // Department name without indentation
+      label: department?.departmentName?.name,
       type: 'department'
     };
   
@@ -84,6 +84,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
 
     console.log("selectedDept",selectedValue)
   }
+  
   useEffect(() => {
     getActiveUserData()
   }, [sortField, sortValue, page, totalCount, selectedDepartment,selectedServiceArea,selectedApplicantType, limit, searchTermForTable]);
@@ -492,7 +493,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => setSelectedDepartment()}
+                        onClick={() => {setSelectedDepartment();setSelectedServiceArea()}}
                       />
                     </Tooltip>
                   </div>
@@ -545,11 +546,12 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
               <div className={style.departmentContainer}>
                 <div>
                   <CommonSelectField
-                    value={
-                      selectedServiceArea 
-                        ? `${selectedDepartment}|${selectedServiceArea}` 
-                        : selectedDepartment
-                    }  
+                    // value={
+                    //   selectedServiceArea 
+                    //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                    //     : selectedDepartment
+                    // } 
+                    value={selectedDepartment} 
                     onChange={handleChange}
                     className={style.fullWidth}
                     firstOptionLabel={'All'}

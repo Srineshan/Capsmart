@@ -4278,11 +4278,12 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                 )}
                 <div>
                   <CommonSelectField
-                    value={
-                      selectedServiceArea 
-                        ? `${selectedDepartment}|${selectedServiceArea}` 
-                        : selectedDepartment
-                    }  
+                    // value={
+                    //   selectedServiceArea 
+                    //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                    //     : selectedDepartment
+                    // }  
+                    value={selectedDepartment}
                     onChange={handleChange}
                     className={style.fullWidth}
                     firstOptionLabel={'All'}
