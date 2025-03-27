@@ -252,7 +252,7 @@ const handleEmbedPrint = () => {
             <div className={style.marginTop}>
               {file?.fileType === "application/pdf" ? (
                 <iframe
-                  src={`${corsUrl}${file?.fileURL}#toolbar=0`}
+                  src={`${corsUrl}${file?.fileURL}#toolbar=0&view=fitH`}
                  ref={fileRef}
                   width="100%"
                   height="600px"
@@ -268,7 +268,7 @@ const handleEmbedPrint = () => {
                 />
               ) : (
                 <iframe
-                  src={`${file?.fileURL}#toolbar=0`}
+                  src={`${file?.fileURL}#toolbar=0&view=fitH`}
                   width="100%"
                   height="600px"
                 ></iframe>

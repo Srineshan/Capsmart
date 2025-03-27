@@ -17,6 +17,7 @@ import CCdateDialog from '../../Components/CCDateDialog';
 import NotesDialog from "../../Components/NotesDialog";
 import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
+import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const StaffApplication = () => {
@@ -40,6 +41,7 @@ const StaffApplication = () => {
     const [staffView, setStaffView] = useState(false);
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [ccMeetingDateSet, setCcMeetingDateSet] = useState();
+    const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
 
     const getSelectedTab = (value) => {
         setSelectedTab(value);
@@ -72,6 +74,10 @@ const StaffApplication = () => {
 
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
+    };
+
+    const getPdfGenerateBox = (value) => {
+        setShowPdfGenerateBox(value);
     };
 
     const getTimerDialog = (value) => {
@@ -136,6 +142,7 @@ const StaffApplication = () => {
                       getEmailDialogBox={getEmailDialogBox}
                       getPaymentDisplayBox={getPaymentDisplayBox}
                       emailDialogBox={emailDialogBox}
+                      activeApplicationTask={activeApplicationTask}
                       approvalnotesCommentsBox={approvalnotesCommentsBox}
                       approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox}
                       approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
@@ -146,6 +153,7 @@ const StaffApplication = () => {
                       getNotesDialog={getNotesDialog}
                     //   getCCDateDialog={getCCDateDialog}
                       getDeptTrackerDialog={getDeptTrackerDialog}
+                      getPdfGenerateBox={getPdfGenerateBox}
                       getloading={getloading}
                       getStaffView = {getStaffView}
                       staffView ={staffView}
@@ -154,7 +162,7 @@ const StaffApplication = () => {
               </Fragment>
           )}
            {activeApplicationTask && (
-                <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask}/>
+                <TaskStatusDialog isLoading={isLoading} getloading={getloading} getIsOpen={getActiveApplicationTask} selectedTab={selectedTab}/>
             )}
               {notesCommentsBox && (
                 <NotesCommentDialog isLoading={isLoading} getloading={getloading} getIsOpen={getNotesCommentBox} selectedTab={selectedTab}/>
@@ -188,6 +196,9 @@ const StaffApplication = () => {
             )}
             {showTimerDialog && (
                 <IdleTimer getIsOpen={getTimerDialog} />
+            )}
+            {showPdfGenrateBox && (
+                <PDFGenerateBox isLoading={isLoading} getloading={getloading} getIsOpen={getPdfGenerateBox}/>
             )}
         </>
       )

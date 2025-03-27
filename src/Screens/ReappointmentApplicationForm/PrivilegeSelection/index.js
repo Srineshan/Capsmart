@@ -301,6 +301,10 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
   }, [basicForm, step, selectedValue]);
 
   useEffect(() => {
+    fetchPaymentListData();
+  }, [selectedDepartment, selectedSpeciality])
+
+  useEffect(() => {
     sessionStorage.removeItem("hasReloaded");
   }, []);
 
@@ -557,7 +561,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     try {
       const regionalCallResponsibility = selectedValue || 'NA';
       const response = await GET(`entity-service/paymentAndFeeDetails/getFeeDetail?privilegeCategoryId=${basicForm?.basicDetailReferences?.credentialingAndPrivilegingCategory?.id}&applicantTypeId=${basicForm?.basicDetailReferences?.applicantType?.id}&applicantCreationType=${basicForm?.creationType}&regionalCallResponsibility=${regionalCallResponsibility}&departmentId=${selectedDepartment !== ""
-        ? selectedDepartment : applicationData?.basicDetailReferences?.department?.id}&serviceAreaId=${selectedSpeciality !== "" ? selectedSpeciality : applicationData?.basicDetailReferences?.specialty?.id}`);
+        ? selectedDepartment : applicationData?.basicDetailReferences?.department?.id}&specialtyId=${selectedSpeciality !== "" ? selectedSpeciality : applicationData?.basicDetailReferences?.specialty?.id}`);
       setPaymentListData(response.data);
     } catch (error) {
       console.error("Error fetching payment list data:", error);

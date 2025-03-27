@@ -66,6 +66,7 @@ const StaffApplicationList = ({
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
   approvalnotesCommentsBoxDept,
+  activeApplicationTask,
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
@@ -119,6 +120,7 @@ const StaffApplicationList = ({
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
+  const [reappointCount, setReappointCount] = useState(0);
   const [limit, setLimit] = useState(9999);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -994,7 +996,7 @@ const StaffApplicationList = ({
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog,activeApplicationTask]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1004,6 +1006,10 @@ const StaffApplicationList = ({
   useEffect(() => {
     getRejectionData(rejectionTab);
   }, [rejectionTab, showApplicationRejectionDialog]);
+
+  useEffect(() => {
+    getActiveUserDataReappointment();
+  }, []);
 
   useEffect(() => {
     getDeclineData();
@@ -1021,6 +1027,35 @@ const StaffApplicationList = ({
   useEffect(() => {
     setPage(1);
   }, [selectedTab]);
+
+  const getActiveUserDataReappointment = async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          status: 'ACTIVE'
+        });
+  
+        const types = ['PERMANENT', 'LOCUM'];
+        types.forEach(type => queryParams.append('type', type));
+        queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
+        queryParams.append('applicationStatus', "CREATED");
+  
+  
+        const response = await GET(
+          `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
+        );
+  
+        // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+        // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
+  
+        // setTableData(response?.data?.staffs);
+        // setTotalCount(response?.data?.numberOfElements);
+        setReappointCount(response?.data?.numberOfElements);
+        return response?.data?.staffs;
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+        return [];
+      }
+    };
 
   const getActiveUserData = async () => {
     try {
@@ -2975,10 +3010,6 @@ const StaffApplicationList = ({
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
       // ]);
-      notesHoverText.push(notesHoverTextArray);
-
-
-
       // cosapproval.push(
       //   format(new Date(data?.logs[data.logs.length - 1].createdDate), "MMM dd, yyyy")
       // );
@@ -3572,8 +3603,13 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    // { data:  "Go to Task List",
+    //   requiredValue: "boolean", 
+    //   onClick: onClickProcessingTaskFunction, 
+    //   hideForRoles: "Department Head", 
+    //   hideForRoles2: "Credentialing Committee",
+    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
-    // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
     //   requiredValue: "boolean",
@@ -3824,7 +3860,7 @@ const StaffApplicationList = ({
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
-                          ? "Staff for Reappointment"
+                          ? `Staff for Reappointment (${reappointCount})`
                           : "Create New Application"}
                       </div>
                     
@@ -4251,6 +4287,7 @@ const StaffApplicationList = ({
                 approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
                 showBulkApproveDialog={showBulkApproveDialog}
                 searchTermForTable={searchTermForTable}
+                activeApplicationTask={activeApplicationTask}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />

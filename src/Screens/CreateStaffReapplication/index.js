@@ -3,6 +3,7 @@ import { GET, POST, PUT } from '../../Screens/dataSaver';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 import CircularProgress from "@mui/material/CircularProgress";
 import TableTwo from "../../Components/TableDesignTwo";
 import style from './index.module.scss';
@@ -124,10 +125,13 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Staff Type",
     "Department",
     "Status",
+    "Completed %",
+    "Date Sent",
+    // "Reminder Status",
     // "Application Status",
     "Action"
   ];
-  const colSortValues = [false, true, false, true, true, true, false];
+  const colSortValues = [false, true, false, true, true, true, false, false, false, false];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -348,6 +352,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     const applicantType = [];
     const department = [];
     const reappointment = [];
+    const Percentage = [];
+    const DateSend = [];
+    const ReminderCount = [];
     const applicationStatusList = [];
     const actionList = [];
     const emailList = [];
@@ -394,6 +401,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           <div className={style.justifyCenter} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Remind" : "Click to Resend"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
           <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
+      Percentage.push(
+        data?.onGoingApplication?.completionPercentage === 0
+          ? "-"
+          : `${data?.onGoingApplication?.completionPercentage + "%"}`
+      );
+      DateSend.push(
+        format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
+      );
     });
 
     return [
@@ -404,6 +419,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       { type: "text", value: applicantType },
       { type: "text", value: department },
       { type: "text", value: reappointment },
+      { type: "text", value: Percentage },
+      { type: "text", value: DateSend },
+      // { type: "text", value: ReminderCount },
       // { type: "text", value: applicationStatusList },
       { type: "icon", icon: actionList },
     ];
