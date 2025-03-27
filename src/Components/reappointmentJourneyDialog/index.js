@@ -125,8 +125,10 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <div className={style.completedItemsText}>NEXT</div>
                                             <div className={style.nextItemText}>{basicForm?.forms[formIndex + 1]?.title}</div>
                                             <div className={` ${style.displayInRow} ${style.marginTop}`}>
-                                                <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>SAVE IN PROGRESS</div>
-                                                <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClick() }}>CONTINUE</div>
+                                            <Tooltip title={"Click to Save in Progress"} arrow>
+                                                <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>SAVE IN PROGRESS</div></Tooltip>
+                                                <Tooltip title={"Click to Continue"} arrow>
+                                                <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClick() }}>CONTINUE</div></Tooltip>
                                             </div>
                                         </>
                                     ) : (

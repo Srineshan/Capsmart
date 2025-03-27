@@ -9,6 +9,7 @@ import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
 import { useParams } from 'react-router-dom';
+import { Tooltip } from '@mui/material';
 
 const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, getPreApplication, hideCross }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -186,12 +187,14 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             {!hideCross && (
+                                <Tooltip title={"Click to Cancel"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             )}
                         </div>
                     </div>
@@ -292,8 +295,10 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     )}
                     <div className={style.marginTop}>{children}</div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div>
+                    <Tooltip title={"Click to Cancel"} arrow>
+                        <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div></Tooltip>
+                        <Tooltip title={"Click to Adopt for Esign"} arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div></Tooltip>
                     </div>
                 </div>
 

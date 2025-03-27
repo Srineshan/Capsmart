@@ -18,6 +18,7 @@ import CommonTextField from "../../../Components/CommonFields/CommonTextField";
 import { TextArea } from "@blueprintjs/core";
 import ReappointmentJourneyDialog from "../../../Components/reappointmentJourneyDialog";
 import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
+import { Tooltip } from "@mui/material";
 
 const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -478,26 +479,32 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
               : ""
               }`}
           >
+                                    <Tooltip title={"Click to Save In Progress"} arrow>
             <div
               className={`${style.saveInProgress} ${style.marginTop}`}
               onClick={() => getIsSaveInProgressOpen(true)}
             >
               SAVE IN PROGRESS
             </div>
+            </Tooltip>
             <div className={style.twoColForButton}>
+            <Tooltip title={"Click to Back"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
                 onClick={() => navigate(-1)}
               >
                 BACK
               </div>
+              </Tooltip>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
+              <Tooltip title={"Click to Continue"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
                 onClick={() => getMissingFields()}
               >
                 CONTINUE
               </div>
+              </Tooltip>
             </div>
           </div>
           <div className={style.marginTop}>

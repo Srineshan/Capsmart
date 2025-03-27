@@ -6,6 +6,7 @@ import { ErrorToaster, SuccessToaster } from '../../utils/toaster';
 import style from './index.module.scss'
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import { getValueByPath } from '../../utils/formatting';
+import { Tooltip } from '@mui/material';
 
 const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId, basicForm, setBasicForm, updateFunc, confirmFunc, hideCross }) => {
     let eSignImg = getValueByPath(basicForm, `forms[${basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')}].data.setUpYourSignature.file`);
@@ -45,12 +46,14 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             {!hideCross && (
+                                <Tooltip title={"Click to Cancel"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             )}
                         </div>
                     </div>
@@ -78,8 +81,10 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                         </div>
                     </div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); updateFunc() }}>UPDATE</div>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); confirmFunc() }}>KEEP AS IS</div>
+                    <Tooltip title={"Click to Update"} arrow>
+                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); updateFunc() }}>UPDATE</div></Tooltip>
+                        <Tooltip title={"Click to Keep as Is"} arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); confirmFunc() }}>KEEP AS IS</div></Tooltip>
                     </div>
                 </div>
 

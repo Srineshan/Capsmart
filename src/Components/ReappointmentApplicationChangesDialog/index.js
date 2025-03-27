@@ -185,6 +185,7 @@ import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import {formatFirstNameLastName} from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
 const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
   let cookie = new Cookie();
@@ -278,6 +279,7 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
             <div className={`${style.heading}`}>
              Reappointment Application Data & Document Verification
             </div>
+            <Tooltip title={"Click to Close"} arrow>
             <div className={style.displayInRow}>
               <img
                 src={CrossPink}
@@ -288,6 +290,7 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
                 }}
               />
             </div>
+            </Tooltip>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
             {/* <div className={`${style.spaceBetween}`}>
@@ -416,9 +419,11 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
+            <Tooltip title={"Click to Start Verification"} arrow>
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
               <div className={style.reviewButton}>START VERIFICATION</div>
             </div>
+            </Tooltip>
           </div>
         </div>
       </div>

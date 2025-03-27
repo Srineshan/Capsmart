@@ -15,6 +15,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
 import axios from "axios";
+import { Tooltip } from "@mui/material";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
@@ -257,6 +258,7 @@ const handleTextChange = async (editor) => {
               Create A Note
             </div>
             <div className={style.displayInRow}>
+            <Tooltip title={"Click to Close"} arrow>
               <img
                 src={CrossPink}
                 alt="cross"
@@ -265,6 +267,7 @@ const handleTextChange = async (editor) => {
                   getIsOpen(false);
                 }}
               />
+              </Tooltip>
             </div>
           </div>
           <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
@@ -468,7 +471,9 @@ const handleTextChange = async (editor) => {
         </div>
         <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer} ${style.cursorPointer}`}>
             <div  onClick={() => getIsOpen(false)}>
+            <Tooltip title={"Click to Close"} arrow>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
+              </Tooltip>
             </div>
             <div
             className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer} ${style.marginLeft}`}
@@ -478,7 +483,9 @@ const handleTextChange = async (editor) => {
               opacity: isApproveEnabled ? 1 : 0.5 
             }}
           >
+            <Tooltip title={"Click to Submit"} arrow>
             <div className={style.reviewButton}>SUBMIT</div>
+            </Tooltip>
           </div>
             </div>
       </div>

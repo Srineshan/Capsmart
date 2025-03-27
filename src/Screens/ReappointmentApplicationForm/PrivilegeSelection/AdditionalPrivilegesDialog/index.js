@@ -19,6 +19,7 @@ import DatalistInput, { useComboboxControls } from "react-datalist-input";
 import ESignature from '../../../../Components/ESignature';
 import style from './index.module.scss'
 import { format } from 'date-fns';
+import { Tooltip } from '@mui/material';
 
 const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivilegeList, basicForm, selectedAdditionalPrivilegeForEdit, applicationId }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -413,7 +414,8 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                     )}
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={selectedPrivilegeForDisplay?.length !== 0 ? () => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); } : () => { getIsOpen(false); }}>ADD</div>
+                    <Tooltip title={"Click to Add"} arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={selectedPrivilegeForDisplay?.length !== 0 ? () => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); } : () => { getIsOpen(false); }}>ADD</div></Tooltip>
                     </div>
                 </div>
 

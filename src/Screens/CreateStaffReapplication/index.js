@@ -11,9 +11,9 @@ import Resend from './../../images/Resend.png';
 import ResendDisabled from './../../images/Resend-disabled.png';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
-import { Tooltip } from '@material-ui/core';
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
+import { Tooltip } from '@mui/material';
 
 
 const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
@@ -598,12 +598,15 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           <div></div>
           <div className={style.displayInRow}>
             <div className={style.displayInRow}>
+            <Tooltip title={"Click to Clear"} arrow>
               <div
                 className={`${style.saveInProgress} ${style.marginTop} ${style.marginLeft}`}
                 onClick={() => window.location.reload()}
               >
                 CLEAR
               </div>
+              </Tooltip>
+              <Tooltip title={selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT" ? "Click to Resend Reappointment Application" : "Click to Send Reappointment Application"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
                 onClick={() => {
@@ -620,6 +623,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
               >
                 {(selectedReappointmentStatus === "SENT" || selectedReappointmentStatus === "RE_SENT") ? 'RESEND REAPPOINTMENT APPLICATION' : 'SEND REAPPOINTMENT APPLICATION'}
               </div>
+              </Tooltip>
             </div>
           </div>
         </div>

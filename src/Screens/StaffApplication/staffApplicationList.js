@@ -49,8 +49,8 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLas
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { Tooltip } from "@mui/material";
 
 const StaffApplicationList = ({
   isLoading,
@@ -3799,6 +3799,7 @@ const StaffApplicationList = ({
                   </div>
                 )}
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                                       <Tooltip title={applicationType === "REAPPOINTMENT" ? "Click to Staff for Reappointment" : "Create New Application" } arrow>
                   <div
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
@@ -3813,6 +3814,7 @@ const StaffApplicationList = ({
                           }
                         />
                       )}
+ 
                       <div
                         className={`${style.alignCenter} ${style.marginLeft10}`}
                         onClick={() =>
@@ -3825,8 +3827,10 @@ const StaffApplicationList = ({
                           ? "Staff for Reappointment"
                           : "Create New Application"}
                       </div>
+                    
                     </div>
                   </div>
+                  </Tooltip>
                 ) : null}
 
                 {/* {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
@@ -3908,7 +3912,9 @@ const StaffApplicationList = ({
                         </div>
                       </div>
                     </div>
+                    <Tooltip title={'Click to View Current Status'} arrow >
                     <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                    </Tooltip>
                   </div>
                 ) : null}
 
@@ -3930,15 +3936,19 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardCompletion ? (
+                          <Tooltip title={"Click to Expand"} arrow>
                           <AddIcon
                             sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                             onClick={() => setShowCardCompletion(!showCardCompletion)}
                           />
+                          </Tooltip>
                         ) : (
+                          <Tooltip title={"Click to Minimize"} arrow>
                           <RemoveIcon
                             sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                             onClick={() => setShowCardCompletion(!showCardCompletion)}
                           />
+                          </Tooltip>
                         )}
                       </div>
                     </div>
@@ -4024,15 +4034,19 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardDetails ? (
+                           <Tooltip title={"Click to Expand"} arrow>
                           <AddIcon
                             sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                             onClick={() => setShowCardDetails(!showCardDetails)}
                           />
+                          </Tooltip>
                         ) : (
+                          <Tooltip title={"Click to Minimize"} arrow>
                           <RemoveIcon
                             sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
                             onClick={() => setShowCardDetails(!showCardDetails)}
                           />
+                          </Tooltip>
                         )}
                       </div>
                     </div>

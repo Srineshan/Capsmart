@@ -3,6 +3,7 @@ import Cookie from 'universal-cookie';
 import style from './index.module.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDescope } from '@descope/react-sdk';
+import { Tooltip } from '@mui/material';
 
 const ApplicationSubmitted = () => {
 
@@ -25,7 +26,9 @@ const ApplicationSubmitted = () => {
                 <div>
                     <div className={style.heading}>Your Credentialing & Privileging Application is Submitted!</div>
                     <div className={style.justifyCenter}>
+                        <Tooltip title={"Click to Logout"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleLogout() }}>LOGOUT</div>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

@@ -2512,12 +2512,14 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
+                      <Tooltip title="Click to Delete File" arrow>
                       <img
                         src={DeleteIcon}
                         alt="Delete"
                         className={`${style.imgIcon} ${style.cursorPointer}`}
                         onClick={() => handleChange(fieldKey, null, baseKey)}
                       />
+                      </Tooltip>
                     </div>
                   </div>
                 )}
@@ -2606,7 +2608,7 @@ const ApplicationFieldCard = ({
                   getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
                     <div className={style.uploadButton2}>
                       <div className={style.uploadGrid2}>
-                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow>
+                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow   >
                           <span
                             className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                             onClick={() =>
@@ -2622,12 +2624,14 @@ const ApplicationFieldCard = ({
                             {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
                           </span>
                         </Tooltip>
+                        <Tooltip title="Click to Delete File" arrow>
                         <img
                           src={DeleteIcon}
                           alt="Delete"
                           className={`${style.imgIcon} ${style.cursorPointer}`}
                           onClick={() => handleChange(fieldKey, null, baseKey)}
                         />
+                        </Tooltip>
                       </div>
                     </div>
                   )}

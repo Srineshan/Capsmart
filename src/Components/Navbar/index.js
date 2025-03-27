@@ -25,6 +25,7 @@ import axios from "axios";
 
 import style from "./index.module.scss";
 import { useDescope } from "@descope/react-sdk";
+import { Tooltip } from "@mui/material";
 // import { Logout } from "../../utils/auth";
 
 const useStyles = makeStyles((theme) => ({
@@ -695,7 +696,7 @@ const Navbar = () => {
             aria-owns={openGuide ? "mouse-over-popover" : undefined}
             aria-haspopup="true"
           >
-            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="large"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
+            <div className={`${style.alignContent} ${style.iconSize1} ${style?.cursorPointer}`}><HelpOutlineOutlinedIcon fontSize="small"  sx={{ "&:hover": { color: "#06617A" } }}  /></div>
             <Popover
               id={"mouse-over-popover"}
               open={openGuide}
@@ -746,7 +747,9 @@ const Navbar = () => {
             className={`${style.logoutStyle} ${style.cursorPointer}`}
             onClick={() => handleLogout()}
           >
+             <Tooltip title={'Click to Logout'} arrow >
             <div className={`${style.logOutTextStyle}`}>Logout</div>
+            </Tooltip>
           </div>
           {/* <img
             src={LogoutIcon1}
@@ -754,7 +757,11 @@ const Navbar = () => {
             className={style.logoutIcons}
             onClick={logout}
           /> */}
+          <div>
+            <Tooltip title={'Click to Logout'} arrow >
           <LogoutIcon className={`${style.logoutIcons} ${style.iconSize1}`} onClick={handleLogout} style={{ fontSize: 20 }} />
+          </Tooltip>
+          </div>
         </div>
       </div>
     </div>

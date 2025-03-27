@@ -40,6 +40,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [anchorElIcon, setAnchorElIcon] = useState(null);
     const openIcon = Boolean(anchorElIcon);
     const [anchorElIconWithCount, setAnchorElIconWithCount] = useState(null);
+    const [cursorPosition, setCursorPosition] = useState({ left: 0, top: 0 });
+    const [isFlipped, setIsFlipped] = useState(false);
     const openIconWithCount = Boolean(anchorElIconWithCount);
     const [anchorElCountWithHover, setAnchorElCountWithHover] = useState(null);
     const openCountWithHover = Boolean(anchorElCountWithHover);
@@ -156,15 +158,37 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorElIcon(null);
     };
 
-    const handleClickIconWithCount = (event, index, tableDataIndex) => {
-        setAnchorElIconWithCount(event.currentTarget);
-        setSelectedMenuIndex(index)
-        setSelectedMenuColIndex(tableDataIndex);
-    };
+const handleClickIconWithCount = (event, index, tableDataIndex) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
 
-    const handleCloseIconWithCount = () => {
-        setAnchorElIconWithCount(null);
-    };
+  // Check if there's enough space below; if not, flip the popover
+  const flip = rect.bottom + 150 > windowHeight; // Adjust 150px threshold as needed
+  setIsFlipped(flip);
+
+  setAnchorElIconWithCount(event.currentTarget);
+  setCursorPosition({
+    left: event.clientX,
+    top: flip ? rect.top : rect.bottom, 
+  });
+  setSelectedMenuIndex(index);
+  setSelectedMenuColIndex(tableDataIndex);
+};
+
+const handleMouseMove = (event) => {
+  if (openIconWithCount) {
+    setCursorPosition({
+      left: event.clientX,
+      top: event.clientY,
+    });
+  }
+};
+
+
+const handleCloseIconWithCount = () => {
+  setAnchorElIconWithCount(null);
+};
+
 
     const handleClickCountWithHover = (event, index, tableDataIndex) => {
         setAnchorElCountWithHover(event.currentTarget);
@@ -478,57 +502,98 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     </div>
                                                 </div>
                                             ) : tableData?.type === "iconWithCount" ? (
-                                                <div onMouseEnter={(e) => handleClickIconWithCount(e, index, tableDataIndex)}
-                                                    onMouseLeave={() => handleCloseIconWithCount()}
-                                                    aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
-                                                    aria-haspopup="true">
+                                               <div
+    onMouseEnter={(e) => handleClickIconWithCount(e, index, tableDataIndex)}
+    onMouseLeave={handleCloseIconWithCount}
+    onMouseMove={handleMouseMove}
+    aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
+    aria-haspopup="true"
+    style={{ display: 'inline-block', position: 'relative' }}
+  >
                                                     <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
                                                         <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
-                                                            <Popover
-                                                                id={'mouse-over-popover'}
-                                                                sx={{
-                                                                    pointerEvents: 'none',
-                                                                }}
-                                                                open={openIconWithCount}
-                                                                anchorEl={anchorElIconWithCount}
-                                                                onClose={handleCloseIconWithCount}
-                                                                anchorOrigin={{
-                                                                    vertical: 'bottom',
-                                                                    horizontal: 'left',
-                                                                }}
-                                                                PaperProps={{
-                                                                    style: {
-                                                                        backgroundColor: "transparent",
-                                                                        boxShadow: "none",
-                                                                        borderRadius: 0
-                                                                    }
-                                                                }}
-                                                                disableRestoreFocus
-                                                            >
-                                                                <Box
-                                                                    sx={{
-                                                                        position: "relative",
-                                                                        mt: "10px",
-                                                                        "&::before": {
-                                                                            backgroundColor: "#737575",
-                                                                            content: '""',
-                                                                            display: "block",
-                                                                            position: "absolute",
-                                                                            width: 12,
-                                                                            height: 12,
-                                                                            top: -6,
-                                                                            transform: "rotate(45deg)",
-                                                                            left: 10,
-                                                                        }
-                                                                    }}
-                                                                />
+                                                          <Popover
+            id="mouse-over-popover"
+            open={openIconWithCount}
+            anchorEl={anchorElIconWithCount}
+            onClose={handleCloseIconWithCount}
+            anchorOrigin={{
+              vertical: isFlipped ? 'top' : 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: isFlipped ? 'bottom' : 'top',
+              horizontal: 'center',
+            }}
+            sx={{
+              pointerEvents: 'none',
+              '& .MuiPopover-paper': {
+                backgroundColor: 'transparent',
+                boxShadow: 'none',
+                overflow: 'visible',
+              },
+            }}
+            disableRestoreFocus
+          >
+           <Box
+              sx={{
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+                width: 0,
+                height: 0,
+                borderLeft: "6px solid transparent",
+                borderRight: "6px solid transparent",
+                borderBottom: isFlipped ? "none" : "6px solid #737575",
+                borderTop: isFlipped ? "6px solid #737575" : "none",
+                top: isFlipped ? "auto" : "-6px",
+                bottom: isFlipped ? "-6px" : "auto",
+                zIndex: 1,
+              }}
+            />
+                <Box
+              sx={{
+                backgroundColor: "#737575",
+                borderRadius: "4px",
+                maxHeight:
+                  tableData?.hoverText?.[index]?.length > 3 ? "100px" : "auto",
+                overflowY: tableData?.hoverText?.[index]?.length > 3 ? "scroll" : "auto",
+                position: "relative",
+                pointerEvents: 'auto',
+                '& > *': { pointerEvents: 'none' },
+                zIndex: 1,
+                width: "280px",
+                margin: "0 auto",
+                padding: "8px",
+                color: "white",
+                fontSize: "14px", 
+                scrollbarWidth: 'thin',
+                '&::-webkit-scrollbar': {
+                  width: "8px", 
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: "rgba(0,0,0,0.2)",
+                  borderRadius: "4px",
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  backgroundColor: "rgba(255,255,255,0.5)", // More visible
+                  borderRadius: "4px",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  '&:hover': {
+                    backgroundColor: "rgba(255,255,255,0.7)",
+                  }
+                },
+              }}
+            >
                                                                 {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
                                                                     <div className={style.multipleOptionsCard}>
                                                                         <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {data}</div>
                                                                     </div>
                                                                 ))}
+
+</Box>
                                                             </Popover>
                                                         )}
                                                     </Typography>
@@ -670,6 +735,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </Tooltip>
                                                             )
                                                         : visibleActions?.length === 1 ? (
+                                                            <Tooltip title={'Click to View'} arrow>
                                                             <span className={`${style.singleActionText}`}
                                                                 onClick={() => {
                                                                     visibleActions[0]?.onClick(data);
@@ -678,6 +744,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 key={0}>
                                                                 {visibleActions[0]?.data}
                                                             </span>
+                                                            </Tooltip>
                                                         ) : (
                                                             <Tooltip title={'Click to take action'} arrow>
                                                                 <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />

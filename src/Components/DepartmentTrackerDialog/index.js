@@ -12,10 +12,10 @@ import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
+import { Tooltip } from "@mui/material";
 
 const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationView, getNotesDialog }) => {
   let cookie = new Cookie();
@@ -497,6 +497,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     />
                   </Tooltip>
                 </div>
+                <Tooltip title="Close" arrow>
                 <img
                   src={CrossPink}
                   alt="cross"
@@ -505,6 +506,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     getIsOpen(false);
                   }}
                 />
+                </Tooltip>
               </div>
             </div>
             {/* Expandable Department List */}

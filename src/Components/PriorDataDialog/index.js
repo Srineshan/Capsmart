@@ -7,6 +7,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import style from './index.module.scss';
 import { useParams } from 'react-router-dom';
+import { Tooltip } from '@mui/material';
 
 const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValue, basicForm, setBasicForm, disclosureBaseKey, disclosureFieldKey, disclosurSchema }) => {
 
@@ -154,19 +155,22 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
             </div>
 
             <div className={`${style.spaceBetween} ${style.displayInRow} ${style.marginTop}`}>
+              <Tooltip title={"Click to Cancel"} arrow>
               <div
                 className={`${style.continue} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                 onClick={handleCancelClick}
               >
                 CANCEL
               </div>
+              </Tooltip>
+              <Tooltip title={"Click to Save"} arrow>
               <div
                 className={`${style.saveInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}
                 onClick={handleSaveClick}
               >
                 SAVE
               </div>
-
+              </Tooltip>
             </div>
           </>
         )}

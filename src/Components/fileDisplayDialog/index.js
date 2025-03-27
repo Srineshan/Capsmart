@@ -10,6 +10,7 @@ import LoadingScreen from "../LoadingScreen";
 import style from "./index.module.scss";
 import { corsUrl } from "../../utils/formatting";
 import { Download } from "@mui/icons-material";
+import { Tooltip } from '@mui/material';
 
 const FileDisplayDialog = ({ getIsOpen, file }) => {
   const [isContinue, setIsContinue] = useState(false);
@@ -189,6 +190,7 @@ const handleEmbedPrint = () => {
               </div>
               <div className={style.displayInRow}>
               <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}>
+              <Tooltip title="Download" arrow >
                                 <Download
                                     sx={{
                                         fontSize: 25,
@@ -196,12 +198,14 @@ const handleEmbedPrint = () => {
                                     }}
                                     onClick={handleDownload} 
                                 />
+                                </Tooltip>
                             </div>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${
                     style.alignCenter
                   } ${style.cursorPointer} ${style.marginRight}`}
                 >
+                  <Tooltip title="Print" arrow >
                   <PrintOutlinedIcon
                     sx={{
                       fontSize: isPrintClicked ? 20 : 25,
@@ -209,25 +213,31 @@ const handleEmbedPrint = () => {
                     }}
                     onClick={handlePrintClick}
                   />
+                  </Tooltip>
                 </div>
                 {!isExpanded ? (
+                  <Tooltip title="Click to Expand" arrow >
                   <FullscreenSharpIcon
                     className={`${style.iconStyle} ${style.cursorPointer} `}
                     onClick={toggleExpand}
                     sx={{ color: "#06617A" }}
                   />
+                  </Tooltip>
                 ) : (
+                  <Tooltip title="Click to Minimize" arrow >
                   <FullscreenExitIcon
                     className={`${style.iconStyle} ${style.cursorPointer} `}
                     onClick={toggleExpand}
                     sx={{ color: "#06617A" }}
                   />
+                  </Tooltip>
                 )}
                 {/* <FullscreenSharpIcon
                                 className={`${style.iconStyle} ${style.cursorPointer} `}
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
+                 <Tooltip title={"Click to Close"} arrow>           
                 <img
                   src={CrossPink}
                   alt="cross"
@@ -236,6 +246,7 @@ const handleEmbedPrint = () => {
                     getIsOpen(false);
                   }}
                 />
+                </Tooltip>
               </div>
             </div>
             <div className={style.marginTop}>
@@ -266,6 +277,7 @@ const handleEmbedPrint = () => {
             <div
               className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
             >
+              <Tooltip title={"Click to Close"} arrow>
               <div
                 className={`${style.continue} ${style.marginLeft}`}
                 onClick={() => {
@@ -274,6 +286,7 @@ const handleEmbedPrint = () => {
               >
                 CLOSE
               </div>
+              </Tooltip>
             </div>
           </div>
         </div>

@@ -643,6 +643,7 @@ import { format } from 'date-fns';
 import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -1357,6 +1358,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
               Staff Reappointment for Review & Approval
             </div>
             <div className={style.displayInRow}>
+            <Tooltip title={"Click to Cancel"} arrow>
               <img
                 src={CrossPink}
                 alt="cross"
@@ -1365,6 +1367,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   closeAndReset();
                 }}
               />
+              </Tooltip>
             </div>
           </div>
           <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -1498,7 +1501,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </>
                }
             <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => closeAndReset()}>
-               {workModeType === "Department Head" ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
+               {workModeType === "Department Head" ? <Tooltip title={"Click to Start Review"} arrow> <div className={style.reviewButton}>START REVIEW</div></Tooltip> :<Tooltip title={"Click to Continue"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
              </div>
           </div>
         </div>

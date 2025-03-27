@@ -500,9 +500,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
-                    ), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData =>  {
+                        return(
+                        <Tooltip title="Click to Delete" arrow>
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
+                 } ), 'isShowHoverText': false
                 });
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
@@ -910,9 +912,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     </div>
                     <div className={style.threeColForButton}>
                         <div></div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Back"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Continue"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -950,9 +955,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
+             <Tooltip title={"Click to Save In Progress"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
                             SAVE IN PROGRESS
                         </div>
+                        </Tooltip>
                         {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
                             getMissingDocs()?.length === 0
@@ -969,12 +976,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         SKIP FOR NOW
                     </div> */}
                         <div className={style.twoColForButton}>
+                        <Tooltip title={"Click to Back"} arrow>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>
+                            </Tooltip>
                             {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={
@@ -989,7 +998,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div>
+                        <Tooltip title={"Click to Continue"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     {/* <div className={style.marginTop}>
@@ -1119,6 +1129,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             </div>
                         ))}
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
+                        <Tooltip title={"Click to Skip for Now"} arrow>
                             <div
                                 className={`${style.saveInProgressValidation}`}
                                 onClick={() => {
@@ -1128,6 +1139,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             >
                                 SKIP FOR NOW
                             </div>
+                            </Tooltip>
+                            <Tooltip title={"Click to Continue Uploading"} arrow>
                             <div
                                 className={`${style.continueValidation} ${style.marginLeft}`}
                                 onClick={() => {
@@ -1136,6 +1149,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             >
                                 CONTINUE UPLOADING
                             </div>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>

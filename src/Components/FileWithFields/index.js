@@ -10,7 +10,7 @@ import style from './index.module.scss'
 import CommonTextField from '../CommonFields/CommonTextField';
 import CommonPhoneField from '../CommonFields/CommonPhoneField';
 import CommonDateField from '../CommonFields/CommonDateField';
-import { TextField } from '@mui/material';
+import { TextField, Tooltip } from '@mui/material';
 import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -195,16 +195,20 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 />
                             </div> */}
                             {!isExpanded ? (
+                                 <Tooltip title={"Click to Expand"} arrow>
                                 <FullscreenSharpIcon
                                     className={`${style.iconStyle} ${style.cursorPointer} `}
                                     onClick={toggleExpand}
                                     sx={{ color: '#06617A' }}
-                                />) : (
+                                />
+                                </Tooltip>) : (
+                                    <Tooltip title={"Click to Minimize"} arrow>
                                 <FullscreenExitIcon
                                     className={`${style.iconStyle} ${style.cursorPointer} `}
                                     onClick={toggleExpand}
                                     sx={{ color: '#06617A' }}
                                 />
+                                </Tooltip>
                             )
                             }
                             {/* <FullscreenSharpIcon
@@ -212,12 +216,14 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
+                            <Tooltip title={"Click to Close"} arrow>
                             <img
                                 src={CrossPink}
                                 alt="cross"
                                 className={`${style.crossStyle} ${style.cursorPointer} `}
                                 onClick={() => { getIsOpen(false) }}
                             />
+                            </Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>
@@ -247,7 +253,9 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ))}
                     </div> */}
                     <div className={`${style.justifyRight} ${style.displayInRow} ${style.marginTop}`}>
+                    <Tooltip title={"Click to Continue"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleContinue(); }}>CONTINUE</div>
+                        </Tooltip>
                     </div>
                 </div>
 

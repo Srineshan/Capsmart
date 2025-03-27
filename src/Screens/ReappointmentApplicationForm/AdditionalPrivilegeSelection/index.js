@@ -37,6 +37,7 @@ import CommonRadio from '../../../Components/CommonFields/CommonRadio';
 import AlertDialog from '../../../Components/AlertDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import { Tooltip } from '@mui/material';
 
 const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [isSigned, setIsSigned] = useState(false);
@@ -776,18 +777,22 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         <div
                             className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
+                            <Tooltip title={"Click to Yes"} arrow>
                             <div
                                 className={`${style.reappointmentButtonOutlined}`}
                                 onClick={() => setIsAdditionalPrivilegeCategoryChanging(true)}
                             >
                                 Yes
                             </div>
+                            </Tooltip>
+                            <Tooltip title={"Click to No"} arrow>
                             <div
                                 className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
                             >
                                 No
                             </div>
+                            </Tooltip>
                         </div>
                     ) : (
                         <>
@@ -804,12 +809,14 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
+                                        <Tooltip title={"Click to Edit"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setIsEdit(true)}
                                         >
                                             Edit
                                         </div>
+                                        </Tooltip>
                                     </div>
                                 </>
                             ) : (
@@ -825,12 +832,14 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
+                                        <Tooltip title={"Click to Edit"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setIsEdit(true)}
                                         >
                                             Edit
                                         </div>
+                                        </Tooltip>
                                     </div>
                                 </>
                             )}
@@ -879,18 +888,22 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                     <div
                         className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
+                        <Tooltip title={"Click to Update"} arrow>
                         <div
                             className={`${style.reappointmentButton} ${style.marginLeft}`}
                             onClick={() => { setIsAdditionalPrivilegeCategoryChanging(false); handleSubmit() }}
                         >
                             UPDATE
                         </div>
+                        </Tooltip>
+                        <Tooltip title={"Click to Cancel"} arrow>
                         <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => setIsAdditionalPrivilegeCategoryChanging(false)}
                         >
                             CANCEL
                         </div>
+                        </Tooltip>
                     </div>
                 </div>
             )}
@@ -929,6 +942,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         <div
                             className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
+                            <Tooltip title={"Click to Continue"} arrow>
                             <div
                                 className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined)
                                     || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0
@@ -939,6 +953,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                             >
                                 CONTINUE
                             </div>
+                            </Tooltip>
                             {/* <button
   className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null 
     && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) 
