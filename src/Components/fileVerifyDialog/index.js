@@ -349,6 +349,11 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                     title: user?.title?.title
                 }
             },
+            attachReferenceDocuments: true,
+            formTable: {
+                tableName: "table",
+                rowId: file?.rowId
+            },
         }
         await POST(`application-management-service/application/${applicationId}/form/${selectedFormId}/clarificationRequest`, temp)
             .then(response => {
@@ -410,7 +415,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         let temp = {
             formId: selectedFormId,
             contentToVerify: "DATA",
-            tableName: selectedRowTableName,
+            tableName: documentStatus === "REJECT_DOCUMENT" ? 'table' : selectedRowTableName,
             rowId: documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? replaceRowId : file?.rowId,
         };
 
@@ -888,7 +893,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         </div>
                                         <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
                                             <div className={style.extractedFields}>
-                                                <div className={`${style.heading} ${style.marginBottom}`}>Alternate Document</div>
+                                                <div className={`${style.heading} ${style.marginBottom}`}>Prior Document</div>
                                                 <div className={`${style.twoCol}`}>
                                                     {fieldsAlternative?.map((field, index) => (
                                                         <div>
