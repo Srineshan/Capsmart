@@ -50,8 +50,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const openInfo = Boolean(anchorElInfo);
 
     const reportTitleList = {
-        upcomingContractRenewals: 'Upcoming Contract Renewals',
-        oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        // upcomingContractRenewals: 'Upcoming Contract Renewals',
+        upcomingContractRenewals: 'Staff Reappointments to Process',
+        // oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        oneTimeContract: "Staff Reappointments to Process",
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -60,7 +62,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         compensationCostAnalysis: 'Compensation Cost Analysis',
         timesheetProcessingSummary: 'Timesheet Processing Summary',
         listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
-        submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        // submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        submittedTimesheetsPaymentStatus: 'Locum Renewal Status Tracker For {All Locum Staff}',
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',
@@ -77,12 +80,12 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
 
     return (
         <div>
-            <div className={`${style.spaceBetween} ${style.alignCenter}`}>
+            <div className={`${style.spaceBetween} ${style.alignCenter} ${style.IconHeaderBackgroundStyle}`}>
                 <div className={`${style.displayInRow} ${style.cardPadding} ${style.alignCenter}`}>
-                    <div className={style.reportTypeTextStyle}>
+                    <div className={style.reportTypeTextNotificationStyle}>
                         {reportTitleList[reportType]}
                     </div>
-                    <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
+                    {/* <div onMouseEnter={(e) => setAnchorElInfo(e.currentTarget)} onMouseLeave={() => setAnchorElInfo(null)} aria-owns={openInfo ? 'mouse-over-popover' : undefined} aria-haspopup="true">
                         <img src={Info} className={`${style.infoStyle} ${style.marginTop5} ${style.marginLeft10}`} />
                         <Popover
                             id={'mouse-over-popover'}
@@ -100,7 +103,7 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
                         >
                             <div className={style.popoverStyle}>{reportTitleList[reportType]}</div>
                         </Popover>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={` ${style.margin20}`}>
                     <div className={style.displayInRow}>

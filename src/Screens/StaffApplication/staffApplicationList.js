@@ -1273,6 +1273,14 @@ const StaffApplicationList = ({
     removeAfterPrint: true,
   });
 
+  const handleNavigate = () => {
+    navigate("/reportTypeOverview/oneTimeContract", { state: { tableData } });
+  };
+
+  const handleNavigateNotes = () => {
+    navigate("/reportTypeOverview/upcomingContractRenewals", { state: { tableData } });
+  };
+
   const getRejectionCounts = async () => {
     if (applicationType === "LOCUM") {
       return;
@@ -4237,17 +4245,32 @@ const StaffApplicationList = ({
                     </Tooltip>
                   </div>
                 ) : ""}
+                 <div
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight20}`}
+                >
+                  <Tooltip title="Print Notes" arrow>
+                  <NoteAltOutlinedIcon
+                    sx={{
+                      fontSize: isPrintClicked ? 20 : 25,
+                      color: isPrintClicked ? "#fff" : "#06617A",
+                    }}
+                    // onClick={handlePrintClick}
+                    onClick={handleNavigateNotes}
+                  />
+                  </Tooltip>
+                </div>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
                 >
-                  <Tooltip title="Print" arrow>
+                  <Tooltip title="Print Data" arrow>
                     <PrintOutlinedIcon
                       sx={{
                         fontSize: isPrintClicked ? 20 : 25,
                         color: isPrintClicked ? "#fff" : "#06617A",
                       }}
-                      onClick={handlePrintClick}
+                      onClick={handleNavigate}
                     />
                   </Tooltip>
                 </div>

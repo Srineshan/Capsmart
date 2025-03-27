@@ -16,11 +16,14 @@ import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
+import { useNavigate } from "react-router-dom";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 
 const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationView, getNotesDialog }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userNotes, setUserNotes] = useState('');
@@ -252,6 +255,10 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     }
   };
 
+  const handleNavigateStatus = () => {
+    navigate("/reportTypeOverview/submittedTimesheetsPaymentStatus", { state: { tableData } });
+  };
+  
   const getTableValues = () => {
     const No = [];
     const staff = [];
@@ -496,6 +503,20 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                       }}
 
                     />
+                  </Tooltip>
+                </div>
+                <div
+                  className={`${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight10}`}
+                >
+                  <Tooltip title='Print Data' arrow >
+                  <PrintOutlinedIcon
+                    sx={{
+                      fontSize: 25,
+                      color: "#06617A",
+                    }}
+                    onClick={handleNavigateStatus}
+                  />
                   </Tooltip>
                 </div>
                 <img

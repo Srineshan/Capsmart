@@ -506,6 +506,14 @@
     align-items: center;
 }
 
+.reportTypeTextNotificationStyle {
+    text-align: left;
+    font: normal normal bold 24px/22px proxima-nova;
+    letter-spacing: 0px;
+    color: #737575;
+    opacity: 1;
+}
+
 .cardPadding {
     padding: 20px 20px;
 }
@@ -1221,7 +1229,7 @@
     box-shadow: 0px 10px 20px #C4C8D066;
     border-radius: 8px;
     width: 100%;
-    padding: 30px 40px;
+    padding: 80px;
 }
 
 .doNotDisturbTextStyle {
@@ -1246,6 +1254,11 @@
 
 .headerLogo {
     width: 130px;
+    height: 55px;
+    object-fit: contain;
+}
+
+.headerLogoReport {
     height: 55px;
     object-fit: contain;
 }
@@ -1275,9 +1288,24 @@
     color: #2C2C2C;
 }
 
+.reportRunByParamStyle {
+    text-align: left;
+    font: normal normal bold 16px/13px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
 .reportFooterLogo {
     width: 150px;
     height: 70px;
+    object-fit: contain;
+}
+
+.reportFooterLogoApplicant {
+    width: 100px;
+    height: 50px;
     object-fit: contain;
 }
 
@@ -1286,6 +1314,14 @@
     font: normal normal 600 13px/24px proxima-nova;
     letter-spacing: 0px;
     color: #000;
+}
+
+.reportCopyRightFooterTextStyle {
+    text-align: left;
+    font: normal normal 600 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #454747;
+    opacity: 0.6;
 }
 
 .poweredByTextStyle {
@@ -1301,6 +1337,23 @@
     letter-spacing: 0px;
     color: #2C2C2C;
     text-transform: capitalize;
+}
+
+.reportTypeValueParamTextStyle {
+    text-align: left;
+    font: normal normal medium 20px/34px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.reportTypeParamsBackground{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 1px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+    padding: 10px;
 }
 
 .reportTypeValueBoldTextStyle {
@@ -1681,3 +1734,41 @@
     display: grid;
     grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
 }
+
+.reporttypeLeftBackGround{
+    background:transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.reportLeftTextStyle{
+    text-align: center;
+    font: normal normal 600 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #FFFFFF;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 5px;
+}
+
+.headingtextStyle{
+    text-align: left;
+    font: normal normal 600 20px/21px proxima-nova;
+    letter-spacing: 0px;
+    color: #253240;
+    text-transform: capitalize;
+    opacity: 0.7;
+}
+
+.IconHeaderBackgroundStyle{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 8px 16px #17133814;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.permanentStaffGrid {
+    display: grid;
+    grid-template-columns: 3% 15% 12% 16% 10% 19% 10% 11%;
+    grid-gap: 5px;
+  }
