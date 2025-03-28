@@ -51,14 +51,46 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const [showFilter, setShowFilter] = useState(false);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   const [limit, setLimit] = useState(9999);
+
+  const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name,
+      type: 'department'
+    };
+
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept", selectedValue)
+  }
+
   useEffect(() => {
     getActiveUserData()
-  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedApplicantType, limit, searchTermForTable]);
+  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable]);
 
   // useEffect(() => {
   //   sessionStorage.setItem("fromSummary", false);
@@ -191,7 +223,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const getActiveUserData = async () => {
     try {
       setIsLoadingImage(true);
-      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${selectedDepartment ? `&departmentId=${selectedDepartment}` : ''}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
+      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
 
       const response = await GET(url);
 
@@ -210,7 +243,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const getActiveUserDataForSearch = async (signal) => {
     try {
       setIsLoadingImage(true);
-      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&offset=${page - 1}&searchText=${searchTerm}&isPaginationRequired=${false}${selectedDepartment ? `&departmentId=${selectedDepartment}` : ''}`;
+      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&offset=${page - 1}&searchText=${searchTerm}&isPaginationRequired=${false}${departmentParam}`;
 
       const response = await GET(url, { signal });
 
@@ -467,7 +501,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => setSelectedDepartment()}
+                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
                       />
                     </Tooltip>
                   </div>
@@ -534,15 +568,20 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
               <div className={style.departmentContainer}>
                 <div>
                   <CommonSelectField
+                    // value={
+                    //   selectedServiceArea 
+                    //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                    //     : selectedDepartment
+                    // } 
                     value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    onChange={handleChange}
                     className={style.fullWidth}
                     firstOptionLabel={'All'}
                     firstOptionValue={''}
-                    valueList={departmentList?.map(data => data?.id)}
-                    labelList={departmentList?.map(data => data?.departmentName?.name)}
-                    disabledList={departmentList?.map(data => false)}
-                    label={'Department'}
+                    valueList={transformedOptions.map(option => option?.value)}
+                    labelList={transformedOptions.map(option => option?.label)}
+                    disabledList={transformedOptions.map(() => false)}
+                    label={'Dept / Division & Specialty'}
                     required={false}
                   />
                 </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TextArea } from '@blueprintjs/core';
 import { format } from 'date-fns';
 import { TextField } from '@mui/material';
-import { GET, POST, PUT } from '../../Screens/dataSaver';
+import { DELETE, GET, POST, PUT } from '../../Screens/dataSaver';
 import CommonSelectField from '../../Components/CommonFields/CommonSelectField';
 import ApplicationHeader from "../../Components/ApplicationHeader";
 import { useNavigate, useParams } from "react-router-dom";
@@ -34,6 +34,8 @@ import CommonDateField from '../../Components/CommonFields/CommonDateField';
 import { dataLoadingGIF, fileLoadingURL } from '../../utils/formatting';
 import DescriptionIcon from '@mui/icons-material/Description';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
+import FileWithFields from '../../Components/FileWithFields';
+import DeleteConfirmation from '../../Components/DeleteConfirmation';
 
 const ApplicantPortalRFC = () => {
     const navigate = useNavigate();
@@ -63,6 +65,7 @@ const ApplicantPortalRFC = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [clarificationSubject, setClarificationSubject] = useState("");
     const [clarificationDescription, setClarificationDescription] = useState("");
+    const [clarificationType, setClarificationType] = useState("");
     const [respondentName, setRespondentName] = useState("");
     const [selectedCommunicationMethod, setSelectedCommunicationMethod] = useState('');
     const [isLoadingImageDocs, setIsLoadingImageDocs] = useState(false);
@@ -109,6 +112,31 @@ const ApplicantPortalRFC = () => {
         }
     }
 
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const isEqual = (obj1, obj2) => {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+    };
+
+    const handleDelete = async () => {
+        setUploadFileData(uploadFileData?.filter(obj => !isEqual(obj, deleteData)))
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[deleteData?.rowId]}`, [deleteData])
+            .then((response) => {
+                SuccessToaster("File Deleted Successfully");
+            })
+            .catch((error) => {
+                ErrorToaster("Unexpected Error Deleting File");
+            });
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            handleDelete()
+        }
+    }
+
     const getPreApplication = async () => {
         setIsLoading(true)
         const query = new URLSearchParams(window.location.search);
@@ -120,6 +148,7 @@ const ApplicantPortalRFC = () => {
         setForm(basicForm);
         setClarificationSubject(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationTitle)
         setClarificationDescription(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
+        setClarificationType(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationRequestType)
         if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse !== null) {
             setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
             setUserNotes(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationDescription)
@@ -135,6 +164,10 @@ const ApplicantPortalRFC = () => {
     //         setTaskById(task);
     //     }
     // }
+
+    const getIsOpenFileWithFields = (value) => {
+        setShowFileWithFields(value);
+    }
 
     const getIsDocRequired = (shortName) => {
         let documentData = form?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
@@ -245,9 +278,9 @@ const ApplicantPortalRFC = () => {
         // handleSubmitApplicationReq(temp)
     }
 
-    const getDocument = async () => {
+    const getDocument = async (id) => {
         const { data: response } = await GET(
-            `document-management-service/document/67b81938783ada4864899ff8`
+            `document-management-service/document/${id}`
         );
         console.log(response);
         setFields(response?.fields);
@@ -314,94 +347,63 @@ const ApplicantPortalRFC = () => {
         navigate("/applicantDashboard");
     };
 
-    // const getApplicantValues = (array) => {
-    //     let temp = [];
-    //     console.log(array, 'array')
-    //     Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
-    //         if (data === "file") {
-    //             temp.push({
-    //                 "type": "icon", "icon": array?.map(innerData => {
-    //                     const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
-    //                         (<Tooltip title="Click to Open" arrow>
-    //                             <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
-    //                         ) : innerData?.fileType?.startsWith("image/") ?
-    //                             (<Tooltip title="Click to Open" arrow>
-    //                                 <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
-    //                 }), 'isShowHoverText': false
-    //             });
-    //         } else {
-    //             if (data === "documentType") {
-    //                 temp.push({
-    //                     "type": "field", "field": array?.map((innerData, innerIndex) => <CommonSelectField
-    //                         value={innerData[data]}
-    //                         onChange={(e) => handleChange(e.target.value, innerIndex)}
-    //                         className={style.fullWidth}
-    //                         // firstOptionLabel={fieldData.label}
-    //                         // firstOptionValue={fieldData.label}
-    //                         valueList={getDropDownValues(innerData[data]) || []}
-    //                         labelList={getDropDownValues(innerData[data]) || []}
-    //                         disabledList={getDropDownValues(innerData[data])?.map(data => false)}
-    //                     />)
-    //                 });
-    //             } else if (data === "valid") {
-    //                 temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
-    //             } else if (data === "verified") {
-    //                 temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
-    //             } else {
-    //                 temp.push({
-    //                     "type": "text",
-    //                     "value": array?.map(innerData => {
-    //                         const rowId = innerData?.rowId;
-    //                         return innerData[data] && (
-    //                             <Tooltip title="Click to Open" arrow>
-    //                                 <span
-    //                                     onClick={() => {
-    //                                         setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
-    //                                     }}
-    //                                 >
-    //                                     {innerData[data]}
-    //                                 </span>
-    //                             </Tooltip>
-    //                         );
-    //                     })
-    //                 });
-    //             }
-    //         }
-    //         if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-    //             // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-    //             temp.push({
-    //                 "type": "icon", "icon": array?.map(innerData =>
-    //                     <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
-    //                 ), 'isShowHoverText': false
-    //             });
-    //         }
-    //         if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
-    //             // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
-    //             temp.push({
-    //                 type: "icon", icon: array?.map(innerData => {
-    //                     const rowId = innerData?.rowId;
-    //                     return (
-    //                         <Tooltip title="Click to Edit" arrow>
-    //                             <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
-    //                         </Tooltip>
-    //                     );
-    //                 }),
-    //                 isShowHoverText: false
-    //             });
-    //         }
-    //     })
-    //     console.log(temp, array, form?.documentsRequired?.map(data => data?.document?.shortName))
-    //     return temp;
-    // }
+    const getApplicantValues = (array) => {
+        let temp = [];
+        console.log(array, 'array')
+        temp.push({
+            "type": "icon", "icon": array?.map(innerData => {
+                const rowId = innerData?.id; return innerData?.file?.fileType === 'application/pdf' ?
+                    (<Tooltip title="Click to Open" arrow>
+                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                    ) : innerData?.file?.fileType?.startsWith("image/") ?
+                        (<Tooltip title="Click to Open" arrow>
+                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20 }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />)
+            }), 'isShowHoverText': false
+        });
+        temp.push({
+            "type": "text", "value": array?.map(innerData => innerData?.file?.fileName)
+        })
+        temp.push({
+            "type": "text", "value": array?.map(innerData => innerData?.documentType?.shortName)
+        })
+        temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['verified'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+        temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['valid'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+        temp.push({
+            "type": "icon", "icon": array?.map(innerData =>
+                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
+            ), 'isShowHoverText': false
+        });
+        temp.push({
+            type: "icon", icon: array?.map(innerData => {
+                const rowId = innerData?.id;
+                return (
+                    <Tooltip title="Click to Edit" arrow>
+                        <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+                    </Tooltip>
+                );
+            }),
+            isShowHoverText: false
+        });
+        console.log(temp, array, form?.documentsRequired?.map(data => data?.document?.shortName))
+        return temp;
+    }
+
+    console.log(uploadFileData, 'uploadFileData')
 
     const getClarificationResponse = async (saveInProgress) => {
         const query = new URLSearchParams(window.location.search);
         const applicationIdFromParam = query.get("app");
         const formIdFromParam = query.get("form");
         const files = (uploadFileData || []).map((item, index) => ({
-            ...item.file || item,
-            description: documentDesc[index] || "",
-            title: documentTitle[index] || "",
+            filePath: item?.file?.filePath,
+            fileName: item?.file?.fileName,
+            fileURL: item?.file?.fileURL,
+            fileType: item?.file?.fileType,
+            classification: item?.file?.classification,
+            verified: item?.file?.verified,
+            valid: item?.file?.valid,
+            title: item?.file?.title,
+            description: item?.file?.description
         }));
 
         let temp = {
@@ -409,8 +411,12 @@ const ApplicantPortalRFC = () => {
             responseMethod: '',
             title: respondentName,
             clarificationDescription: userNotes,
-            attachedDocuments: files
+            attachedDocuments: files,
+            documents: uploadFileData
         };
+        if (clarificationType !== undefined && clarificationType !== "") {
+            temp["clarificationResponseType"] = "REPLACE_ORIGINAL_DOCUMENT";
+        }
 
         console.log(taskById, 'taskById')
 
@@ -627,16 +633,16 @@ const ApplicantPortalRFC = () => {
 
                                 />
                             </div>
-                            <div className={`${style.twoCol} ${style.marginTop10}`}>
+                            <div className={` ${style.marginTop10}`}>
                                 <CommonDropZone
-                                    title={"Upload Your Documents"}
+                                    title={"Upload Your Document"}
                                     description={
-                                        "Upload your files or drag & drop from your document cabinet"
+                                        "Upload your file or drag & drop from your document cabinet"
                                     }
                                     changeHandler={changeHandler}
                                     files={files}
                                 />
-                                <CommonDropZone
+                                {/* <CommonDropZone
                                     title={"Upload A Photo"}
                                     description={
                                         "Take a picture with your Camera or Upload from Gallery."
@@ -644,71 +650,76 @@ const ApplicantPortalRFC = () => {
                                     changeHandler={changeHandler}
                                     files={files}
                                     accept="image/*"
-                                />
+                                /> */}
                             </div>
-                            {uploadFileData?.length > 0 && (
-                                <div>
-                                    {uploadFileData?.map((file, index) => (
-                                        <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
-                                            <div className={`${style.threeColumnGrid}`}>
-                                                <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.verticalAlignCenter}`}>
-                                                    <DescriptionIcon className={style.docsIcon} />
-                                                    <div className={style.marginLeft20}>{file?.file?.fileName || file?.fileName}</div>
+                            {!(clarificationType !== undefined && clarificationType !== "") ? (
+                                <>
+                                    {uploadFileData?.length > 0 && (
+                                        <div>
+                                            {uploadFileData?.map((file, index) => (
+                                                <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                                                    <div className={`${style.threeColumnGrid}`}>
+                                                        <div className={`${style.displayInRow} ${style.referenceCardStyle} ${style.verticalAlignCenter}`}>
+                                                            <DescriptionIcon className={style.docsIcon} />
+                                                            <div className={style.marginLeft20}>{file?.file?.fileName || file?.fileName}</div>
+                                                        </div>
+                                                        <div>
+                                                            <CommonInputField
+                                                                value={documentTitle[index] || ""}
+                                                                onChange={(e) => {
+                                                                    const newDocumentTitle = [...documentTitle];
+                                                                    newDocumentTitle[index] = e.target.value;
+                                                                    setDocumentTitle(newDocumentTitle);
+                                                                }}
+                                                                type="text"
+                                                                placeholder="Title*"
+                                                                className={style.referenceCardStyleDescription}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <CommonInputField
+                                                                value={documentDesc[index] || ""}
+                                                                onChange={(e) => {
+                                                                    const newDocumentDesc = [...documentDesc];
+                                                                    newDocumentDesc[index] = e.target.value;
+                                                                    setDocumentDesc(newDocumentDesc);
+                                                                }}
+                                                                type="text"
+                                                                placeholder="Description (Optional)"
+                                                                className={style.referenceCardStyleDescription}
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <CommonInputField
-                                                        value={documentTitle[index] || ""}
-                                                        onChange={(e) => {
-                                                            const newDocumentTitle = [...documentTitle];
-                                                            newDocumentTitle[index] = e.target.value;
-                                                            setDocumentTitle(newDocumentTitle);
-                                                        }}
-                                                        type="text"
-                                                        placeholder="Title*"
-                                                        className={style.referenceCardStyleDescription}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <CommonInputField
-                                                        value={documentDesc[index] || ""}
-                                                        onChange={(e) => {
-                                                            const newDocumentDesc = [...documentDesc];
-                                                            newDocumentDesc[index] = e.target.value;
-                                                            setDocumentDesc(newDocumentDesc);
-                                                        }}
-                                                        type="text"
-                                                        placeholder="Description (Optional)"
-                                                        className={style.referenceCardStyleDescription}
-                                                    />
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                    ))}
+                                    )}
+                                </>
+                            ) : (
+                                <div className={style.tableContainer}>
+                                    {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
+                                        <TableTwo
+                                            tableHeaderValues={[
+                                                "",
+                                                "File Uploaded",
+                                                "Document Type",
+                                                "Verified",
+                                                "Valid",
+                                                "",
+                                            ]}
+                                            tableDataValues={getApplicantValues(uploadFileData)}
+                                            tableData={uploadFileData || []}
+                                            gridStyle={style.gridStyle}
+                                            // actions={actions}
+                                            // scrollStyle={style.contractScrollStyle}
+                                            tableSortValues={[]}
+                                            heading={"You have not yet uploaded any documents."}
+                                            onClickFunction={() => { }}
+                                        />
+                                    )}
                                 </div>
                             )}
-                            {/* <div className={style.tableContainer}>
-                                {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
-                                    <TableTwo
-                                        tableHeaderValues={[
-                                            "",
-                                            "File Uploaded",
-                                            "Document Type",
-                                            "",
-                                            "Verified",
-                                            "Valid",
-                                            "",
-                                        ]}
-                                        tableDataValues={getApplicantValues(uploadFileData)}
-                                        tableData={uploadFileData || []}
-                                        gridStyle={style.gridStyle}
-                                        // actions={actions}
-                                        // scrollStyle={style.contractScrollStyle}
-                                        tableSortValues={[]}
-                                        heading={"You have not yet uploaded any documents."}
-                                        onClickFunction={() => { }}
-                                    />
-                                )}
-                            </div>
+                            {/* 
                             <div>
                                 <CommonCheckBox
                                     className={`${style.marginTop20} ${style.textAlignLeft}`}
@@ -784,6 +795,16 @@ const ApplicantPortalRFC = () => {
                 </div>
 
             </div>
+            {showFileWithFields && (
+                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={form?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
+            )}
+            {
+                showDeleteConfirmation && (
+                    <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
+                        getDeleteConfirmation={getDeleteConfirmation}
+                        confirmationText="Do you want to delete this document?" />
+                )
+            }
         </div>
     )
 }
