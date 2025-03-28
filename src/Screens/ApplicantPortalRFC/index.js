@@ -17,7 +17,7 @@ import CommonDropZone from '../../Components/CommonFields/CommonDropZone';
 import Close from './../../images/close.png';
 import ApplicationUserCard from '../../Components/ApplicationUserCard';
 import ApplicationAssistanceCard from '../../Components/ApplicationAssistanceCard';
-import { SuccessToaster, ErrorToaster } from '../../utils/toaster';
+import { SuccessToaster, ErrorToaster, SuccessToaster2 } from '../../utils/toaster';
 import { Tooltip } from '@mui/material';
 import PDFDocs from './../../images/PDFDocs.png';
 import imgDocs from './../../images/imgDocs.png';
@@ -36,6 +36,8 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import CommonInputField from '../../Components/CommonFields/CommonInputField';
 import FileWithFields from '../../Components/FileWithFields';
 import DeleteConfirmation from '../../Components/DeleteConfirmation';
+import { useDescope } from "@descope/react-sdk";
+import Cookies from "universal-cookie";
 
 const ApplicantPortalRFC = () => {
     const navigate = useNavigate();
@@ -74,6 +76,14 @@ const ApplicantPortalRFC = () => {
     const [documentTitle, setDocumentTitle] = useState("");
     const [taskId, setTaskId] = useState("");
     const [taskById, setTaskById] = useState({});
+    const { logout } = useDescope();
+    let cookie = new Cookies();
+    const handleLogout = () => {
+        cookie.remove("user", { path: "/" });
+        cookie.remove("entityId", { path: "/" });
+        cookie.remove("authorization", { path: "/" });
+        logout();
+    }
 
     useEffect(() => {
         if (taskById?.details?.application?.application?.id !== undefined) {
@@ -150,7 +160,11 @@ const ApplicantPortalRFC = () => {
         setClarificationDescription(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
         setClarificationType(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationRequestType)
         if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse !== null) {
-            setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
+            if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationResponseType === "REPLACE_ORIGINAL_DOCUMENT") {
+                setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.documents)
+            } else {
+                setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
+            }
             setUserNotes(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationDescription)
             setDocumentTitle(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.title))
             setDocumentDesc(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments?.map(data => data?.description))
@@ -344,7 +358,8 @@ const ApplicantPortalRFC = () => {
     };
 
     const handleCloseClick = () => {
-        navigate("/applicantDashboard");
+        // navigate("/applicantDashboard");
+        handleLogout();
     };
 
     const getApplicantValues = (array) => {
@@ -391,19 +406,20 @@ const ApplicantPortalRFC = () => {
     console.log(uploadFileData, 'uploadFileData')
 
     const getClarificationResponse = async (saveInProgress) => {
+        setIsLoading(true)
         const query = new URLSearchParams(window.location.search);
         const applicationIdFromParam = query.get("app");
         const formIdFromParam = query.get("form");
         const files = (uploadFileData || []).map((item, index) => ({
-            filePath: item?.file?.filePath,
-            fileName: item?.file?.fileName,
-            fileURL: item?.file?.fileURL,
-            fileType: item?.file?.fileType,
-            classification: item?.file?.classification,
-            verified: item?.file?.verified,
-            valid: item?.file?.valid,
-            title: item?.file?.title,
-            description: item?.file?.description
+            filePath: item?.file?.filePath ?? uploadFileData?.[index]?.filePath,
+            fileName: item?.file?.fileName ?? uploadFileData?.[index]?.fileName,
+            fileURL: item?.file?.fileURL ?? uploadFileData?.[index]?.fileURL,
+            fileType: item?.file?.fileType ?? uploadFileData?.[index]?.fileType,
+            classification: item?.file?.classification ?? uploadFileData?.[index]?.classification,
+            verified: item?.file?.verified ?? uploadFileData?.[index]?.verified,
+            valid: item?.file?.valid ?? uploadFileData?.[index]?.valid,
+            title: item?.file?.title ?? uploadFileData?.[index]?.title,
+            description: item?.file?.description ?? uploadFileData?.[index]?.description,
         }));
 
         let temp = {
@@ -412,10 +428,10 @@ const ApplicantPortalRFC = () => {
             title: respondentName,
             clarificationDescription: userNotes,
             attachedDocuments: files,
-            documents: uploadFileData
         };
-        if (clarificationType !== undefined && clarificationType !== "") {
+        if (clarificationType !== undefined && clarificationType !== "" && clarificationType !== null) {
             temp["clarificationResponseType"] = "REPLACE_ORIGINAL_DOCUMENT";
+            temp["documents"] = uploadFileData;
         }
 
         console.log(taskById, 'taskById')
@@ -431,13 +447,17 @@ const ApplicantPortalRFC = () => {
         await PUT(`application-management-service/application/${applicationIdFromParam}/form/${formIdFromParam}/clarification/${clarificationId}/response`, temp)
             .then(response => {
                 console.log('successfull notes added');
+                SuccessToaster2('Clarification Response Submitted Successfully!')
                 getPreApplication();
                 handleCloseClick();
             })
             .catch((error) => {
                 console.log(error);
             });
+        setIsLoading(false)
     };
+
+    console.log('clarificationType', clarificationType)
 
     const renderFields = (field, index) => {
         console.log('field', field)
@@ -652,7 +672,7 @@ const ApplicantPortalRFC = () => {
                                     accept="image/*"
                                 /> */}
                             </div>
-                            {!(clarificationType !== undefined && clarificationType !== "") ? (
+                            {!(clarificationType !== undefined && clarificationType !== "" && clarificationType !== null) ? (
                                 <>
                                     {uploadFileData?.length > 0 && (
                                         <div>

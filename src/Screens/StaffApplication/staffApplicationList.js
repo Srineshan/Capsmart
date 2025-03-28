@@ -272,12 +272,12 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ] : [
-    // <CommonCheckBox
-    //   size="medium"
-    //   checked={checkedIds.length === tableData.length}
-    //   onChange={handleSelectAllClick}
-    // />,
-    " ",
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+    />,
+    // " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -1030,6 +1030,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
+    setCheckedIds([]);
   }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea]);
 
   useEffect(() => {
@@ -2707,26 +2708,26 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
-      // checkbox.push(
-      //   <CommonCheckBox
-      //     checked={checkedIds.includes(data.id)}
-      //     onChange={() => handleCheckboxClick(data.id)}
-      //     color="primary"
-      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
-      //   />
-      // );
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Advisory Committee"));
-      if (workflow) {
-        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-        dot.push(color);
-        console.log("Matching workflow found:", {
-          role: workflow?.role,
-          status: workflow?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflow) {
+      //   const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //   dot.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflow?.role,
+      //     status: workflow?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -2849,8 +2850,8 @@ const StaffApplicationList = ({
     });
 
     return [
-      // { type: "checkbox", value: checkbox },
-      { type: "dot", value: dot },
+      { type: "checkbox", value: checkbox },
+      // { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -4218,6 +4219,71 @@ const StaffApplicationList = ({
                     </Tooltip>
                   </div>
                 )}
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4")) && (
+                  <>
+                    <div
+                      className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                      style={{
+                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                      }}
+                      onClick={() => {
+                        setShowBulkApproveDialog(true);
+                      }}
+                    >
+                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : "Update MAC Approval Status"} arrow>
+                        <PeopleOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
+                    {!(workModeType === "Staff Manager" && selectedTab === "level-4") && (
+                      <div
+                        className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                        style={{
+                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                        }}
+                        onClick={() => {
+                          setShowCCDateDialog(true);
+                        }}
+                      >
+                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : "MAC Approval Date"} arrow>
+                          <EventAvailableOutlinedIcon
+                            sx={{
+                              fontSize: 25,
+                              color: "#06617A",
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </>
+                )}
+                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
+                  <div
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      } ${style.marginRight20}`}
+                    style={{
+                      opacity: 1,
+                    }}
+                    onClick={() => setShowFilter(!showFilter)}
+                  >
+                    <Tooltip title="Filter" arrow>
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 15,
+                          color: "#06617A",
+                        }}
+                        className={style.cursorPointer}
+                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                      />
+                    </Tooltip>
+                  </div>
+                ) : ""}
                 {
                   workModeType === "Staff Manager" && selectedTab === "level-3" && (
                     <>
@@ -4290,14 +4356,14 @@ const StaffApplicationList = ({
                     } ${style.cursorPointer} ${style.marginRight20}`}
                 >
                   <Tooltip title="Print Notes" arrow>
-                  <NoteAltOutlinedIcon
-                    sx={{
-                      fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#06617A",
-                    }}
-                    // onClick={handlePrintClick}
-                    onClick={handleNavigateNotes}
-                  />
+                    <NoteAltOutlinedIcon
+                      sx={{
+                        fontSize: isPrintClicked ? 20 : 25,
+                        color: isPrintClicked ? "#fff" : "#06617A",
+                      }}
+                      // onClick={handlePrintClick}
+                      onClick={handleNavigateNotes}
+                    />
                   </Tooltip>
                 </div>
                 <div
@@ -4454,6 +4520,7 @@ const StaffApplicationList = ({
             <CCDateDialog
               getCCDateDialogOpen={getCCDateDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
             />
           )
@@ -4463,6 +4530,7 @@ const StaffApplicationList = ({
             <ApprovalBulkDialog
               getBulkApproveDialogOpen={getBulkApproveDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowBulkApproveDialog(false); setCheckedIds([]); }}
             />
           )

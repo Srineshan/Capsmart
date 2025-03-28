@@ -51,7 +51,7 @@ const StaffApplication = () => {
     const [clarificationFormMode, setClarificationFormMode] = useState({});
     const [clarificationRequestFormMode, setClarificationRequestFormMode] = useState({});
     const [ccDateSetMode, setCcDateSetMode] = useState('');
-    const [ccMeetingDateSet, setCcMeetingDateSet] = useState();
+    const [approveMeetDateSet, setApproveMeetDateSet] = useState();
     const [showPdfGenrateBox, setShowPdfGenerateBox] = useState(false);
 
     const getSelectedTab = (value) => {
@@ -133,7 +133,7 @@ const StaffApplication = () => {
 
     const getApprovalwithoutNotesCommentBox = (value, date) => {
         setApprovalwithoutNotesCommentBox(value);
-        setCcMeetingDateSet(date)
+        setApproveMeetDateSet(date)
     }
 
     const getApprovalNotesCommentBoxDept = (value) => {
@@ -151,7 +151,7 @@ const StaffApplication = () => {
     return (
         <>
             {activeApplicationView ? (
-                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={ccMeetingDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} />
+                <NewActiveApplication isLoading={isLoading} dataLevel={ccDateSetMode} ccMeetingDateSet={approveMeetDateSet} getloading={getloading} getSelectedTab={getSelectedTab} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} getApprovalNotesCommentBox={getApprovalNotesCommentBox} getApprovalwithoutNotesCommentBox={getApprovalwithoutNotesCommentBox} getActiveApplicationTask={getActiveApplicationTask} getEmailDialogBox={getEmailDialogBox} getApprovalNotesCommentBoxDept={getApprovalNotesCommentBoxDept} emailDialogBox={emailDialogBox} showTimerDialog={showTimerDialog} approvalnotesCommentsBox={approvalnotesCommentsBox} approvalwithoutnotesCommentsBox={approvalwithoutnotesCommentsBox} approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept} notesCommentsBox={notesCommentsBox} reappointmentChangesCommentsBox={reappointmentChangesCommentsBox} getNotesDialog={getNotesDialog} getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog} getDocumentClarificationDialog={getDocumentClarificationDialog} getResolveDialog={getResolveDialog} getRequestOverrideDialog={getRequestOverrideDialog} getStaffView={getStaffView} staffView={staffView} getPaymentDisplayBox={getPaymentDisplayBox} showClarificationRequestFromApplicantDialog={showClarificationRequestFromApplicantDialog} showDocumentClarificationDialog={showDocumentClarificationDialog} showNotesDialog={showNotesDialog} showResolveDialog={showResolveDialog} showRequestOverrideDialog={showRequestOverrideDialog} />
             ) : credCommApplicationView ? (
                 <NewCredCommApplication getSelectedTab={getSelectedTab} selectedTab={selectedTab} getCredCommApplicationView={getCredCommApplicationView} />
             ) : (
@@ -214,7 +214,7 @@ const StaffApplication = () => {
                 <PaymentDisplayDialog isLoading={isLoading} getloading={getloading} getIsOpen={getPaymentDisplayBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {approvalwithoutnotesCommentsBox && (
-                <ApprovalWithoutNotesDialog isLoading={isLoading} dateStorage={ccMeetingDateSet} getloading={getloading} getIsOpen={getApprovalwithoutNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
+                <ApprovalWithoutNotesDialog isLoading={isLoading} dateStorage={approveMeetDateSet} getloading={getloading} getIsOpen={getApprovalwithoutNotesCommentBox} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
             )}
             {approvalnotesCommentsBoxDept && (
                 <ApprovalWithNotesDeptDialog isLoading={isLoading} getloading={getloading} getIsOpen={getApprovalNotesCommentBoxDept} getActiveApplicationView={getActiveApplicationView} selectedTab={selectedTab} />
