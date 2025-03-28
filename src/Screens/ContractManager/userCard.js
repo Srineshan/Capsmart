@@ -66,6 +66,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                     </Link>
                     <div>
                         <Link to={'/profile'} className={style.noFontStyle}>
+                        <Tooltip title={"Click to Go to Profile"} arrow>
                             <div className={style.marginLeft20}>
                                 {/* <div className={style.userNameStyle}>
                            Hi, {updateProfileData
@@ -87,7 +88,9 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                                     Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                                 </div>
                             </div>
+                            </Tooltip>
                         </Link>
+                        
                     </div>
                 </div>
                 <Tooltip title={"Click to Minimize"} arrow>

@@ -178,8 +178,8 @@
 
 .twoColumnGridInner {
   display: grid;
-  grid-template-columns: 40% 45%;
-  grid-gap: 20px;
+  grid-template-columns: 45% 45%;
+  grid-gap: 2%;
   justify-items: start;
 }
 
@@ -274,4 +274,32 @@
   opacity: 0.9;
   // padding: 3px;
 }
+
+
+
+.gridContainer {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.gridItem {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.gridItem1 {
+  display: flex;
+  gap: 0;
+  align-items: center;
+}
+
 

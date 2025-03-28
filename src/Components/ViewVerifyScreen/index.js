@@ -1640,19 +1640,23 @@ const NewActiveApplication = ({
                 innerData?.isVerified === true
                   ? (
                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                      <Tooltip title={"Click to Revert Verification"} arrow>
                       <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                         onClick={() => handleVerifyClickDocs(array, index)}
                       >
                         Verified
                       </div>
+                      </Tooltip>
                     </div>
                   ) : (
                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                      <Tooltip title={"Click to Verify"} arrow>
                       <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                         onClick={() => handleVerifyClickDocs(array, index)}
                       >
                         Verify
                       </div>
+                      </Tooltip>
                     </div>
                   )
               ))

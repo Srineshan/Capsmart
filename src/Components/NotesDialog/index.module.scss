@@ -171,12 +171,7 @@
   margin-bottom: 10px !important;
 }
 
-.twoColumnGridInner {
-  display: grid;
-  grid-template-columns: 45% 45%;
-  grid-gap: 2%;
-  align-items: center;
-}
+
 
 .rejectionTextStyle1 {
   text-align: left;
@@ -311,4 +306,11 @@
   display: flex;
   gap: 0;
   align-items: center;
+}
+
+.twoColumnGridInner {
+  display: grid;
+  grid-template-columns: 45% 45%;
+  grid-gap: 2%;
+  justify-items: start;
 }

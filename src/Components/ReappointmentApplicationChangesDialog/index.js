@@ -303,81 +303,66 @@ const ReappointmentChangesDialog = ({ getIsOpen,selectedTab}) => {
               </div>
             </div> */}
             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-              {/* <div className={`${style.rejectionTextStyle} ${style.marginLeft20} ${style.marginTop5}`}>{formDetails?.providerType?.serviceProviderType}</div> */}
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                  <span className={style.rejectionHeadingTextStyle}>
-                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-                  {formDetails?.basicDetails?.applicant?.name?.firstName
-                  ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                  : ""}{", "}
-                   {/* {`${formatFirstNameLastName(formDetails?.basicDetail?.applicant?.name?.firstName, formDetails?.basicDetail?.applicant?.name?.lastName)}`} */}
-                  {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
-                </span>
-                <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                  {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
-                </div>
-                <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
-                  </div>
-                {/* </div>
-              </div> */}
-              {/* <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
-                  </div>
-                  {/* <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
-                  </div> */}
-                  {
-                    entity?.multiSiteEntity && (
-                        <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                        <span className={`${style.rejectionTextStyle1}`}>
-                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                                      <div className={style.marginTop10}>
+                                        <div className={`${style.gridContainer} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                                            <div className={`${style.gridRow} `}>
+                                         <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                                    {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                                     formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                                    {formDetails?.basicDetails?.applicant?.name?.firstName
+                                        ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                                          formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                                        : ""}
+                                </span>
+                                <span className={`${style.rejectionTextStyle}`}>
+                                    {", "}{formDetails?.providerType?.serviceProviderType}
+                                </span>
+                                </div>
+                                          <div>
+                                          <span className={`${style.rejectionHeadingTextStyle}`}>
+                            {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                            {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                                ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                                : ""}
                         </span>
-                        </div>
-                    )
-                    }
-                {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated:</span>
-                    {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>
-                      {formDetails?.basicDetails?.applicant?.name?.firstName
-                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                                          </div>
+                                          <div className={`${style.twoColumnGridInner} `}>
+                                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                                        </div>
+                                        </div>
+                                        <div className={style.gridRow}>
+                                        {
+                                            entity?.multiSiteEntity && (
+                                                <div className={`${style.twoColumnGridInner}`}>
+                                                <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                                                <span className={`${style.rejectionTextStyle1}`}>
+                                                    {entity?.multiSiteEntity?.[0]?.name || "-"}
+                                                </span>
+                                                </div>
+                                            )
+                                            }
+                                             <div className={`${style.twoColumnGridInner}`}>
+                                            <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                                            <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                                          </div>
+                                          <div className={`${style.twoColumnGridInner}`}>
+                                            <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                                            <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                                          </div>
+                                          <div className={`${style.twoColumnGridInner}`}>
+                                            <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                                            <span className={`${style.rejectionTextStyle1}`}>
+                                              {formDetails?.basicDetails?.applicant?.name?.firstName
+                                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                                            </span>
+                                          </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
             {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
             {logDetails?.logs?.[logDetails.logs.length - 1]?.role} Comments & Notes
             </div>
