@@ -11,7 +11,7 @@ import style from "./index.module.scss";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextField from "@mui/material/TextField";
 
-const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
+const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose,selectedTab }) => {
   const id = sessionStorage.getItem("applicationId");
   const [calendarStartForCC, setCalendarStartForCC] = useState(false);
   const [selectedDateForCC, setSelectedDateForCC] = useState(null);
@@ -34,14 +34,11 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
 
   console.log("ID1234",checkedIds)
 
-  const handleDateChange = (date, field) => {
+  const handleDateChange = (date) => {
       const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
-  
-  
       setSelectedDateForCC(formattedDate);
       setCalendarStartForCC(false);
       setIsButtonDisabled(false);
-     
     };
   return (
     <Dialog
@@ -54,9 +51,12 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
       <div>
         <div>
           <div className={style.templateHeader}>
-            <div className={style.templateHeadertext}>
-            {checkedIds?.length} Staff Application for Presenting to CC 
-            </div>
+          <div className={style.templateHeadertext}>
+            {checkedIds?.length}{" "}
+            {selectedTab === "level-3"
+              ? "Staff Application for Presenting to CC"
+              : "Staff Application Approval Date by MAC"}
+          </div>
             <img
               src={CrossPink}
               alt="cross"
@@ -76,7 +76,7 @@ const CCDateDialog = ({checkedIds,getCCDateDialogOpen,onClose }) => {
                 minDate={add(new Date(), { days: 1 })}
                 maxDate={add(new Date(), { years: 3 })}
                 value={selectedDateForCC}
-                label=" CC Meeting Date*"
+                label={selectedTab === "level-3" ? "CC Meeting Date*" : "MAC Approval Date*"}
                  InputProps={{
                   style: {
                       fontSize: 14,

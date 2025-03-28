@@ -272,12 +272,12 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
     "Last Updated",
     "",
   ] : [
-    // <CommonCheckBox
-    //   size="medium"
-    //   checked={checkedIds.length === tableData.length}
-    //   onChange={handleSelectAllClick}
-    // />,
-    " ",
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+    />,
+    // " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -1025,6 +1025,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
+    setCheckedIds([]);
   }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee,selectedDepartment,selectedServiceArea]);
 
   useEffect(() => {
@@ -2686,26 +2687,26 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
-      // checkbox.push(
-      //   <CommonCheckBox
-      //     checked={checkedIds.includes(data.id)}
-      //     onChange={() => handleCheckboxClick(data.id)}
-      //     color="primary"
-      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
-      //   />
-      // );
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Advisory Committee"));
-      if (workflow) {
-        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-        dot.push(color);
-        console.log("Matching workflow found:", {
-          role: workflow?.role,
-          status: workflow?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflow) {
+      //   const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //   dot.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflow?.role,
+      //     status: workflow?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -2824,8 +2825,8 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
     });
 
     return [
-      // { type: "checkbox", value: checkbox },
-      { type: "dot", value: dot },
+      { type: "checkbox", value: checkbox },
+      // { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -4187,7 +4188,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                         </Tooltip>
                       </div>
                     )}
-                {workModeType === "Staff Manager" && selectedTab === "level-3" && (
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4")) && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
@@ -4199,7 +4200,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title="Update CC Approval Status" arrow>
+                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : "Update MAC Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -4208,7 +4209,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                         />
                       </Tooltip>
                     </div>
-
+                    {!(workModeType === "Staff Manager" && selectedTab === "level-4") && (
                     <div
                       className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                       style={{
@@ -4219,7 +4220,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                         setShowCCDateDialog(true);
                       }}
                     >
-                      <Tooltip title="Designate CC Meeting Date" arrow>
+                      <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : "MAC Approval Date"} arrow>
                         <EventAvailableOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -4228,6 +4229,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
                         />
                       </Tooltip>
                     </div>
+                    )}
                   </>
                 )}
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
@@ -4402,6 +4404,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
             <CCDateDialog
               getCCDateDialogOpen={getCCDateDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
             />
           )
@@ -4411,6 +4414,7 @@ console.log("SelectedDepartmentSplt",selectedDepartment,"service",selectedServic
             <ApprovalBulkDialog
               getBulkApproveDialogOpen={getBulkApproveDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowBulkApproveDialog(false); setCheckedIds([]); }}
             />
           )

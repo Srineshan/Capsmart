@@ -309,10 +309,7 @@ const NewActiveApplication = ({
   // };
 
   const handleDateChange = (date, field) => {
-    const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'00:00")
-      : format(new Date(date), 'yyyy-MM-dd');
-
+    const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
 
     if (field === 'CC') {
       setSelectedDateForCC(formattedDate);
@@ -10995,7 +10992,7 @@ const NewActiveApplication = ({
                                 {...params}
                                 inputProps={{
                                   ...params.inputProps,
-                                  placeholder: 'Enter MAC Meeting Date To Continue',
+                                  placeholder: 'Enter MAC Approval Date To Continue',
                                   readOnly: true
                                 }}
                                 variant="outlined"
@@ -11015,7 +11012,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesMACFunction}
+                            onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesMACFunction()}
                           >
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               RECOMMENDED BY MAC
