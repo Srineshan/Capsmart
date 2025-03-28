@@ -367,8 +367,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                 <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
                                                     <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
                                                         {searchTermForTable?.trim() ?
-                                                            tableData?.value?.[index]?.split(new RegExp(`(${searchTermForTable})`, 'gi')).map((part, i) =>
-                                                                part.toLowerCase() === searchTermForTable?.toLowerCase() ?
+                                                            String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
+                                                                part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
                                                                     <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
                                                                     part
                                                             ) :
