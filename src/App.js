@@ -766,7 +766,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'cmh-hospital',
+          "X-subdomain": 'master',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -806,7 +806,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'cmh-hospital',
+        "X-subdomain": 'master',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -979,7 +979,7 @@ const App = ({ props }) => {
 
   const ProtectedRoute = ({ children }) => {
     if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
-      sessionStorage.setItem('initialRoute', window.location.pathname)
+      sessionStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
     }
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
