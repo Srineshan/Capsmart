@@ -124,7 +124,13 @@ const StaffApplicationList = ({
   const [limit, setLimit] = useState(9999);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
+  const selectedServiceAreaName =
+    departmentList?.serviceAreas?.find(serviceArea =>
+      serviceArea?.id === selectedServiceArea
+    )?.name || "";
+
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -136,7 +142,7 @@ const StaffApplicationList = ({
   //   }
   //   // console.log("allIdsall" + checkedIds)
   // };
-
+  console.log("SelectedDepartmentSplt", selectedDepartment, "service", selectedServiceArea, "name", selectedServiceAreaName)
   const handleSelectAllClick = () => {
     if (checkedIds?.length === tableData?.length) {
       // If all are already selected, deselect all
@@ -567,6 +573,36 @@ const StaffApplicationList = ({
   //   'level-2' :0,
   // });
 
+  const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name, // Department name without indentation
+      type: 'department'
+    };
+
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft20}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept", selectedValue)
+  }
+
   useEffect(() => {
     sessionStorage.removeItem("applicationIdForDialog");
     getPreApplication();
@@ -994,14 +1030,14 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea]);
 
   useEffect(() => {
     getWorkflowUserData();
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog,activeApplicationTask]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, activeApplicationTask]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1034,33 +1070,33 @@ const StaffApplicationList = ({
   }, [selectedTab]);
 
   const getActiveUserDataReappointment = async () => {
-      try {
-        const queryParams = new URLSearchParams({
-          status: 'ACTIVE'
-        });
-  
-        const types = ['PERMANENT', 'LOCUM'];
-        types.forEach(type => queryParams.append('type', type));
-        queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
-        queryParams.append('applicationStatus', "CREATED");
-  
-  
-        const response = await GET(
-          `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
-        );
-  
-        // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
-        // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
-  
-        // setTableData(response?.data?.staffs);
-        // setTotalCount(response?.data?.numberOfElements);
-        setReappointCount(response?.data?.numberOfElements);
-        return response?.data?.staffs;
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-        return [];
-      }
-    };
+    try {
+      const queryParams = new URLSearchParams({
+        status: 'ACTIVE'
+      });
+
+      const types = ['PERMANENT', 'LOCUM'];
+      types.forEach(type => queryParams.append('type', type));
+      queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
+      queryParams.append('applicationStatus', "CREATED");
+
+
+      const response = await GET(
+        `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
+      );
+
+      // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+      // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
+
+      // setTableData(response?.data?.staffs);
+      // setTotalCount(response?.data?.numberOfElements);
+      setReappointCount(response?.data?.numberOfElements);
+      return response?.data?.staffs;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
 
   const getActiveUserData = async () => {
     try {
@@ -1095,7 +1131,7 @@ const StaffApplicationList = ({
             workModeType === "Chief Of Staff" ||
             workModeType === "Credentialing Committee");
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam = selectedDepartment ? `&departmentSpecialties=${selectedDepartment}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
         setIsLoadingImage(true);
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
@@ -4169,74 +4205,78 @@ const StaffApplicationList = ({
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => setSelectedDepartment()}
+                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
                       />
                     </Tooltip>
                   </div>
                 )}
-                {workModeType === "Staff Manager" && selectedTab === "level-3" && (
-                  <>
-                    <div
-                      className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
-                      style={{
-                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                      }}
-                      onClick={() => {
-                        setShowBulkApproveDialog(true);
-                      }}
-                    >
-                      <Tooltip title="Update CC Approval Status" arrow>
-                        <PeopleOutlinedIcon
-                          sx={{
-                            fontSize: 25,
-                            color: "#06617A",
-                          }}
-                        />
-                      </Tooltip>
-                    </div>
-
-                    <div
-                      className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
-                      style={{
-                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                      }}
-                      onClick={() => {
-                        setShowCCDateDialog(true);
-                      }}
-                    >
-                      <Tooltip title="Designate CC Meeting Date" arrow>
-                        <EventAvailableOutlinedIcon
-                          sx={{
-                            fontSize: 25,
-                            color: "#06617A",
-                          }}
-                        />
-                      </Tooltip>
-                    </div>
-                  </>
-                )}
-                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
-                  <div
-                    className={`${style.alignCenter} ${style.cursorPointer
-                      } ${style.marginRight20}`}
-                    style={{
-                      opacity: 1,
-                    }}
-                    onClick={() => setShowFilter(!showFilter)}
-                  >
-                    <Tooltip title="Filter" arrow>
-                      <FilterAltOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
+                {
+                  workModeType === "Staff Manager" && selectedTab === "level-3" && (
+                    <>
+                      <div
+                        className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                        style={{
+                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
                         }}
+                        onClick={() => {
+                          setShowBulkApproveDialog(true);
+                        }}
+                      >
+                        <Tooltip title="Update CC Approval Status" arrow>
+                          <PeopleOutlinedIcon
+                            sx={{
+                              fontSize: 25,
+                              color: "#06617A",
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
 
-                      />
-                    </Tooltip>
-                  </div>
-                ) : ""}
+                      <div
+                        className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                        style={{
+                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                        }}
+                        onClick={() => {
+                          setShowCCDateDialog(true);
+                        }}
+                      >
+                        <Tooltip title="Designate CC Meeting Date" arrow>
+                          <EventAvailableOutlinedIcon
+                            sx={{
+                              fontSize: 25,
+                              color: "#06617A",
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
+                    </>
+                  )
+                }
+                {
+                  workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
+                    <div
+                      className={`${style.alignCenter} ${style.cursorPointer
+                        } ${style.marginRight20}`}
+                      style={{
+                        opacity: 1,
+                      }}
+                      onClick={() => setShowFilter(!showFilter)}
+                    >
+                      <Tooltip title="Filter" arrow>
+                        <FilterAltOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+
+                        />
+                      </Tooltip>
+                    </div>
+                  ) : ""
+                }
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -4251,34 +4291,41 @@ const StaffApplicationList = ({
                     />
                   </Tooltip>
                 </div>
-              </div>
-            </div>
+              </div >
+            </div >
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
-            {showFilter && (
-              <div className={style.filterContainer}>
-                {workModeType !== "Staff Manager" && (
-                  <div>
-                    <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+            {
+              showFilter && (
+                <div className={style.filterContainer}>
+                  {workModeType !== "Staff Manager" && (
+                    <div>
+                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                        <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                      </div>
                     </div>
+                  )}
+                  <div>
+                    <CommonSelectField
+                      // value={
+                      //   selectedServiceArea 
+                      //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                      //     : selectedDepartment
+                      // }  
+                      value={selectedDepartment}
+                      onChange={handleChange}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={transformedOptions.map(option => option?.value)}
+                      labelList={transformedOptions.map(option => option?.label)}
+                      disabledList={transformedOptions.map(() => false)}
+                      label={'Dept / Division & Specialty'}
+                      required={false}
+                    />
                   </div>
-                )}
-                <div>
-                  <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={departmentList?.map(data => data?.id)}
-                    labelList={departmentList?.map(data => data?.departmentName?.name)}
-                    disabledList={departmentList?.map(data => false)}
-                    label={'Department'}
-                    required={false}
-                  />
                 </div>
-              </div>
-            )}
+              )
+            }
             {/* <CommonDivider /> */}
             {/* <CommonDivider /> */}
             {/* <StaffApplicationTopTiles
@@ -4301,32 +4348,6 @@ const StaffApplicationList = ({
               // getApplicationCreationType = {getApplicationCreationType}
               />
             </div>
-            {/* {showFilter && (
-                <div className={style.filterContainer}>
-                  {workModeType !== "Staff Manager" && (
-                    <div>
-                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <CommonSelectField
-                      value={selectedDepartment}
-                      onChange={(e) => setSelectedDepartment(e.target.value)}
-                      className={style.fullWidth}
-                      firstOptionLabel={'All'}
-                      firstOptionValue={''}
-                      valueList={departmentList?.map(data => data?.id)}
-                      labelList={departmentList?.map(data => data?.departmentName?.name)}
-                      disabledList={departmentList?.map(data => false)}
-                      label={'Department'}
-                      required={false}
-                    />
-                  </div>
-                </div>
-            )} */}
-
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (
                 <div
@@ -4368,7 +4389,7 @@ const StaffApplicationList = ({
                 </div>
               )}
             </div>
-          </div>
+          </div >
         </div >
         <div className={style.spaceBetween}>
           <div className={`${style.displayInRow}`}>
