@@ -2895,37 +2895,122 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
     return temp;
   };
 
-  const getDeptItems = (data) => {
-    let temp = [];
-    data?.map((data) => {
-      // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === "")) {
-      temp.push({ id: data?.id, value: data?.departmentName?.name });
-      // }
-      data?.serviceAreas?.map((specialityData => {
-        // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
-        temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
-        // }
-      }))
-    });
-    return temp;
-  };
+  // const getDeptItems = (data) => {
+  //   let temp = [];
+  //   data?.map((data) => {
+  //     // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === "")) {
+  //     temp.push({ id: data?.id, value: data?.departmentName?.name });
+  //     // }
+  //     data?.serviceAreas?.map((specialityData => {
+  //       // if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
+  //       temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
+  //       // }
+  //     }))
+  //   });
+  //   return temp;
+  // };
 
-  const getAdditionalDeptItems = (data) => {
+
+  const getDeptItems = (departmentList) => {
     let temp = [];
-    data?.map((data) => {
-      console.log('Dept Check', data, basicForm?.basicDetails?.departmentSpecialty?.department, data?.departmentName?.name, basicForm?.basicDetails?.departmentSpecialty?.specialty)
-      if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && (basicForm?.basicDetails?.departmentSpecialty?.specialty === "" || basicForm?.basicDetails?.departmentSpecialty?.specialty === null))) {
-        temp.push({ id: data?.id, value: data?.departmentName?.name });
-      }
-      data?.serviceAreas?.map((specialityData => {
-        console.log('Dept Check', specialityData, basicForm?.basicDetails?.departmentSpecialty?.specialty, specialityData?.name)
-        if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
-          temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
+    let processedDepartments = new Set(); 
+
+    departmentList?.forEach((department) => {
+        let departmentValue = department?.departmentName?.name;
+        let hasSpecialities = department?.serviceAreas?.length > 0;
+
+        // Add department first (if not already added)
+        if (!processedDepartments.has(department?.id)) {
+            let deptItem = {
+                id: department?.id,
+                value: departmentValue, 
+                specialityId: "", 
+                key: `dept-${department?.id}` 
+            };
+            temp.push(deptItem); 
+            processedDepartments.add(department?.id); 
         }
-      }))
+
+        // If serviceAreas exist, process and add them as specialities
+        if (hasSpecialities) {
+            department?.serviceAreas?.forEach((specialityData) => {
+                let specialityItem = {
+                    id: specialityData?.id, 
+                    departmentId: specialityData?.department?.id, // department.id from speciality
+                    value: `${specialityData?.department?.departmentName?.name} - ${specialityData?.name}`, // Department name followed by speciality name
+                    specialityId: specialityData?.id, // Speciality ID
+                    key: `speciality-${specialityData?.department?.id}-${specialityData?.id}` // Unique key for speciality
+                };
+
+                temp.push(specialityItem); 
+            });
+        }
     });
+
     return temp;
-  };
+};
+
+  // const getAdditionalDeptItems = (data) => {
+  //   let temp = [];
+  //   data?.map((data) => {
+  //     console.log('Dept Check', data, basicForm?.basicDetails?.departmentSpecialty?.department, data?.departmentName?.name, basicForm?.basicDetails?.departmentSpecialty?.specialty)
+  //     if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && (basicForm?.basicDetails?.departmentSpecialty?.specialty === "" || basicForm?.basicDetails?.departmentSpecialty?.specialty === null))) {
+  //       temp.push({ id: data?.id, value: data?.departmentName?.name });
+  //     }
+  //     data?.serviceAreas?.map((specialityData => {
+  //       console.log('Dept Check', specialityData, basicForm?.basicDetails?.departmentSpecialty?.specialty, specialityData?.name)
+  //       if (!(basicForm?.basicDetails?.departmentSpecialty?.department === data?.departmentName?.name && basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
+  //         temp.push({ id: data?.id, value: `${data?.departmentName?.name} - ${specialityData?.name}`, specialityId: specialityData?.id });
+  //       }
+  //     }))
+  //   });
+  //   return temp;
+  // };
+
+  const getAdditionalDeptItems = (departmentList) => {
+    let temp = [];
+    let processedDepartments = new Set();
+
+    departmentList?.forEach((department) => {
+        let departmentValue = department?.departmentName?.name;
+        let hasSpecialities = department?.serviceAreas?.length > 0;
+
+        // Access basicForm directly from state
+        if (!processedDepartments.has(department?.id) && 
+            !(basicForm?.basicDetails?.departmentSpecialty?.department === departmentValue && 
+              (basicForm?.basicDetails?.departmentSpecialty?.specialty === "" || basicForm?.basicDetails?.departmentSpecialty?.specialty === null))) {
+            
+            let deptItem = {
+                id: department?.id,
+                value: departmentValue, 
+                specialityId: "", 
+                key: `dept-${department?.id}`
+            };
+            temp.push(deptItem);
+            processedDepartments.add(department?.id);
+        }
+
+        if (hasSpecialities) {
+            department?.serviceAreas?.forEach((specialityData) => {
+                if (!(basicForm?.basicDetails?.departmentSpecialty?.department === specialityData?.department?.departmentName?.name && 
+                      basicForm?.basicDetails?.departmentSpecialty?.specialty === specialityData?.name)) {
+                    
+                    let specialityItem = {
+                        id: specialityData?.id,
+                        departmentId: specialityData?.department?.id,
+                        value: `${specialityData?.department?.departmentName?.name} - ${specialityData?.name}`,
+                        specialityId: specialityData?.id,
+                        key: `speciality-${specialityData?.department?.id}-${specialityData?.id}`
+                    };
+
+                    temp.push(specialityItem);
+                }
+            });
+        }
+    });
+
+    return temp;
+};
 
   const handleEditPrivilegesAtOtherHospital = (data, index) => {
     setIsPrivilegeAtOtherHospitalEdited(true);
@@ -3411,7 +3496,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div className={`${style.lableStyle}`}>
                         {'Department / Division or Specialty'}
                       </div>
-                      <DatalistInput
+                      {/* <DatalistInput
                         items={getDeptItems(departmentList) || []}
                         onSelect={(item) => {
                           console.log('setDept', item.id, item.specialityId, item)
@@ -3433,7 +3518,29 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         //   )?.value || ''
                         // }
                         required={true}
-                      />
+                      /> */}
+
+<DatalistInput
+    items={getDeptItems(departmentList) || []}
+    onSelect={(item) => {
+        console.log('Selected item:', item);
+        if (item.specialityId !== "") {
+            setSelectedDepartment(item.departmentId);
+            setSelectedSpeciality(item.specialityId);
+        } else {
+            setSelectedDepartment(item.id);
+            setSelectedSpeciality("");
+        }
+    }}
+    className={ `${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`} 
+    maxLength={50}
+    placeholder={'Enter Department Name'}
+    value={getDeptItems(departmentList)?.find(data => 
+      (data?.specialityId !=="" ? data?.departmentId === selectedDepartment && data?.specialityId === selectedSpeciality 
+      : data?.id === selectedDepartment && data?.specialityId === selectedSpeciality)
+  )?.value || ''}
+    required={true}
+/>
                       {departmentList?.some(department => department.id === selectedDepartment) && (
                         departmentList.find(department => department.id === selectedDepartment)?.serviceAreas?.some(
                           (serviceArea) => serviceArea.id === selectedSpeciality && serviceArea.regionalCallResponsibilitiesApplicable
@@ -3947,7 +4054,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                           <div className={`${style.lableStyle}`}>
                             {'Department / Division or Specialty'}
                           </div>
-                          <DatalistInput
+                          {/* <DatalistInput
                             items={getAdditionalDeptItems(departmentList) || []}
                             onSelect={(item) => {
                               setSelectedAdditionalDepartment(item.id)
@@ -3961,7 +4068,46 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             placeholder={'Enter Department Name'}
                             value={getAdditionalDeptItems(departmentList)?.filter(data => data?.departmentId ? data?.departmentId === selectedAdditionalDepartment : data?.id === selectedAdditionalDepartment)?.[0]?.data?.value}
                             required={true}
+                          /> */}
+ <DatalistInput
+                            items={getAdditionalDeptItems(departmentList) || []}
+                            onSelect={(item) => {
+                              console.log('Selected item:', item);
+                              if (item.specialityId !== "") {
+                                  setSelectedAdditionalDepartment(item.departmentId);
+                                  setSelectedAdditionalSpeciality(item.specialityId);
+                              } else {
+                                  setSelectedAdditionalDepartment(item.id);
+                                  setSelectedAdditionalSpeciality(item.specialityId);
+                              }
+                          }}
+                            className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+                            maxLength={50}
+                            onChange={(e) => {
+                              const inputValue = e.target.value;
+                              const matchedItem = getAdditionalDeptItems(departmentList)?.find(item => item.value === inputValue);
+                          
+                              if (matchedItem) {
+                                  // If user types a valid department/speciality name, set corresponding IDs
+                                  if (matchedItem.specialityId !=="") {
+                                      setSelectedAdditionalDepartment(matchedItem.departmentId);
+                                      setSelectedAdditionalSpeciality("")
+                                  } else {
+                                      setSelectedAdditionalDepartment(matchedItem.id);
+                                      setSelectedAdditionalSpeciality(matchedItem.specialityId)
+                                  }
+                              } 
+                          }}
+                          
+                            placeholder={'Enter Department Name'}
+                            value={getAdditionalDeptItems(departmentList)?.find(data => 
+                              (data?.specialityId !== ""
+                                  ? data?.departmentId === selectedAdditionalDepartment && data?.specialityId === selectedAdditionalSpeciality 
+                                  : data?.id === selectedAdditionalDepartment && data.specialityId === selectedAdditionalSpeciality)
+                          )?.value || ''}                          
+                            required={true}
                           />
+
                         </div>
                       </div>
                       {selectedAdditionalDepartment !== '' && (

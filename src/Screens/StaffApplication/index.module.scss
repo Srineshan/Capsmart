@@ -980,7 +980,7 @@ body::-webkit-scrollbar {
   // grid-template-columns: 4% 20% 15% 14% 6% 6% 7% 7% 9% 5%;
   // grid-template-columns: 20% 15% 14% 6% 6% 7% 9% 9% 5%;
   // grid-template-columns: 20% 15% 14% 8% 8% 8% 11% 9%;
-  grid-template-columns: 3% 26% 11% 27% 7% 7% 8% 6%;
+  grid-template-columns: 5% 23% 11% 27% 7% 7% 8% 6%;
   grid-gap: 1%;
 }
 
@@ -4268,7 +4268,6 @@ input[type="number"] {
 .borderStyleTiles {
   background: $tableheadhover 0% 0% no-repeat padding-box;
   height: 2px;
-
 }
 
 .selectedNewApplicantBackground {
@@ -5010,7 +5009,7 @@ input[type="number"] {
   display: flex;
   flex-direction: column;
   margin: 0 auto;
-  font-family: 'Proxima Nova', Arial, sans-serif;
+  font-family: 'proxima nova', Arial, sans-serif;
 }
 
 .row {
@@ -5227,7 +5226,7 @@ input[type="number"] {
   // padding: 3px;
 }
 
-.viewCurrentStatusText{
+.viewCurrentStatusText {
   text-align: center;
   font: normal normal bold 12px proxima-nova;
   padding: 5px;
@@ -5244,7 +5243,7 @@ input[type="number"] {
   margin-right: 18px;
 }
 
-.filterContainer{
+.filterContainer {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 10px 20px #171A1A29;
   border-radius: 4px;
@@ -5256,7 +5255,7 @@ input[type="number"] {
   z-index: 10;
 }
 
-.filterBackground{
+.filterBackground {
   background-color: rgba(6, 97, 122, 0.1);
   border-radius: 20px;
   padding: 5px;
@@ -5264,7 +5263,7 @@ input[type="number"] {
   align-items: center;
 }
 
-.filtertextStyle{
+.filtertextStyle {
   text-align: left;
   font: italic normal medium 14px/22px proxima-nova;
   letter-spacing: 0px;
@@ -5272,6 +5271,32 @@ input[type="number"] {
   opacity: 1;
 }
 
-.Bold{
+.Bold {
   font-weight: 500;
+}
+
+.privateBorderText {
+  background: #FFBFBE1A 0% 0% no-repeat padding-box;
+  border: 1px solid #FFBFBE;
+  border-radius: 3px;
+  opacity: 1;
+  text-align: left;
+  font: italic normal 600 10px/12px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFB4B2;
+  text-transform: capitalize;
+  padding: 1px;
+}
+
+.viewCurrentStatusText {
+  text-align: center;
+  font: normal normal bold 12px proxima-nova;
+  padding: 5px;
+  letter-spacing: 0px;
+  color: #F5F8F8;
+  text-transform: uppercase;
+  background: #06617A 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
 }

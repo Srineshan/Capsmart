@@ -16,11 +16,14 @@ import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
+import { useNavigate } from "react-router-dom";
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 
 const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationView, getNotesDialog }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
+  const navigate = useNavigate();
   const [userRole, setUserRole] = useState('');
   const [formDetails, setFormDetails] = useState([]);
   const [userNotes, setUserNotes] = useState('');
@@ -61,7 +64,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       label: department?.departmentName?.name,
       type: 'department'
     };
-  
+
     const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
       value: `${department.id}|${serviceArea.id}`,
       label: (
@@ -71,7 +74,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       ),
       type: 'serviceArea'
     })) || [];
-  
+
     return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
   }) || [];
 
@@ -82,12 +85,12 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     setSelectedDepartment(departmentId || "");
     setSelectedServiceArea(serviceAreaId || "");
 
-    console.log("selectedDept",selectedValue)
+    console.log("selectedDept", selectedValue)
   }
-  
+
   useEffect(() => {
     getActiveUserData()
-  }, [sortField, sortValue, page, totalCount, selectedDepartment,selectedServiceArea,selectedApplicantType, limit, searchTermForTable]);
+  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable]);
 
   // useEffect(() => {
   //   sessionStorage.setItem("fromSummary", false);
@@ -144,16 +147,16 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   }
 
   const getApplicantType = async () => {
-      const { data: applicant } = await GET(
-        `entity-service/applicantType`
-      );
-      setApplicantType(applicant);
-      // if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
-      //   setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
-      // } else {
-      //   setSelectedApplicantType(applicant?.[0]?.id);
-      // }
-    }
+    const { data: applicant } = await GET(
+      `entity-service/applicantType`
+    );
+    setApplicantType(applicant);
+    // if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
+    //   setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
+    // } else {
+    //   setSelectedApplicantType(applicant?.[0]?.id);
+    // }
+  }
 
 
   const setUserDetails = async () => {
@@ -236,6 +239,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     }
   };
 
+
   const getActiveUserDataForSearch = async (signal) => {
     try {
       setIsLoadingImage(true);
@@ -285,6 +289,10 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     }
   };
 
+  const handleNavigateStatus = () => {
+    navigate("/reportTypeOverview/submittedTimesheetsPaymentStatus", { state: { tableData } });
+  };
+  
   const getTableValues = () => {
     const No = [];
     const staff = [];
@@ -404,30 +412,30 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
           .pop();
 
         if (lastApproval) {
-            const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
-            status.push(`${lastApproval?.role}, ${formattedApprovalType}`);
+          const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ").split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+          status.push(`${lastApproval?.role}, ${formattedApprovalType}`);
         } else {
-            if (data?.status === "DECLINED") {
-                status.push("Reappointment Application Declined");
-            } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-                status.push("Reappointment Application Not Submitted");
-            } else if (data?.formFillingStatus === "IN_PROGRESS") {
-                status.push("Reappointment Application In-Progress");
-            } else {
-                status.push("MSO Verification Not Started");
-            }
-        }
-    } else {
-        if (data?.status === "DECLINED") {
+          if (data?.status === "DECLINED") {
             status.push("Reappointment Application Declined");
-        } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+          } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
             status.push("Reappointment Application Not Submitted");
-        } else if (data?.formFillingStatus === "IN_PROGRESS") {
+          } else if (data?.formFillingStatus === "IN_PROGRESS") {
             status.push("Reappointment Application In-Progress");
           } else {
-            status.push("Reappointment Application Not Started");
+            status.push("MSO Verification Not Started");
           }
         }
+      } else {
+        if (data?.status === "DECLINED") {
+          status.push("Reappointment Application Declined");
+        } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
+          status.push("Reappointment Application Not Submitted");
+        } else if (data?.formFillingStatus === "IN_PROGRESS") {
+          status.push("Reappointment Application In-Progress");
+        } else {
+          status.push("Reappointment Application Not Started");
+        }
+      }
 
       lastUpdated.push(
         <>
@@ -493,12 +501,12 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => {setSelectedDepartment();setSelectedServiceArea()}}
+                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
                       />
                     </Tooltip>
                   </div>
                 )}
-                 {selectedApplicantType && (
+                {selectedApplicantType && (
                   <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
                     <Tooltip title="Remove" arrow>
@@ -515,7 +523,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 )}
                 <div
                   className={`${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
+                    }`}
                   style={{
                     opacity: 1,
                   }}
@@ -531,6 +539,20 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     />
                   </Tooltip>
                 </div>
+                {/* <div
+                  className={`${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight10}`}
+                >
+                  <Tooltip title='Print Data' arrow >
+                  <PrintOutlinedIcon
+                    sx={{
+                      fontSize: 25,
+                      color: "#06617A",
+                    }}
+                    onClick={handleNavigateStatus}
+                  />
+                  </Tooltip>
+                </div> */}
                 <img
                   src={CrossPink}
                   alt="cross"
@@ -551,7 +573,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     //     ? `${selectedDepartment}|${selectedServiceArea}` 
                     //     : selectedDepartment
                     // } 
-                    value={selectedDepartment} 
+                    value={selectedDepartment}
                     onChange={handleChange}
                     className={style.fullWidth}
                     firstOptionLabel={'All'}

@@ -1,0 +1,319 @@
+@import "../../index.scss";
+
+.heading {
+  text-align: left;
+  font: normal normal 600 22px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginLeft {
+  margin-left: 20px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.marginTop5 {
+  margin-top: 5px !important;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.displayInRowCenter {
+  align-items: center;
+}
+
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 5% 88% 3%;
+  grid-gap: 10px;
+}
+
+.flex {
+  display: flex;
+}
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 70% !important;
+}
+
+.fullWidth {
+  width: 100% !important;
+  margin-top: -6px !important;
+}
+
+.fullWidth1 {
+  width: 100% !important;
+  // margin-top: 16px !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 20px 0px 20px;
+  border-radius: 20px !important;
+  border: 5px solid rgba(255, 255, 255, 0.4);
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.marginRight30 {
+  margin-right: 30px;
+}
+
+.marginLeft10 {
+  margin-left: 10px;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+
+.marginBottom10 {
+  margin-bottom: 10px !important;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20 {
+  margin-bottom: 20px;
+}
+
+.marginLeft2 {
+  margin-left: 2px;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
+}
+
+.taskBoardShadow {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 5px;
+  width: 100%;
+  // margin-left: 10px;
+}
+
+
+.backgroundCardStyle {
+  background-color: rgba(255, 230, 255, 0.2);
+  border: 1px solid #9AAFB5;
+  border-radius: 4px;
+  width: 100%;
+  align-content: center;
+  padding: 10px;
+}
+
+.backgroundBorderGreen {
+  background: #14B15A0A 0% 0% no-repeat padding-box;
+  border: 1px solid #14B15A;
+  border-radius: 4px;
+  width: 100%;
+  align-content: center;
+  padding: 10px;
+}
+
+.backgroundBorderRed {
+  background: #FF65620F 0% 0% no-repeat padding-box;
+  border: 1px solid #FF6562;
+  border-radius: 4px;
+  width: 100%;
+  align-content: center;
+  padding: 10px;
+}
+
+.backgroundBorderYellow {
+  background: #FFC1000F 0% 0% no-repeat padding-box;
+  border: 1px solid #FFC100;
+  border-radius: 4px;
+  width: 100%;
+  align-content: center;
+  padding: 10px;
+}
+
+.HeadingFontStyle {
+  text-align: left;
+  font: normal normal bold 16px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #737575;
+  opacity: 1;
+}
+
+.HeadingFontStyleGreen {
+  text-align: left;
+  font: normal normal bold 16px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #14B15A;
+  opacity: 1;
+}
+
+.logo {
+  width: 20px;
+  height: 20px;
+}
+
+.dateOfSubmissionTextStyle {
+  text-align: left;
+  font: normal normal 600 10px/18px proxima-nova;
+  letter-spacing: 1px;
+  color: #737575;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.NotesTextStyle {
+  text-align: left;
+  font: italic normal normal 14px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  opacity: 1;
+}
+
+.taskList {
+  position: relative;
+  padding-left: 0;
+}
+
+.taskItem {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  // padding-bottom: 16px;
+}
+
+.taskItem::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 3px;
+  height: calc(100% - 5px);
+  background: repeating-linear-gradient(to bottom,
+      #ccc 0px,
+      #ccc 6px,
+      transparent 10px,
+      transparent 14px);
+}
+
+.taskItem:last-child::before {
+  display: none;
+}
+
+
+.checkboxContainer {
+  position: relative;
+  z-index: 2;
+}
+
+.checkBoxBackGroundGreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #4CAF50;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
+}
+
+.checkBoxBackGroundYellow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #FFC100;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
+}
+
+.checkBoxBackGroundRed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #FF6562;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
+}
+
+.checkBoxBackGroundGrey {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 2px solid #9AAFB5;
+  /* Green border */
+  border-radius: 4px;
+  /* Rounded corners */
+  background-color: white;
+  /* Background color */
+}

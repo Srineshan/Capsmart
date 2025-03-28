@@ -140,6 +140,20 @@ useEffect(() => {
   }
 }, [userSelectRole,userSelectRoleDept, selectedRoleCred,selectedRoleDept]);
 
+useEffect(() => {
+  if (userSelectRoleDept?.length === 1) {
+    const singleUser = userSelectRoleDept[0];
+    setSelectedRoleDept(singleUser?.id);
+  }
+}, [userSelectRoleDept]);
+
+useEffect(() => {
+  if (userSelectRole?.length === 1) {
+    const singleUser = userSelectRole[0];
+    setSelectedRoleCred(singleUser?.id);
+  }
+}, [userSelectRole]);
+
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
     getApplication();
@@ -751,10 +765,10 @@ const handleCheckboxChange = (checkboxName) => (event) => {
   // }
 
    const lastModifiedDate = formDetails?.lastModifiedDate;
-    const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+    const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
     const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
     const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-    const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+    const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   return (
     <>
     {isLoadingImageDocs && (
@@ -780,6 +794,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
     >
       <div>
         <div className={Classes.DIALOG_BODY}>
+          <span className={`${style.Subheading}`}>{isUser ? "Applicant is designated as Department Head" : ""}</span>
           <div className={style.spaceBetween}>
           <div className={`${style.heading}`}>
             {isUser ? "SEND TO CHIEF / DEP COS FOR REVIEW" : "SEND TO DEPARTMENT HEAD FOR REVIEW"}
@@ -876,7 +891,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
             Provide notes, if any, for the Department Head regarding this application(Optional)
             </div> */}
             <div  className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            {isUser ? " Provide notes, if any, for the Chief / Dep COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
+            {isUser ? " Provide notes, if any, for the Chief / Deputy COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
           </div>
               {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -1073,8 +1088,6 @@ const handleCheckboxChange = (checkboxName) => (event) => {
                     className={style.fullWidth}
                     firstOptionLabel={''}
                     firstOptionValue={''}
-                    // valueList={["HIGH", "NO"]}
-                    // labelList={['High Priority', 'No Priority']}
                     valueList={userSelectRole?.map(data => data?.id)}
                     // labelList={userSelectRole?.map(data => `${data.name.firstName} ${data.name.lastName}`)}
                     labelList={userSelectRole?.map(data => {
@@ -1102,12 +1115,12 @@ const handleCheckboxChange = (checkboxName) => (event) => {
       
               </div>
              
-            <div className={`${style.marginTop}  ${style.reviewButtonContainer} ${style.cursorPointer}`}>
-            <div  onClick={() => getIsOpen(false)}>
+            <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
+            <div  className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
               <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
             </div>
             <div
-            className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer} ${style.marginLeft}`}
+            className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
             onClick={onClickApproveMoveFunction}
             style={{ 
               pointerEvents: isApproveEnabled ? 'auto' : 'none', 

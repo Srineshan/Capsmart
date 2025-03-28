@@ -5,7 +5,7 @@ import CrossPink from "../../images/crossPink.png";
 import style from './index.module.scss'
 
 const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
-  console.log(labelList, 'Metadata')
+  console.log(labelList, 'Metadatarrrr')
   return (
     <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog} ${style.eSignDialogBackground}`} canOutsideClickClose={false} canEscapeKeyClose={false}>
       <div>
@@ -32,7 +32,9 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
                 <div
                   className={`${style.description} ${style.marginTop10} ${style.marginLeft}`}
                   dangerouslySetInnerHTML={{
-                    __html: data?.label
+                    __html: window.location.pathname.includes("reappointmentApplicationForm")
+                    ? data?.label?.label
+                    : data?.label
                   }}
                 />
               </div>

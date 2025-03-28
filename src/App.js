@@ -287,6 +287,11 @@ const CreateStaffReapplication = React.lazy(() =>
   import("./Screens/CreateStaffReapplication")
 );
 
+const ApplicantPortalRFC = React.lazy(() =>
+  import("./Screens/ApplicantPortalRFC")
+);
+
+
 const ApplicantPortalDashboard = React.lazy(() =>
   import("./Screens/ApplicantDashboard")
 );
@@ -972,7 +977,7 @@ const App = ({ props }) => {
 
   const ProtectedRoute = ({ children }) => {
     if (!(cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization")))) {
-      sessionStorage.setItem('initialRoute', window.location.pathname)
+      sessionStorage.setItem('initialRoute', window.location.pathname + (window.location.search ? window.location.search : ''))
     }
     return (cookie.get("authorization") !== undefined && cookie.get("authorization") !== 'undefined' && !isSessionTokenExpired(cookie.get("authorization"))) ? children : <Navigate to="/loginPage" />;
   };
@@ -1334,6 +1339,10 @@ const App = ({ props }) => {
                 <Route
                   path="/createStaffReapplication"
                   element={<ProtectedRoute><CreateStaffReapplication /></ProtectedRoute>}
+                />
+                <Route
+                  path="/RFC/:clarificationId"
+                  element={<ProtectedRoute><ApplicantPortalRFC /></ProtectedRoute>}
                 />
                 <Route
                   path="/ApplicantDashboard"

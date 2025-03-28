@@ -842,11 +842,6 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   console.log("Updated Lastnameuserssssss", userFirstName);
   console.log("Updated Lastnameuserssssss", userLastName);
 
-  const closeAndReset = () => {
-    getIsOpen(false);
-  };
-
-
   const onClicksignFunction = () => {
     setTodayDate();
     handleSignatureClick();
@@ -1281,12 +1276,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
   // const userRoleTab = getUserRole(selectedTab);
   const lastModifiedDate = formDetails?.lastModifiedDate;
-  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
+  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
   const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
   const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
-  const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MMM dd, yyyy") : "-";
+  const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MM/dd/yyyy") : "-";
 
   // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Department Head')) {
   //   return null;
@@ -1344,7 +1339,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
 
     <Dialog
       isOpen={getIsOpen}
-      onClose={() => closeAndReset()}
+      onClose={() => getIsOpen(false)}
       className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
       canOutsideClickClose={false}
       canEscapeKeyClose={false}
@@ -1362,7 +1357,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  closeAndReset();
+                  getIsOpen(false);getActiveApplicationView(false);
                 }}
               />
             </div>
@@ -1497,7 +1492,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                </div>
                </>
                }
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => closeAndReset()}>
+            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
                {workModeType === "Department Head" ? <div className={style.reviewButton}>START REVIEW</div> : <div className={style.reviewButton}>CONTINUE</div>}
              </div>
           </div>

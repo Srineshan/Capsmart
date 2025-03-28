@@ -2,9 +2,12 @@ import { React, useEffect, useState } from "react";
 import style from "./index.module.scss";
 import AddIcon from '@mui/icons-material/Add';
 import HapiCare from "../../images/cambridgeHospital.png"
+import NotificationLogo from "../../images/notificationMic1.png"
 import HourGlass from "../../images/hourglass.png"
 import HourGlassComplete from "../../images/hourglassComplete.png"
 import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import KeyboardArrowLeftOutlinedIcon from '@mui/icons-material/KeyboardArrowLeftOutlined';
+import KeyboardArrowRightOutlinedIcon from '@mui/icons-material/KeyboardArrowRightOutlined';
 import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
@@ -18,6 +21,10 @@ import { currentUser } from "../../utils/auth";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
 import { Tooltip } from "@mui/material";
 import PrivilegeDisplayDialog from "../../Components/PrivilegeDisplayDialog";
+import TaskNewDialog from "../../Components/AddTaskFromApplicantDialog";
+import TrackApplicationDialog from "../../Components/TrackApplicationDialog";
+import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord"; // Dots
+import { Stack } from "@mui/material";
 
 const tasks = [
   {
@@ -42,6 +49,13 @@ const tasks = [
   }
 ];
 
+const notifications = [
+  "You have a Request for Clarification for your reappointment that requires your attention!",
+  "Your appointment has been approved, please review the details!",
+  "You have a new message from the HR team regarding your application!",
+  "You have a new message from the HR team regarding your application!"
+];
+
 const sidebarItems = [
   { title: 'My Tasks', key: "tasks", count: 5, active: true },
   { title: 'Current Applications', key: "Current", count: 1 },
@@ -63,7 +77,10 @@ const ApplicantDashboard = () => {
   const [showFileDialog, setShowFileDialog] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [showPrivilegeDialog, setShowPrivilegeDialog] = useState(false);
+  const [showTaskNewDialog, setShowTaskNewDialog] = useState(false);
+  const [showTrackApplicationDialog, setShowTrackApplicationDialog] = useState(false);
   const [selectedPrivilegeList, setSelectedPrivilegeList] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const availableCategories = {
     REAPPOINTMENT_APPLICATION: 'REAPPOINTMENT APPLICATION',
     MEDICAL_DIRECTIVE_ATTESTATION: 'MEDICAL DIRECTIVE ATTESTATION',
@@ -73,12 +90,19 @@ const ApplicantDashboard = () => {
   }
 
   const availableCategoryWarnings = {
-    REAPPOINTMENT_APPLICATION: style.warningRed,
-    MEDICAL_DIRECTIVE_ATTESTATION: style.warningYellow,
-    DOCUMENT_FOLLOW_UP: style.warningOrange,
-    INITIAL_APPLICATION: style.warningRed,
-    REQUEST_FOR_CLARIFICATION: style.warningRed
+    HIGH: style.warningRed,
+    LOW: style.warningYellow,
+    MEDIUM: style.warningOrange
   }
+
+  const handleNextNotification = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % notifications.length);
+  };
+
+  const handlePrevNotification = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + notifications.length) % notifications.length);
+  };
+
 
   useEffect(() => {
     getEntity();
@@ -122,6 +146,7 @@ const ApplicantDashboard = () => {
   const handleOnCick = (task) => {
     sessionStorage.setItem('taskId', task?.id)
     sessionStorage.setItem('taskStatus', task?.status)
+    sessionStorage.setItem('taskInfo', JSON.stringify(task))
     if (task?.category === 'REAPPOINTMENT_APPLICATION') {
       if (task?.details?.application?.lastSavedSection !== null && task?.details?.application?.lastSavedSection !== "") {
         console.log(task?.details?.application?.lastSavedSection)
@@ -137,6 +162,9 @@ const ApplicantDashboard = () => {
         navigate(`/applicationForm/${task?.details?.application?.application?.id}`);
       }
     }
+    if (task.category === 'REQUEST_FOR_CLARIFICATION') {
+      navigate(`/RFC/${task?.details?.application?.clarificationId}?app=${task?.details?.application?.application?.id}&form=${task?.details?.application?.formDetails?.formId}`);
+    }
   }
 
   const handleShowFileDialog = (file) => {
@@ -149,33 +177,54 @@ const ApplicantDashboard = () => {
     setShowPrivilegeDialog(true);
   }
 
+  const handleShowTaskNewDialog = () => {
+    setShowTaskNewDialog(true);
+  }
+
+  const handleShowTrackApplicationDialog = () => {
+    setShowTrackApplicationDialog(true);
+  }
+
   return (
-    <div className={`${style.backgroundDashboard}`}>
+    <div>
       <ApplicantHeader />
-      <div className={`${style.flex} ${style.marginTop20}`}>
+      <div className={`${style.flex} ${style.backgroundDashboard}`}>
         {/* <div className={`${style.sidebar}`}>
         <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span>
         </div>
       </div> */}
-        <div className={style.mainContent}>
-          <div className={`${style.flex}`}>
+        <div className={`${style.mainContent} ${style.marginTop20}`}>
+          {/* <div className={`${style.flex}`}>
             <div className={style.greeting}>Good Morning <span className={style.userName}>Jenny!</span></div>
             <div className={style.header}>
-              <div>
-                <KeyboardArrowUpOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
-              </div>
               <div className={`${style.spaceBetween} ${style.padding10}`}>
-                <div className={style.flex}>
-                  <div className={style.notificationNumber}>1/3</div>
-                  <div className={style.notificationText}>You have a Request for Clarification for your reappointment that requires your attention!</div>
+                <div className={`${style.flex} ${style.alignItem}`}>
+                  <img src={NotificationLogo} alt="Notification Logo" className={`${style.logoNotification}`} />
+                  <Stack direction="column" spacing={0.3} sx={{ marginLeft: 1 }}>
+                    {notifications.map((_, index) => (
+                      <FiberManualRecordIcon
+                        key={index}
+                        sx={{
+                          fontSize: 5,
+                          color: currentIndex === index ? "#06617A" : "#B0BEC5",
+                          transition: "color 0.3s"
+                        }}
+                      />
+                    ))}
+                  </Stack>
+                  <KeyboardArrowLeftOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handlePrevNotification} />
+                  <div className={style.notificationText}>
+                    <span className={style.notificationNumber}>{currentIndex + 1}. </span>
+                    {notifications[currentIndex]}
+                  </div>
                 </div>
-                <div className={style.viewButton}>View</div>
-              </div>
-              <div>
-                <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
+                <div className={`${style.flex} ${style.alignItem} ${style.gap}`}>
+                  <div className={`${style.viewButton} ${style.cursorPointer}`} onClick={() => handleShowTrackApplicationDialog()}>View</div>
+                  <KeyboardArrowRightOutlinedIcon sx={{ fontSize: 22, color: "#06617A", cursor: "pointer" }} onClick={handleNextNotification} />
+                </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className={`${style.flex}`}>
             <div className={`${style.backgroundSideBar} ${style.marginTop20}`}>
               <div
@@ -228,19 +277,20 @@ const ApplicantDashboard = () => {
             {activeSection === "tasks" ? (
               <div className={style.taskBoardShadow}>
                 <div className={style.taskBoard}>
-                  {/* <div className={`${style.addTask} ${style.alignItem}`}><AddIcon  sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> Add New Task</div> */}
-                  <div className={`${style.flexGap} ${style.marginTop2}`}>
+                  {/* <div className={`${style.addTask} ${style.alignItem} ${style.cursorPointer}`} onClick={() => handleShowTaskNewDialog()}><AddIcon sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }} /> <span className={style.marginLeft10}>Add New Task</span></div> */}
+                  <div className={`${style.flexGap} ${style.marginTop10}`}>
                     <div className={`${style.padding5} ${style.pastDue}`}>
+                      <div className={style.pastDueHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-                        <div className={`${style.redDotStyle}`}></div>
+                        {/* <div className={`${style.redDotStyle}`}></div> */}
                         <div className={style.columnTitlePastDue}>Past Due</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {pastDueTasks?.map((task, index) => (
                           <div key={index} className={style.taskCardSingle}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -259,7 +309,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -282,16 +332,17 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.ongoing}`}>
+                      <div className={style.ongoingHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-                        <div className={`${style.yellowDotStyle}`}></div>
+                        {/* <div className={`${style.yellowDotStyle}`}></div> */}
                         <div className={style.columnTitleOngoing}>Ongoing</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {onGoingTasks?.map((task, index) => (
                           <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -310,7 +361,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -333,16 +384,17 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.notStarted}`}>
+                      <div className={style.notStartedHeader}></div>
                       <div className={`${style.flex} ${style.alignItem} ${style.marginBottom10}`}>
-                        <div className={`${style.greyDotStyle}`}></div>
+                        {/* <div className={`${style.greyDotStyle}`}></div> */}
                         <div className={style.columnTitleNotYet}>Not Yet Started</div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {notStartedTasks?.map((task, index) => (
                           <div key={index} className={`${style.taskCardSingle} ${style.cursorPointer}`} onClick={() => handleOnCick(task)}>
                             <div className={style.spaceBetween}>
                               <div className={`${style.flex} ${style.verticalAlignCenter}`}>
-                                <div className={`${availableCategoryWarnings[task?.category]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
+                                <div className={`${availableCategoryWarnings[task?.priority]} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 10, color: "#FFFFFF" }} /></div>
                                 <div className={`${style.taskType} ${style.marginLeft} `}>{availableCategories[task?.category]}</div>
                               </div>
                               <div>
@@ -361,7 +413,7 @@ const ApplicantDashboard = () => {
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlass} className={style.smallLogo} alt="" />
+                                <img src={HourGlass} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -384,9 +436,10 @@ const ApplicantDashboard = () => {
                       </div>
                     </div>
                     <div className={`${style.padding5} ${style.completed}`}>
+                      <div className={style.completedHeader}></div>
                       <div className={`${style.spaceBetween} ${style.alignItem} ${style.marginBottom10}`}>
                         <div className={`${style.flex} ${style.alignItem}`}>
-                          <div className={`${style.greenDotStyle}`}></div>
+                          {/* <div className={`${style.greenDotStyle}`}></div> */}
                           <div className={style.columnTitleCompleted}>Completed</div>
                         </div>
                         <div className={`${style.flex} ${style.alignItem}`}>
@@ -394,7 +447,7 @@ const ApplicantDashboard = () => {
                           <KeyboardArrowDownOutlinedIcon sx={{ fontSize: 18, color: "#06617A" }} />
                         </div>
                       </div>
-                      <div className={style.taskList}>
+                      <div className={`${style.taskList} ${style.tasksScroll}`}>
                         {completedTasks?.map((task, index) => (
                           <div key={index} className={style.taskCardSingle}>
                             <div className={style.spaceBetween}>
@@ -409,16 +462,16 @@ const ApplicantDashboard = () => {
                               </div>
                             </div>
                             <div className={`${style.taskTitle} ${style.marginTop5}`}>{task?.title}</div>
-                            <div className={`${style.assignedBy} ${style.marginTop10}`}>
+                            {/* <div className={`${style.assignedBy} ${style.marginTop10}`}>
                               {task?.description}
                             </div>
                             <div className={`${style.assignedBy} ${style.marginTop5}`}>
                               Assigned by: {`${task?.createdBy?.name?.firstName} ${task?.createdBy?.name?.lastName}, ${task?.createdBy?.title?.title}`}
-                            </div>
+                            </div> */}
 
                             <div className={`${style.date} ${style.marginTop5}`}>
                               <div className={style.flex}>
-                                <img src={HourGlassComplete} className={style.smallLogo} alt="" />
+                                <img src={HourGlassComplete} className={style.smallLogo1} alt="" />
                                 <span className={style.marginLeft}>{format(new Date(task?.dueDate), 'MMMM dd, yyyy')}</span>
                               </div>
                             </div>
@@ -433,7 +486,7 @@ const ApplicantDashboard = () => {
                                   <div><CommentOutlinedIcon sx={{ fontSize: 12, color: "#52575D" }} /></div>
                                   <div className={style.commentStyle}> {0}</div>
                                 </div>
-                                <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span>
+                                {/* <span className={style.daysToGoStyle}>{`${differenceInCalendarDays(new Date(task?.dueDate), new Date())} Days to go`}</span> */}
                               </div>
                             </div>
                           </div>
@@ -818,6 +871,12 @@ const ApplicantDashboard = () => {
       )}
       {showPrivilegeDialog && (
         <PrivilegeDisplayDialog getIsOpen={setShowPrivilegeDialog} privilegeList={selectedPrivilegeList} />
+      )}
+      {showTaskNewDialog && (
+        <TaskNewDialog getIsOpen={setShowTaskNewDialog} />
+      )}
+      {showTrackApplicationDialog && (
+        <TrackApplicationDialog getIsOpen={setShowTrackApplicationDialog} />
       )}
     </div >
   );

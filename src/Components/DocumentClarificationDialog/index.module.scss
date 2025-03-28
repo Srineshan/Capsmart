@@ -1,0 +1,266 @@
+@import "../../index.scss";
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 70% !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px;
+  border-radius: 20px !important;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.heading {
+  text-align: left;
+  font: normal normal bold 24px proxima-nova;
+  letter-spacing: 0px;
+  color: #06617A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.flex {
+  display: flex;
+}
+
+.marginLeft {
+  margin-left: 20px;
+}
+
+.marginTop5 {
+  margin-top: 5px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginBottom {
+  margin-bottom: 20px;
+}
+
+.marginBottom5 {
+  margin-bottom: 5px;
+}
+
+.marginBottom10 {
+  margin-bottom: 20px;
+}
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+
+.marginLeft2 {
+  margin-left: 2px;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.displayInRowCenter {
+  align-items: center;
+}
+
+.detailsTextStyle {
+  text-align: left;
+  font: normal normal 600 20px/28px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.7;
+}
+
+.rejectionBorderStyle {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 5px 20px #52575D14;
+  border: 0.4px solid #52575D14;
+  border-radius: 12px;
+  opacity: 1;
+}
+
+.declineBorderStyle {
+  // background: #DBD8FA 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid #0F0B3129;
+  border-radius: 8px;
+  padding: 10px 10px;
+}
+
+.subHeadingtextStyle {
+  text-align: center;
+  font: normal normal 500 14px/16px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 0.5;
+}
+
+.subAnswerTextStyle {
+  text-align: center;
+  font: normal normal 500 16px/34px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.textBoxTextStyle {
+  text-align: left;
+  font: normal normal normal 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #94979A;
+  opacity: 1;
+}
+
+.textBoxTextStyle1 {
+  text-align: center;
+  font: normal normal normal 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.8;
+}
+
+.cancelButton {
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 5px 10px;
+  // width: 200px;
+}
+
+.cancelButtonTextStyle {
+  text-align: center;
+  font: normal normal bold 18px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 5px 10px;
+  width: 200px;
+}
+
+.reviewButton {
+  text-align: center;
+  font: normal normal bold 18px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.clarificationHeadingTextStyle {
+  text-align: left;
+  font: normal normal 600 23px/28px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.fullWidth {
+  width: 50%;
+}
+
+.uploadBorderStyle {
+  background: $secondarycolor 0% 0% no-repeat padding-box;
+  border: 0.800000011920929px dashed #173790;
+  border-radius: 4px;
+  opacity: 1;
+  // padding: 5px;
+}
+
+.uploadTextStyle {
+  text-align: center;
+  font: normal normal normal 18px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+  padding: 5px;
+}
+
+.referenceCardStyle {
+  background: #dddddf 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 4px;
+  opacity: 0.9;
+  padding: 3px;
+}
+
+.docsIcon {
+  text-align: left;
+  font: normal normal normal 20px/24px la-solid-900;
+  letter-spacing: 0px;
+  color: $primarycolor;
+  opacity: 1;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
+}
+
+.threeColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.referenceCardStyleDescription {
+  // background: #dddddf 0% 0% no-repeat padding-box;
+  // box-shadow: 0px 3px 18px #0F0B3129;
+  border: 1px solid $primarycolor;
+  border-radius: 4px;
+  opacity: 0.9;
+  // padding: 3px;
+}

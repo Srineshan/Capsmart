@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds,filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -365,16 +365,16 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                         )
                                             : tableData?.type === "text" ? (
                                                 <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
-                                                <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
-                                                    {searchTermForTable?.trim() ? 
-                                                        tableData?.value?.[index]?.split(new RegExp(`(${searchTermForTable})`, 'gi')).map((part, i) => 
-                                                            part.toLowerCase() === searchTermForTable?.toLowerCase() ? 
-                                                                <span key={i} style={{backgroundColor: 'yellow'}}>{part}</span> : 
-                                                                part
-                                                        ) : 
-                                                        tableData?.value?.[index]
-                                                    }
-                                                </p>
+                                                    <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
+                                                        {searchTermForTable?.trim() ?
+                                                            String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
+                                                                part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
+                                                                    <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
+                                                                    part
+                                                            ) :
+                                                            tableData?.value?.[index]
+                                                        }
+                                                    </p>
                                                 </Tooltip>
                                             ) : tableData?.type === "textWithHover" ? (
                                                 <div>

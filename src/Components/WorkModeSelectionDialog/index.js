@@ -64,7 +64,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
       > */}
         <div className={`${style.backGroundStyle}`}>
           <div className={`${style.displayInCol}`}>
-            <div className={`${style.heading}  ${style.padding}`}>Select The Workspace You Would Like To Work With</div>
+            <div className={`${style.heading}  ${style.padding}`}>Select The Workspace You Would Like To Work In</div>
             {/* <img
               src={CrossPink}
               alt="cross"
@@ -137,7 +137,7 @@ const WorkModeDialog = ({ getIsOpen }) => {
                     alt="Credentialing Committee User"
                     className={`${style.crossStyle} ${style.cursorPointer}`}
                   />
-                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Credentialing Committee User</p>
+                  <p className={`${hoveredRole === "Credentialing Committee User" ? style.roleTitleHover : style.roleTitle}  ${style.marginTop10}`}>Staff Manager's Credentialing Committee Workspace</p>
                 </div>
               )}
               {userRole?.includes("Chief Of Staff") && (
