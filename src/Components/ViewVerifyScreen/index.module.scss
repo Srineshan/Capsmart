@@ -132,6 +132,17 @@ body::-webkit-scrollbar {
   opacity: 1;
 }
 
+.buttonCardStyleDoc {
+  height: 50px;
+  width: 130px;
+  justify-self: right;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 1;
+}
+
 .textCardStyle {
   height: 100px;
   // width: 270px;
@@ -181,6 +192,7 @@ body::-webkit-scrollbar {
 
 .dropdownContainer {
   width: 200px;
+  height: 85px;
   background-color: $primarycolor;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
@@ -285,6 +297,16 @@ body::-webkit-scrollbar {
   text-align: center;
   font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.buttonTextStyleDocs {
+  text-align: center;
+  font: normal normal bold 16px/25px proxima-nova;
+  letter-spacing: 0px;
+  line-height: revert;
   color: $primarycolor;
   text-transform: uppercase;
   opacity: 1;

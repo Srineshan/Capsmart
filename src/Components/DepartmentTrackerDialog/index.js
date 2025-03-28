@@ -523,7 +523,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                 )}
                 <div
                   className={`${style.alignCenter} ${style.cursorPointer
-                    } ${style.marginRight20}`}
+                    }`}
                   style={{
                     opacity: 1,
                   }}
@@ -539,7 +539,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     />
                   </Tooltip>
                 </div>
-                <div
+                {/* <div
                   className={`${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight10}`}
                 >
@@ -552,7 +552,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     onClick={handleNavigateStatus}
                   />
                   </Tooltip>
-                </div>
+                </div> */}
                 <img
                   src={CrossPink}
                   alt="cross"

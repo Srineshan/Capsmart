@@ -4285,7 +4285,7 @@ const StaffApplicationList = ({
                     </div>
                   ) : ""
                 }
-                 <div
+                 {/* <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight20}`}
                 >
@@ -4313,7 +4313,7 @@ const StaffApplicationList = ({
                       onClick={handleNavigate}
                     />
                   </Tooltip>
-                </div>
+                </div> */}
               </div >
             </div >
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>

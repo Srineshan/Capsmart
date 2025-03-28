@@ -6175,7 +6175,11 @@ const NewActiveApplication = ({
                                                                         handleStepsVerifyRevoke(form?.forms[index]?.id);
                                                                       }}
                                                                     >
-                                                                      Verified
+                                                                      Verified <RestartAltOutlinedIcon sx={{
+                                                                    fontSize: 20,
+                                                                    color: "#ffffff",
+                                                                    marginLeft: "10px",
+                                                                  }} />
                                                                     </div>
                                                                   </Tooltip>
                                                                 </div>
@@ -6246,7 +6250,7 @@ const NewActiveApplication = ({
                                                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
                                                           onClickDocumentClarificationRequestFunction(form?.forms[index], "APPLICANT");
                                                         }}>From Applicant</div>
-                                                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div>
+                                                        {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div> */}
                                                         {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30}`}>From Institution</div> */}
                                                       </div>
                                                     )}
@@ -12044,20 +12048,21 @@ const NewActiveApplication = ({
                                                         : 'N/A'}
                                                     </div>
                                                     {clarification?.clarificationStatus === 'NA' && (
-                                                      <div className={style.twoColumnGrid}>
+                                                      // <div className={style.twoColumnGrid}>
+                                                      <div>
                                                         <div
-                                                          className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                                          className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
                                                           onClick={() => onClickDocumentClarificationFunction(clarification, data)}
                                                         >
-                                                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
                                                             Document Clarification
                                                           </div>
                                                         </div>
-                                                        <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                                        {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
                                                             Send by Email
                                                           </div>
-                                                        </div>
+                                                        </div> */}
                                                       </div>
                                                     )}
                                                     {clarification?.clarificationStatus !== "NA" && (
@@ -12141,12 +12146,12 @@ const NewActiveApplication = ({
                                                               </div>
                                                             </div>
 
-                                                            <div
+                                                            {/* <div
                                                               className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop10}`}
                                                               onClick={onClickRequestOverrideDialogFunction}
                                                             >
                                                               <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Request Override</div>
-                                                            </div>
+                                                            </div> */}
                                                           </div>
                                                         )}
                                                         {(clarification?.clarificationStatus === "REJECTED" || clarification?.clarificationStatus === "ACCEPTED") && (
