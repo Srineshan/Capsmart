@@ -110,8 +110,11 @@ const ApplicantPortalRFC = () => {
     }
 
     useEffect(() => {
+        getPreApplication();
+    }, [])
+
+    useEffect(() => {
         if (taskById?.details?.application?.application?.id !== undefined) {
-            getPreApplication();
             getDocumentReference(taskById?.details?.application?.formDetails?.rowId)
         }
     }, [taskById?.details?.application?.application?.id]);
@@ -139,6 +142,10 @@ const ApplicantPortalRFC = () => {
             );
         }
     }, [canadaData]);
+
+    useEffect(() => {
+        renderFieldsBasedOnStepReappointment(form?.formSchemas?.[form?.forms?.findIndex(data => data?.id === taskById?.details?.application?.formDetails?.formId)])
+    }, [selectedAdditionalPrivilegeForDisplay, selectedPrivilegeForDisplay])
 
     const getIsShowFileDialog = (value) => {
         setShowFileDisplayDialog(value);
@@ -197,9 +204,9 @@ const ApplicantPortalRFC = () => {
             `application-management-service/application/${applicationIdFromParam}`
         );
         setForm(basicForm);
-        setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
+        setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
         setSelectedAdditionalPrivilegeForDisplay(
-            form?.privileges?.additionalPrivileges
+            basicForm?.privileges?.additionalPrivileges
         );
         setPrivilegeChangeYesOrNo(form?.forms[form?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection")]?.data?.privilegeChangeYesOrNo);
         setPrivilegeSetChangeYesOrNo(form?.forms[form?.forms?.findIndex(data => data?.schemaCategory === "PrivilegeSelection")]?.data?.privilegeSetChangeYesOrNo);
@@ -528,6 +535,7 @@ const ApplicantPortalRFC = () => {
         }
         let schema = formSchema?.schema
         let temp = [];
+        console.log('medicalDirective', schema)
 
         Object.keys(schema?.properties?.medicalDirectives?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
@@ -663,6 +671,8 @@ const ApplicantPortalRFC = () => {
         }
     }
 
+    console.log('selectedPrivilegeForDisplay', selectedPrivilegeForDisplay, selectedAdditionalPrivilegeForDisplay)
+
     const renderFieldsBasedOnStepReappointment = (data, index) => {
         console.log('renderCheck', data, formSchema)
         let formIndex = form?.forms?.findIndex(formData => formData?.schemaCategory === data?.schemaCategory);
@@ -697,7 +707,7 @@ const ApplicantPortalRFC = () => {
                     <>
                         <>
                             {form?.forms?.[formIndex]?.data?.cmeTranscripts?.length !== 0 && form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName !== undefined && (
-                                <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop} ${style.verticalAlignCenter}`}>
+                                <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop20} ${style.verticalAlignCenter}`}>
                                     <div><strong>CME / CEU Transcript</strong></div>
                                     <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
                                     <img
@@ -711,11 +721,11 @@ const ApplicantPortalRFC = () => {
                                     />
                                 </div>
                             )}
-                            <div className={`${style.cmeCreditsGrid} ${style.marginTop}`}>
+                            <div className={`${style.cmeCreditsGrid} ${style.marginTop20}`}>
                                 <div>
                                     <div className={style.cmeCard}>
                                         <div className={style.creditsHeading}>CME CREDITS / HOURS</div>
-                                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                                        <div className={`${style.twoCol} ${style.marginTop20}`}>
 
                                             <div className={`${style.cmeHourCard} `}
                                             >
@@ -835,7 +845,7 @@ const ApplicantPortalRFC = () => {
                         <div className={`${style.totalText} ${style.leftAlign}`}>
                             All Medical Directives that required Attestation for this reappointment period for this Medical Staff have been attested.
                         </div>
-                        <div className={style.marginTop}>
+                        <div className={style.marginTop20}>
                             <TableTwo
                                 tableHeaderValues={[
                                     "",
@@ -1755,9 +1765,9 @@ const ApplicantPortalRFC = () => {
                         <div className={`${style.applicationCardStyle} ${style.headingTextStyle}`}>
                             {clarificationSubject}
                         </div>
-                        <div className={`${style.applicationCardStyle} ${style.headingTextStyle} ${style.marginTop20}`}>
+                        <div className={`${style.applicationCardStyle} ${style.marginTop20}`}>
                             <div className={style.spaceBetween}>
-                                <div>
+                                <div className={style.headingTextStyle}>
                                     Prior Reference
                                 </div>
                                 {collapseOpen ? (
@@ -1771,7 +1781,7 @@ const ApplicantPortalRFC = () => {
                                 )}
                             </div>
                             {collapseOpen && (
-                                <div className={style.marginTop}>
+                                <div className={style.marginTop20}>
                                     {/* <div className={style.marginTop20}>
                                         {fileReference?.fileType === 'application/pdf' ? (
                                             <iframe src={`${fileReference?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>

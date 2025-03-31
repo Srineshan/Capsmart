@@ -8,6 +8,9 @@
     margin-top: 10px;
 }
 
+.marginTop30 {
+    margin-top: 30px !important;
+}
 
 .spaceBetween {
     display: flex;
@@ -436,4 +439,342 @@
     font: normal normal bold 20px/26px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
+}
+
+.applicationCardStyleReappointment {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D4D;
+    border-radius: 20px;
+    border: 0.4000000059604645px solid #e5e6e6;
+    padding: 0px 20px 20px 20px;
+}
+
+.privilegeCard {
+    background: #14358F00 0% 0% no-repeat padding-box;
+    // box-shadow: 0px 0px 8px #040B2014;
+    // border: 0.4000000059604645px solid #5087D9;
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 99999 !important;
+}
+
+.privilegeHeading {
+    text-align: left;
+    font: normal normal normal 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.privilegeHeading1 {
+    text-align: left;
+    font: normal normal bold 16px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+    // font-size: 16px;
+}
+
+.privilegeHeadingTitle {
+    font: normal normal medium 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.privilegeContentCard {
+    background: #1D24370A 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.privilegeHeadingCurrent {
+    text-align: left;
+    font: italic normal bold 12px/17px proxima-nova !important;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.privilegeHeadingReappointment {
+    text-align: left;
+    font: italic normal bold 12px/17px proxima-nova !important;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.privilegeContentChangeCard {
+    background: #F5F8F8 0% 0% no-repeat padding-box;
+    box-shadow: 0px 0px 8px #040B2014;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.itemLeft {
+    padding: 10px;
+    /* Inner padding for each line */
+    text-align: left;
+}
+
+.privilegeCodeGrid {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 10px;
+}
+
+.fileDisplayGrid {
+    display: grid;
+    grid-template-columns: 20% 72% 5%;
+    gap: 1%;
+}
+
+.fileDisplayCME {
+    background: $tableheadbg 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $tableheadhover;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.imgIcon {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+}
+
+.eSignGrid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 20px;
+}
+
+.cmeCard {
+    // background: #14358F14 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid #14358F1F;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.cmeHourCard {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border-radius: 6px;
+    padding: 20px;
+}
+
+.totalText {
+    text-align: center;
+    font: normal normal 600 16px/18px proxima-nova;
+    letter-spacing: 0px;
+    color: #1D2437;
+}
+
+.hourText {
+    text-align: center;
+    font: normal normal normal 24px/49px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.hourRemainingText {
+    text-align: center;
+    font: italic normal medium 12px/14px proxima-nova;
+    letter-spacing: 0px;
+    color: #FF5555;
+}
+
+.creditsHeading {
+    text-align: left;
+    font: normal normal bold 15px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.cmeCreditsGrid {
+    display: grid;
+    grid-template-columns: 40% 60%;
+    gap: 20px;
+}
+
+.checkGrid {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+}
+
+.disabled {
+    cursor: not-allowed;
+}
+
+.leftAlign {
+    text-align: left;
+}
+
+.medicalDirectivesGridStyle {
+    display: grid;
+    grid-template-columns: 5% 53% 10% 10% 18%;
+    gap: 1%;
+}
+
+.lableReadOnlyStyleInPOD {
+    text-align: left;
+    font: normal normal normal 18px/24px proxima-nova;
+    letter-spacing: 0px;
+    color: $textsecondary;
+    // text-transform: capitalize;
+    opacity: 1;
+    margin-top: 10px;
+    max-width: 85%;
+}
+
+.homeMailingAddressGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.homeMailingAddressGrid> :nth-child(1) {
+    grid-column: span 3;
+}
+
+.homeMailingAddressGrid> :nth-child(2) {
+    grid-column: span 3;
+}
+
+.homeMailingAddressGrid> :nth-child(3) {
+    grid-column: span 3;
+}
+
+.homeMailingAddressGrid> :nth-child(4) {
+    grid-column: span 3;
+}
+
+.homeMailingAddressGrid> :nth-child(5) {
+    grid-column: span 3;
+}
+
+.homeMailingAddressGrid> :nth-child(6) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.mailingAddressGrid> :nth-child(1) {
+    grid-column: span 6;
+}
+
+.mailingAddressGrid> :nth-child(2) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(3) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(4) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(5) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(6) {
+    grid-column: span 3;
+}
+
+.mailingAddressGrid> :nth-child(7) {
+    grid-column: span 3;
+}
+
+.businessMailingAddressGrid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+}
+
+.businessMailingAddressGrid> :nth-child(1) {
+    grid-column: span 12;
+}
+
+.businessMailingAddressGrid> :nth-child(2) {
+    grid-column: span 12;
+}
+
+.businessMailingAddressGrid> :nth-child(3) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(4) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(5) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(6) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(7) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(8) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(9) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(10) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(11) {
+    grid-column: span 6;
+}
+
+.businessMailingAddressGrid> :nth-child(12) {
+    grid-column: span 6;
+}
+
+.applicantGrid {
+    display: grid;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.conductGrid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 20px;
+}
+
+.medicalHistoryGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.medicalHistoryGrid> :nth-child(1) {
+    grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(2) {
+    grid-column: 1 / -1;
+}
+
+.medicalHistoryGrid> :nth-child(3) {
+    grid-column: 1 / -1;
 }
