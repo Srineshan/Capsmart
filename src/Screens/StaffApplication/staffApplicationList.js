@@ -814,6 +814,16 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+  const onClickViewAndVerifyDateSetBODFunction = (data) => {
+    getActiveApplicationView(true, "DateSetForBOD");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyApproveFromBODFunction = (data) => {
+    getActiveApplicationView(true, "ReviewFromBOD");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const onClickViewAndVerifyDateSetFunction = (data) => {
     getActiveApplicationView(true, "DateSetForCC");
     sessionStorage.setItem("applicationId", data?.id);
@@ -2485,15 +2495,17 @@ const StaffApplicationList = ({
       department.push(
         `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
       );
-      ccdate.push(
-        data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(`${data?.upcomingCredCommitteeMeetingDate}T00:00`), "MM/dd/yyyy")
-          : "-"
-      );
       const credCommittee = data?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Credentialing Committee"
       );
 
+      if (credCommittee) {
+        ccdate.push(
+          credCommittee?.reviewedDate
+            ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+            : "-"
+        );
+      }
       if (credCommittee?.approverDetail) {
         ccMember.push(
           `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
@@ -2586,10 +2598,19 @@ const StaffApplicationList = ({
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
-      if (workflowCCDate) {
-        const reviewDate = workflowCCDate?.approvedDate
-          ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
-          : 'Data Issue';
+      // if (workflowCCDate) {
+      //   const reviewDate = workflowCCDate?.approvedDate
+      //     ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
+      //     : 'Data Issue';
+
+      //   submitted.push(reviewDate);
+      // } else {
+      //   submitted.push('-');
+      // }
+      if (credCommittee) {
+        const reviewDate = credCommittee?.reviewedDate
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+          : '-';
 
         submitted.push(reviewDate);
       } else {
@@ -3500,19 +3521,19 @@ const StaffApplicationList = ({
       data: "Modify CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
     },
     {
       data: "Designate CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `!data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
     },
     {
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
     },
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
@@ -3643,23 +3664,23 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    // {
-    //   data: "Modify CC Meeting Date",
-    //   requiredValue: "boolean",
-    //   onClick: onClickViewAndVerifyDateSetFunction,
-    //   conditionToShow: `data?.upcomingCredCommitteeMeetingDate`,
-    // },
+    {
+      data: "Modify MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.reviewedDate`,
+    },
     {
       data: "Designate MAC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetMACFunction,
-      // conditionToShow: `!data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.reviewedDate`,
     },
     {
       data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update MAC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromMACFunction,
-      // conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.reviewedDate`,
     },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
@@ -3696,7 +3717,25 @@ const StaffApplicationList = ({
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
-    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    {
+      data: "Modify BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.reviewedDate`,
+    },
+    {
+      data: "Designate BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.reviewedDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update BOD Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.reviewedDate`,
+    },
     { data:  "Go to Task List",
       requiredValue: "boolean", 
       onClick: onClickProcessingTaskFunction, 
@@ -4268,7 +4307,7 @@ const StaffApplicationList = ({
                         />
                       </Tooltip>
                     </div>
-                    {!(workModeType === "Staff Manager" && selectedTab === "level-5") && (
+                    {/* {!(workModeType === "Staff Manager" && selectedTab === "level-5") && ( */}
                       <div
                         className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{
@@ -4279,7 +4318,7 @@ const StaffApplicationList = ({
                           setShowCCDateDialog(true);
                         }}
                       >
-                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : "MAC Approval Date"} arrow>
+                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : selectedTab === "level-4" ? "MAC Approval Date" : "BOD Approval Date"} arrow>
                           <EventAvailableOutlinedIcon
                             sx={{
                               fontSize: 25,
@@ -4288,7 +4327,7 @@ const StaffApplicationList = ({
                           />
                         </Tooltip>
                       </div>
-                    )}
+                    {/* )} */}
                   </>
                 )}
                 {

@@ -182,9 +182,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
     let applicationIdsParam = checkedIds?.length
       ? checkedIds.map(id => `&applicationIds=${id}`).join("")
       : "";
-    let approvedDate = selectedTab === "level-4"
-      ? format(new Date(selectedDateForApproval), "yyyy-MM-dd")
-      : new Date().toISOString();
+    // let approvedDate = selectedTab === "level-4"
+    //   ? format(new Date(selectedDateForApproval), "yyyy-MM-dd")
+    //   : new Date().toISOString();
 
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
@@ -228,7 +228,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
       notes: {
         notes: notesComments
       },
-      approvedDate: approvedDate,
+      // approvedDate: approvedDate,
       title: title,
       files: files
     };

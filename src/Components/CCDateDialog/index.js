@@ -68,7 +68,8 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               {checkedIds?.length}{" "}
               {selectedTab === "level-3"
                 ? "Staff Application for Presenting to CC"
-                : "Staff Application Approval Date by MAC"}
+                : selectedTab === "level-4"
+                ? "Staff Application Approval Date by MAC" : "Staff Application Approval Date by BOD"}
             </div>
             <img
               src={CrossPink}
@@ -89,7 +90,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               minDate={add(new Date(), { days: 1 })}
               maxDate={add(new Date(), { years: 3 })}
               value={SelectedDate}
-              label={selectedTab === "level-3" ? "CC Meeting Date*" : "MAC Approval Date*"}
+              label={selectedTab === "level-3" ? "CC Meeting Date*" : selectedTab === "level-4" ? "MAC Approval Date*" : "BOD Approval Date*"}
               InputProps={{
                 style: {
                   fontSize: 14,

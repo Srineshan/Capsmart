@@ -312,12 +312,29 @@ const NewActiveApplication = ({
   }, [applicationId])
 
   useEffect(() => {
-    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && form?.upcomingCredCommitteeMeetingDate) {
-      setSelectedDateForReappoint(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
+    const credentialingCommitteeDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Credentialing Committee"
+    );
+    const AdvisoryCommitteeDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Advisory Committee"
+    );
+    const BoardDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Board"
+    );
+    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.reviewedDate) {
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-  }, [workModeType,selectedTab,form?.upcomingCredCommitteeMeetingDate]);
+    if ( workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.reviewedDate) {
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+    if ( workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.reviewedDate) {
+      setSelectedDateForBod(new Date(`${BoardDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+  }, [workModeType,selectedTab,form]);
   
 
   // const handleDateChange = (date, field) => {
@@ -1988,6 +2005,14 @@ const NewActiveApplication = ({
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
+  const credentialingCommitteeData = form?.completedWorkflows?.find(
+    (workflow) => workflow?.role === "Credentialing Committee"
+  );
+  const reviewedDateCC = credentialingCommitteeData ? new Date(credentialingCommitteeData?.reviewedDate) : null;
+  const AdvisoryCommitteeData = form?.completedWorkflows?.find(
+    (workflow) => workflow?.role === "Advisory Committee"
+  );
+  const reviewedDateMAC = AdvisoryCommitteeData ? new Date(AdvisoryCommitteeData?.reviewedDate) : null;
   const paymentmentDate = form?.payment?.paidDateTime;
   const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MM/dd/yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
@@ -11002,7 +11027,7 @@ const NewActiveApplication = ({
 
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
-                            minDate={form?.upcomingCredCommitteeMeetingDate ? new Date(form?.upcomingCredCommitteeMeetingDate) : sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (
@@ -11112,9 +11137,61 @@ const NewActiveApplication = ({
 
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
-                            minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForMac}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter MAC Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            SAVE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (" ")
+                  }
+                   {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForBOD")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyleSaveButton}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              BOD Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            // minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            minDate={reviewedDateMAC || sub(new Date(), { years: 3 })}
+                            // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForBod}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
@@ -11156,7 +11233,7 @@ const NewActiveApplication = ({
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}                        
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForMac}
@@ -11196,8 +11273,8 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
-                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}> 
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
                           <div
@@ -11214,8 +11291,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={reviewedDateMAC || sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForBod}
                             renderInput={(params) => (
