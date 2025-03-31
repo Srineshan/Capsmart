@@ -346,7 +346,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
               <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} />
             </div>
             {renderApplicationDetails()}
-            {selectedTab === "level-4" && (
+            {/* {selectedTab === "level-4" && (
               <div className={`${style.marginTop10}`}>
                 <CommonDateField
                   className={style.halfWidth}
@@ -378,7 +378,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   )}
                 />
               </div>
-            )}
+            )} */}
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
               {selectedTab === "level-3"
                 ? "Notes /Comments By The Cred Comm*"
