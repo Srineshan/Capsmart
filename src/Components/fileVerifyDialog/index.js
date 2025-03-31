@@ -28,11 +28,16 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { useParams } from 'react-router-dom';
 import CommonDivider from '../CommonFields/CommonDivider';
 import { format } from 'date-fns';
+import Cookies from 'universal-cookie';
+import jwt from 'jwt-decode';
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
+    let cookie = new Cookies();
+    let userDetails = cookie.get('user');
+    const users = jwt(userDetails);
     const componentRef = useRef(null);
     const PDFRef = createRef();
     const [applicationId, setApplicationId] = useState(sessionStorage.getItem("applicationId"));
@@ -70,6 +75,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     useEffect(() => {
         setChangedData(metaData);
     }, [metaData])
+
+    useEffect(() => {
+        setUserDetails();
+    }, [users?.id])
 
     useEffect(() => {
         console.log("filesssssssssssssssss", file);
@@ -116,6 +125,11 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     //         setSelectedFileIndex(0);
     //     }
     // };
+
+    const setUserDetails = async () => {
+        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+        sessionStorage.setItem('user', JSON.stringify(userData))
+    }
 
     const handlePrevious = () => {
         setReasonForReplacingDocument('')
