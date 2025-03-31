@@ -321,17 +321,17 @@ const NewActiveApplication = ({
     const BoardDate = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Board"
     );
-    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.reviewedDate) {
-      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate) {
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-    if ( workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.reviewedDate) {
-      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+    if ( workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate) {
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-    if ( workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.reviewedDate) {
-      setSelectedDateForBod(new Date(`${BoardDate?.reviewedDate}T00:00`), "MMM dd, yyyy");
+    if ( workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.meetingDate) {
+      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
   }, [workModeType,selectedTab,form]);
@@ -370,6 +370,8 @@ const NewActiveApplication = ({
     } else if (field === "MAC") {
       setSelectedDateForMac(formattedDate);
     } else if (field === "ApprovedDateBod") {
+      setSelectedDateForBod(formattedDate);
+    } else if (field === "BOD") {
       setSelectedDateForBod(formattedDate);
     }
 
@@ -1254,6 +1256,7 @@ const NewActiveApplication = ({
       meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
     } else if (selectedTab === 'level-5') {
       role = "Board";
+      meetingDate = format(new Date(selectedDateForBod), 'yyyy-MM-dd');
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
     }
@@ -11182,7 +11185,7 @@ const NewActiveApplication = ({
                           </div>
                           <CommonDateField
                             className={style.dateWidth}
-                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            onChange={(date) => handleDateChange(date, 'BOD')}
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
@@ -11197,7 +11200,7 @@ const NewActiveApplication = ({
                                 {...params}
                                 inputProps={{
                                   ...params.inputProps,
-                                  placeholder: 'Enter MAC Approval Date',
+                                  placeholder: 'Enter BOD Approval Date',
                                   readOnly: true
                                 }}
                                 variant="outlined"
