@@ -3521,19 +3521,19 @@ const StaffApplicationList = ({
       data: "Modify CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
     },
     {
       data: "Designate CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
     },
     {
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.reviewedDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
