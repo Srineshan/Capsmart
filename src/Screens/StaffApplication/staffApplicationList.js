@@ -2501,8 +2501,8 @@ const StaffApplicationList = ({
 
       if (credCommittee) {
         ccdate.push(
-          credCommittee?.reviewedDate
-            ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+          credCommittee?.meetingDate
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "MM/dd/yyyy")
             : "-"
         );
       }
