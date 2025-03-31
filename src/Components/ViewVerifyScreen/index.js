@@ -350,6 +350,8 @@ const NewActiveApplication = ({
       setSelectedDateForReappoint(formattedDate);
     } else if (field === "ApprovedDateMac") {
       setSelectedDateForMac(formattedDate);
+    } else if (field === "MAC") {
+      setSelectedDateForMac(formattedDate);
     } else if (field === "ApprovedDateBod") {
       setSelectedDateForBod(formattedDate);
     }
@@ -1222,10 +1224,24 @@ const NewActiveApplication = ({
 
 
   const getApplicationDateForCC = async () => {
-    let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    let role;
+    let meetingDate;
     let temp = [applicationId];
+    if (selectedTab === 'level-2') {
+      role = "Department Head";
+    } else if (selectedTab === 'level-3'){
+        role = "Credentialing Committee";
+        meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+      } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+    }
 
-    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`, temp)
+    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}&role=${role}`, temp)
       .then(response => {
         console.log('successfull')
         onClose();
@@ -11076,7 +11092,58 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForMAC")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyleSaveButton}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              MAC Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+
+                            // minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForMac}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter MAC Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            SAVE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -11176,7 +11243,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : getApplicationApproveAndMoveToNext}
+                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
                           >
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
                               APPROVED BY BOD

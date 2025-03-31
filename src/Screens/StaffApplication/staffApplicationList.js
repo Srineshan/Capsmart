@@ -300,12 +300,12 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ] : [
-    // <CommonCheckBox
-    //   size="medium"
-    //   checked={checkedIds.length === tableData.length}
-    //   onChange={handleSelectAllClick}
-    // />,
-    " ",
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+    />,
+    // " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -801,6 +801,16 @@ const StaffApplicationList = ({
 
   const onClickViewAndVerifyFunction = (data) => {
     getActiveApplicationView(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyDateSetMACFunction = (data) => {
+    getActiveApplicationView(true, "DateSetForMAC");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyApproveFromMACFunction = (data) => {
+    getActiveApplicationView(true, "ReviewFromMAC");
     sessionStorage.setItem("applicationId", data?.id);
   };
 
@@ -2963,26 +2973,26 @@ const StaffApplicationList = ({
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       // const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
-      // checkbox.push(
-      //   <CommonCheckBox
-      //     checked={checkedIds.includes(data.id)}
-      //     onChange={() => handleCheckboxClick(data.id)}
-      //     color="primary"
-      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
-      //   />
-      // );
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Board"));
-      if (workflow) {
-        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-        dot.push(color);
-        console.log("Matching workflow found:", {
-          role: workflow?.role,
-          status: workflow?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflow) {
+      //   const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //   dot.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflow?.role,
+      //     status: workflow?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -3125,8 +3135,8 @@ const StaffApplicationList = ({
     });
 
     return [
-      // { type: "checkbox", value: checkbox },
-      { type: "dot", value: dot },
+      { type: "checkbox", value: checkbox },
+      // { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -3632,7 +3642,25 @@ const StaffApplicationList = ({
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
-    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    // {
+    //   data: "Modify CC Meeting Date",
+    //   requiredValue: "boolean",
+    //   onClick: onClickViewAndVerifyDateSetFunction,
+    //   conditionToShow: `data?.upcomingCredCommitteeMeetingDate`,
+    // },
+    {
+      data: "Designate MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      // conditionToShow: `!data?.upcomingCredCommitteeMeetingDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update MAC Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromMACFunction,
+      // conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
+    },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
@@ -3669,12 +3697,12 @@ const StaffApplicationList = ({
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
     { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    // { data:  "Go to Task List",
-    //   requiredValue: "boolean", 
-    //   onClick: onClickProcessingTaskFunction, 
-    //   hideForRoles: "Department Head", 
-    //   hideForRoles2: "Credentialing Committee",
-    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
+    { data:  "Go to Task List",
+      requiredValue: "boolean", 
+      onClick: onClickProcessingTaskFunction, 
+      hideForRoles: "Department Head", 
+      hideForRoles2: "Credentialing Committee",
+      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
@@ -4219,7 +4247,7 @@ const StaffApplicationList = ({
                     </Tooltip>
                   </div>
                 )}
-                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4")) && (
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5")) && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
@@ -4231,7 +4259,7 @@ const StaffApplicationList = ({
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : "Update MAC Approval Status"} arrow>
+                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : selectedTab === "level-4" ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -4240,7 +4268,7 @@ const StaffApplicationList = ({
                         />
                       </Tooltip>
                     </div>
-                    {!(workModeType === "Staff Manager" && selectedTab === "level-4") && (
+                    {!(workModeType === "Staff Manager" && selectedTab === "level-5") && (
                       <div
                         className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{

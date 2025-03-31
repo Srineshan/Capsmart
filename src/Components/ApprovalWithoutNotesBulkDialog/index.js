@@ -338,8 +338,10 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
             <div className={style.templateHeader}>
               <div className={style.templateHeadertext}>
                 {selectedTab === "level-3"
-                  ? "Staff Reappointments Approved by the Cred. Comm."
-                  : "Staff Reappointments Approved by the MAC."}
+                  ? "Staff Reappointments Approved by the Cred. Comm." :
+                  selectedTab === "level-4"
+                  ? "Staff Reappointments Approved by the MAC."
+                  : "Staff Reappointments Approved by the BOD."}
               </div>
               <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} />
             </div>
@@ -380,7 +382,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
               {selectedTab === "level-3"
                 ? "Notes /Comments By The Cred Comm*"
-                : " Notes /Comments By The MAC*"}
+                :selectedTab === "level-4"
+                ? "Notes /Comments By The MAC*"
+                : " Notes /Comments By The BOD*"}
             </div>
             <div className={`${style.marginTop10}`}>
               <CKEditor

@@ -13,15 +13,28 @@ import TextField from "@mui/material/TextField";
 
 const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab }) => {
   const id = sessionStorage.getItem("applicationId");
-  const [calendarStartForCC, setCalendarStartForCC] = useState(false);
-  const [selectedDateForCC, setSelectedDateForCC] = useState(null);
+  const [calendarStart, setCalendarStart] = useState(false);
+  const [SelectedDate, setSelectedDate] = useState(null);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const getApplicationDateForCC = async () => {
-    let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    let role;
+    let meetingDate = format(new Date(SelectedDate), 'yyyy-MM-dd');
+    
+     if (selectedTab === 'level-2') {
+          role = "Department Head";
+     } else if (selectedTab === 'level-3'){
+        role = "Credentialing Committee";
+      } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+     } else if (selectedTab === 'level-5') {
+      role = "Board";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+    }
     let temp = [checkedIds].flat();
 
-    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`, temp)
+    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}&role=${role}`, temp)
       .then(response => {
         console.log('successfull')
         SuccessToaster("Meeting date updated successfully.");
@@ -36,8 +49,8 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
 
   const handleDateChange = (date) => {
     const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
-    setSelectedDateForCC(formattedDate);
-    setCalendarStartForCC(false);
+    setSelectedDate(formattedDate);
+    setCalendarStart(false);
     setIsButtonDisabled(false);
   };
   return (
@@ -70,12 +83,12 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
             <CommonDateField
               className={style.fullWidth}
               onChange={(date) => handleDateChange(date)}
-              open={calendarStartForCC}
-              onOpen={() => setCalendarStartForCC(true)}
-              onClose={() => setCalendarStartForCC(false)}
+              open={calendarStart}
+              onOpen={() => setCalendarStart(true)}
+              onClose={() => setCalendarStart(false)}
               minDate={add(new Date(), { days: 1 })}
               maxDate={add(new Date(), { years: 3 })}
-              value={selectedDateForCC}
+              value={SelectedDate}
               label={selectedTab === "level-3" ? "CC Meeting Date*" : "MAC Approval Date*"}
               InputProps={{
                 style: {
