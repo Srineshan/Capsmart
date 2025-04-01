@@ -169,6 +169,75 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
     setCalendarStartForApproval(false);
   };
 
+  const onClickApproveMoveFunction = () => {
+    if (selectedTab === "level-5") {
+      handleApplicationAccept(true);
+    } else {
+      handleApplicationApprove(true);
+    }
+  };
+
+   const handleApplicationAccept = async () => {
+      let role;
+      let title;
+      let notes = userRoleComments;
+      let isDelegate = true;
+      let applicationIdsParam = checkedIds?.length
+      ? checkedIds.map(id => `&applicationIds=${id}`).join("")
+      : "";
+  
+      // Determine role based on selectedTab and applicationType
+      if (selectedTab === 'level-2') {
+        if (workModeType === "Department Head") {
+          role = "Department Head";
+          isDelegate = false;
+          title = "Dept. Head / Chief Review"
+        } else {
+          role = "Department Head";
+          title = "Dept. Head / Chief Review"
+        }
+      } else if (selectedTab === 'level-3') {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review";
+          isDelegate = false;
+        } else if (workModeType === "Chief Of Staff") {
+          role = "Chief Of Staff";
+          isDelegate = false;
+          title = "Chief Of Staff Review";
+        }
+      } else if (selectedTab === 'level-4') {
+        role = "Advisory Committee";
+        title = "MAC Review";
+      } else if (selectedTab === 'level-5') {
+        role = "Board";
+        title = "BOD Approval";
+      } else if (selectedTab === 'level-1') {
+        role = "Staff Manager";
+        title = "Staff Manager Verification";
+        isDelegate = false;
+      }
+  
+      // Prepare the payload
+      let temp = {
+        role: isDelegate ? role : "",
+        notes: notes,
+        title: title
+      };
+  
+  
+      // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+      // const requestData = { ...temp, notes: "" };
+      await PUT(`application-management-service/application/${applicationIdsParam}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
+        .then(response => {
+          console.log('success')
+          onClose()
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
   const handleApplicationApprove = async () => {
     let role;
     let title;
@@ -504,7 +573,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   pointerEvents: isApproveEnabled ? 'auto' : 'none',
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
-                onClick={handleApplicationApprove}>
+                onClick={onClickApproveMoveFunction}>
                 <div className={style.reviewButton}>Save</div>
               </div>
             </div>

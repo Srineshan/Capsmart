@@ -95,6 +95,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     useOptionsHide(countHoverRef);
     useOptionsHide(textHoverRef);
     const isInitialLoad = useRef(true);
+    console.log("filteredIds",filteredIds)
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
@@ -108,7 +109,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         SUBMITTED_DATE: ['Submitted'],
         APPLICANT_ID: ['Applicant ID'],
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
-        MEETING_DATE: ['CC Meeting Date'],
+        MEETING_DATE: ['CC Meeting Date', 'MAC Meeting Date', ,'BOD Meeting Date'],
         REVIEWED_DATE: ['Reviewed On'],
         COMPLETION_PERCENTAGE: ['Completed %']
     }
@@ -129,6 +130,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Dept / Division & Specialty': 'DEPARTMENT',
         'Department': 'DEPARTMENT',
         'CC Meeting Date': 'MEETING_DATE',
+        'MAC Meeting Date' : 'MEETING_DATE',
+        'BOD Meeting Date' : 'MEETING_DATE',
         'Reviewed On': 'REVIEWED_DATE',
         'Status': 'REAPPOINTMENT_STATUS',
         'Completed %': 'COMPLETION_PERCENTAGE'
@@ -361,7 +364,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     onChange={() => handleCheckboxClick(data?.id, data)}
                                                     color="primary"
                                                     inputProps={{ 'aria-label': `Select ${data?.name}` }}
-                                                    disabled={filteredIds?.length > 0 ? !filteredIds.includes(data?.id) : false}
+                                                    disabled={filteredIds?.length > 0 ? filteredIds.includes(data?.id) : false}
                                                 />
                                             </div>
                                         )
