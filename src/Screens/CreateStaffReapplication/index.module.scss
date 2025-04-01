@@ -32,6 +32,18 @@
     margin-top: 10px;
 }
 
+.marginTop5 {
+    margin-top: 5px;
+}
+
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+.marginLeft5 {
+    margin-left: 5px !important;
+}
+
 .statisticsHeading {
     border-bottom: 2px solid #EBF2F7;
     padding: 0 0 20px 20px;
@@ -46,6 +58,10 @@
 .progressbarStyle {
     width: 80%;
     margin-left: 10%;
+}
+
+.flex{
+    display: flex;
 }
 
 .spaceBetween {
@@ -115,8 +131,8 @@
 }
 
 .filterTypeGreen {
-    background: #14B15A1A 0% 0% no-repeat padding-box;
-    border-radius: 19px;
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
@@ -127,8 +143,8 @@
 }
 
 .filterTypeGrey {
-    background: #7375751A 0% 0% no-repeat padding-box;
-    border-radius: 19px;
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
@@ -139,8 +155,8 @@
 }
 
 .filterTypeRed {
-    background: #FF65621A 0% 0% no-repeat padding-box;
-    border-radius: 19px;
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
@@ -151,8 +167,8 @@
 }
 
 .filterTypeLightGreen {
-    background: #8ED12B1A 0% 0% no-repeat padding-box;
-    border-radius: 19px;
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
@@ -163,12 +179,12 @@
 }
 
 .filterTypeYellow {
-    background: #FFC1001A 0% 0% no-repeat padding-box;
-    border-radius: 19px;
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
-    color: #FFC100;
+    color: #FF8457;
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
@@ -183,6 +199,10 @@
     display: flex;
     align-items: center;
     // height: 100%;
+}
+
+.alignItemCenter{
+    align-items: center;
 }
 
 .alignCenter {
@@ -338,3 +358,14 @@
     background-color: $buttonBorder;
     margin: 0 10px;
 }
+
+.searchChips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: italic normal bold 14px/18px proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+    width: fit-content;
+}
+
