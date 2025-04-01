@@ -161,6 +161,64 @@ const StaffApplicationList = ({
     }
   };
 
+  // const handleSelectAllClick = () => {
+  //   if (checkedIds?.length === tableData?.length) {
+  //     setCheckedIds([]);
+  //   } else {
+  //     let allIds = [];
+  //     const currentDate = new Date(); // Get current date
+      
+  //     if (selectedTab === "level-3") {
+  //       allIds = tableData
+  //         ?.filter((data) =>
+  //           data?.completedWorkflows?.some(
+  //             (workflow) =>
+  //               workflow?.role === "Credentialing Committee" &&
+  //               workflow?.status === "COMPLETED"
+  //           )
+  //         )
+  //         .map((data) => data.id);
+  //     } else if (selectedTab === "level-4") {
+  //       allIds = tableData
+  //         ?.filter((data) =>
+  //           data?.completedWorkflows?.some(
+  //             (workflow) => {
+  //               // If meetingDate exists, check if it's in the future; if null, also include
+  //               if (workflow?.role === "Advisory Committee") {
+  //                 if (!workflow.meetingDate) {
+  //                   return true; // Include items with null meetingDate
+  //                 }
+  //                 const meetingDate = new Date(workflow.meetingDate);
+  //                 return meetingDate < currentDate; 
+  //               }
+  //               return false;
+  //             }
+  //           )
+  //         )
+  //         .map((data) => data.id);
+  //     } else if (selectedTab === "level-5") {
+  //       allIds = tableData
+  //         ?.filter((data) =>
+  //           data?.completedWorkflows?.some(
+  //             (workflow) => {
+  //               // If meetingDate exists, check if it's in the future; if null, also include
+  //               if (workflow?.role === "Board") {
+  //                 if (!workflow.meetingDate) {
+  //                   return true; // Include items with null meetingDate
+  //                 }
+  //                 const meetingDate = new Date(workflow.meetingDate);
+  //                 return meetingDate < currentDate;
+  //               }
+  //               return false;
+  //             }
+  //           )
+  //         )
+  //         .map((data) => data.id);
+  //     }   
+  //     setCheckedIds(allIds);
+  //   }
+  // };
+
   const applicantHeaderValues = applicationType === "NEW" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
@@ -283,9 +341,10 @@ const StaffApplicationList = ({
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Dept / Division & Specialty",
     // "Ref",
-    "Docs",
-    "CRs",
+    // "Docs",
+    // "CRs",
     "Notes",
+    "MAC Meeting Date",
     // "Task List",
     // "CC Status",
     "",
@@ -300,20 +359,21 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ] : [
-    // <CommonCheckBox
-    //   size="medium"
-    //   checked={checkedIds.length === tableData.length}
-    //   onChange={handleSelectAllClick}
-    // />,
-    " ",
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+    />,
+    // " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
     "Dept / Division & Specialty",
-    "Docs",
+    // "Docs",
     // "Ref",
-    "CRs",
+    // "CRs",
     "Notes",
+    "BOD Meeting Date",
     // "Task List",
     // "CC Status",
     // "MAC Status",
@@ -422,7 +482,7 @@ const StaffApplicationList = ({
     false,
     false,
     false,
-    false,
+    true,
     true,
     false
   ]
@@ -466,8 +526,7 @@ const StaffApplicationList = ({
     true,
     true,
     false,
-    false,
-    false,
+    true,
     false,
     false
   ]
@@ -486,8 +545,7 @@ const StaffApplicationList = ({
     true,
     true,
     false,
-    false,
-    false,
+    true,
     false
   ]
   const clarificationColSortValues = [
@@ -804,6 +862,26 @@ const StaffApplicationList = ({
     sessionStorage.setItem("applicationId", data?.id);
   };
 
+  const onClickViewAndVerifyDateSetMACFunction = (data) => {
+    getActiveApplicationView(true, "DateSetForMAC");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyApproveFromMACFunction = (data) => {
+    getActiveApplicationView(true, "ReviewFromMAC");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyDateSetBODFunction = (data) => {
+    getActiveApplicationView(true, "DateSetForBOD");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickViewAndVerifyApproveFromBODFunction = (data) => {
+    getActiveApplicationView(true, "ReviewFromBOD");
+    sessionStorage.setItem("applicationId", data?.id);
+  };
+
   const onClickViewAndVerifyDateSetFunction = (data) => {
     getActiveApplicationView(true, "DateSetForCC");
     sessionStorage.setItem("applicationId", data?.id);
@@ -985,7 +1063,7 @@ const StaffApplicationList = ({
         data?.completedWorkflows?.some(
           (workflow) =>
             workflow?.role === "Credentialing Committee" &&
-            workflow?.status === "COMPLETED"
+            workflow?.status !== "COMPLETED"
         )
       )
       .map((data) => data.id);
@@ -994,8 +1072,62 @@ const StaffApplicationList = ({
     console.log("Filtered IDs:", allIds);
   }, [tableData]);
 
+  // useEffect(() => {
+  //   let allIds = [];
+  //   const currentDate = new Date(); // Get current date
+    
+  //   if (selectedTab === "level-3") {
+  //     allIds = tableData
+  //       ?.filter((data) =>
+  //         data?.completedWorkflows?.some(
+  //           (workflow) =>
+  //             workflow?.role === "Credentialing Committee" &&
+  //             workflow?.status !== "COMPLETED"
+  //         )
+  //       )
+  //       .map((data) => data.id);
+  //   } else if (selectedTab === "level-4") {
+  //     allIds = tableData
+  //       ?.filter((data) =>
+  //         data?.completedWorkflows?.some(
+  //           (workflow) => {
+  //             if (workflow?.role === "Advisory Committee") {
+  //               if (!workflow.meetingDate) {
+  //                 return true; // Include items with null meetingDate
+  //               }
+  //               const meetingDate = new Date(workflow.meetingDate);
+  //               return meetingDate > currentDate; // Include past meeting dates
+  //             }
+  //             return false;
+  //           }
+  //         )
+  //       )
+  //       .map((data) => data.id);
+  //   } else if (selectedTab === "level-5") {
+  //     allIds = tableData
+  //       ?.filter((data) =>
+  //         data?.completedWorkflows?.some(
+  //           (workflow) => {
+  //             if (workflow?.role === "Board") {
+  //               if (!workflow.meetingDate) {
+  //                 return true; // Include items with null meetingDate
+  //               }
+  //               const meetingDate = new Date(workflow.meetingDate);
+  //               return meetingDate > currentDate; // Include past meeting dates
+  //             }
+  //             return false;
+  //           }
+  //         )
+  //       )
+  //       .map((data) => data.id);
+  //   }
+    
+  //   setFilteredIds(allIds);
+  //   console.log("Filtered IDs:", allIds);
+  // }, [tableData, selectedTab]);
+
   const handleCheckboxClick = (id) => {
-    if (!filteredIds?.includes(id)) return;
+    if (filteredIds?.includes(id)) return;
 
     setCheckedIds((prevCheckedIds) => {
       return prevCheckedIds?.includes(id)
@@ -1381,6 +1513,8 @@ const StaffApplicationList = ({
   let macapproval = [];
   let taskListDotColor = [];
   let ccdate = [];
+  let macdate = [];
+  let boddate = [];
   let submitted = [];
   let deptHead = [];
   let checkbox = [];
@@ -1678,8 +1812,9 @@ const StaffApplicationList = ({
       //   ? "green"
       //   : "grey");
       // disclosures.push(data?.disclosures || '7/9');
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society"]);
+      // crs.push(data?.clarificationRequiredFor || "0");
+      // crsHoverText.push(["Ontario Medical Society"]);
+      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
@@ -1896,8 +2031,9 @@ const StaffApplicationList = ({
       //   ? "green"
       //   : "grey");
       // disclosures.push(data?.disclosures || '7/9');
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society"]);
+      // crs.push(data?.clarificationRequiredFor || "0");
+      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      // crsHoverText.push(["Ontario Medical Society"]);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -2243,8 +2379,9 @@ const StaffApplicationList = ({
       // commiteeStatus.push(data?.commiteeStatus || "yellow");
       // boardStatus.push(data?.boardStatus || "green");
       // ceoStatus.push(data?.ceoStatus || "grey");
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society"]);
+      // crs.push(data?.clarificationRequiredFor || "0");
+      // crsHoverText.push(["Ontario Medical Society"]);
+      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -2475,15 +2612,17 @@ const StaffApplicationList = ({
       department.push(
         `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
       );
-      ccdate.push(
-        data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(`${data?.upcomingCredCommitteeMeetingDate}T00:00`), "MM/dd/yyyy")
-          : "-"
-      );
       const credCommittee = data?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Credentialing Committee"
       );
 
+      if (credCommittee) {
+        ccdate.push(
+          credCommittee?.meetingDate
+            ? format(new Date(`${credCommittee?.meetingDate}T00:00`), "MM/dd/yyyy")
+            : "-"
+        );
+      }
       if (credCommittee?.approverDetail) {
         ccMember.push(
           `${credCommittee.approverDetail.name?.firstName || ""} ${credCommittee.approverDetail.name?.lastName || ""}`
@@ -2576,10 +2715,19 @@ const StaffApplicationList = ({
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
-      if (workflowCCDate) {
-        const reviewDate = workflowCCDate?.approvedDate
-          ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
-          : 'Data Issue';
+      // if (workflowCCDate) {
+      //   const reviewDate = workflowCCDate?.approvedDate
+      //     ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
+      //     : 'Data Issue';
+
+      //   submitted.push(reviewDate);
+      // } else {
+      //   submitted.push('-');
+      // }
+      if (credCommittee) {
+        const reviewDate = credCommittee?.reviewedDate
+          ? format(new Date(`${credCommittee?.reviewedDate}T00:00`), "MM/dd/yyyy")
+          : '-';
 
         submitted.push(reviewDate);
       } else {
@@ -2705,6 +2853,7 @@ const StaffApplicationList = ({
     taskListDotColor = [];
     cc = [];
     action = [];
+    macdate = [];
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
@@ -2808,6 +2957,13 @@ const StaffApplicationList = ({
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
+      if (workflow) {
+        macdate.push(
+          workflow?.meetingDate
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            : "-"
+        );
+      }
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -2856,19 +3012,19 @@ const StaffApplicationList = ({
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
-      {
-        type: "iconWithCount",
-        value: docs,
-        hoverText: docsHoverText,
-        isShowHoverText: true,
-        icon: docsIcon,
-      },
-      {
-        type: "text",
-        value: crs,
-        hoverText: crsHoverText,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: docs,
+      //   hoverText: docsHoverText,
+      //   isShowHoverText: true,
+      //   icon: docsIcon,
+      // },
+      // {
+      //   type: "text",
+      //   value: crs,
+      //   hoverText: crsHoverText,
+      //   isShowHoverText: true,
+      // },
       {
         type: "iconWithCount",
         value: notes,
@@ -2883,6 +3039,10 @@ const StaffApplicationList = ({
       //   type: "dot",
       //   value: cc
       // },
+      {
+        type: "text",
+        value: macdate,
+      },
       { type: "action", value: action },
     ];
   }
@@ -2958,31 +3118,32 @@ const StaffApplicationList = ({
     taskListDotColor = [];
     cc = [];
     mac = [];
+    boddate = [];
     action = [];
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
       // const workflowMacRole = data?.completedWorkflows?.find(workflow => workflow.role === "Advisory Committee");
-      // checkbox.push(
-      //   <CommonCheckBox
-      //     checked={checkedIds.includes(data.id)}
-      //     onChange={() => handleCheckboxClick(data.id)}
-      //     color="primary"
-      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
-      //   />
-      // );
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Board"));
-      if (workflow) {
-        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-        dot.push(color);
-        console.log("Matching workflow found:", {
-          role: workflow?.role,
-          status: workflow?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflow) {
+      //   const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //   dot.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflow?.role,
+      //     status: workflow?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -3072,6 +3233,13 @@ const StaffApplicationList = ({
         }).reverse()
         : ["-"];
       notesHoverText.push(notesHoverTextArray);
+      if (workflow) {
+        boddate.push(
+          workflow?.meetingDate
+            ? format(new Date(`${workflow?.meetingDate}T00:00`), "MM/dd/yyyy")
+            : "-"
+        );
+      }
       // notesHoverText.push([
       //   "June 13 00:00, Nina Grealy",
       //   "Lorem ipsum dolor sit amet, consetetur sadipscing.",
@@ -3125,25 +3293,25 @@ const StaffApplicationList = ({
     });
 
     return [
-      // { type: "checkbox", value: checkbox },
-      { type: "dot", value: dot },
+      { type: "checkbox", value: checkbox },
+      // { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
       { type: "text", value: department },
-      {
-        type: "iconWithCount",
-        value: docs,
-        hoverText: docsHoverText,
-        isShowHoverText: true,
-        icon: docsIcon,
-      },
-      {
-        type: "text",
-        value: crs,
-        hoverText: crsHoverText,
-        isShowHoverText: true,
-      },
+      // {
+      //   type: "iconWithCount",
+      //   value: docs,
+      //   hoverText: docsHoverText,
+      //   isShowHoverText: true,
+      //   icon: docsIcon,
+      // },
+      // {
+      //   type: "text",
+      //   value: crs,
+      //   hoverText: crsHoverText,
+      //   isShowHoverText: true,
+      // },
       {
         type: "iconWithCount",
         value: notes,
@@ -3162,6 +3330,10 @@ const StaffApplicationList = ({
       //   type: "dot",
       //   value: mac
       // },
+      {
+        type: "text",
+        value: boddate,
+      },
       { type: "action", value: action },
     ];
   }
@@ -3490,19 +3662,19 @@ const StaffApplicationList = ({
       data: "Modify CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     {
       data: "Designate CC Meeting Date",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyDateSetFunction,
-      conditionToShow: `!data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     {
       data: "Update CC Approval Status",
       requiredValue: "boolean",
       onClick: onClickViewAndVerifyApproveFromCCFunction,
-      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.upcomingCredCommitteeMeetingDate`,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.approvalType && data?.completedWorkflows?.find((wf) => wf?.role === "Credentialing Committee")?.meetingDate`,
     },
     // { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
   ];
@@ -3632,7 +3804,25 @@ const StaffApplicationList = ({
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
-    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "MAC Review", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    {
+      data: "Modify MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
+    {
+      data: "Designate MAC Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetMACFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update MAC Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromMACFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Advisory Committee")?.meetingDate`,
+    },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // { data:  "Go to Task List", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
@@ -3668,13 +3858,31 @@ const StaffApplicationList = ({
     { data: "Print Summary For BOD", requiredValue: "boolean", onClick: "", hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: onClickProcessingTaskFunction, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
   ] : [
-    { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
-    // { data:  "Go to Task List",
-    //   requiredValue: "boolean", 
-    //   onClick: onClickProcessingTaskFunction, 
-    //   hideForRoles: "Department Head", 
-    //   hideForRoles2: "Credentialing Committee",
-    //   conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
+    // { data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") ? "View" : "BOD Approval", requiredValue: "boolean", onClick: onClickViewAndVerifyFunction, },
+    {
+      data: "Modify BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+    },
+    {
+      data: "Designate BOD Meeting Date",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyDateSetBODFunction,
+      conditionToShow: `!data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+    },
+    {
+      data: (workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Chief Of Staff") ? "View" : "Update BOD Approval Status",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromBODFunction,
+      conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
+    },
+    { data:  "Go to Task List",
+      requiredValue: "boolean", 
+      onClick: onClickProcessingTaskFunction, 
+      hideForRoles: "Department Head", 
+      hideForRoles2: "Credentialing Committee",
+      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
@@ -4219,7 +4427,7 @@ const StaffApplicationList = ({
                     </Tooltip>
                   </div>
                 )}
-                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4")) && (
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5")) && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
@@ -4231,7 +4439,7 @@ const StaffApplicationList = ({
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : "Update MAC Approval Status"} arrow>
+                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : selectedTab === "level-4" ? "Update MAC Approval Status" : "Update BOD Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -4240,7 +4448,7 @@ const StaffApplicationList = ({
                         />
                       </Tooltip>
                     </div>
-                    {!(workModeType === "Staff Manager" && selectedTab === "level-4") && (
+                    {/* {!(workModeType === "Staff Manager" && selectedTab === "level-5") && ( */}
                       <div
                         className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
                         style={{
@@ -4251,7 +4459,7 @@ const StaffApplicationList = ({
                           setShowCCDateDialog(true);
                         }}
                       >
-                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : "MAC Approval Date"} arrow>
+                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : selectedTab === "level-4" ? "MAC Approval Date" : "BOD Approval Date"} arrow>
                           <EventAvailableOutlinedIcon
                             sx={{
                               fontSize: 25,
@@ -4260,7 +4468,7 @@ const StaffApplicationList = ({
                           />
                         </Tooltip>
                       </div>
-                    )}
+                    {/* )} */}
                   </>
                 )}
                 {
@@ -4392,7 +4600,7 @@ const StaffApplicationList = ({
                       actions={actions}
                       scrollStyle={style.contractScrollStyle}
                       tableSortValues={tableSortValues}
-                      heading={"There are no Record for you to manage"}
+                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Record for you to manage"}
                       onClickFunction={() => { }}
                       getHandleSort={getHandleSort}
                       sortValue={{ sortBy: sortValue, sortByField: sortField }}

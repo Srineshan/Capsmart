@@ -660,29 +660,32 @@ const transformedOptions = departmentList?.flatMap((department) => {
         </div> */}
         {/* Filtering section remains the same */}
         <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
-          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
-            <div className={`${style.filterType}`}>
+          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+            <div className={`${style.filterTypeGreen}`}>
               Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
             </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeGrey}`}>
               Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
             </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeGrey} ${style.marginLeft30}`}>
               Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
             </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeRed}`}>
               Past Due {tableData?.filter(data => data?.expiryDate && new Date(data.expiryDate) < new Date())?.length}
             </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeLightGreen}`}>
               Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length}
             </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeYellow}`}>
               In Progress {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
+            </div>
+            <div className={`${style.filterTypeRed} ${style.marginBottom5}`}>
+              Not Yet Started {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 0)?.length}
             </div>
           </div>
           {isLoading ? (
