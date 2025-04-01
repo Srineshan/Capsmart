@@ -36,6 +36,7 @@ const TaskStatusDialog = ({ getIsOpen,selectedTab }) => {
     // getApplication();
   }, []);
 
+  console.log("selectedTabselectedTab",selectedTab)
   useEffect(() => {
     if(pdfBase64 !== null) {
     const fixedBase64 = base64String?.replace(/-/g, '+')?.replace(/_/g, '/')
@@ -113,9 +114,8 @@ const TaskStatusDialog = ({ getIsOpen,selectedTab }) => {
       }
 
       let temp = {
-        role: isDelegate ? role : "",
+        role: "Board",
         approvedDate: new Date().toISOString(),
-        title: title
       };
   
       await PUT(`application-management-service/application/${id}/workflow/move?workflowAction=APPROVED&isDelegate=${isDelegate}`, temp)

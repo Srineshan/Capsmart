@@ -13,6 +13,7 @@ import ResendDisabled from './../../images/Resend-disabled.png';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
 import { Tooltip } from '@material-ui/core';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 
@@ -43,6 +44,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   let availableApplicationStatus = {
     "CREATED": "Not Submitted",
     "SUBMITTED": "Submitted",
@@ -652,6 +654,36 @@ const transformedOptions = departmentList?.flatMap((department) => {
             </div> */}
           </div>
         </div>
+        <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
+        <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+            <div className={`${style.filterTypeGreen} ${style.marginBottom5}`}>
+              Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
+            </div>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeGrey} ${style.marginBottom5}`}>
+              Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
+            </div>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5}`}>
+              Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
+            </div>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeRed} ${style.marginBottom5}`}>
+              Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) <= new Date())?.length}
+            </div>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeLightGreen} ${style.marginBottom5}`}>
+              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length}
+            </div>
+            {/* <div className={style.verticalBorder}></div> */}
+            <div className={`${style.filterTypeYellow} ${style.marginBottom5}`}>
+              Partially Completed {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
+            </div>
+            <div className={`${style.filterTypeRed} ${style.marginBottom5}`}>
+              Not Yet Started {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 0)?.length}
+            </div>
+          </div>
+        </div>
         {/* <div className={style.spaceBetween}>
           <div></div>
           <div className={`${style.searchFieldWidth} ${style.marginTop10}`}>
@@ -659,32 +691,22 @@ const transformedOptions = departmentList?.flatMap((department) => {
           </div>
         </div> */}
         {/* Filtering section remains the same */}
-        <div className={`${style.bigCardStyle} ${style.marginTop10}`}>
-          <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20}`}>
-            <div className={`${style.filterType}`}>
-              Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
-            </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
-              Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
-            </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
-              Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
-            </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
-              Past Due {tableData?.filter(data => data?.expiryDate && new Date(data.expiryDate) < new Date())?.length}
-            </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
-              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length}
-            </div>
-            <div className={style.verticalBorder}></div>
-            <div className={`${style.filterType}`}>
-              In Progress {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
-            </div>
-          </div>
+          <div className={`${style.bigCardStyle1} ${style.marginTop10}`}>
+            {/* {selectedDepartment && (
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeftRight20} ${style.alignItemCenter}`}>
+                <div className={`${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                <Tooltip title="Remove" arrow>
+                  <CancelOutlinedIcon
+                    sx={{
+                      fontSize: 15,
+                      color: "#06617A",
+                    }}
+                    className={`${style.cursorPointer} ${style.marginLeft5}`}
+                    onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                  />
+                </Tooltip>
+                </div>
+            )} */}
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <CircularProgress sx={{ color: "#06617A" }} />

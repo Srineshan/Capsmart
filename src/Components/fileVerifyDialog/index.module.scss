@@ -356,6 +356,13 @@
     margin-top: 5px;
 }
 
+.dateStyle {
+    text-align: left;
+    font: normal normal normal 13px/17px proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+}
+
 .extractedFields {
     border-radius: 5px;
 }

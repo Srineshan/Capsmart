@@ -32,6 +32,18 @@
     margin-top: 10px;
 }
 
+.marginTop5 {
+    margin-top: 5px;
+}
+
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
+.marginLeft5 {
+    margin-left: 5px !important;
+}
+
 .statisticsHeading {
     border-bottom: 2px solid #EBF2F7;
     padding: 0 0 20px 20px;
@@ -46,6 +58,10 @@
 .progressbarStyle {
     width: 80%;
     margin-left: 10%;
+}
+
+.flex{
+    display: flex;
 }
 
 .spaceBetween {
@@ -114,6 +130,66 @@
     text-transform: capitalize;
 }
 
+.filterTypeGreen {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #14B15A;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+}
+
+.filterTypeGrey {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #737575;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+}
+
+.filterTypeRed {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FF6562;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+}
+
+.filterTypeLightGreen {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #8ED12B;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+}
+
+.filterTypeYellow {
+    border: 1px solid #E8E9E9;
+    border-radius: 8px;
+    text-align: left;
+    font: normal normal bold 14px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: #FF8457;
+    text-transform: capitalize;
+    opacity: 1;
+    padding: 0px 15px;
+}
+
 .displayInRow {
     display: flex;
     flex-direction: row;
@@ -123,6 +199,10 @@
     display: flex;
     align-items: center;
     // height: 100%;
+}
+
+.alignItemCenter{
+    align-items: center;
 }
 
 .alignCenter {
@@ -203,6 +283,8 @@
 .displayInRow {
     display: flex;
     flex-direction: row;
+    gap: 10px;
+    // justify-content: space-between;
 }
 
 .saveInProgress {
@@ -240,6 +322,13 @@
     margin-left: 20px;
 }
 
+.marginLeft30 {
+    margin-left: 30px;
+}
+.marginBottom5{
+    margin-bottom: 5px !important;
+}
+
 .screenPadding {
     padding: 20px 100px;
     height: calc(100vh - 80px);
@@ -269,3 +358,14 @@
     background-color: $buttonBorder;
     margin: 0 10px;
 }
+
+.searchChips {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    font: italic normal bold 14px/18px proxima-nova;
+    border: 1px solid $primarycolor;
+    border-radius: 23px;
+    padding: 5px 10px;
+    color: $primarycolor;
+    width: fit-content;
+}
+
