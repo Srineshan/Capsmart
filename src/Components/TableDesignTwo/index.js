@@ -32,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds,filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
+const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tableData, hidePagination, gridStyle, actions, getSelectedPage, totalCount, page, scrollStyle, tableSortValues, heading, subHeading, subHeading2, onClickText, onClickFunction, buttonComponent, getHandleSort, sortValue, checkedIds, filteredIds, isUploadYourDocTable, hasVerificationAttempted, searchTermForTable, searchCount, setSearchTermForTable, onLimitChange, searchField }) => {
     const [showOptions, setShowOptions] = useState(false);
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
     const [selectedMenuColIndex, setSelectedMenuColIndex] = useState(-1);
@@ -110,7 +110,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         SUBMITTED_DATE: ['Submitted'],
         APPLICANT_ID: ['Applicant ID'],
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
-        CC_MEETING_DATE: ['CC Meeting Date']
+        CC_MEETING_DATE: ['CC Meeting Date'],
+        COMPLETION_PERCENTAGE: ['Completed %']
     }
 
     const availableSortValueEnum = {
@@ -129,7 +130,8 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Dept / Division & Specialty': 'DEPARTMENT',
         'Department': 'DEPARTMENT',
         'CC Meeting Date': 'CC_MEETING_DATE',
-        'Status': 'REAPPOINTMENT_STATUS'
+        'Status': 'REAPPOINTMENT_STATUS',
+        'Completed %': 'COMPLETION_PERCENTAGE'
     }
 
 
@@ -317,7 +319,7 @@ const handleCloseIconWithCount = () => {
                     {(searchTermForTable?.trim() !== "" && searchTermForTable !== undefined) && (
                         <div className={`${style.chipsContainer} ${style.marginTop10}`}>
                             <div className={`${style.searchChips} ${style.displayInRow}`}>
-                                <div>{`Showing All Search Results For '${searchTermForTable}' (${searchCount})`}</div>
+                                <div>{`Showing All Search Results For `} <span className={style.bold}>{`'${searchTermForTable}'`}</span>{` (${searchCount})`}</div>
                                 <div className={`${style.verticalAlignCenter} ${style.marginLeft10} ${style.cursorPointer}`}
                                     onClick={() => setSearchTermForTable("")}
                                 ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
@@ -386,7 +388,18 @@ const handleCloseIconWithCount = () => {
                                             </div>
                                         )
                                             : tableData?.type === "text" ? (
-                                                <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>{tableData?.value?.[index]}</p>
+                                                <Tooltip title={tableData?.tooltipValueText?.[index]} arrow>
+                                                    <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`} onClick={tableData?.onClickFunction ? () => { tableData?.onClickFunction(data, index) } : () => { }}>
+                                                        {searchTermForTable?.trim() ?
+                                                            String(tableData?.value?.[index] || '')?.split(new RegExp(`(${searchTermForTable})`, 'gi'))?.map((part, i) =>
+                                                                part?.toLowerCase() === searchTermForTable?.toLowerCase() ?
+                                                                    <span key={i} style={{ backgroundColor: 'yellow' }}>{part}</span> :
+                                                                    part
+                                                            ) :
+                                                            tableData?.value?.[index]
+                                                        }
+                                                    </p>
+                                                </Tooltip>
                                             ) : tableData?.type === "textWithHover" ? (
                                                 <div>
                                                     <p className={`${style.tableDataFontStyle} ${style.cursorPointer} ${style.verticalAlignCenter}`}

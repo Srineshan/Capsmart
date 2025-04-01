@@ -4,7 +4,7 @@ import Cookie from 'universal-cookie';
 import { TenantID, GET } from './../../Screens/dataSaver';
 import jwt from 'jwt-decode';
 import { corsUrl, siteTimeZone, timeZoneAbbreviation } from '../../utils/formatting';
-
+import CommonDivider from '../../Components/CommonFields/CommonDivider';
 import style from './index.module.scss';
 
 const ReportHeader = () => {
@@ -40,19 +40,19 @@ const ReportHeader = () => {
                     <div className={style.confidentialBoxStyle}>
                         <div className={`${style.confidentialTextStyle} ${style.textAlignCenter}`}>CONFIDENTIAL</div>
                         <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Do Not Distribute</div>
-                        <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div>
+                        {/* <div className={`${style.doNotDisturbTextStyle} ${style.textAlignCenter}`}>Without Permission</div> */}
                     </div>
                 </div>
                 <div>
                     <div className={`${style.centerAlignUsingBlock} ${style.textAlignCenter}`}>
                         <div className={`${style.centerAlignUsingBlock}`}>
                             {logo.logo && (
-                                <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogo} ${style.textAlignCenter}`} />
+                                <img src={corsedLogo || logo?.logo} alt="" className={`${style.headerLogoReport} ${style.textAlignCenter}`} />
                             )}
                         </div>
-                        <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
+                        {/* <div className={`${style.entityNameBolderStyle} ${style.textAlignCenter}`}>{logo.title}</div>
                         <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine1}</div>
-                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine2}</div>
+                        <div className={`${style.entityNameHeaderStyle} ${style.textAlignCenter}`}>{addressLine2}</div> */}
                     </div>
                 </div>
                 <div>
@@ -62,7 +62,8 @@ const ReportHeader = () => {
                     </div>
                 </div>
             </div>
-            <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div>
+            <CommonDivider />
+            {/* <div className={`${style.headerBorderStyle} ${style.marginTop40}`}></div> */}
         </div>
     )
 }

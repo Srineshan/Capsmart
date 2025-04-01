@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect, useRef, useCallback, createRef } from 'react';
+import { useLocation } from "react-router-dom";
 import SampleReportLeftCard from './sampleReportLeftCard';
 import Navbar from '../../Components/Navbar';
 import { GET } from './../dataSaver';
@@ -25,16 +26,22 @@ import ApexLineChart from './chart-data/lineChart';
 import ApexBarChart from './chart-data/barChart';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
-import Loader from './../../images/loading.gif';
+import Loader from './../../images/loaderCommon.gif';
 import style from './index.module.scss';
 import ApexBoxChart from './chart-data/boxChart';
 import ReportsTable from '../../Components/ReportsTable';
+import ReportsApplicantTable from '../../Components/ReportApplicantData';
+import ReportsApplicantTableNotes from '../../Components/ReportApplicantNotes';
 import ReportNoDataBox from '../../Components/ReusableSmallComponents/reportNoDataBox';
 import { formatInTimeZone } from 'date-fns-tz';
 import { siteTimeZone } from '../../utils/formatting';
+import {formatFirstNameLastName } from "../../utils/formatting";
 import TrackTable from '../../Components/TrackTable';
+import TableTwo from "../../Components/TableDesignTwo"
 
 const ReportTypeOverview = () => {
+    const location = useLocation();
+    const tableData = location.state?.tableData || [];
     const { reportType } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
     const myReportId = sessionStorage.getItem('myReportId')
@@ -87,6 +94,7 @@ const ReportTypeOverview = () => {
     const [activityTrackServices, setActivityTrackServices] = useState([]);
     const [paymentTrackValues, setPaymentTrackValues] = useState();
     const [selectedPaymentTab, setSelectedPaymentTab] = useState('Payment Processed');
+    const [tableDataStatus, setTableDataStatus] = useState([]);
     const [apexStackedBarChartDisplay, setApexStackedBarChartDisplay] = useState(
         <ApexStackedBarChart stackedSeries={stackedSeries} stackedCategories={stackedCategories} />
     )
@@ -127,6 +135,9 @@ const ReportTypeOverview = () => {
         FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITH_OFFSET: 'Fixed Amount For Timesheet Period With Offset',
         FIXED_AMOUNT_FOR_TIMESHEET_PERIOD_WITHOUT_OFFSET: 'Fixed Amount For Timesheet Period Without Offset',
     }
+
+    // console.log("dashboard",tableData.map(item => item.id))
+    console.log("dashboard",tableData)
 
     useEffect(() => {
         setActivitiesOrServices();
@@ -285,8 +296,10 @@ const ReportTypeOverview = () => {
     }
 
     const reportTitleList = {
-        upcomingContractRenewals: 'Upcoming Contract Renewals',
-        oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        // upcomingContractRenewals: 'Upcoming Contract Renewals',
+        upcomingContractRenewals: 'List Of Notes On Current Staff Reappointment Applications',
+        // oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
+        oneTimeContract: "Staff Reappointments to Process",
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -295,7 +308,8 @@ const ReportTypeOverview = () => {
         compensationCostAnalysis: 'Compensation Cost Analysis',
         timesheetProcessingSummary: 'Timesheet Processing Summary',
         listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
-        submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        // submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
+        submittedTimesheetsPaymentStatus: 'Staff Reappointment Status Tracker For {All Staff}',
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',
@@ -650,42 +664,55 @@ const ReportTypeOverview = () => {
         setIsLoading(false);
     }
 
-    const getSubmittedTimesheetsPaymentStatus = async (filter) => {
-        if (filter === 'withoutParameter') {
-            let chartData;
-            if (!isMyReport) {
-                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-                    setIsLoading(true)
-                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
-                    chartData = chartDataValues;
-                }
-            } else {
-                setIsLoading(true)
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
-                chartData = chartDataValues;
-            }
-            if (chartData) {
-                setSubmittedTimesheetsPaymentStatusData(chartData);
-            }
-        } else {
-            let chartData;
-            if (!isMyReport) {
-                if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
-                    setIsLoading(true)
-                    const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
-                    chartData = chartDataValues;
-                }
-            } else {
-                setIsLoading(true)
-                const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
-                chartData = chartDataValues;
-            }
-            if (chartData) {
-                setSubmittedTimesheetsPaymentStatusData(chartData);
-            }
+    // const getSubmittedTimesheetsPaymentStatus = async (filter) => {
+    //     if (filter === 'withoutParameter') {
+    //         let chartData;
+    //         if (!isMyReport) {
+    //             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+    //                 setIsLoading(true)
+    //                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&users=${dataToUseInReport?.selectedContractedServiceProvider}`);
+    //                 chartData = chartDataValues;
+    //             }
+    //         } else {
+    //             setIsLoading(true)
+    //             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
+    //             chartData = chartDataValues;
+    //         }
+    //         if (chartData) {
+    //             setSubmittedTimesheetsPaymentStatusData(chartData);
+    //         }
+    //     } else {
+    //         let chartData;
+    //         if (!isMyReport) {
+    //             if (dataToUseInReport?.from !== undefined && dataToUseInReport?.to !== undefined && dataToUseInReport?.selectedContracts !== undefined && dataToUseInReport?.selectedContractedServiceProvider !== undefined && dataToUseInReport?.selectedSites !== undefined && dataToUseInReport?.selectedDepartments !== undefined) {
+    //                 setIsLoading(true)
+    //                 const { data: chartDataValues } = await GET(`timesheet-management-service/report/submittedTimesheetsPaymentStatus?startDate=${dataToUseInReport?.from}&endDate=${dataToUseInReport?.to}&contracts=${dataToUseInReport?.selectedContracts}&users=${dataToUseInReport?.selectedContractedServiceProvider}&sites=${dataToUseInReport?.selectedSites}&departments=${dataToUseInReport?.selectedDepartments}`);
+    //                 chartData = chartDataValues;
+    //             }
+    //         } else {
+    //             setIsLoading(true)
+    //             const { data: chartDataValues } = await GET(`timesheet-management-service/report/myReport/submittedTimesheetsPaymentStatus?id=${myReportId}`);
+    //             chartData = chartDataValues;
+    //         }
+    //         if (chartData) {
+    //             setSubmittedTimesheetsPaymentStatusData(chartData);
+    //         }
+    //     }
+    //     setIsLoading(false);
+    // }
+
+     const getSubmittedTimesheetsPaymentStatus = async () => {
+        try {
+            setIsLoading(true)
+            const response = await GET(`application-management-service/staff/reappointmentStatusDetails`);
+            setTableDataStatus(response?.data?.applications);
+            setIsLoading(false)
+            return response?.data?.applications;
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            return [];
         }
-        setIsLoading(false);
-    }
+    };
 
     const getUsersData = async () => {
         const { data: user } = await GET('user-management-service/user');
@@ -880,6 +907,97 @@ const ReportTypeOverview = () => {
         }
     }
 
+    const headerValuesStatus = [
+        "No.",
+        "Staff",
+        "Staff Type",
+        "Department / Specialty",
+        "title",
+        "Current Application Status",
+        "Last Updated",
+        "Last Updated By",
+    ];
+    const colSortValues = [false, false, false, false, false, false, false, false];
+
+    const getTableValues = () => {
+        const No = [];
+        const staff = [];
+        const staffType = [];
+        const department = [];
+        const title = [];
+        const status = [];
+        const lastUpdated = [];
+        const lastUpdatedBy = [];
+    
+        tableData?.map((data,index) => {
+        No.push(index + 1+".")
+        staff.push(
+            `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+        );
+    
+        // ohipNo.push(`${data?.displayId}` || "123");
+        staffType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}`);
+        // department.push(`${data?.basicDetailReferences?.department?.name}`);
+        department.push(
+            `${data?.basicDetails?.departmentSpecialty?.department || "-"}${data?.basicDetails?.departmentSpecialty?.specialty ? ` / ${data.basicDetails.departmentSpecialty.specialty}` : ""}`
+          );
+        title.push(data?.basicDetails?.applicant?.category)
+        if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
+            let lastApproval = data?.completedWorkflows
+            .filter(item => item.approvalType !== null)
+            .pop();
+        
+            if (lastApproval) {
+            const formattedApprovalType = lastApproval.approvalType.toLowerCase().replace(/_/g, " ");
+            status.push(`${lastApproval.role}, ${formattedApprovalType}`)
+            } else {
+            status.push("MSO Verification Not Started")
+            }
+        } else {
+            if (data?.status === "DECLINED") {
+                status.push("Reappointment Application Declined");
+            } else {
+                if (data?.formFillingStatus === "IN_PROGRESS") {
+                    status.push("Reappointment Application In-Progress");
+                } else if (data?.formFillingStatus === "PENDING") {
+                    status.push("Reappointment Application Not Started");
+                } else {
+                    status.push("MSO Verification Not Started");
+                }
+            }
+        }
+        lastUpdatedBy.push(
+            <>
+            {data?.updatedBy?.name?.firstName}
+            </>
+        );
+        
+        lastUpdated.push(
+            <>
+            {format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")}
+            </>
+        );
+        });
+    
+        return [
+        { type: "text", value: No },
+        { type: "text", value: staff },
+        { type: "text", value: staffType },
+        { type: "text", value: department },
+        { type: "text", value: title },
+        { type: "text", value: status },
+        {
+            type: "text",
+            value: lastUpdatedBy
+        },
+        {
+            type: "text",
+            value: lastUpdated
+        },
+        ];
+    };
+      
+
     let activityPerformed = [];
     let startDateTime = [];
     let endDateTime = [];
@@ -938,26 +1056,26 @@ const ReportTypeOverview = () => {
         requestReviewer = [];
         site = [];
 
-        if (value === "Rejected") {
-            addOnRejectedReportLog !== [] && addOnRejectedReportLog?.map(data => {
-                addonActivityServices.push(data?.activity?.activity?.activity);
-                requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
-                requestingProvider.push(data?.activity?.user?.name)
-                requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name : '-');
-                site.push(data?.activity?.site?.name)
-            })
-        }
-        if (value === "Approved") {
-            addOnAcceptedReportLog !== [] && addOnAcceptedReportLog?.map(data => {
-                addonActivityServices.push(data?.activity?.activity?.activity);
-                requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
-                rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
-                requestingProvider.push(data?.activity?.user?.name)
-                requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name : '-');
-                site.push(data?.activity?.site?.name)
-            })
-        }
+        // if (value === "Rejected") {
+        //     addOnRejectedReportLog !== [] && addOnRejectedReportLog?.map(data => {
+        //         addonActivityServices.push(data?.activity?.activity?.activity);
+        //         requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
+        //         rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
+        //         requestingProvider.push(data?.activity?.user?.name)
+        //         requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED") !== [] ? data?.logs?.filter(filterData => filterData?.workFlowAction === "REJECTED")?.[0]?.workFlowUser?.name?.name : '-');
+        //         site.push(data?.activity?.site?.name)
+        //     })
+        // }
+        // if (value === "Approved") {
+        //     addOnAcceptedReportLog !== [] && addOnAcceptedReportLog?.map(data => {
+        //         addonActivityServices.push(data?.activity?.activity?.activity);
+        //         requestDateTime.push(`${format(new Date(data?.activity?.activityTimeFrame?.startDateTime), 'MM-dd-yyyy, HH:mm')}`)
+        //         rejectedDateTime.push(`${data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? formatInTimeZone(new Date(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.createdDate), siteTimeZone(), 'MM-dd-yyyy, HH:mm') : '-'}`)
+        //         requestingProvider.push(data?.activity?.user?.name)
+        //         requestReviewer.push(data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.length !== 0 ? data?.logs?.filter(filterData => filterData?.workFlowAction === "APPROVED")?.[0]?.workFlowUser?.name?.name : '-');
+        //         site.push(data?.activity?.site?.name)
+        //     })
+        // }
 
         return [
             addonActivityServices,
@@ -1647,6 +1765,7 @@ const ReportTypeOverview = () => {
                                 <table style={{ width: '100%' }}>
                                     <thead>
                                         <ReportHeader />
+                                        
                                     </thead>
                                     <tbody>
                                         <div className={style.justifyCenter}>
@@ -1671,36 +1790,48 @@ const ReportTypeOverview = () => {
                                                         <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Timesheet Interval used for this report : {dataToUseInReport?.selectedTimesheetInterval?.map(data => data.split("%23")?.map(innerData => `${format(new Date(innerData), 'MMM dd yyyy')}`)).join(', ') || 'All Timesheet Intervals'} </div>
                                                     </div>
                                                 )} */}
-                                                {reportType === "upcomingContractRenewals" && (
+                                                {/* {reportType === "upcomingContractRenewals" && (
                                                     <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Within Next {dataToUseInReport?.renewalreportingTimePeriod} Days </div>
+                                                )} */}
+                                                {(reportType === "upcomingContractRenewals" ||reportType === "oneTimeContract") && (
+                                                    <div className={`${style.reportRunByTextStyle} ${style.textAlignCenter} ${style.marginTop5} `}>Reporting Period : 30 Days </div>
                                                 )}
                                             </div>
                                         </div>
-                                        <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div>
-                                        <div className={style.marginTop20}>
+                                        {/* <div className={`${style.mildBorderStyle} ${style.marginTop20} `}></div> */}
+                                        <div className={`${style.marginTop20}`}>
+                                            <div  className={`${style.marginTop20} ${style.reportTypeParamsBackground}`}>
                                             <div className={`${style.entityNameBolderStyle} ${style.textAlignLeft} ${style.marginTop5} `}>Reporting Parameters Applied</div>
                                             {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
                                                 reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                 reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                                                reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") ? (
-                                                <div className={`${style.grid2} ${style.marginTop20} `}>
-                                                    {reportType === "upcomingContractRenewals" && (
+                                                reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker" || reportType === "submittedTimesheetsPaymentStatus") ? (
+                                                <div className={`${style.grid4} ${style.marginTop20} `}>
+                                                    {/* {reportType === "upcomingContractRenewals" && (
                                                         <div>
-                                                            <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
+                                                            <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame </div>
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{`${reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next ${dataToUseInReport?.renewalreportingTimePeriod} days`}</div>
                                                         </div>
-                                                    )}
-                                                    <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
+                                                    )} */}
+                                                    {/* <div>
+                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Sites </div>
                                                         <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedSitesToSend?.map(data => data?.siteName?.siteName).join(', ') || 'All Sites'}</div>
+                                                    </div> */}
+                                                    <div>
+                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>Departments</div>
+                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All'}</div>
                                                     </div>
                                                     <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Departments</div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedDepartmentsToSend?.map(data => data?.departmentName?.name).join(', ') || 'All Departments'}</div>
+                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>DIVISION / SPECIALITY </div>
+                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All'}</div>
                                                     </div>
                                                     <div>
-                                                        <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract </div>
-                                                        <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Contracts'}</div>
+                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>STAFF TYPE </div>
+                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Staff Type'}</div>
+                                                    </div>
+                                                    <div>
+                                                        <div className={`${style.reportRunByParamStyle} ${style.marginTop5} `}>PRIVILEGE CATEGORY </div>
+                                                        <div className={`${style.reportTypeValueParamTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractsToSend?.map(data => data?.contractName?.contractName).join(', ') || 'All Categories'}</div>
                                                     </div>
                                                     {(reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                         reportType === "contractsWithABusinessEntity") && (
@@ -1715,7 +1846,7 @@ const ReportTypeOverview = () => {
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
                                                         </div>
                                                     )}
-                                                    {reportType === "upcomingContractRenewals" && (
+                                                    {/* {reportType === "upcomingContractRenewals" && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contract Continuation Policy</div>
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.contractContinuationPolicy === 'AUTORENEWAL' ? "Auto Renewal"
@@ -1723,9 +1854,9 @@ const ReportTypeOverview = () => {
                                                                     : dataToUseInReport?.contractContinuationPolicy === "NEWCONTRACTONEXPIRATION" ? "New Contract On Expiration"
                                                                         : dataToUseInReport?.contractContinuationPolicy === "ONETIMECONTRACTTERMINATEONEXPIRATION" ? "One Time Contract - Terminate On Expiration" : 'All Contract Continuation Policy'}</div>
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                 </div>
-                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") ? (
+                                            ) : (reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "paymentsProcessingSummary") ? (
                                                 <div className={`${style.grid2} ${style.marginTop20} `}>
                                                     <div>
                                                         <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Sites </div>
@@ -1812,7 +1943,9 @@ const ReportTypeOverview = () => {
                                                     </div> */}
                                                     </div>
                                                 )}
-                                            <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div>
+                                                </div>
+                                            {/* <div className={`${style.headerBorderStyle} ${style.marginTop40} `}></div> */}
+                                            <div className={`${style.marginTop40} `}></div>
                                             {isLoading ? (
                                                 <div>
                                                     <img src={Loader} alt="Loading" width={250} />
@@ -2208,13 +2341,21 @@ const ReportTypeOverview = () => {
                                                             <div className={style.marginTop20}>
                                                                 {submittedTimesheetsPaymentStatusData?.timesheetPayment?.length !== 0 ? (
                                                                     <>
-                                                                        <ReportsTable
+                                                                        {/* <ReportsTable
                                                                             tableType={''}
                                                                             tableHeader={['Timesheet Name', 'Period', 'Contractor', 'Site/ Dept', 'Billable Hours', 'Non Billable Hours', 'Submission Date', 'Current Status', 'Status Date', 'Payment Status', 'Payment Amount', 'Payment Date']}
                                                                             tableValue={submittedTimesheetsPaymentStatusData?.timesheetPayment}
                                                                             activitiesServicesValues={getSubmittedTimesheetsPaymentStatusValues()}
                                                                             styleName={style.grid12}
-                                                                        />
+                                                                        /> */}
+                                                                        <TableTwo
+                                                                            tableHeaderValues={headerValuesStatus}
+                                                                            tableDataValues={getTableValues()}
+                                                                            tableData={tableData}
+                                                                            gridStyle={style.permanentStaffGrid}
+                                                                            tableSortValues={colSortValues}
+                                                                            heading={"There are no record to display"}
+                                                                            />
                                                                     </>
                                                                 ) : (
                                                                     <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
@@ -2339,37 +2480,65 @@ const ReportTypeOverview = () => {
                                                             //         </div>
                                                             //     </>
                                                             // ) 
-                                                            : (reportType === "upcomingContractRenewals" || reportType === "oneTimeContract") ? (
-                                                                (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                            : 
+                                                            // (reportType === "upcomingContractRenewals") ? (
+                                                            //     (individualContract?.length !== 0 || multipleContract?.length !== 0) ? (
+                                                            //         <>
+                                                            //             {individualContract?.length !== 0 && (
+                                                            //                 <ReportsTable
+                                                            //                     tableType={`Individual Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
+                                                            //                     tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
+                                                            //                     tableValue={individualContract}
+                                                            //                     activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
+                                                            //                     styleName={style.individualServiceReportGrid}
+                                                            //                 />
+                                                            //             )}
+                                                            //             {multipleContract?.length !== 0 && (
+                                                            //                 <ReportsTable
+                                                            //                     tableType={`Multiple Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
+                                                            //                     tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
+                                                            //                     tableValue={multipleContract}
+                                                            //                     activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
+                                                            //                     styleName={style.multipleServiceReportGrid}
+                                                            //                 />
+                                                            //             )}
+                                                            //         </>
+                                                            //     ) : reportType === "upcomingContractRenewals" ? (
+
+                                                            //         <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
+                                                            //             subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
+                                                            //     ) : (
+
+                                                            //         <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
+                                                            //             subHeading={''} />
+                                                            //     ))
+                                                            (reportType === "upcomingContractRenewals") ? (
+                                                                (tableData?.length !== 0 || tableData?.length !== 0) ? (
                                                                     <>
-                                                                        {individualContract?.length !== 0 && (
-                                                                            <ReportsTable
-                                                                                tableType={`Individual Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
-                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address']}
-                                                                                tableValue={individualContract}
-                                                                                activitiesServicesValues={getContractManagementUpcomingValues('INDIVIDUAL')}
-                                                                                styleName={style.individualServiceReportGrid}
-                                                                            />
-                                                                        )}
-                                                                        {multipleContract?.length !== 0 && (
-                                                                            <ReportsTable
-                                                                                tableType={`Multiple Service Provider Contract Renewals Within ${dataToUseInReport?.renewalreportingTimePeriod} Days`}
-                                                                                tableHeader={['Contract Name', 'Contract ID', 'Contract Expiration Date', 'Contracting Entity', 'Point of Contact', 'Point of Contact Number', 'Email Address', 'Service Providers']}
-                                                                                tableValue={multipleContract}
-                                                                                activitiesServicesValues={getContractManagementUpcomingValues('MULTIPLE')}
-                                                                                styleName={style.multipleServiceReportGrid}
+                                                                        {tableData?.length !== 0 && (
+                                                                            <ReportsApplicantTableNotes
+                                                                                tableData = {tableData}
                                                                             />
                                                                         )}
                                                                     </>
-                                                                ) : reportType === "upcomingContractRenewals" ? (
-
-                                                                    <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                                        subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
                                                                 ) : (
-
                                                                     <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
                                                                         subHeading={''} />
-                                                                )) : (reportType === "contractDocumentsOnFile") ?
+                                                                ))
+                                                                :(reportType === "oneTimeContract") ? (
+                                                                    (tableData?.length !== 0 || tableData?.length !== 0) ? (
+                                                                        <>
+                                                                            {tableData?.length !== 0 && (
+                                                                                <ReportsApplicantTable
+                                                                                    tableData = {tableData}
+                                                                                />
+                                                                            )}
+                                                                        </>
+                                                                    ) : (
+                                                                        <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
+                                                                            subHeading={''} />
+                                                                    ))
+                                                                     : (reportType === "contractDocumentsOnFile") ?
                                                                 contractDocumentsOnFileValues?.length !== 0 ? (
                                                                     <>
                                                                         {contractDocumentsOnFileValues?.map((data, index) => (

@@ -174,14 +174,15 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
         navigate(navigateBackURL)
     }
 
-    const handleSubmitApplicationReq = async (skip) => {
+    const handleSubmitApplicationReq = async (data) => {
         setIsLoading(true)
-        if (isSigned) {
+        // if (isSigned) {
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
-                acknowledged: isSigned,
-                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+                data: data !== "skipped" ? (!isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? `${name} ${currentDate}` : '' }) : {},
+                acknowledged: true,
+                unFilledFields: data === "skipped" ? ["skipped"] : ["continue"],
+                esign: data !== "skipped" ? { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' } : null
             }
             await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
                 .then(response => {
@@ -202,15 +203,15 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        }
-        else {
-            setIsLoading(false)
-            if (sessionStorage.getItem('fromSummary') === 'true') {
-                navigate(-1);
-            } else {
-                navigate(navigateURL)
-            }
-        }
+        // }
+        // else {
+        //     setIsLoading(false)
+        //     if (sessionStorage.getItem('fromSummary') === 'true') {
+        //         navigate(-1);
+        //     } else {
+        //         navigate(navigateURL)
+        //     }
+        // }
     }
     return (
         <div>
@@ -285,14 +286,15 @@ const ScheduleA = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
                     <Tooltip title={"Click to Skip for Now"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq()}>SKIP FOR NOW</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq("skipped")}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save In Progress"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+
                         <div className={style.twoColForButton}>
                         <Tooltip title={"Click to Back"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             <Tooltip title={"Click to Continue"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq(); }} >CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq("continue"); }} >CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

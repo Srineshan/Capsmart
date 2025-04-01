@@ -34,6 +34,7 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
     const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -62,13 +63,23 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
         setMetadata(temp);
     }
 
+    // const getAllLabels = (data) => {
+    //     let tempLabels = labels;
+    //     if (!tempLabels?.includes(data)) {
+    //         console.log(tempLabels, data, 'Metadata')
+    //         tempLabels.push(data);
+    //     }
+    //     setLabels(tempLabels);
+    // }
+
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();    
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -91,13 +102,14 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -107,30 +119,51 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedText`,`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedFile`,`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesText`]
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesText`,`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesFile`,`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesResponse`]
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+
+        setWarningFields(missingKeys);
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+            handleSubmitApplicationReq();
+        }
+
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        console.log(keyValuePair, 'privilegeAtOtherHospitalMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
+            console.log("missingprivilegeAtOtherHospital", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -247,7 +280,9 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)} 
+                getSkipClicked={getSkipClicked} />
             )}
 
         </div>

@@ -62,7 +62,7 @@ const StaffApplicationList = ({
   getActiveApplicationTask,
   getNotesCommentBox,
   getNotesDialog,
-  getCCDateDialog,
+  getClarificationRequestFromApplicantDialog,
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
   approvalnotesCommentsBoxDept,
@@ -124,7 +124,13 @@ const StaffApplicationList = ({
   const [limit, setLimit] = useState(9999);
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
+  const selectedServiceAreaName =
+    departmentList?.serviceAreas?.find(serviceArea =>
+      serviceArea?.id === selectedServiceArea
+    )?.name || "";
+
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
   //     // If all are already selected, deselect all
@@ -136,7 +142,7 @@ const StaffApplicationList = ({
   //   }
   //   // console.log("allIdsall" + checkedIds)
   // };
-
+  console.log("SelectedDepartmentSplt", selectedDepartment, "service", selectedServiceArea, "name", selectedServiceAreaName)
   const handleSelectAllClick = () => {
     if (checkedIds?.length === tableData?.length) {
       // If all are already selected, deselect all
@@ -266,12 +272,12 @@ const StaffApplicationList = ({
     "Last Updated",
     "",
   ] : [
-    // <CommonCheckBox
-    //   size="medium"
-    //   checked={checkedIds.length === tableData.length}
-    //   onChange={handleSelectAllClick}
-    // />,
-    " ",
+    <CommonCheckBox
+      size="medium"
+      checked={checkedIds?.length === tableData?.length}
+      onChange={handleSelectAllClick}
+    />,
+    // " ",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
     applicationType === "NEW" ? "Applicant Type" : "Staff Type",
@@ -567,6 +573,36 @@ const StaffApplicationList = ({
   //   'level-2' :0,
   // });
 
+  const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name, // Department name without indentation
+      type: 'department'
+    };
+
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft20}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept", selectedValue)
+  }
+
   useEffect(() => {
     sessionStorage.removeItem("applicationIdForDialog");
     getPreApplication();
@@ -747,6 +783,11 @@ const StaffApplicationList = ({
     getNotesDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
   };
+
+  const onClickClarificationRequrstFromApplicantDialog = (data) => {
+    getClarificationRequestFromApplicantDialog(true);
+    sessionStorage.setItem("applicationId", data?.id);
+  }
 
   const onClickDeptReviewDialog = (data) => {
     getApprovalNotesCommentBoxDept(true);
@@ -989,14 +1030,15 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getWorkflowUserData(selectedTab);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee,selectedDepartment]);
+    setCheckedIds([]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea]);
 
   useEffect(() => {
     getWorkflowUserData();
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog,activeApplicationTask]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, activeApplicationTask]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1029,33 +1071,33 @@ const StaffApplicationList = ({
   }, [selectedTab]);
 
   const getActiveUserDataReappointment = async () => {
-      try {
-        const queryParams = new URLSearchParams({
-          status: 'ACTIVE'
-        });
-  
-        const types = ['PERMANENT', 'LOCUM'];
-        types.forEach(type => queryParams.append('type', type));
-        queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
-        queryParams.append('applicationStatus', "CREATED");
-  
-  
-        const response = await GET(
-          `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
-        );
-  
-        // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
-        // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
-  
-        // setTableData(response?.data?.staffs);
-        // setTotalCount(response?.data?.numberOfElements);
-        setReappointCount(response?.data?.numberOfElements);
-        return response?.data?.staffs;
-      } catch (error) {
-        console.error("Error fetching applications:", error);
-        return [];
-      }
-    };
+    try {
+      const queryParams = new URLSearchParams({
+        status: 'ACTIVE'
+      });
+
+      const types = ['PERMANENT', 'LOCUM'];
+      types.forEach(type => queryParams.append('type', type));
+      queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
+      queryParams.append('applicationStatus', "CREATED");
+
+
+      const response = await GET(
+        `application-management-service/staff?${queryParams.toString()}&sendForReappointment=false`
+      );
+
+      // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
+      // const filteredData = response?.data?.staffs?.filter(item => item?.type !== 'PROVISIONAL') || [];
+
+      // setTableData(response?.data?.staffs);
+      // setTotalCount(response?.data?.numberOfElements);
+      setReappointCount(response?.data?.numberOfElements);
+      return response?.data?.staffs;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
 
   const getActiveUserData = async () => {
     try {
@@ -1090,7 +1132,7 @@ const StaffApplicationList = ({
             workModeType === "Chief Of Staff" ||
             workModeType === "Credentialing Committee");
         const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
-        const departmentParam = selectedDepartment ? `&departmentSpecialties=${selectedDepartment}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
         setIsLoadingImage(true);
         response = await GET(
           `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&applicationCreationType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
@@ -1267,6 +1309,14 @@ const StaffApplicationList = ({
     documentTitle: "Staff Application",
     removeAfterPrint: true,
   });
+
+  const handleNavigate = () => {
+    navigate("/reportTypeOverview/oneTimeContract", { state: { tableData } });
+  };
+
+  const handleNavigateNotes = () => {
+    navigate("/reportTypeOverview/upcomingContractRenewals", { state: { tableData } });
+  };
 
   const getRejectionCounts = async () => {
     if (applicationType === "LOCUM") {
@@ -1630,7 +1680,9 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
@@ -1645,9 +1697,10 @@ const StaffApplicationList = ({
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index} className={style.fullWidth}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -1669,11 +1722,7 @@ const StaffApplicationList = ({
 
       data?.logs?.forEach((log) => {
         if (log?.workflowStatus === "SUBMITTED") {
-          submitted.push(format(new Date(`${log?.lastModifiedDate}`), "MMM dd, yyyy"));
-          // const updateDate = log?.lastModifiedDate
-          // ? format(new Date(`${log?.lastModifiedDate}T00:00`), "MMM dd, yyyy")
-          // : '-';
-          // submitted.push(updateDate)
+          submitted.push(format(new Date(log?.lastModifiedDate), "MM/dd/yyyy"));
         }
       });
       // lastUpdated.push(
@@ -1724,7 +1773,7 @@ const StaffApplicationList = ({
       // },
       // { type: "dot", value: taskListDotColor, tooltipValue: dotTooltipValues },
       {
-        type: "iconWithCount",
+        type: "text",
         value: submitted,
         // hoverText: lastUpdatedBy,
         // isShowHoverText: true,
@@ -1849,7 +1898,10 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
@@ -1872,9 +1924,10 @@ const StaffApplicationList = ({
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index} className={style.fullWidth}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2192,7 +2245,10 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
@@ -2207,9 +2263,10 @@ const StaffApplicationList = ({
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index} className={style.fullWidth}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2393,7 +2450,7 @@ const StaffApplicationList = ({
           onChange={() => handleCheckboxClick(data?.id, data)}
           color="primary"
           inputProps={{ 'aria-label': `Select ${data?.name}` }}
-          disabled = {isDisabled}
+          disabled={isDisabled}
         />
       );
       if (workflow) {
@@ -2420,7 +2477,7 @@ const StaffApplicationList = ({
       );
       ccdate.push(
         data?.upcomingCredCommitteeMeetingDate
-          ? format(new Date(`${data?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy")
+          ? format(new Date(`${data?.upcomingCredCommitteeMeetingDate}T00:00`), "MM/dd/yyyy")
           : "-"
       );
       const credCommittee = data?.completedWorkflows?.find(
@@ -2492,7 +2549,7 @@ const StaffApplicationList = ({
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
       const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
-      notes.push(validNotes?.length|| "-");
+      notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
           <NoteAltOutlinedIcon style={{ fontSize: 20, color: "#2C2C2C" }} />
@@ -2506,9 +2563,10 @@ const StaffApplicationList = ({
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index} className={style.fullWidth}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2520,7 +2578,7 @@ const StaffApplicationList = ({
       notesHoverText.push(notesHoverTextArray);
       if (workflowCCDate) {
         const reviewDate = workflowCCDate?.approvedDate
-          ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MMM dd, yyyy")
+          ? format(new Date(`${workflowCCDate?.approvedDate}T00:00`), "MM/dd/yyyy")
           : 'Data Issue';
 
         submitted.push(reviewDate);
@@ -2528,7 +2586,7 @@ const StaffApplicationList = ({
         submitted.push('-');
       }
       lastUpdatedOn.push(
-        format(new Date(data?.lastModifiedDate), "MMM dd, yyyy")
+        format(new Date(data?.lastModifiedDate), "MM/dd/yyyy")
       );
       lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
       action.push(true);
@@ -2554,7 +2612,7 @@ const StaffApplicationList = ({
         icon: notesIcon,
       },
       {
-        type: "iconWithCount",
+        type: "text",
         value: submitted,
       },
       {
@@ -2650,26 +2708,26 @@ const StaffApplicationList = ({
 
     tableData?.map((data) => {
       // const workflowCredRole = data?.completedWorkflows?.find(workflow => workflow.role === "Credentialing Committee");
-      // checkbox.push(
-      //   <CommonCheckBox
-      //     checked={checkedIds.includes(data.id)}
-      //     onChange={() => handleCheckboxClick(data.id)}
-      //     color="primary"
-      //     inputProps={{ 'aria-label': `Select ${data.name}` }}
-      //   />
-      // );
+      checkbox.push(
+        <CommonCheckBox
+          checked={checkedIds.includes(data.id)}
+          onChange={() => handleCheckboxClick(data.id)}
+          color="primary"
+          inputProps={{ 'aria-label': `Select ${data.name}` }}
+        />
+      );
       const workflow = data?.completedWorkflows?.find(workflow => (workflow?.role === "Advisory Committee"));
-      if (workflow) {
-        const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
-          : workflow?.currentLevelStatus === "COMPLETED" ? "green"
-            : "grey";
-        dot.push(color);
-        console.log("Matching workflow found:", {
-          role: workflow?.role,
-          status: workflow?.currentLevelStatus,
-          assignedColor: color
-        });
-      }
+      // if (workflow) {
+      //   const color = workflow?.currentLevelStatus === "IN_PROGRESS" ? "yellow"
+      //     : workflow?.currentLevelStatus === "COMPLETED" ? "green"
+      //       : "grey";
+      //   dot.push(color);
+      //   console.log("Matching workflow found:", {
+      //     role: workflow?.role,
+      //     status: workflow?.currentLevelStatus,
+      //     assignedColor: color
+      //   });
+      // }
       applicantName.push(
         `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
       );
@@ -2719,7 +2777,10 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
@@ -2735,8 +2796,9 @@ const StaffApplicationList = ({
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
             <div key={index}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2788,8 +2850,8 @@ const StaffApplicationList = ({
     });
 
     return [
-      // { type: "checkbox", value: checkbox },
-      { type: "dot", value: dot },
+      { type: "checkbox", value: checkbox },
+      // { type: "dot", value: dot },
       { type: "text", value: applicantName },
       // { type: "text", value: applicantId },
       { type: "text", value: applicantType },
@@ -2979,7 +3041,10 @@ const StaffApplicationList = ({
 
       crs.push(data?.clarificationRequiredFor || "0");
       crsHoverText.push(["Ontario Medical Society"]);
-      const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const validNotes = data?.notesDetails?.filter(
+        log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
+      ) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
         validNotes.length > 0 ? (
@@ -2994,9 +3059,10 @@ const StaffApplicationList = ({
           const createdDate = format(new Date(note?.createdDate), "MMM dd, yyyy 'at' h:mm a") || '';
           const noteContent = `${firstName}, ${title} ${createdDate}`;
           return (
-            <div key={index} className={style.fullWidth}>
-              {noteContent}
-              <div className={style.Bold}>{text}</div>
+            <div key={index}>
+              {note?.private && <span className={style.privateBorderText}>Private</span>}
+              {" "}{noteContent}
+              <div>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -3367,7 +3433,7 @@ const StaffApplicationList = ({
     //   requiredValue: "boolean",
     //   isParagraph: true,
     // },
-    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: "", isIndent: true },
+    // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: onClickClarificationRequrstFromApplicantDialog, isIndent: true },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
   ]
@@ -3778,7 +3844,7 @@ const StaffApplicationList = ({
                       ? rejectedActionsData
                       // :[];
 
-                      : approvedActionsData;
+                      : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -3857,6 +3923,9 @@ const StaffApplicationList = ({
                           applicationType === "NEW"
                             ? navigate("/createStaffMemberApplication")
                             : navigate("/createStaffReapplication")
+                          // : navigate("/ApplicantPortalRFC")
+
+
                         }
                       >
                         {applicationType === "REAPPOINTMENT"
@@ -3930,7 +3999,6 @@ const StaffApplicationList = ({
                     >
                       <div
                         className={`${style.displayInCol} ${style.marginTop}`}
-                      // onClick={() => onClickDepttrackerDialog()}
                       >
                         <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
                           <div className={style.progressbarStyle}>
@@ -3947,10 +4015,9 @@ const StaffApplicationList = ({
                           </div>
                         </div>
                       </div>
+                      <Tooltip title={'Click to View Current Status'} arrow >
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
                     </div>
-                    <Tooltip title={'Click to View Current Status'} arrow >
-                    <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
-                    </Tooltip>
                   </div>
                 ) : null}
 
@@ -4025,7 +4092,7 @@ const StaffApplicationList = ({
                                   </div>
                                   <div className={`${style.smallTextStyle} ${style.justifyCenter}`}>
                                     {status?.createdDate
-                                      ? format(new Date(status?.createdDate), "MMM dd, yyyy")
+                                      ? format(new Date(status?.createdDate), "MM/dd/yyyy")
                                       : "-"}
                                   </div>
                                 </div>
@@ -4150,22 +4217,22 @@ const StaffApplicationList = ({
                     )}
                   </>
                 ) : ""}
-                    {selectedDepartment && (
-                      <div className={`${style.filterBackground} ${style.displayInRow}`}>
-                        <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                        <Tooltip title="Remove" arrow>
-                          <CancelOutlinedIcon
-                            sx={{
-                              fontSize: 15,
-                              color: "#06617A",
-                            }}
-                            className={style.cursorPointer}
-                            onClick={() => setSelectedDepartment()}
-                          />
-                        </Tooltip>
-                      </div>
-                    )}
-                {workModeType === "Staff Manager" && selectedTab === "level-3" && (
+                {selectedDepartment && (
+                  <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                    <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
+                    <Tooltip title="Remove" arrow>
+                      <CancelOutlinedIcon
+                        sx={{
+                          fontSize: 15,
+                          color: "#06617A",
+                        }}
+                        className={style.cursorPointer}
+                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                      />
+                    </Tooltip>
+                  </div>
+                )}
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4")) && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
@@ -4177,7 +4244,7 @@ const StaffApplicationList = ({
                         setShowBulkApproveDialog(true);
                       }}
                     >
-                      <Tooltip title="Update CC Approval Status" arrow>
+                      <Tooltip title={selectedTab === "level-3" ? "Update CC Approval Status" : "Update MAC Approval Status"} arrow>
                         <PeopleOutlinedIcon
                           sx={{
                             fontSize: 25,
@@ -4186,90 +4253,115 @@ const StaffApplicationList = ({
                         />
                       </Tooltip>
                     </div>
-
+                    {!(workModeType === "Staff Manager" && selectedTab === "level-4") && (
+                      <div
+                        className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                        style={{
+                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                        }}
+                        onClick={() => {
+                          setShowCCDateDialog(true);
+                        }}
+                      >
+                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : "MAC Approval Date"} arrow>
+                          <EventAvailableOutlinedIcon
+                            sx={{
+                              fontSize: 25,
+                              color: "#06617A",
+                            }}
+                          />
+                        </Tooltip>
+                      </div>
+                    )}
+                  </>
+                )}
+                {
+                  workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
                     <div
-                      className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                      className={`${style.alignCenter} ${style.cursorPointer
+                        } ${style.marginRight20}`}
                       style={{
-                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                        opacity: 1,
                       }}
-                      onClick={() => {
-                        setShowCCDateDialog(true);
-                      }}
+                      onClick={() => setShowFilter(!showFilter)}
                     >
-                      <Tooltip title="Designate CC Meeting Date" arrow>
-                        <EventAvailableOutlinedIcon
+                      <Tooltip title="Filter" arrow>
+                        <FilterAltOutlinedIcon
                           sx={{
                             fontSize: 25,
                             color: "#06617A",
                           }}
+
                         />
                       </Tooltip>
                     </div>
-                  </>
-                )}
-                {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" || workModeType === "Staff Manager" ? (
-                  <div
-                    className={`${style.alignCenter} ${style.cursorPointer
-                      } ${style.marginRight20}`}
-                    style={{
-                      opacity: 1,
-                    }}
-                    onClick={() => setShowFilter(!showFilter)}
-                  >
-                    <Tooltip title="Filter" arrow>
-                      <FilterAltOutlinedIcon
-                        sx={{
-                          fontSize: 25,
-                          color: "#06617A",
-                        }}
-
-                      />
-                    </Tooltip>
-                  </div>
-                ) : ""}
+                  ) : ""
+                }
+                 {/* <div
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight20}`}
+                >
+                  <Tooltip title="Print Notes" arrow>
+                    <NoteAltOutlinedIcon
+                      sx={{
+                        fontSize: isPrintClicked ? 20 : 25,
+                        color: isPrintClicked ? "#fff" : "#06617A",
+                      }}
+                      // onClick={handlePrintClick}
+                      onClick={handleNavigateNotes}
+                    />
+                  </Tooltip>
+                </div>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
                 >
-                  <Tooltip title="Print" arrow>
+                  <Tooltip title="Print Data" arrow>
                     <PrintOutlinedIcon
                       sx={{
                         fontSize: isPrintClicked ? 20 : 25,
                         color: isPrintClicked ? "#fff" : "#06617A",
                       }}
-                      onClick={handlePrintClick}
+                      onClick={handleNavigate}
                     />
                   </Tooltip>
-                </div>
-              </div>
-            </div>
+                </div> */}
+              </div >
+            </div >
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>
-            {showFilter && (
-              <div className={style.filterContainer}>
-                {workModeType !== "Staff Manager" && (
-                  <div>
-                    <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+            {
+              showFilter && (
+                <div className={style.filterContainer}>
+                  {workModeType !== "Staff Manager" && (
+                    <div>
+                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
+                        <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
+                      </div>
                     </div>
+                  )}
+                  <div>
+                    <CommonSelectField
+                      // value={
+                      //   selectedServiceArea 
+                      //     ? `${selectedDepartment}|${selectedServiceArea}` 
+                      //     : selectedDepartment
+                      // }  
+                      value={selectedDepartment}
+                      onChange={handleChange}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={transformedOptions.map(option => option?.value)}
+                      labelList={transformedOptions.map(option => option?.label)}
+                      disabledList={transformedOptions.map(() => false)}
+                      label={'Dept / Division & Specialty'}
+                      required={false}
+                    />
                   </div>
-                )}
-                <div>
-                  <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={(e) => setSelectedDepartment(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={departmentList?.map(data => data?.id)}
-                    labelList={departmentList?.map(data => data?.departmentName?.name)}
-                    disabledList={departmentList?.map(data => false)}
-                    label={'Department'}
-                    required={false}
-                  />
                 </div>
-              </div>
-            )}
+              )
+            }
             {/* <CommonDivider /> */}
             {/* <CommonDivider /> */}
             {/* <StaffApplicationTopTiles
@@ -4292,32 +4384,6 @@ const StaffApplicationList = ({
               // getApplicationCreationType = {getApplicationCreationType}
               />
             </div>
-            {/* {showFilter && (
-                <div className={style.filterContainer}>
-                  {workModeType !== "Staff Manager" && (
-                    <div>
-                      <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                      <CommonSwitch label={showAssignee ? 'YES' : 'NO'} checked={showAssignee} onChange={(e) => setShowAssignee(e.target.checked)} labelName={'See Only Assigned to Me'} />
-                      </div>
-                    </div>
-                  )}
-                  <div>
-                    <CommonSelectField
-                      value={selectedDepartment}
-                      onChange={(e) => setSelectedDepartment(e.target.value)}
-                      className={style.fullWidth}
-                      firstOptionLabel={'All'}
-                      firstOptionValue={''}
-                      valueList={departmentList?.map(data => data?.id)}
-                      labelList={departmentList?.map(data => data?.departmentName?.name)}
-                      disabledList={departmentList?.map(data => false)}
-                      label={'Department'}
-                      required={false}
-                    />
-                  </div>
-                </div>
-            )} */}
-
             <div className={`${style.bigCardStyle}`}>
               {isLoading ? (
                 <div
@@ -4359,7 +4425,7 @@ const StaffApplicationList = ({
                 </div>
               )}
             </div>
-          </div>
+          </div >
         </div >
         <div className={style.spaceBetween}>
           <div className={`${style.displayInRow}`}>
@@ -4401,6 +4467,7 @@ const StaffApplicationList = ({
             <CCDateDialog
               getCCDateDialogOpen={getCCDateDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowCCDateDialog(false); setCheckedIds([]); }}
             />
           )
@@ -4410,6 +4477,7 @@ const StaffApplicationList = ({
             <ApprovalBulkDialog
               getBulkApproveDialogOpen={getBulkApproveDialogOpen}
               checkedIds={checkedIds}
+              selectedTab={selectedTab}
               onClose={() => { setShowBulkApproveDialog(false); setCheckedIds([]); }}
             />
           )

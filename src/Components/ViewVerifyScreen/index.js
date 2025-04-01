@@ -41,6 +41,8 @@ import style from "./index.module.scss";
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
+import KeyboardArrowUpOutlinedIcon from '@mui/icons-material/KeyboardArrowUpOutlined';
+import KeyboardArrowDownOutlinedIcon from '@mui/icons-material/KeyboardArrowDownOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import ApplicationDecline from "../../Screens/StaffApplication/applicationDeclineDialog";
@@ -61,11 +63,13 @@ import Dropzone from "react-dropzone";
 import TableTwo from "../../Components/TableDesignTwo";
 import CommonSelectField from "../../Components/CommonFields/CommonSelectField";
 import FileDisplayDialog from "../../Components/fileDisplayDialog";
+import EditNotesDialog from "../../Components/NotesEditDialog";
 import FileVerifyDialog from "../../Components/fileVerifyDialog";
 import CommonRadio from "../../Components/CommonFields/CommonRadio";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useNavigate, useParams } from "react-router-dom";
 import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded';
@@ -99,6 +103,15 @@ const NewActiveApplication = ({
   reappointmentChangesCommentsBox,
   notesCommentsBox,
   getNotesDialog,
+  getEditNotesDialog,
+  showNotesDialog,
+  getClarificationRequestFromApplicantDialog,
+  showClarificationRequestFromApplicantDialog,
+  getDocumentClarificationDialog,
+  showDocumentClarificationDialog,
+  getResolveDialog,
+  showResolveDialog,
+  getRequestOverrideDialog,
   staffView,
   getPaymentDisplayBox,
   dataLevel
@@ -143,6 +156,11 @@ const NewActiveApplication = ({
   const [helpTextData, setHelpTextData] = useState();
   const [form1, setForm1] = useState();
   const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+  const [showEditNotesDialog, setShowEditNotesDialog] = useState(false);
+  const [showEditNotesID, setShowEditNotesID] = useState('');
+  const [showEditNotes, setShowEditNotes] = useState('');
+  const [showEditNotesFile, setShowEditNotesFile] = useState('');
+  const [showEditNotesPrivate, setShowEditNotesPrivate] = useState(false);
   const [showFileVerifyDialog, setShowFileVerifyDialog] = useState(false);
   const [selectedFile, setselectedFile] = useState(false);
   const [medicalDirectives, setMedicalDirectives] = useState([])
@@ -162,8 +180,17 @@ const NewActiveApplication = ({
     section2: false,
     section3: false,
     section4: false,
-    section5: false
+    section5: false,
+    section6: false,
+    section7: false,
   });
+  const [isOpenToggle, setIsOpenToggle] = useState(false);
+  const toggleDropdown = (index) => {
+    setIsOpenToggle(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
   const [expandAcknowledgement, setExpandAcknowledgement] = useState({
     status: false,
     index: 0,
@@ -265,13 +292,19 @@ const NewActiveApplication = ({
     borderRadius: 5,
   };
 
-  console.log("dataLevel", dataLevel)
+  console.log("dataLevel", users?.id)
 
   useEffect(() => {
     getPreApplication();
     // getPreApplicationTask();
     console.log("staffview", staffView)
   }, [applicationId]);
+
+  useEffect(() => {
+    if (!showClarificationRequestFromApplicantDialog || !showDocumentClarificationDialog || !showNotesDialog || !showResolveDialog) {
+      getPreApplication();
+    }
+  }, [showClarificationRequestFromApplicantDialog, showDocumentClarificationDialog, showResolveDialog, showNotesDialog]);
 
   useEffect(() => {
     getMedicalDirectives()
@@ -309,10 +342,7 @@ const NewActiveApplication = ({
   // };
 
   const handleDateChange = (date, field) => {
-    const formattedDate = date
-      ? format(new Date(date), "yyyy-MM-dd'T'00:00")
-      : format(new Date(date), 'yyyy-MM-dd');
-
+    const formattedDate = format(new Date(date), "yyyy-MM-dd'T'00:00")
 
     if (field === 'CC') {
       setSelectedDateForCC(formattedDate);
@@ -688,6 +718,13 @@ const NewActiveApplication = ({
   }, [form, applicationId, userFirstName, userLastName, workModeType, applicationType, isApproverCred]);
 
   console.log("Is Approver:", isApproverDept);
+
+  useEffect(() => {
+    if (!showNotesDialog || !showEditNotesDialog) {
+      getPreApplication();
+    }
+  }, [showNotesDialog, showEditNotesDialog]);
+
 
   useEffect(() => {
     setUserDetails();
@@ -1077,7 +1114,8 @@ const NewActiveApplication = ({
       'level-2': "Department Head",
       'level-3': "Credentialing Committee",
       'level-4': "Advisory Committee",
-      'level-5': "Board"
+      'level-5': "Board",
+      'clarificationsRequired': "Staff Manager"
     };
     console.log("roleMap" + roleMap);
 
@@ -1104,6 +1142,31 @@ const NewActiveApplication = ({
 
   const onClickNotesFunction = () => {
     getNotesDialog(true);
+  };
+
+  const onClickDocumentClarificationFunction = (clarificationId, formId) => {
+    getDocumentClarificationDialog(true, clarificationId, formId);
+  };
+
+  const onClickDocumentClarificationRequestFunction = (formId, type) => {
+    getClarificationRequestFromApplicantDialog(true, formId, type);
+  };
+
+  const onClickResolveDialogFunction = (mode, clarificationId, formId) => {
+    getResolveDialog(true, mode, clarificationId, formId);
+  };
+
+  const onClickRequestOverrideDialogFunction = () => {
+    getRequestOverrideDialog(true);
+  };
+
+  const onClickNotesEditFunction = (logID, notesEdit, privateKey, File) => {
+    // getEditNotesDialog(true);
+    setShowEditNotesDialog(true)
+    setShowEditNotesID(logID)
+    setShowEditNotes(notesEdit)
+    setShowEditNotesPrivate(privateKey)
+    setShowEditNotesFile(File)
   };
 
   const onClickPaymentFunction = () => {
@@ -1146,6 +1209,19 @@ const NewActiveApplication = ({
   const onClickRejectFunction = () => {
     handleApplicationReject(true);
   };
+
+  const handleDeleteNote = async (noteID) => {
+
+    await DELETE(`application-management-service/application/${applicationId}/note/${noteID}`)
+      .then((response) => {
+        getPreApplication()
+        SuccessToaster("Notes Deleted Successfully");
+      })
+      .catch((error) => {
+        ErrorToaster("Unexpected Error Deleting File");
+      });
+  }
+
 
   const getApplicationDateForCC = async () => {
     let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
@@ -1432,6 +1508,10 @@ const NewActiveApplication = ({
     setShowFileDisplayDialog(value);
   }
 
+  const getIsShowEditNoteDialog = (value) => {
+    setShowEditNotesDialog(value);
+  }
+
   const getIsShowFileVerifyDialog = (value) => {
     setShowFileVerifyDialog(value);
   }
@@ -1677,7 +1757,7 @@ const NewActiveApplication = ({
           temp.push({
             "type": "text",
             "value": array.map(innerData =>
-              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+              <div className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
                 {innerData[data]}
               </div>
             )
@@ -1825,7 +1905,7 @@ const NewActiveApplication = ({
           temp.push({
             "type": "text",
             "value": array.map(innerData =>
-              <div onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
+              <div className={style.cursorPointer} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData); }}>
                 {innerData[data]}
               </div>
             )
@@ -1893,13 +1973,13 @@ const NewActiveApplication = ({
 
   console.log("relevantForm" + JSON.stringify(relevantForm))
 
-  const lastSubmittedLog = logDetails?.logs?.find((log) => log?.workflowStatus === "SUBMITTED");
-  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog?.lastModifiedDate : null;
-  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MMM dd, yyyy") : "-";
+  const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+  const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+  const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   const reappointmentDate = form?.createdDate;
-  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MMM dd, yyyy") : "-";
+  const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
   const paymentmentDate = form?.payment?.paidDateTime;
-  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MMM dd, yyyy 'at' h:mm a") : "-";
+  const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MM/dd/yyyy 'at' h:mm a") : "-";
   const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
   const isMedicalDirectives = form?.forms[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
   const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
@@ -4788,7 +4868,6 @@ const NewActiveApplication = ({
       }}
       // className={style.calcHeight}
       >
-        <div className={style.screenBackground}></div>
 
         {/* <ApplicationHeader
         title={`${form?.creationType === "NEW" ? "New Application For" : "Reappointment Application For"}  
@@ -4822,9 +4901,9 @@ const NewActiveApplication = ({
           closeClick={onClose}
         />
 
-        <div className={style.welcomeBorder}></div>
+        {/* <div className={style.marginBottom10}></div> */}
 
-        <div className={`${style.marginLeftRight50}`}>
+        <div className={`${style.marginLeftRight50} ${style.marginTop10}`}>
           {/* <div
           className={`${style.displayInRow} ${style.spaceBetween} ${style.topHeadingTextStyle} ${style.marginTop20}`}
         >
@@ -4907,8 +4986,8 @@ const NewActiveApplication = ({
                               <div className={`${style.emailTextBoldStyle}`}>
                                 {form?.basicDetails?.applicant?.cellPhone ? `+1 ${form?.basicDetails?.applicant?.cellPhone}` : ""}
                               </div>
-                              <div className={`${style.emailTextBoldStyle}`} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")} style={{ cursor: form?.basicDetails?.applicant?.email?.officialEmail ? 'pointer' : 'default' }}>
-                                {form?.basicDetails?.applicant?.email?.officialEmail || ""}
+                              <div className={`${style.emailTextBoldStyle}`}>
+                                <span className={style.cursorPointer} onClick={() => sendEmail(form?.basicDetails?.applicant?.email?.officialEmail || "")}>{form?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
                               </div>
                               {/* <div className={`${style.emailTextBoldStyle} ${style.marginTop10}`}>
                                 {form?.basicDetails?.applicant?.email?.officialEmail || ""}
@@ -5085,7 +5164,7 @@ const NewActiveApplication = ({
                     )}
 
                     <>
-                      {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1")) ? (
+                      {((workModeType === 'Staff Manager' && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === "clarificationsRequired")) ? (
                         <div
                           className={`${style.cardLeftStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                         >
@@ -6056,40 +6135,11 @@ const NewActiveApplication = ({
                                                 });
 
                                                 return (
-                                                  <div>
-                                                    {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
-                                                      isMatch ? (
-                                                        <div className={`${style.greenButton} ${style.cursorPointer}`}>
-                                                          <Tooltip title="Click To Revert Verification" arrow>
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => {
-                                                                handleStepsVerifyRevoke(form?.forms[index]?.id);
-                                                              }}
-                                                            >
-                                                              Verified <RestartAltOutlinedIcon sx={{
-                                                                fontSize: 20,
-                                                                color: "#ffffff",
-                                                                marginLeft: "10px",
-                                                              }} />
-                                                            </div>
-                                                          </Tooltip>
-                                                        </div>
-                                                      ) :
-                                                        (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
-                                                            <div className={`${style.purpleButton} ${style.cursorPointer}`}>
-                                                              <Tooltip title="Click To Verify" arrow>
-                                                                <div
-                                                                  className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => {
-                                                                    handleStepsVerify(form?.forms[index]?.id);
-                                                                  }}
-                                                                >
-                                                                  Verify
-                                                                </div>
-                                                              </Tooltip>
-                                                            </div>
-                                                          ) : (
+                                                  <div key={form?.id}>
+                                                    <div className={`${style.flexEnd}`}>
+                                                      <div>
+                                                        {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
+                                                          isMatch ? (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click To Revert Verification" arrow>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
@@ -6105,10 +6155,41 @@ const NewActiveApplication = ({
                                                                 </div>
                                                               </Tooltip>
                                                             </div>
-                                                          )
-                                                        )
-                                                    )}
-                                                    {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                          ) :
+                                                            (
+                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                                <div className={`${style.purpleButton} ${style.cursorPointer}`}>
+                                                                  <Tooltip title="Click To Verify">
+                                                                    <div
+                                                                      className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                      onClick={() => {
+                                                                        handleStepsVerify(form?.forms[index]?.id);
+                                                                      }}
+                                                                    >
+                                                                      Verify
+                                                                    </div>
+                                                                  </Tooltip>
+                                                                </div>
+                                                              ) : (
+                                                                <div className={`${style.greenButton} ${style.cursorPointer}`}>
+                                                                  <Tooltip title="Click To Revert Verification">
+                                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                                                                      onClick={() => {
+                                                                        handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                      }}
+                                                                    >
+                                                                      Verified <RestartAltOutlinedIcon sx={{
+                                                                    fontSize: 20,
+                                                                    color: "#ffffff",
+                                                                    marginLeft: "10px",
+                                                                  }} />
+                                                                    </div>
+                                                                  </Tooltip>
+                                                                </div>
+                                                              )
+                                                            )
+                                                        )}
+                                                        {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
                                                     //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     //     <Tooltip title="Click To Revert Verification">
@@ -6155,6 +6236,27 @@ const NewActiveApplication = ({
                                                       )
                                                     )
                                                   ): null} */}
+                                                      </div>
+                                                      <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
+                                                        <div className={`${style.spaceEvenly}`}>
+                                                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                            RFC
+                                                          </div>
+                                                          {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
+                                                        </div>
+                                                      </div>
+
+                                                    </div>
+                                                    {isOpenToggle[index] && (
+                                                      <div className={`${style.dropdownContainer}`}>
+                                                        <div className={`${style.dropdownItem}`}>Request for Clarification</div>
+                                                        <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
+                                                          onClickDocumentClarificationRequestFunction(form?.forms[index], "APPLICANT");
+                                                        }}>From Applicant</div>
+                                                        {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div> */}
+                                                        {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30}`}>From Institution</div> */}
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 );
                                               })()
@@ -6169,6 +6271,7 @@ const NewActiveApplication = ({
                                         )}
                                       </>
                                     )}
+
                                   </div>))}
                               {/* {userRole?.includes('Staff Manager') && selectedTab === 'level-1' && applicationType === "REAPPOINTMENT" ? (
                               
@@ -11049,7 +11152,7 @@ const NewActiveApplication = ({
                                 {...params}
                                 inputProps={{
                                   ...params.inputProps,
-                                  placeholder: 'Enter MAC Meeting Date To Continue',
+                                  placeholder: 'Enter MAC Approval Date To Continue',
                                   readOnly: true
                                 }}
                                 variant="outlined"
@@ -11069,7 +11172,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : onClickApprovalwithoutnotesMACFunction}
+                            onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesMACFunction()}
                           >
                             <Tooltip title={"Click to Recommended By MAC"} arrow>
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
@@ -11761,25 +11864,52 @@ const NewActiveApplication = ({
                               // </>
                               <>
                                 {form?.notesDetails
-                                  ?.filter(log => log.notes.notes)
+                                  ?.filter(log => {
+                                    if (!log?.notes?.notes) return false;
+                                    if (log?.private && log?.user?.id !== users?.id) return false;
+                                    return true;
+                                  })
                                   .reverse()
                                   .map((log, index) => (
                                     <div key={index}>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationTextStyle} ${style.marginTop10}`}>
-                                        {log?.title}
+                                        {log?.private && <span className={style.privateBorderText}>Private</span>}{" "}{log?.title}
                                       </div>
                                       <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.verificationRoleTextStyle}`}>
                                         {log?.user?.name?.firstName}{log?.user?.name?.lastName}, on {format(new Date(log?.createdDate), 'MMM d, yyyy, H.mm')}
                                       </div>
-                                      <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
-                                        <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                      <div className={`${style.gridNotes3}`}>
+                                        <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingBottom5} ${style.notesTextStyle} ${style.marginBottom0}`}>
+                                          <div dangerouslySetInnerHTML={{ __html: log.notes.notes }} />
+                                        </div>
+                                        {log?.user?.id === users?.id && (
+                                          <div>
+                                            <Tooltip title="Edit a note" arrow>
+                                              <EditOutlinedIcon
+                                                sx={{ fontSize: 20 }}
+                                                className={`${style.notesIcon} ${style.cursorPointer}`}
+                                                onClick={() => onClickNotesEditFunction(log?.id, log?.notes?.notes, log?.private, log?.files)}
+                                              />
+                                            </Tooltip>
+                                          </div>
+                                        )}
+                                        {log?.user?.id === users?.id && (
+                                          <div>
+                                            <Tooltip title="Delete a note" arrow>
+                                              <DeleteOutlineIcon
+                                                sx={{ fontSize: 20 }}
+                                                className={`${style.notesIconDelete} ${style.cursorPointer}`}
+                                                onClick={() => handleDeleteNote(log?.id)}
+                                              />
+                                            </Tooltip>
+                                          </div>
+                                        )}
                                       </div>
 
                                       {/* Check if there are files */}
                                       {log?.files && log?.files?.length > 0 && (
                                         <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
                                           {log?.files?.map((file, fileIndex) => {
-                                            // let innerData = log?.files[0];
                                             return (
                                               <div key={fileIndex}>
                                                 <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
@@ -11807,7 +11937,6 @@ const NewActiveApplication = ({
                                                   </div>
                                                   <div>
                                                     <DescriptionOutlinedIcon
-                                                      // className={style.docsIcon}
                                                       style={{ marginRight: '8px' }}
                                                     />
                                                   </div>
@@ -11883,71 +12012,254 @@ const NewActiveApplication = ({
                             </div>
                           </div>
                         </div> */}
-                        {/* <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
-                        <div className={`${style.displayInRow}${style.marginTop20}`}>
-                          <div
-                            className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
-                          >
-                            <span className={`${style.tableHeaderHeadingTextStyle1}`}>
-                              RFCs & Doc Clarification
-                            </span>
+                        <div className={`${style.cardLeftStyle} ${style.marginTop20}`}>
+                          <div className={`${style.displayInRow}${style.marginTop20}`}>
                             <div
-                              className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                              className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}
                             >
+                              <span className={`${style.tableHeaderHeadingTextStyle1}`}>
+                                RFCs & Doc Clarification
+                              </span>
                               <div
-                                className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
+                                className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                               >
-                                {expandStates.section1 ? (
-                                  <RemoveIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                ) : (
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          {expandStates.section1 && (
-                            <>
-                              <div className={`${style.spaceBetween} ${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
-                                <div>Proof of Qualifications</div>
-                                <RemoveIcon
-                                  sx={{
-                                    fontSize: 20,
-                                    color: "#94979A",
-                                    cursor: "pointer",
-                                  }}
-                                />
-                              </div>
-                              <div className={`${style.marginBottom20} ${style.clarificationCardStyle}`}>
-                                <div className={`${style.gridGap3}`}>
-                                  <div className={`${style.greenDotStyle} ${style.buttonCenter}`}></div>
-                                  <div className={`${style.sideHeadingFontStyle}`}>Queen's University Clarification Title To Address</div>
-                                  <AddIcon
-                                    sx={{
-                                      fontSize: 20,
-                                      color: "#94979A",
-                                      cursor: "pointer",
-                                    }}
-                                  />
+                                <div
+                                  className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section1")}
+                                >
+                                  {expandStates.section1 ? (
+                                    <RemoveIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() => setExpandStates((prev) => ({ ...prev, section6: false }))}
+                                    />
+                                  ) : (
+                                    <AddIcon
+                                      sx={{
+                                        fontSize: 20,
+                                        color: "#94979A",
+                                        cursor: "pointer",
+                                      }}
+                                    />
+                                  )}
                                 </div>
                               </div>
-                            </>
-                          )}
-                        </div>
+                            </div>
+                            {expandStates.section1 && (
+                              <>
+                                {form?.forms
+                                  ?.filter((data) => data?.clarifications?.length > 0)
+                                  .map((data) => {
+                                    const isExpanded = expandStates[`section6_${data.id}`] || false;
 
-                        <div className={style.marginBottom20}></div>
-                      </div> */}
+                                    return (
+                                      <div key={data.id} className={`${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
+                                        <div className={`${style.spaceBetween}`}>
+                                          <div className={`${style.headingRFCtextStyle}`}>{data?.title}</div>
+                                          {isExpanded ? (
+                                            <RemoveIcon
+                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                              onClick={() =>
+                                                setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: false }))
+                                              }
+                                            />
+                                          ) : (
+                                            <AddIcon
+                                              sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                              onClick={() =>
+                                                setExpandStates((prev) => ({ ...prev, [`section6_${data.id}`]: true }))
+                                              }
+                                            />
+                                          )}
+                                        </div>
+
+                                        {/* Show clarifications when expanded */}
+                                        {isExpanded &&
+                                          data?.clarifications?.map((clarification, index) => {
+                                            const isExpandedData = expandStates[`section7_${data.id}_${index}`] || false;
+                                            return (
+                                              <div key={`${data.id}-${index}`} className={`${style.marginBottom10} ${style.marginTop10} ${style.clarificationCardStyle}`}>
+                                                <div className={`${style.gridGap3}`}>
+                                                  <Tooltip title={clarification?.clarificationStatus === "RESPONDED" ? "Clarification Responded" : clarification?.clarificationStatus === "ACCEPTED" ? "Clarification Resolved" : clarification?.clarificationStatus === "REJECTED" ? "Clarification Unresolved" : "Clarification Not Initiated"} arrow>
+                                                    <div className={`${style.buttonCenter} ${clarification?.clarificationStatus === "RESPONDED" ? style.yellowDotStyle : clarification?.clarificationStatus === "REJECTED" ? style.redDotStyle : clarification?.clarificationStatus === "ACCEPTED" ? style.greenDotStyle : style.greyDotStyle}`}></div>
+                                                  </Tooltip>
+                                                  <div className={`${style.sideHeadingFontStyle}`}>
+                                                    {clarification?.clarificationRequest?.clarificationTitle}
+                                                  </div>
+                                                  {isExpandedData ? (
+                                                    <RemoveIcon
+                                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                      onClick={() =>
+                                                        setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: false }))
+                                                      }
+                                                    />
+                                                  ) : (
+                                                    <AddIcon
+                                                      sx={{ fontSize: 20, color: "#94979A", cursor: "pointer" }}
+                                                      onClick={() =>
+                                                        setExpandStates((prev) => ({ ...prev, [`section7_${data.id}_${index}`]: true }))
+                                                      }
+                                                    />
+                                                  )}
+                                                </div>
+
+                                                {isExpandedData && (
+                                                  <div>
+                                                    <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                                      Clarification requested from {clarification?.clarificationRequest?.clarificationRequiredFrom.toLowerCase()}
+                                                    </div>
+                                                    <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                                      <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationRequest?.clarificationDescription }} />
+                                                    </div>
+                                                    <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                                      {clarification?.clarificationRequest?.createdDate
+                                                        ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
+                                                        : 'N/A'}
+                                                    </div>
+                                                    {clarification?.clarificationStatus === 'NA' && (
+                                                      // <div className={style.twoColumnGrid}>
+                                                      <div>
+                                                        <div
+                                                          className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
+                                                          onClick={() => onClickDocumentClarificationFunction(clarification, data)}
+                                                        >
+                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
+                                                            Document Clarification
+                                                          </div>
+                                                        </div>
+                                                        {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                                                            Send by Email
+                                                          </div>
+                                                        </div> */}
+                                                      </div>
+                                                    )}
+                                                    {clarification?.clarificationStatus !== "NA" && (
+                                                      <div>
+                                                        <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                                          Response from {clarification?.clarificationResponse?.title}
+                                                        </div>
+                                                        <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                                          <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationResponse?.clarificationDescription }} />
+                                                        </div>
+                                                        {clarification?.clarificationResponse?.attachedDocuments && clarification?.clarificationResponse?.attachedDocuments?.length > 0 && (
+                                                          <div className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5}`}>
+                                                            {clarification?.clarificationResponse?.attachedDocuments?.map((file, fileIndex) => {
+                                                              return (
+                                                                <div key={fileIndex}>
+                                                                  <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
+                                                                    <div
+                                                                      className={style.cursorPointer}
+                                                                      onClick={() => {
+                                                                        setShowFileDisplayDialog(true);
+                                                                        setselectedFile(file);
+                                                                      }}
+                                                                    >
+                                                                      <PictureAsPdfIcon
+                                                                        className={style.docsIcon}
+                                                                        style={{ marginRight: '8px' }}
+                                                                      />
+                                                                    </div>
+                                                                    <div
+                                                                      className={`${style.cursorPointer} ${style.notesTitle}`}
+                                                                      onClick={() => {
+                                                                        setShowFileDisplayDialog(true);
+                                                                        setselectedFile(file);
+                                                                      }}
+                                                                    >
+                                                                      {file?.fileName}
+                                                                    </div>
+                                                                    <div>
+                                                                      <img src={Verified} className={style.verifyImage} alt="img" />
+                                                                    </div>
+                                                                  </div>
+                                                                  {/* {file?.title && (
+                                                      <div
+                                                        className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom10}`}
+                                                      >
+                                                        <div>{file?.title}</div>
+                                                      </div>
+                                                    )} */}
+                                                                  {/* Optional description */}
+                                                                  {/* {file?.description && (
+                                                      <div
+                                                        className={`${style.marginLeftRight20} ${style.alignStart} ${style.paddingTop5} ${style.marginBottom20}`}
+                                                      >
+                                                        <div>{file?.description}</div>
+                                                      </div>
+                                                    )} */}
+                                                                </div>
+                                                              );
+                                                            })}
+                                                          </div>
+                                                        )}
+                                                        <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                                          {clarification?.clarificationResponse?.createdDate
+                                                            ? `Created on ${format(new Date(clarification?.clarificationResponse?.createdDate), 'MMM d, yyyy, HH.mm')}`
+                                                            : 'N/A'}
+                                                        </div>
+                                                        {clarification?.clarificationStatus === "RESPONDED" && (
+                                                          <div>
+                                                            <div className={`${style.twoColumnGrid}`}>
+                                                              <div
+                                                                className={`${style.buttonCardStyle} ${style.cursorPointer}`}
+                                                                onClick={() => onClickResolveDialogFunction("unresolve", clarification, data)}
+                                                              >
+                                                                <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>Un-Resolved</div>
+                                                              </div>
+                                                              <div
+                                                                className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
+                                                                onClick={() => onClickResolveDialogFunction("resolve", clarification, data)}
+                                                              >
+                                                                <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Resolve</div>
+                                                              </div>
+                                                            </div>
+
+                                                            {/* <div
+                                                              className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop10}`}
+                                                              onClick={onClickRequestOverrideDialogFunction}
+                                                            >
+                                                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>Request Override</div>
+                                                            </div> */}
+                                                          </div>
+                                                        )}
+                                                        {(clarification?.clarificationStatus === "REJECTED" || clarification?.clarificationStatus === "ACCEPTED") && (
+                                                          <div>
+                                                            <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
+                                                              {clarification?.clarificationStatus === "REJECTED"
+                                                                ? `Clarification Marked As Unresolved by ${clarification?.workflowUser?.name?.firstName}`
+                                                                : `Clarification Required resolved by ${clarification?.workflowUser?.name?.firstName}`}
+                                                            </div>
+                                                            <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
+                                                              <div dangerouslySetInnerHTML={{ __html: clarification?.notes?.notes }} />
+                                                            </div>
+                                                            <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                                              {clarification?.workflowActionDate
+                                                                ? clarification?.clarificationStatus === "REJECTED"
+                                                                  ? `Unresolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
+                                                                  : `Resolved on ${format(new Date(clarification?.workflowActionDate), 'dd/MM/yyyy, HH:mm')}`
+                                                                : 'Date not available'}
+                                                            </div>
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    )}
+                                                  </div>
+                                                )}
+                                              </div>
+                                            );
+                                          })}
+                                      </div>
+                                    );
+                                  })}
+                              </>
+                            )}
+                          </div>
+
+                          <div className={style.marginBottom20}></div>
+                        </div>
                       </>
                     ) : (" ")}
 
@@ -12329,6 +12641,17 @@ const NewActiveApplication = ({
               <FileDisplayDialog
                 getIsOpen={getIsShowFileDialog}
                 file={selectedFile}
+              />
+            )
+          }
+          {
+            showEditNotesDialog && (
+              <EditNotesDialog
+                getIsOpen={getIsShowEditNoteDialog}
+                showEditNotesID={showEditNotesID}
+                showEditNotes={showEditNotes}
+                showEditNotesPrivate={showEditNotesPrivate}
+                showEditNotesFile={showEditNotesFile}
               />
             )
           }

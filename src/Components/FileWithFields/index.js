@@ -105,7 +105,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         onClose={() => setCalendarStart(false)}
                         value={changedData?.[field?.name]}
                         onChange={(newValue) => {
-                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") });
+                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "MMMM dd,yyyy'T'00:00") });
                             setIsEdited(true)
                         }}
                         InputProps={{

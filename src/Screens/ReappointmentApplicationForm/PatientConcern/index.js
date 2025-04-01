@@ -34,6 +34,7 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     const [priorData, setPriorData] = useState();
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
@@ -65,15 +66,17 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
             temp.push(data);
         }
         setMetadata(temp);
+        console.log("level6", data )
     }
 
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();    
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -97,9 +100,9 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
     const getValueByPath = (obj, path) => {
         const keys = path.split(/[\.\[\]]+/).filter(Boolean);
@@ -116,9 +119,10 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
         navigate(navigateBackURL)
     }
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -128,25 +132,48 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
             }
         })
         if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === undefined) {
-            let filterKeys = [`forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsText`]
+            let filterKeys = [
+                `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsText`
+                , `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsFile`
+                , `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsResponse`
+              ];
             let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
             missingKeys = temp;
         }
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcerns`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.patientConcernDisclosure.haveSubjectedToPatientConcernsResponse`];
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+
+        setWarningFields(missingKeys);
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+            handleSubmitApplicationReq();
+        }
+
+        if(data !== "skipped"){
+            if (hasMandatoryMissingFields) {
+            setShowValidationDialog(true);
+          } else {
+            handleSubmitApplicationReq();
+          }
+        }
+        console.log(keyValuePair, 'patientConcrenMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
-        if (isEdited) {
+        // if (isEdited) {
+            console.log("missingpatientConcren", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
+                // unFilledFields: Array.isArray(warningFields) 
+                // ? warningFields.map(field => JSON.stringify(field))
+                // : [],
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -167,15 +194,15 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                     console.log(error)
                     ErrorToaster("Unexpected Error Updating Application");
                 });
-        } else {
-            if (sessionStorage.getItem('fromSummary') === "true") {
-                navigate(-1);
-            }
-            else {
-                navigate(navigateURL)
+        // } else {
+        //     if (sessionStorage.getItem('fromSummary') === "true") {
+        //         navigate(-1);
+        //     }
+        //     else {
+        //         navigate(navigateURL)
 
-            }
-        }
+        //     }
+        // }
     }
 
 
@@ -251,7 +278,9 @@ const PatientConcern = ({ basicForm, setBasicForm, getPreApplication }) => {
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen} 
+                labelList={warningFields?.filter(field => field?.label?.mandatory !== false)} 
+                getSkipClicked={getSkipClicked} />
             )}
             {/* {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Great Job So Far! You're On The Right Track.`} img={JourneyStep3} formIndex={formIndex} basicForm={basicForm} continueClick={getMissingFields} />

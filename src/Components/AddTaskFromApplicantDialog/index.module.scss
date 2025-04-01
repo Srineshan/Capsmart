@@ -1,0 +1,219 @@
+@import "../../index.scss";
+
+.heading {
+  text-align: left;
+  font: normal normal 600 22px/20px proxima-nova;
+  letter-spacing: 0px;
+  color: #171A1A;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.marginTop {
+  margin-top: 20px;
+}
+
+.marginLeft {
+  margin-left: 20px;
+}
+
+.marginTop10 {
+  margin-top: 10px;
+}
+
+.marginTop5 {
+  margin-top: 5px !important;
+}
+
+.spaceBetween {
+  display: flex;
+  justify-content: space-between;
+}
+
+.displayInRowCenter {
+  align-items: center;
+}
+
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.flex {
+  display: flex;
+}
+
+.eSignDialog {
+  height: 75%;
+  overflow: hidden;
+  width: 70% !important;
+}
+
+.fullWidth {
+  width: 100% !important;
+  margin-top: -6px !important;
+}
+
+.fullWidth1 {
+  width: 100% !important;
+  // margin-top: 16px !important;
+}
+
+.eSignDialogBackground {
+  background: #ffffff 0% 0% no-repeat padding-box;
+  padding: 20px 20px 0px 20px;
+  border-radius: 20px !important;
+  border: 5px solid rgba(255, 255, 255, 0.4);
+}
+
+.displayInRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.crossStyle {
+  height: 24px;
+  width: 24px;
+}
+
+.cursorPointer {
+  cursor: pointer;
+}
+
+.date {
+  text-align: left;
+  font: italic normal normal 14px proxima-nova;
+  letter-spacing: 0px;
+  color: #171338;
+  opacity: 0.5;
+}
+
+.marginRight30 {
+  margin-right: 30px;
+}
+
+.marginLeft10 {
+  margin-left: 10px;
+}
+
+.notesBorderStyle {
+  // border: 0.4px solid var(---7165e3);
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  // border: 0.4000000059604645px solid $primarycolor !important;
+  border-radius: 4px;
+  opacity: 1;
+  width: 100%;
+  // height: 100px !important;
+}
+
+.commentsNotesHeadingFontStyle {
+
+  text-align: left;
+  font: normal normal bold 14px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #737575;
+  opacity: 1;
+}
+
+.commentsNotesFontStyle {
+  text-align: left;
+  font: normal normal medium 18px/25px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.7;
+  // padding: 10px;
+  line-height: 1.5;
+}
+
+.reviewButtonStyle {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border-radius: 8px;
+  opacity: 1;
+  padding: 10px 20px;
+  width: 150px;
+  justify-self: right;
+}
+
+
+.reviewButton {
+  text-align: center;
+  font: normal normal bold 18px/30px proxima-nova;
+  letter-spacing: 0px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+
+.marginLeftRight20 {
+  margin: 0 20px !important;
+}
+
+.marginBottom10 {
+  margin-bottom: 10px !important;
+}
+
+.alignItem {
+  align-self: center;
+}
+
+.marginLeft20 {
+  margin-left: 20px;
+}
+
+.marginBottom20 {
+  margin-bottom: 20px;
+}
+
+.marginLeft2 {
+  margin-left: 2px;
+}
+
+.verticalAlignCenter {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.fileLoadingStyle {
+  height: auto;
+  width: 40%;
+  object-fit: contain;
+}
+
+.taskBoardShadow {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  padding: 5px;
+  width: 100%;
+  // margin-left: 10px;
+}
+
+.lableStyle {
+  text-align: left;
+  font: normal normal normal 15px/17px proxima-nova;
+  letter-spacing: 0px;
+  color: $textgrey;
+  // text-transform: capitalize;
+  opacity: 1;
+}

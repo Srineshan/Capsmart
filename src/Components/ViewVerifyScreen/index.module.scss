@@ -30,7 +30,7 @@ body::-webkit-scrollbar {
 }
 
 .marginLeftRight20 {
-  margin: 0 20px !important;
+  margin: 0 10px !important;
 }
 
 .marginLeftRight50 {
@@ -97,6 +97,12 @@ body::-webkit-scrollbar {
   width: 50% !important;
 }
 
+.flexEnd {
+  display: flex;
+  justify-content: end;
+  gap: 30px;
+}
+
 .textUnderline {
   text-decoration: underline;
 }
@@ -112,9 +118,24 @@ body::-webkit-scrollbar {
   font-size: 16px;
 }
 
+.capitalize {
+  text-transform: capitalize;
+}
+
 .buttonCardStyle {
   height: 50px;
   // width: 270px;
+  background: #FFFFFF 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 1;
+}
+
+.buttonCardStyleDoc {
+  height: 50px;
+  width: 130px;
+  justify-self: right;
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 3px 6px #00000029;
   border: 0.5px solid $primarycolor;
@@ -155,6 +176,63 @@ body::-webkit-scrollbar {
   // margin-left: 100px;
   justify-self: end;
 
+}
+
+.whiteButton {
+  width: 70px;
+  height: 35px;
+  background: #ffffff 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 6px #00000029;
+  border: 0.5px solid $primarycolor;
+  border-radius: 8px;
+  opacity: 1;
+  justify-self: end;
+  align-content: center;
+}
+
+.dropdownContainer {
+  width: 200px;
+  height: 85px;
+  background-color: $primarycolor;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  float: inline-end;
+}
+
+.dropdownItem {
+  // display: block;
+  // width: 100%;
+  // padding: 8px 16px;
+  // text-align: left;
+  // border: none;
+  // background: none;
+  // color: #ffffff;
+  // font-size: 14px;
+  // cursor: pointer;
+  text-align: left;
+  font: normal normal bold 14px/30px proxima-nova;
+  letter-spacing: 0.45px;
+  color: #F5F9FD;
+  opacity: 0.8;
+  margin-left: 10px;
+}
+
+.dropDownTextStyle {
+  text-align: left;
+  padding: 8px 16px;
+  font: normal normal normal 18px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #F5F9FD;
+  text-transform: capitalize;
+  opacity: 1;
+}
+
+.dropDownTextStyle:hover {
+  background: #044D61 0% 0% no-repeat padding-box;
+  box-shadow: 0px 3px 12px #00000052;
+  border-radius: 8px;
+  opacity: 1;
 }
 
 .greenButtonSmall {
@@ -219,6 +297,16 @@ body::-webkit-scrollbar {
   text-align: center;
   font: normal normal bold 16px/25px proxima-nova;
   letter-spacing: 0px;
+  color: $primarycolor;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.buttonTextStyleDocs {
+  text-align: center;
+  font: normal normal bold 16px/25px proxima-nova;
+  letter-spacing: 0px;
+  line-height: revert;
   color: $primarycolor;
   text-transform: uppercase;
   opacity: 1;
@@ -2426,6 +2514,12 @@ select {
   grid-gap: 20px;
 }
 
+.gridNotes3 {
+  display: grid;
+  grid-template-columns: 80% 10% 10%;
+  grid-gap: 2px;
+}
+
 .grid3WithoutGap {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -2522,7 +2616,7 @@ select {
 
 .twoColumnGridInner2 {
   display: grid;
-  grid-template-columns: 70% 45%;
+  grid-template-columns: 65% 40%;
   grid-gap: 10px;
   justify-items: start;
 }
@@ -4537,11 +4631,11 @@ input[type="number"] {
 
 .sideHeadingFontStyle {
   text-align: left;
-  font: normal normal bold 18px/22px proxima-nova;
+  font: normal normal 600 18px/24px proxima-nova;
   letter-spacing: 0px;
-  color: #1D2437;
-  opacity: 1;
+  color: #52575D;
   text-transform: capitalize;
+  opacity: 1;
 }
 
 .sideHeadingRefFrontStyle {
@@ -4597,10 +4691,10 @@ input[type="number"] {
 
 .gridGap3 {
   display: grid;
-  grid-template-columns: 5% 85% 5%;
+  grid-template-columns: 5% 82% 5%;
   gap: 10px;
   // margin-top: 10px;
-  align-items: center;
+  align-items: start;
   // justify-content: space-between;
 }
 
@@ -4612,7 +4706,6 @@ input[type="number"] {
   border: 0.4000000059604645px solid #CBCBE3;
   border-radius: 8px;
   opacity: 1;
-  width: 90%;
   margin: auto;
   padding: 10px;
 
@@ -5212,6 +5305,10 @@ input[type="number"] {
   color: $primarycolor
 }
 
+.notesIconDelete {
+  color: $statusred
+}
+
 .verticalAlignCenter {
   display: flex;
   align-items: center;
@@ -5417,7 +5514,7 @@ input[type="number"] {
 
 .threeColGrid {
   display: grid;
-  grid-template-columns: 8% 76% 9%;
+  grid-template-columns: 8% 70% 13%;
   grid-gap: 10px;
 }
 
@@ -5449,4 +5546,53 @@ input[type="number"] {
   opacity: 1;
   margin-top: 5px;
   max-width: 85%;
+}
+
+.headingRFCtextStyle {
+  text-align: left;
+  font: normal normal 200 17px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 1;
+}
+
+.rfcSubHeadingTextStyle {
+  text-align: left;
+  font: normal normal medium 18px/24px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.8;
+}
+
+.rfcResponseTextStyle {
+  text-align: left;
+  font: normal normal medium 16px/22px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  text-transform: capitalize;
+  opacity: 1;
+  background-color: white;
+  border-radius: 10px;
+  padding: 0px 10px;
+}
+
+.rfcDateTextStyle {
+  text-align: left;
+  font: normal normal normal 16px/34px proxima-nova;
+  letter-spacing: 0px;
+  color: #52575D;
+  opacity: 0.6;
+}
+
+.privateBorderText {
+  background: #FFBFBE1A 0% 0% no-repeat padding-box;
+  border: 1px solid #FFBFBE;
+  border-radius: 3px;
+  opacity: 1;
+  text-align: left;
+  font: italic normal 600 10px/12px proxima-nova;
+  letter-spacing: 0px;
+  color: #ec7e7b;
+  text-transform: capitalize;
+  padding: 1px;
 }

@@ -26,6 +26,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [sortValue, setSortValue] = useState("DESCENDING");
   const [departmentList, setDepartmentList] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [privilegeCategories, setPrivilegeCategories] = useState([]);
   const [selectedPrivilegeCategory, setSelectedPrivilegeCategory] = useState('');
   const [applicantType, setApplicantType] = useState([]);
@@ -52,6 +53,36 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "DECLINED": "Declined"
   }
 
+const transformedOptions = departmentList?.flatMap((department) => {
+    const departmentEntry = {
+      value: department?.id,
+      label: department?.departmentName?.name,
+      type: 'department'
+    };
+  
+    const serviceAreaEntries = department.serviceAreas?.map((serviceArea) => ({
+      value: `${department.id}|${serviceArea.id}`,
+      label: (
+        <span className={style.marginLeft}>
+          {serviceArea?.name}
+        </span>
+      ),
+      type: 'serviceArea'
+    })) || [];
+  
+    return [departmentEntry, ...serviceAreaEntries]; // Include department first, then service areas
+  }) || [];
+
+  const handleChange = (e) => {
+    const selectedValue = e.target.value;
+    const [departmentId, serviceAreaId] = selectedValue.split("|");
+
+    setSelectedDepartment(departmentId || "");
+    setSelectedServiceArea(serviceAreaId || "");
+
+    console.log("selectedDept",selectedValue)
+  }
+
   useEffect(() => {
     getDepartmentList();
     getApplicantType();
@@ -66,7 +97,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       setIsDataLoaded(false);
     });
     setCheckedIds([]);
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount, limit, searchTermForTable]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount, limit, searchTermForTable,selectedServiceArea]);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -126,12 +157,12 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "Department",
     "Status",
     "Completed %",
-    "Date Sent",
+    "Last Sent",
     // "Reminder Status",
     // "Application Status",
     "Action"
   ];
-  const colSortValues = [false, true, false, true, true, true, false, false, false, false];
+  const colSortValues = [false, true, false, true, true, true, true, false, false];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -147,9 +178,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       const types = ['PERMANENT', 'LOCUM'];
       types.forEach(type => queryParams.append('type', type));
 
-      if (selectedDepartment) {
-        queryParams.append('departmentId', selectedDepartment);
-      }
+      // if (selectedDepartment) {
+      //   queryParams.append('departmentId', selectedDepartment);
+      // }
 
       if (selectedPrivilegeCategory) {
         queryParams.append('credentialingAndPrivilegingCategoryId', selectedPrivilegeCategory);
@@ -167,8 +198,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);
       }
 
+      const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}${departmentParam}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
@@ -223,7 +255,8 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       setSearchData(response?.data?.staffs?.map(item => ({
         id: item.id,
         name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
-        desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.category}`
+        desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.category}`,
+        lastName: `${item?.applicant?.name?.lastName}`
       })));
       return response?.data?.staffs;
     } catch (error) {
@@ -231,6 +264,11 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       return [];
     }
   };
+
+  const onClickUserFunction  = (data,index) => {
+    setSearchTermForTable(data?.lastName)
+    console.log("searchData",index,"searchTermForTable",searchTermForTable,"searchTerm",searchTerm,'data',data)
+  }
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
@@ -345,19 +383,38 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     });
   }
 
+    let checkbox = [];
+    let applicantName = [];
+    let applicantId = [];
+    let applicantTypeName = [];
+    let department = [];
+    let reappointment = [];
+    let Percentage = [];
+    let DateSend = [];
+    let ReminderCount = [];
+    let applicationStatusList = [];
+    let actionList = [];
+    let emailList = [];
+    let applicantNumber = [];
+    let dotTooltipValues = [];
+    let remindTooltipCount = [];
+
   const getTableValues = () => {
-    const checkbox = [];
-    const applicantName = [];
-    const applicantId = [];
-    const applicantType = [];
-    const department = [];
-    const reappointment = [];
-    const Percentage = [];
-    const DateSend = [];
-    const ReminderCount = [];
-    const applicationStatusList = [];
-    const actionList = [];
-    const emailList = [];
+     checkbox = [];
+     applicantName = [];
+     applicantId = [];
+     applicantTypeName = [];
+     department = [];
+     reappointment = [];
+     Percentage = [];
+     DateSend = [];
+     ReminderCount = [];
+     applicationStatusList = [];
+     actionList = [];
+     emailList = [];
+     applicantNumber = []; 
+     dotTooltipValues = [];
+     remindTooltipCount = [];
 
     tableData?.forEach((data) => {
       // Checkbox with individual checked state
@@ -367,14 +424,17 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           onChange={() => handleCheckboxClick(data.id)}
           color="primary"
           inputProps={{ 'aria-label': `Select ${data.name}` }}
+          className={style.padding0}
         />
       );
-      applicantName.push(
-        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
-      );
-
+      <Tooltip title={`${data?.applicant?.name?.firstName}`} arrow>
+        {applicantName.push(
+          `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+        )}
+      </Tooltip>
+      applicantNumber.push([data?.applicant?.mobileNumber ? data?.applicant?.mobileNumber : "-"]);
       // applicantId.push(`${data?.staffId}` || "123");
-      applicantType.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
+      applicantTypeName.push(`${data?.basicDetailReferences?.applicantType?.serviceProviderType}` || "Dentist");
       emailList.push(data?.applicant?.email?.officialEmail)
       department.push(`${data?.basicDetailReferences?.department?.name}` || "Surgery");
       reappointment.push(
@@ -401,11 +461,33 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
           <div className={style.justifyCenter} onClick={() => handleResend(data.id)}> <Tooltip arrow title={data?.onGoingApplication?.subStatus === 'STARTED' ? "Click to Remind" : "Click to Resend"}><img src={Resend} alt="" className={style.resentIcon} /></Tooltip></div> :
           <div className={`${style.justifyCenter} ${style.disabled}`}> <Tooltip arrow title="Not Sent"><img src={ResendDisabled} alt="" className={style.resentIcon} /></Tooltip></div>
       );
-      Percentage.push(
-        data?.onGoingApplication?.completionPercentage === 0
-          ? "-"
-          : `${data?.onGoingApplication?.completionPercentage + "%"}`
-      );
+      // Percentage.push(
+      //   data?.onGoingApplication?.completionPercentage === 0
+      //     ? "-"
+      //     : `${data?.onGoingApplication?.completionPercentage + "%"}`
+      // );
+      if (data?.expiryDate && new Date(data?.expiryDate) < new Date()) {
+        Percentage.push('red');
+        dotTooltipValues.push("Past Due");
+      } else {
+      if (data?.onGoingApplication?.completionPercentage === 0) {
+        Percentage.push('red');
+        dotTooltipValues.push (data?.onGoingApplication?.completionPercentage + "%")
+      } else if (data?.onGoingApplication?.completionPercentage === 100) {
+        Percentage.push('darkgreen');
+        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
+      } else if (data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100 ) {
+        Percentage.push('yellow');
+        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
+      } else {
+        Percentage.push('red');
+        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
+      }
+    }
+    const reminderCount = data?.onGoingApplication?.reminderLog?.submissionReminders?.length || 0;
+    remindTooltipCount?.push(
+      `${reminderCount} Reminder${reminderCount === 1 ? "" : "s"} Sent`
+    );
       DateSend.push(
         format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
       );
@@ -413,14 +495,25 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
     return [
       { type: "checkbox", value: checkbox },
-      { type: "text", value: applicantName },
+      // { type: "text", 
+      //   value: applicantName, 
+      //   hoverText: applicantNumber, 
+      //   isShowHoverText: true
+      // },
+      {
+        type: "text",
+        value: applicantName,
+        // ...(applicantNumber !== "" ? { tooltipValueText: applicantNumber } : {}),
+        tooltipValueText: applicantNumber,
+        // isShowHoverText: applicantNumber !== "" && applicantNumber !== undefined && applicantNumber !== null
+      },
       // { type: "text", value: applicantId },
       { type: "text", value: emailList },
-      { type: "text", value: applicantType },
+      { type: "text", value: applicantTypeName },
       { type: "text", value: department },
       { type: "text", value: reappointment },
-      { type: "text", value: Percentage },
-      { type: "text", value: DateSend },
+      { type: "dot", value: Percentage, tooltipValue: dotTooltipValues },
+      { type: "text", value: DateSend, tooltipValueText: remindTooltipCount},
       // { type: "text", value: ReminderCount },
       // { type: "text", value: applicationStatusList },
       { type: "icon", icon: actionList },
@@ -447,18 +540,16 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 </div>
               </div>
               <div className={style.marginTop10}>
-
-
                 <CommonSelectField
                   value={selectedDepartment}
-                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                  onChange={handleChange}
                   className={style.fullWidth}
                   firstOptionLabel={'All'}
                   firstOptionValue={''}
-                  valueList={departmentList?.map(data => data?.id)}
-                  labelList={departmentList?.map(data => data?.departmentName?.name)}
-                  disabledList={departmentList?.map(data => false)}
-                  // label={'Department / Division or Specialty'}
+                  valueList={transformedOptions.map(option => option?.value)}
+                  labelList={transformedOptions.map(option => option?.label)}
+                  disabledList={transformedOptions.map(() => false)}
+                  // label={'Dept / Division & Specialty'}
                   required={false}
                 />
 
@@ -514,7 +605,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
-                  reappointment status
+                Application Sent Status
                 </div>
               </div>
               <div className={style.marginTop10}>
@@ -577,6 +668,22 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             <div className={`${style.filterType}`}>
               Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
             </div>
+            <div className={style.verticalBorder}></div>
+            <div className={`${style.filterType}`}>
+              Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
+            </div>
+            <div className={style.verticalBorder}></div>
+            <div className={`${style.filterType}`}>
+              Past Due {tableData?.filter(data => data?.expiryDate && new Date(data.expiryDate) < new Date())?.length}
+            </div>
+            <div className={style.verticalBorder}></div>
+            <div className={`${style.filterType}`}>
+              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length}
+            </div>
+            <div className={style.verticalBorder}></div>
+            <div className={`${style.filterType}`}>
+              In Progress {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
+            </div>
           </div>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -606,7 +713,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 searchCount={searchCount}
                 setSearchTermForTable={setSearchTermForTable}
                 onLimitChange={handleLimitChange}
-                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />}
+                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder='Search By Staff Name' isOnClickAvailable={true} onClickFunc={onClickUserFunction} />}
               />
             </div>
           )}

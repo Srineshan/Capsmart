@@ -45,12 +45,15 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [fieldsAlternative, setFieldsAlternative] = useState([]);
     const [metaDataAlternative, setMetaDataAlternative] = useState({});
     const [documentStatus, setDocumentStatus] = useState('ACCEPT_DOCUMENT');
+    const [rejectClarificationType, setRejectClarificationType] = useState('ACCEPT_DOCUMENT');
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
     const [isEdited, setIsEdited] = useState(false);
     const [arrowLeftOnHover, setArrowLeftOnHover] = useState(false);
     const [arrowRightOnHover, setArrowRightOnHover] = useState(false);
+    const [rejectSubject, setRejectSubject] = useState('');
+    const [rejectClarification, setRejectClarification] = useState('');
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
     }
@@ -322,6 +325,45 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         setForm(basicForm);
     };
 
+    const handleSubmitRequestForClarification = async () => {
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        let clarificationRequiredForTitle = form?.forms?.[form?.forms?.findIndex(data => data?.id === selectedFormId)]?.[0]?.title
+        console.log(form?.forms?.[form?.forms?.findIndex(data => data?.id === selectedFormId)]?.[0]?.title, form?.forms?.findIndex(data => data?.id === selectedFormId), selectedFormId)
+        let temp = {
+            clarificationRequiredFor: clarificationRequiredForTitle,
+            clarificationTitle: rejectSubject,
+            clarificationDescription: rejectClarification,
+            clarificationRequiredFrom: "APPLICANT",
+            clarificationRequestType: rejectClarificationType,
+            clarificationRequestedBy: {
+                id: user?.id,
+                name: {
+                    firstName: user?.name?.firstName,
+                    lastName: user?.name?.lastName,
+                    middleName: user?.name?.middleName
+                },
+                email: {
+                    officialEmail: user?.email?.officialEmail
+                },
+                title: {
+                    title: user?.title?.title
+                }
+            },
+            attachReferenceDocuments: true,
+            formTable: {
+                tableName: "table",
+                rowId: file?.rowId
+            },
+        }
+        await POST(`application-management-service/application/${applicationId}/form/${selectedFormId}/clarificationRequest`, temp)
+            .then(response => {
+                console.log("onetwo", response)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
     const changeHandler = async (event) => {
         setIsLoading(true);
         console.log(event, 'Test');
@@ -365,16 +407,19 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                     console.log(error)
                 })
         }
+        if (documentStatus === "REJECT_DOCUMENT") {
+            await handleSubmitRequestForClarification();
+        }
         let verificationStatus = file?.isVerified ? "UNVERIFIED" : "VERIFIED";
 
         let temp = {
             formId: selectedFormId,
             contentToVerify: "DATA",
-            tableName: selectedRowTableName,
+            tableName: documentStatus === "REJECT_DOCUMENT" ? 'table' : selectedRowTableName,
             rowId: documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? replaceRowId : file?.rowId,
         };
 
-        await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${verificationStatus}`, temp)
+        await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${documentStatus !== "REJECT_DOCUMENT" ? verificationStatus : "UNVERIFIED"}&documentStatus=${documentStatus}`, temp)
             .then((response) => {
                 console.log("success");
 
@@ -611,6 +656,20 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                 </Tooltip>
                                             </div>
                                         )}
+                                        {
+                                            !file?.isVerified && (
+                                                <div
+                                                    className={`${style.purpleButtonVerify}`}
+                                                    onClick={() => {
+                                                        setDocumentStatus('REJECT_DOCUMENT')
+                                                    }}
+                                                >
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                        Reject
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
                                         {documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && (
                                             <div>
                                                 {file?.isVerified ? (
@@ -648,6 +707,95 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             </div>
                                         )}
                                     </div>
+                                    {documentStatus === "REJECT_DOCUMENT" && (
+                                        <>
+                                            <div className={style.marginTop}>
+                                                <div className={style.heading}>Request For Required Document</div>
+                                                <div className={` ${style.marginTop10}`}>
+                                                    <CommonSelectField
+                                                        value={rejectClarificationType}
+                                                        onChange={(e) => setRejectClarificationType(e.target.value)}
+                                                        className={style.documentStatusWidth}
+                                                        // firstOptionLabel={"Select Clarification Type"}
+                                                        // firstOptionValue={""}
+                                                        label={'Clarification Type*'}
+                                                        valueList={['REQUEST_ORIGINAL_DOCUMENT', 'REQUEST_UPDATED_DOCUMENT']}
+                                                        labelList={['Request Original Document', 'Request Updated Document']}
+                                                        disabledList={['Request Original Document', 'Request Updated Document']?.map(data => false)}
+                                                    />
+                                                </div>
+                                                <div className={style.marginTop10}>
+                                                    <CommonTextField
+                                                        className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle} ${style.fullWidth}`}
+                                                        value={rejectSubject}
+                                                        onChange={(e) => setRejectSubject(e.target.value)}
+                                                        placeholder="Enter Clarification Subject Here"
+                                                        label={"Clarification Required Subject*"}
+                                                    />
+                                                </div>
+
+                                            </div>
+                                            <div className={style.marginTop10}>
+                                                <div className={style.lableStyle}>Specify the clarification that is needed*</div>
+                                                <CKEditor
+                                                    editor={ClassicEditor}
+                                                    data={rejectClarification}
+                                                    onChange={(event, editor) => {
+                                                        const data = editor.getData();
+                                                        setRejectClarification(data);
+                                                    }}
+                                                    onReady={(editor) => {
+                                                        editor.editing.view.change(
+                                                            (writer) => {
+                                                                writer.setStyle(
+                                                                    "height",
+                                                                    "80px",
+                                                                    editor.editing.view.document.getRoot()
+                                                                );
+                                                            }
+                                                        );
+                                                    }}
+                                                    config={{
+                                                        placeholder:
+                                                            "Insert here...",
+                                                        toolbar: {
+                                                            shouldNotGroupWhenFull: true,
+                                                            sticky: true,
+                                                            items: [
+                                                                'undo', 'redo',
+                                                                '|',
+                                                                'heading',
+                                                                '|',
+                                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                                '|',
+                                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                                '|',
+                                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                            ],
+                                                        },
+                                                        autoGrow: false,
+                                                    }}
+                                                />
+                                            </div>
+                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Enter Clarification Details" : "Click To Continue"}>
+                                                <div
+                                                    className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
+                                                    onClick={() => {
+                                                        handleDocVerify();
+                                                        if (selectedFileIndex === fileArray?.length - 1) {
+                                                            setTimeout(() => getIsOpen(false), 500);
+                                                        } else {
+                                                            handleNext();
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                        SAVE & CONTINUE
+                                                    </div>
+                                                </div>
+                                            </Tooltip>
+                                        </>
+                                    )}
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" && (
                                         <>
                                             <div className={style.marginTop}>
@@ -672,7 +820,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                     }}
                                                     config={{
                                                         placeholder:
-                                                            "Insert any privilege competency and qualification information...",
+                                                            "Insert here...",
                                                         toolbar: {
                                                             shouldNotGroupWhenFull: true,
                                                             sticky: true,
@@ -735,42 +883,44 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 </div>
                             </div>
                         </div>
-                        {fileToDisplayAlternative?.length !== 0 && (
-                            <>
-                                <CommonDivider />
-                                <div className={style.gridContainer}>
-                                    <div className={style.fileColumn}>
-                                        {!isLoading && (
-                                            <div className={style.height}>
-                                                {file?.fileType === 'application/pdf' ? (
-                                                    <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
-                                                ) : fileToDisplayAlternative?.fileType?.startsWith("image/") ? (
-                                                    <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                                                ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
-                                        <div className={style.extractedFields}>
-                                            <div className={`${style.heading} ${style.marginBottom}`}>Alternate Document</div>
-                                            <div className={`${style.twoCol}`}>
-                                                {fieldsAlternative?.map((field, index) => (
-                                                    <div>
-                                                        <div className={`${style.lableStyle} ${style.marginTop10}`}>{field.label}</div>
-                                                        <div className={style.dividerStyle}></div>
-                                                        <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
-                                                            {metaDataAlternative !== null ? metaDataAlternative[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaDataAlternative[field?.name]), 'dd/MM/yyyy') : metaDataAlternative[field?.name] : "" : ""}
+                        {
+                            fileToDisplayAlternative?.length !== 0 && (
+                                <>
+                                    <CommonDivider />
+                                    <div className={style.gridContainer}>
+                                        <div className={style.fileColumn}>
+                                            {!isLoading && (
+                                                <div className={style.height}>
+                                                    {file?.fileType === 'application/pdf' ? (
+                                                        <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                                    ) : fileToDisplayAlternative?.fileType?.startsWith("image/") ? (
+                                                        <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                                    ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
+                                            <div className={style.extractedFields}>
+                                                <div className={`${style.heading} ${style.marginBottom}`}>Prior Document</div>
+                                                <div className={`${style.twoCol}`}>
+                                                    {fieldsAlternative?.map((field, index) => (
+                                                        <div>
+                                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>{field.label}</div>
+                                                            <div className={style.dividerStyle}></div>
+                                                            <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>
+                                                                {metaDataAlternative !== null ? metaDataAlternative[field?.name] !== undefined ? field?.fieldType === "datepicker" ? format(new Date(metaDataAlternative[field?.name]), 'dd/MM/yyyy') : metaDataAlternative[field?.name] : "" : ""}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
+                                </>
+                            )
+                        }
+                    </div >
+                </div >
             </Dialog >
         </>
     );

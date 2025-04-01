@@ -179,6 +179,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             let temp = [...medicalDirectives?.completed, ...medicalDirectives?.pending, ...medicalDirectives?.reviewInprogress, ...medicalDirectives?.pastDue]
             setMedicalDirectives(temp)
             console.log(medicalDirectives, 'medicalDirectives')
+            console.log(allMedicalDirectives, 'medicalDirectives123')
+            console.log(...medicalDirectives?.completed, 'medicalDirectivesssss')
         } else {
             console.warn("Get Medical Directives Error");
         }
@@ -305,6 +307,12 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const handleContinue = async () => {
         // if (isSigned) {
         console.log(medicalDirectives)
+        const totalCount = (allMedicalDirectives?.completed?.length || 0) + 
+                   (allMedicalDirectives?.pastDue?.length || 0) + 
+                   (allMedicalDirectives?.pending?.length || 0) + 
+                   (allMedicalDirectives?.reviewInprogress?.length || 0);
+
+        const completedCount = allMedicalDirectives?.completed?.length || 0;
         let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
             // attestationDueDate: format(new Date(innerData?.dueDate), 'dd/MM/yyyy'),
             attestationDueDate: basicForm?.forms?.[formIndex]?.esign?.signedDate || currentDate,
@@ -319,7 +327,8 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             data: {
                 table: payload,
             },
-            acknowledged: allMedicalDirectives?.completed?.length !== 0 ? true : false,
+            unFilledFields : completedCount === totalCount ? ["Completed"] : completedCount === 0? ["notYetStarted"]  : ["inProgress"],
+            acknowledged: true,
             esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -585,7 +594,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     </div>
                     <div className={style.threeColForButton}>
                     <Tooltip title={"Click to Skip for Now"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save In Progress"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Back"} arrow>
@@ -619,7 +628,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
                     <Tooltip title={"Click to Skip for Now"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save In Progress"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
