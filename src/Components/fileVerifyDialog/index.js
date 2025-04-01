@@ -56,7 +56,6 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
-    const [isEditEnabled, setIsEditEnabled] = useState(false);
     const [isEdited, setIsEdited] = useState(false);
     const [arrowLeftOnHover, setArrowLeftOnHover] = useState(false);
     const [arrowRightOnHover, setArrowRightOnHover] = useState(false);
@@ -98,7 +97,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     useEffect(() => {
         getDocument();
         getDocumentAlternative();
-    }, [file]);
+    }, [file, showFileWithFields]);
 
     const toggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -630,17 +629,25 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     <div className={style.spaceBetween}>
                                         <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
                                         <Tooltip title="Click to Modify" arrow>
-                                            <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setIsEditEnabled(true)} />
+                                            <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
                                         </Tooltip>
                                     </div>
-                                    {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== null && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.notes?.notes !== null) && (
+                                    {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.length !== 0 && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.map(item => item.notes?.notes)?.filter(note => note)?.length !== 0) && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== undefined && (
                                         <div>
-                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing Document by MSO</div>
+                                            <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing / Editing Document by MSO</div>
                                             <div className={style.dividerStyle}></div>
-                                            <div
-                                                className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
-                                                dangerouslySetInnerHTML={{ __html: form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.notes?.notes }}
-                                            />
+                                            {form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.filter(item => item.notes?.notes)?.map(item => ({
+                                                note: item.notes.notes,
+                                                time: new Date(item.createdDate).toLocaleString()
+                                            }))?.map(data => (
+                                                <div>
+                                                    <div className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}>{`${data?.time}`}</div>
+                                                    <div
+                                                        className={`${style.notesAlignment} ${style.marginTop10} ${style.lableStyle}`}
+                                                        dangerouslySetInnerHTML={{ __html: data?.note }}
+                                                    />
+                                                </div>
+                                            ))}
                                         </div>
                                     )}
                                     {documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? (
@@ -945,9 +952,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         }
                     </div >
                 </div >
-                {/* {showFileWithFields && (
-                    <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={metaData} file={fileToDisplay} schemaId={form?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
-                )} */}
+                {showFileWithFields && (
+                    <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={metaData} file={fileToDisplay} applicationDocumentId={file?.rowId} getPreApplication={getPreApplication} applicationIdFromEdit={applicationId} />
+                )}
             </Dialog >
         </>
     );

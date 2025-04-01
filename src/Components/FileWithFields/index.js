@@ -16,7 +16,7 @@ import { PUT } from '../../Screens/dataSaver';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 
-const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication }) => {
+const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicationDocumentId, getPreApplication, applicationIdFromEdit }) => {
     const [isContinue, setIsContinue] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isPrintClicked, setIsPrintClicked] = useState(false);
@@ -108,7 +108,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         onClose={() => setCalendarStart(false)}
                         value={changedData?.[field?.name]}
                         onChange={(newValue) => {
-                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "MMMM dd,yyyy'T'00:00") });
+                            setChangedData({ ...changedData, [field.name]: format(new Date(newValue), "yyyy-MM-dd'T'00:00") });
                             setIsEdited(true)
                         }}
                         InputProps={{
@@ -168,7 +168,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                     notes: editNotes
                 }
             }
-            let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&manuallyUpdated=${true}`;
+            let baseUrl = `application-management-service/application/${applicationId ?? applicationIdFromEdit}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&manuallyUpdated=${true}`;
             let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
             await PUT(url, changedData !== null ? updateData : {})
                 .then(response => {
@@ -237,48 +237,52 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ) : <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>}
                     </div>
                     <div className={style.marginTop}>
-                        <div className={style.marginTop10}>
-                            <div className={style.lableStyle}>Specify the clarification that is needed*</div>
-                            <CKEditor
-                                editor={ClassicEditor}
-                                data={editNotes}
-                                onChange={(event, editor) => {
-                                    const data = editor.getData();
-                                    setEditNotes(data);
-                                }}
-                                onReady={(editor) => {
-                                    editor.editing.view.change(
-                                        (writer) => {
-                                            writer.setStyle(
-                                                "height",
-                                                "80px",
-                                                editor.editing.view.document.getRoot()
+                        {!window.location.pathname.includes("reappointmentApplicationForm") && (
+                            <div className={style.marginTop10}>
+                                <div className={style.lableStyle}>Reason for Editing Document Details by MSO *</div>
+                                <div className={style.marginTop10}>
+                                    <CKEditor
+                                        editor={ClassicEditor}
+                                        data={editNotes}
+                                        onChange={(event, editor) => {
+                                            const data = editor.getData();
+                                            setEditNotes(data);
+                                        }}
+                                        onReady={(editor) => {
+                                            editor.editing.view.change(
+                                                (writer) => {
+                                                    writer.setStyle(
+                                                        "height",
+                                                        "80px",
+                                                        editor.editing.view.document.getRoot()
+                                                    );
+                                                }
                                             );
-                                        }
-                                    );
-                                }}
-                                config={{
-                                    placeholder:
-                                        "Insert here...",
-                                    toolbar: {
-                                        shouldNotGroupWhenFull: true,
-                                        sticky: true,
-                                        items: [
-                                            'undo', 'redo',
-                                            '|',
-                                            'heading',
-                                            '|',
-                                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                            '|',
-                                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                            '|',
-                                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                                        ],
-                                    },
-                                    autoGrow: false,
-                                }}
-                            />
-                        </div>
+                                        }}
+                                        config={{
+                                            placeholder:
+                                                "Insert here...",
+                                            toolbar: {
+                                                shouldNotGroupWhenFull: true,
+                                                sticky: true,
+                                                items: [
+                                                    'undo', 'redo',
+                                                    '|',
+                                                    'heading',
+                                                    '|',
+                                                    'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                    '|',
+                                                    'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                    '|',
+                                                    'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                ],
+                                            },
+                                            autoGrow: false,
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
                         <div className={`${style.twoCol} ${style.marginTop}`}>
                             {fields?.map((field, index) => renderFields(field, index))}
                         </div>
