@@ -157,9 +157,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
-      setIsApproveEnabled(hasValidComments && allFilesHaveTitles && (selectedTab === "level-4" ? selectedDateForApproval : true));
+      setIsApproveEnabled(hasValidComments && allFilesHaveTitles);
     } else {
-      setIsApproveEnabled(hasValidComments && (selectedTab === "level-4" ? selectedDateForApproval : true));
+      setIsApproveEnabled(hasValidComments);
     }
   };
 

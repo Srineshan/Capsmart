@@ -145,10 +145,8 @@ const StaffApplicationList = ({
   console.log("SelectedDepartmentSplt", selectedDepartment, "service", selectedServiceArea, "name", selectedServiceAreaName)
   const handleSelectAllClick = () => {
     if (checkedIds?.length === tableData?.length) {
-      // If all are already selected, deselect all
       setCheckedIds([]);
     } else {
-      // Filter tableData to exclude rows where the condition is met
       const allIds = tableData
         .filter(data =>
           data?.completedWorkflows?.some(workflow =>
