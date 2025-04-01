@@ -5,7 +5,8 @@ import FullscreenSharpIcon from '@mui/icons-material/FullscreenSharp';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
-
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import style from './index.module.scss'
 import CommonTextField from '../CommonFields/CommonTextField';
 import CommonPhoneField from '../CommonFields/CommonPhoneField';
@@ -25,6 +26,8 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
     const [isEdited, setIsEdited] = useState(false);
+    const [editNotes, setEditNotes] = useState('');
+
     useEffect(() => {
         console.log("filesssssssssssssssss", file);
         // getPreApplicationTask();
@@ -159,9 +162,15 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
 
     const handleContinue = async () => {
         if (isEdited || changedData === null) {
+            let updateData = {
+                data: changedData,
+                notes: {
+                    notes: editNotes
+                }
+            }
             let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${applicationDocumentId}&manuallyUpdated=${true}`;
             let url = window.location.pathname.includes("reappointmentApplicationForm") ? atob(step) !== "UploadYourDoc" ? `${baseUrl}&schemaId=${schemaId}` : baseUrl : baseUrl;
-            await PUT(url, changedData !== null ? changedData : {})
+            await PUT(url, changedData !== null ? updateData : {})
                 .then(response => {
                     console.log(response)
                     getPreApplication()
@@ -227,8 +236,52 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                             <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
                         ) : <iframe src={`${file?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>}
                     </div>
-                    <div className={`${style.twoCol} ${style.marginTop}`}>
-                        {fields?.map((field, index) => renderFields(field, index))}
+                    <div className={style.marginTop}>
+                        <div className={style.marginTop10}>
+                            <div className={style.lableStyle}>Specify the clarification that is needed*</div>
+                            <CKEditor
+                                editor={ClassicEditor}
+                                data={editNotes}
+                                onChange={(event, editor) => {
+                                    const data = editor.getData();
+                                    setEditNotes(data);
+                                }}
+                                onReady={(editor) => {
+                                    editor.editing.view.change(
+                                        (writer) => {
+                                            writer.setStyle(
+                                                "height",
+                                                "80px",
+                                                editor.editing.view.document.getRoot()
+                                            );
+                                        }
+                                    );
+                                }}
+                                config={{
+                                    placeholder:
+                                        "Insert here...",
+                                    toolbar: {
+                                        shouldNotGroupWhenFull: true,
+                                        sticky: true,
+                                        items: [
+                                            'undo', 'redo',
+                                            '|',
+                                            'heading',
+                                            '|',
+                                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                            '|',
+                                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                            '|',
+                                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                        ],
+                                    },
+                                    autoGrow: false,
+                                }}
+                            />
+                        </div>
+                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                            {fields?.map((field, index) => renderFields(field, index))}
+                        </div>
                     </div>
                     {/* <div className={`${style.twoCol} ${style.marginTop}`}>
                         {fields?.map(data => (

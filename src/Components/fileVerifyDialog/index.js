@@ -26,10 +26,12 @@ import { TextField } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import { useParams } from 'react-router-dom';
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
 import CommonDivider from '../CommonFields/CommonDivider';
 import { format } from 'date-fns';
 import Cookies from 'universal-cookie';
 import jwt from 'jwt-decode';
+import FileWithFields from '../FileWithFields';
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -54,11 +56,14 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [reasonForReplacingDocument, setReasonForReplacingDocument] = useState('')
     const [calendarStart, setCalendarStart] = useState(false);
     const [changedData, setChangedData] = useState({})
+    const [isEditEnabled, setIsEditEnabled] = useState(false);
     const [isEdited, setIsEdited] = useState(false);
     const [arrowLeftOnHover, setArrowLeftOnHover] = useState(false);
     const [arrowRightOnHover, setArrowRightOnHover] = useState(false);
     const [rejectSubject, setRejectSubject] = useState('');
     const [rejectClarification, setRejectClarification] = useState('');
+    const [showFileWithFields, setShowFileWithFields] = useState(false);
+
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
     }
@@ -129,6 +134,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const setUserDetails = async () => {
         const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
         sessionStorage.setItem('user', JSON.stringify(userData))
+    }
+
+    const getIsOpenFileWithFields = (value) => {
+        setShowFileWithFields(value);
     }
 
     const handlePrevious = () => {
@@ -411,8 +420,14 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
     const handleDocVerify = async () => {
         if ((isEdited || changedData === null) && documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+            let updateData = {
+                data: changedData,
+                notes: {
+                    notes: ""
+                }
+            }
             let baseUrl = `application-management-service/application/${applicationId}/updateDocumentData?applicationDocumentId=${replaceRowId}&manuallyUpdated=${true}`;
-            await PUT(baseUrl, changedData !== null ? changedData : {})
+            await PUT(baseUrl, changedData !== null ? updateData : {})
                 .then(response => {
                     console.log(response)
                     getPreApplication()
@@ -612,9 +627,12 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             </div>
                             <div className={`${style.detailsColumn} ${fields?.length > 6 ? style.expanded : ""}`}>
                                 <div className={style.extractedFields}>
-                                    {fileToDisplayAlternative?.length !== 0 && (
+                                    <div className={style.spaceBetween}>
                                         <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
-                                    )}
+                                        <Tooltip title="Click to Modify" arrow>
+                                            <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setIsEditEnabled(true)} />
+                                        </Tooltip>
+                                    </div>
                                     {(form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails !== null && form?.documents?.documentDetails?.filter(data => data?.rowId === file?.rowId)?.[0]?.notesDetails?.notes?.notes !== null) && (
                                         <div>
                                             <div className={`${style.lableStyle} ${style.marginTop10}`}>Reason for Replacing Document by MSO</div>
@@ -927,6 +945,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         }
                     </div >
                 </div >
+                {/* {showFileWithFields && (
+                    <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={metaData} file={fileToDisplay} schemaId={form?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
+                )} */}
             </Dialog >
         </>
     );
