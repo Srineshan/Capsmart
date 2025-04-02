@@ -40,6 +40,10 @@
     margin-left: 10px !important;
 }
 
+.padding0{
+    padding: -10px !important;
+}
+
 .marginLeft5 {
     margin-left: 5px !important;
 }
@@ -62,6 +66,7 @@
 
 .flex{
     display: flex;
+    align-items: center;
 }
 
 .spaceBetween {
@@ -175,7 +180,7 @@
     color: #8ED12B;
     text-transform: capitalize;
     opacity: 1;
-    padding: 0px 15px;
+    padding: 0px 10px;
 }
 
 .filterTypeYellow {
@@ -184,7 +189,7 @@
     text-align: left;
     font: normal normal bold 14px/28px proxima-nova;
     letter-spacing: 0px;
-    color: #FF8457;
+    color: #FFC100;
     text-transform: capitalize;
     opacity: 1;
     padding: 0px 15px;
@@ -266,7 +271,7 @@
 .permanentStaffGrid {
     display: grid;
     // grid-template-columns: 5% 9% 19% 11% 12% 9% 9% 7% 7% 5%;
-    grid-template-columns: 5% 12% 17% 11% 13% 9% 12% 10% 7%;
+    grid-template-columns: 5% 3% 12% 17% 11% 12% 8% 12% 8% 7%;
     grid-gap: 1%;
 }
 
@@ -283,7 +288,7 @@
 .displayInRow {
     display: flex;
     flex-direction: row;
-    gap: 10px;
+    gap: 5px;
     // justify-content: space-between;
 }
 
@@ -321,6 +326,11 @@
 .marginLeft {
     margin-left: 20px;
 }
+
+.marginLeft10 {
+    margin-left: 10px;
+}
+
 
 .marginLeft30 {
     margin-left: 30px;
@@ -367,5 +377,9 @@
     padding: 5px 10px;
     color: $primarycolor;
     width: fit-content;
+}
+
+.cursorPointer{
+    cursor: pointer;
 }
 

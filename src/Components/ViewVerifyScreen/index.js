@@ -6275,6 +6275,7 @@ const NewActiveApplication = ({
                                                     )
                                                   ): null} */}
                                                       </div>
+                                                      {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                       <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
                                                         <div className={`${style.spaceEvenly}`}>
                                                           <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
@@ -6283,6 +6284,7 @@ const NewActiveApplication = ({
                                                           {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                         </div>
                                                       </div>
+                                                      )}
 
                                                     </div>
                                                     {isOpenToggle[index] && (
