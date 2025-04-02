@@ -228,7 +228,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
   
       // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
       // const requestData = { ...temp, notes: "" };
-      await PUT(`application-management-service/application/${applicationIdsParam}/workflow/complete/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED`, temp)
+      await PUT(`application-management-service/application/workflow/complete/bulk/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES${applicationIdsParam}`, temp)
         .then(response => {
           console.log('success')
           onClose()
