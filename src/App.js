@@ -1015,6 +1015,7 @@ const App = ({ props }) => {
                 <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+                <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
                 {/* <Route
                 path="/privilegeListManager"

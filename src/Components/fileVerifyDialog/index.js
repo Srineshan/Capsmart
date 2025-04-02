@@ -32,6 +32,7 @@ import { format } from 'date-fns';
 import Cookies from 'universal-cookie';
 import jwt from 'jwt-decode';
 import FileWithFields from '../FileWithFields';
+import { SuccessToaster2 } from '../../utils/toaster';
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -450,6 +451,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${documentStatus !== "REJECT_DOCUMENT" ? verificationStatus : "UNVERIFIED"}&documentStatus=${documentStatus}`, temp)
             .then((response) => {
                 console.log("success");
+                SuccessToaster2(documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? 'Document Rejected & Replaced Successfully' : documentStatus === "REJECT_DOCUMENT" ? 'Document Rejected Successfully' : 'Document Accepted Successfully')
 
                 // Update the fileArray with the correct verified status
                 const updatedFileArray = fileArray.map((record, index) => {
@@ -669,75 +671,78 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     )}
                                 </div>
                                 <div>
-                                    <div className={`${style.displayInRow} ${style.marginTop}`}>
-                                        {/* <div className={`${style.CloseButton} ${style.cursorPointer}`} onClick={() => { getIsOpen(false); }}>
+                                    {documentStatus !== "REJECT_DOCUMENT" && documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && (
+                                        <div className={`${style.displayInRow} ${style.marginTop}`}>
+                                            {/* <div className={`${style.CloseButton} ${style.cursorPointer}`} onClick={() => { getIsOpen(false); }}>
                                         <div className={`${style.closeTextStyle} ${style.alignCenter}`}>
                                             CLOSE
                                         </div>
                                     </div> */}
-                                        {!file?.isVerified && (
-                                            <div
-                                                className={`${style.purpleButtonVerify}`}
-                                                onClick={() => {
-                                                    setDocumentStatus('REJECT_AND_REPLACE_DOCUMENT')
-                                                }}
-                                            >
-                                                <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                    Reject & Replace
-                                                </div>
-                                            </div>
-                                        )}
-                                        {
-                                            !file?.isVerified && (
-                                                <div
-                                                    className={`${style.purpleButtonVerify}`}
-                                                    onClick={() => {
-                                                        setDocumentStatus('REJECT_DOCUMENT')
-                                                    }}
-                                                >
-                                                    <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                        Reject
-                                                    </div>
-                                                </div>
-                                            )
-                                        }
-                                        {documentStatus !== "REJECT_AND_REPLACE_DOCUMENT" && (
-                                            <div>
-                                                {file?.isVerified ? (
-                                                    <Tooltip arrow title="Click To Revert Verification">
-                                                        <div
-                                                            className={`${style.greenButtonVerify}`}
-                                                            onClick={handleDocVerify}
-                                                        >
-                                                            <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                                VERIFIED
-                                                            </div>
+                                            {!file?.isVerified && (
+                                                <Tooltip arrow title="Click To Reject & Replace Document">
+                                                    <div
+                                                        className={`${style.purpleButtonVerify}`}
+                                                        onClick={() => {
+                                                            setDocumentStatus('REJECT_AND_REPLACE_DOCUMENT')
+                                                        }}
+                                                    >
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                            Reject & Replace
                                                         </div>
-                                                    </Tooltip>) : (
-                                                    <Tooltip arrow title={"Click To Verify"}>
+                                                    </div>
+                                                </Tooltip>
+                                            )}
+                                            {
+                                                !file?.isVerified && (
+                                                    <Tooltip arrow title="Click To Reject Document">
                                                         <div
                                                             className={`${style.purpleButtonVerify}`}
                                                             onClick={() => {
-                                                                handleDocVerify();
-                                                                if (selectedFileIndex === fileArray?.length - 1) {
-                                                                    setTimeout(() => getIsOpen(false), 500);
-                                                                } else {
-                                                                    if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
-                                                                        setTimeout(() => getIsOpen(false), 500);
-                                                                    } else {
-                                                                        handleNext();
-                                                                    }
-                                                                }
+                                                                setDocumentStatus('REJECT_DOCUMENT')
                                                             }}
                                                         >
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
-                                                                Accept Document
+                                                                Reject
                                                             </div>
                                                         </div>
-                                                    </Tooltip>)}
-                                            </div>
-                                        )}
-                                    </div>
+                                                    </Tooltip>
+                                                )
+                                            }
+
+                                            {file?.isVerified ? (
+                                                <Tooltip arrow title="Click To Revert Verification">
+                                                    <div
+                                                        className={`${style.greenButtonVerify}`}
+                                                        onClick={handleDocVerify}
+                                                    >
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                            VERIFIED
+                                                        </div>
+                                                    </div>
+                                                </Tooltip>) : (
+                                                <Tooltip arrow title={"Click To Accept Document"}>
+                                                    <div
+                                                        className={`${style.purpleButtonVerify}`}
+                                                        onClick={() => {
+                                                            handleDocVerify();
+                                                            if (selectedFileIndex === fileArray?.length - 1) {
+                                                                setTimeout(() => getIsOpen(false), 500);
+                                                            } else {
+                                                                if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
+                                                                    setTimeout(() => getIsOpen(false), 500);
+                                                                } else {
+                                                                    handleNext();
+                                                                }
+                                                            }
+                                                        }}
+                                                    >
+                                                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter} ${style.cursorPointer}`}>
+                                                            Accept Document
+                                                        </div>
+                                                    </div>
+                                                </Tooltip>)}
+                                        </div>
+                                    )}
                                     {documentStatus === "REJECT_DOCUMENT" && (
                                         <>
                                             <div className={style.marginTop}>
@@ -767,48 +772,50 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
 
                                             </div>
                                             <div className={style.marginTop10}>
-                                                <div className={style.lableStyle}>Specify the clarification that is needed*</div>
-                                                <CKEditor
-                                                    editor={ClassicEditor}
-                                                    data={rejectClarification}
-                                                    onChange={(event, editor) => {
-                                                        const data = editor.getData();
-                                                        setRejectClarification(data);
-                                                    }}
-                                                    onReady={(editor) => {
-                                                        editor.editing.view.change(
-                                                            (writer) => {
-                                                                writer.setStyle(
-                                                                    "height",
-                                                                    "80px",
-                                                                    editor.editing.view.document.getRoot()
-                                                                );
-                                                            }
-                                                        );
-                                                    }}
-                                                    config={{
-                                                        placeholder:
-                                                            "Insert here...",
-                                                        toolbar: {
-                                                            shouldNotGroupWhenFull: true,
-                                                            sticky: true,
-                                                            items: [
-                                                                'undo', 'redo',
-                                                                '|',
-                                                                'heading',
-                                                                '|',
-                                                                'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                                                                '|',
-                                                                'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                                                                '|',
-                                                                'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                                                            ],
-                                                        },
-                                                        autoGrow: false,
-                                                    }}
-                                                />
+                                                <div className={style.lableStyle}>Specify the reason why this document is being rejected*</div>
+                                                <div className={style.marginTop10}>
+                                                    <CKEditor
+                                                        editor={ClassicEditor}
+                                                        data={rejectClarification}
+                                                        onChange={(event, editor) => {
+                                                            const data = editor.getData();
+                                                            setRejectClarification(data);
+                                                        }}
+                                                        onReady={(editor) => {
+                                                            editor.editing.view.change(
+                                                                (writer) => {
+                                                                    writer.setStyle(
+                                                                        "height",
+                                                                        "80px",
+                                                                        editor.editing.view.document.getRoot()
+                                                                    );
+                                                                }
+                                                            );
+                                                        }}
+                                                        config={{
+                                                            placeholder:
+                                                                "Insert here...",
+                                                            toolbar: {
+                                                                shouldNotGroupWhenFull: true,
+                                                                sticky: true,
+                                                                items: [
+                                                                    'undo', 'redo',
+                                                                    '|',
+                                                                    'heading',
+                                                                    '|',
+                                                                    'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                                                                    '|',
+                                                                    'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                                                                    '|',
+                                                                    'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                                                                ],
+                                                            },
+                                                            autoGrow: false,
+                                                        }}
+                                                    />
+                                                </div>
                                             </div>
-                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Enter Clarification Details" : "Click To Continue"}>
+                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Enter Clarification Details" : "Click To Save & Continue"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={() => {
