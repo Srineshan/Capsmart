@@ -899,7 +899,12 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          setShowDialog(true);
+          if (sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null && sessionStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+            sessionStorage.setItem("workModeType", roles[0]);
+            window.location.pathname = sessionStorage?.getItem('initialRoute');
+          } else {
+            setShowDialog(true);
+          }
         }
         if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
