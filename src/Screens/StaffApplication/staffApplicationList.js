@@ -1254,7 +1254,7 @@ const StaffApplicationList = ({
       const types = ['PERMANENT', 'LOCUM'];
       types.forEach(type => queryParams.append('type', type));
       // queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
-      // queryParams.append('applicationStatus', "CREATED");
+      queryParams.append('applicationStatus', "CREATED");
 
 
       const response = await GET(

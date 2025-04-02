@@ -198,11 +198,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT' && selectedReappointmentStatus !== '' &&  selectedReappointmentStatus !== undefined) {
-        queryParams.append('applicationStatus', applicationStatus);
-      }
-
-      if (selectedReappointmentSubStatus) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -254,7 +250,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT' && selectedReappointmentStatus !== '' &&  selectedReappointmentStatus !== undefined) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
