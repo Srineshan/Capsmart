@@ -484,7 +484,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
       //     : `${data?.onGoingApplication?.completionPercentage + "%"}`
       // );
 
-      if (data?.expiryDate && new Date(data.expiryDate) < new Date()) {
+      if (data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date()) {
         Percentage.push('red');
         dotTooltipValues.push("Past Due");
       } else {
@@ -805,7 +805,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
               <div className={`${style.searchChips} ${style.flex} ${style.marginLeft5} ${style.alignItemCenter}`}>
                 <div className={`${style.marginRight5}`}>
                   Filter by {" "}
-                   {Array.isArray(selectedReappointmentStatus) ? "TotalSent" : 
+                   {Array.isArray(selectedReappointmentStatus) ? "Sent" : 
                    selectedReappointmentStatus === 'RE_SENT' ? 'Retriggered' : 
                    selectedReappointmentStatus === 'SENT' ? 'Sent' : 
                    selectedReappointmentStatus === 'NOT_SENT' ? 'Not Sent' : 
