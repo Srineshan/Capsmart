@@ -897,7 +897,12 @@ const App = ({ props }) => {
           // return(
           //   <WorkModeDialog getIsOpen={true} />
           // ) 
-          setShowDialog(true);
+          if (sessionStorage?.getItem('initialRoute') !== undefined && sessionStorage?.getItem('initialRoute') !== 'undefined' && sessionStorage?.getItem('initialRoute') !== null && sessionStorage?.getItem('initialRoute')?.includes('/applicationById/REAPPOINTMENT')) {
+            sessionStorage.setItem("workModeType", roles[0]);
+            window.location.pathname = sessionStorage?.getItem('initialRoute');
+          } else {
+            setShowDialog(true);
+          }
         }
         if (roles?.length === 1) {
           sessionStorage.setItem("workModeType", roles[0]);
@@ -1013,6 +1018,7 @@ const App = ({ props }) => {
                 <Route path="/contracts" element={<ProtectedRoute><ActiveContracts /></ProtectedRoute>} />
                 <Route path="/staffs" element={<ProtectedRoute><StaffManager /></ProtectedRoute>} />
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
+                <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
                 {/* <Route
                 path="/privilegeListManager"

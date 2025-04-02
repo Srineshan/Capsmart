@@ -365,6 +365,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                     color="primary"
                                                     inputProps={{ 'aria-label': `Select ${data?.name}` }}
                                                     disabled={filteredIds?.length > 0 ? filteredIds.includes(data?.id) : false}
+                                                    className={style.padding0}
                                                 />
                                             </div>
                                         )

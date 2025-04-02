@@ -14,6 +14,7 @@ import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { ErrorToaster2, SuccessToaster, SuccessToaster2 } from '../../utils/toaster';
 import { Tooltip } from '@material-ui/core';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { formatFirstNameLastName } from "../../utils/formatting";
 import CommonSearchField from '../../Components/CommonFields/CommonSearchField';
 
@@ -33,6 +34,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [applicantType, setApplicantType] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const [selectedReappointmentStatus, setSelectedReappointmentStatus] = useState('');
+  const [selectedReappointmentSubStatus, setSelectedReappointmentSubStatus] = useState('');
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [applicationStatus, setApplicationStatus] = useState("CREATED");
@@ -45,6 +47,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [searchCount, setSearchount] = useState(0);
   const [limit, setLimit] = useState(9999);
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
+  const selectedApplicantName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   let availableApplicationStatus = {
     "CREATED": "Not Submitted",
     "SUBMITTED": "Submitted",
@@ -55,6 +58,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
     "DECLINED": "Declined"
   }
 
+  console.log("selectedReappointmentSubStatus",selectedReappointmentStatus)
 const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
       value: department?.id,
@@ -99,7 +103,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
       setIsDataLoaded(false);
     });
     setCheckedIds([]);
-  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount, limit, searchTermForTable,selectedServiceArea]);
+  }, [selectedDepartment, selectedPrivilegeCategory, selectedApplicantType, selectedReappointmentStatus, applicationStatus, sortField, sortValue, page, totalCount, limit, searchTermForTable,selectedServiceArea,selectedReappointmentSubStatus]);
 
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -124,7 +128,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
   }, [isDataLoaded, tableData]);
 
   const handleSelectAllClick = () => {
-    if (checkedIds.length === tableData.length) {
+    if (checkedIds?.length === tableData?.length) {
       // If all are already selected, deselect all
       setCheckedIds([]);
     } else {
@@ -150,9 +154,11 @@ const transformedOptions = departmentList?.flatMap((department) => {
   const headerValues = [
     <CommonCheckBox
       size="medium"
-      checked={checkedIds.length === tableData.length}
+      checked={checkedIds?.length === tableData?.length}
       onChange={handleSelectAllClick}
+      className={style.padding0}
     />,
+    "No.",
     "Staff Name",
     "Email",
     "Staff Type",
@@ -164,7 +170,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
     // "Application Status",
     "Action"
   ];
-  const colSortValues = [false, true, false, true, true, true, true, false, false];
+  const colSortValues = [false, false, true, false, true, true, true, true, false,false];
 
   // Rest of the methods remain the same as in your original code...
   const handleCloseClick = () => {
@@ -192,7 +198,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT' && selectedReappointmentStatus !== '' &&  selectedReappointmentStatus !== undefined) {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -200,9 +206,14 @@ const transformedOptions = departmentList?.flatMap((department) => {
         queryParams.append('reappointmentStatus', selectedReappointmentStatus);
       }
 
+      // if (selectedReappointmentStatus?.length > 0) {
+      //   selectedReappointmentStatus.forEach(status => queryParams.append('reappointmentStatus', status));
+      // }
+
       const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+      const subStatusParam = selectedReappointmentSubStatus ? `&applicationSubStatus=${selectedReappointmentSubStatus}` : "";
       const response = await GET(
-        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}${departmentParam}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
+        `application-management-service/staff?${queryParams.toString()}&sortBy=${sortValue}&sortByField=${sortField}&sendForReappointment=false&limit=${limit}&offset=${page - 1}${departmentParam}${subStatusParam}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}`
       );
 
       // Filter out any data that might have 'type' as 'PROVISIONAL' in case backend returns it
@@ -277,7 +288,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
   };
 
   const reappointmentApplicationbulk = async () => {
-    if (checkedIds.length === 0) {
+    if (checkedIds?.length === 0) {
       console.log('No checked IDs to process');
       return;
     }
@@ -298,7 +309,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
   };
 
   const reappointmentApplicationResendbulk = async () => {
-    if (checkedIds.length === 0) {
+    if (checkedIds?.length === 0) {
       console.log('No checked IDs to process');
       return;
     }
@@ -343,12 +354,13 @@ const transformedOptions = departmentList?.flatMap((department) => {
     const { data: applicant } = await GET(
       `entity-service/applicantType`
     );
-    setApplicantType(applicant?.filter(data => data?.id !== "66dc4517788741fedc982f05"));
-    if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
-      setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
-    } else {
-      setSelectedApplicantType(applicant?.[0]?.id);
-    }
+    setApplicantType(applicant)
+    // setApplicantType(applicant?.filter(data => data?.id !== "66dc4517788741fedc982f05"));
+    // if (applicant?.filter(data => data?.applicantType === "Physician")?.length !== 0) {
+    //   setSelectedApplicantType(applicant?.filter(data => data?.applicantType === "Physician")?.[0]?.id);
+    // } else {
+    //   setSelectedApplicantType(applicant?.[0]?.id);
+    // }
   }
 
   const handleSearch = (e) => {
@@ -400,6 +412,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
     let applicantNumber = [];
     let dotTooltipValues = [];
     let remindTooltipCount = [];
+    let No = [];
 
   const getTableValues = () => {
      checkbox = [];
@@ -417,8 +430,9 @@ const transformedOptions = departmentList?.flatMap((department) => {
      applicantNumber = []; 
      dotTooltipValues = [];
      remindTooltipCount = [];
+     No = [];
 
-    tableData?.forEach((data) => {
+    tableData?.forEach((data,index) => {
       // Checkbox with individual checked state
       checkbox.push(
         <CommonCheckBox
@@ -429,6 +443,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
           className={style.padding0}
         />
       );
+      No.push(index + 1 + ".");
       <Tooltip title={`${data?.applicant?.name?.firstName}`} arrow>
         {applicantName.push(
           `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
@@ -468,28 +483,43 @@ const transformedOptions = departmentList?.flatMap((department) => {
       //     ? "-"
       //     : `${data?.onGoingApplication?.completionPercentage + "%"}`
       // );
-      if (data?.expiryDate && new Date(data?.expiryDate) < new Date()) {
+
+      if (data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date()) {
         Percentage.push('red');
         dotTooltipValues.push("Past Due");
       } else {
-      if (data?.onGoingApplication?.completionPercentage === 0) {
-        Percentage.push('red');
-        dotTooltipValues.push (data?.onGoingApplication?.completionPercentage + "%")
-      } else if (data?.onGoingApplication?.completionPercentage === 100) {
-        Percentage.push('darkgreen');
-        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
-      } else if (data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100 ) {
-        Percentage.push('yellow');
-        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
-      } else {
-        Percentage.push('red');
-        dotTooltipValues.push(data?.onGoingApplication?.completionPercentage + "%")
+        const completionPercentage = data?.onGoingApplication?.completionPercentage;
+      
+        if (completionPercentage === 0) {
+          Percentage.push('red');
+        } else if (completionPercentage === 100) {
+          Percentage.push('darkgreen');
+        } else {
+          Percentage.push('yellow');
+        }
+      
+        dotTooltipValues.push(`${completionPercentage}%`);
       }
-    }
+
     const reminderCount = data?.onGoingApplication?.reminderLog?.submissionReminders?.length || 0;
-    remindTooltipCount?.push(
-      `${reminderCount} Reminder${reminderCount === 1 ? "" : "s"} Sent`
-    );
+    const reminderText = reminderCount === 0 ? "No Reminder Sent" : `${reminderCount} Reminder${reminderCount === 1 ? "" : "s"} Sent`;
+    
+    const reminderDates =
+    reminderCount > 0
+      ? data?.onGoingApplication?.reminderLog?.submissionReminders?.map(reminder => (
+          <div key={reminder?.date}>{format(new Date(reminder?.date), 'MMM dd yyyy')}</div>
+        ))
+      : null;
+    
+    const remindTooltipValue = reminderCount >= 0 ? (
+      <div>
+        <div>{reminderText}</div>
+        <div>{reminderDates}</div>
+      </div>
+    ) : null;
+    
+
+    remindTooltipCount.push(remindTooltipValue);
       DateSend.push(
         format(new Date(data?.reAppointmentSentDate), "MMM dd, yyyy")
       );
@@ -497,6 +527,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
 
     return [
       { type: "checkbox", value: checkbox },
+      { type: "text", value: No },
       // { type: "text", 
       //   value: applicantName, 
       //   hoverText: applicantNumber, 
@@ -522,7 +553,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
     ];
   };
 
-  const isDataAvailable = tableData.length > 0;
+  const isDataAvailable = tableData?.length > 0;
 
   // Rest of the render method remains the same
   return (
@@ -656,32 +687,94 @@ const transformedOptions = departmentList?.flatMap((department) => {
         </div>
         <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
         <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-            <div className={`${style.filterTypeGreen} ${style.marginBottom5}`}>
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus(["SENT","RE_SENT"])}>
               Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <div className={`${style.filterTypeGrey} ${style.marginBottom5}`}>
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeGrey} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("NOT_SENT")}>
               Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <div className={`${style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5}`}>
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
               Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <div className={`${style.filterTypeRed} ${style.marginBottom5}`}>
-              Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) <= new Date())?.length}
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PAST_DUE")}>
+              Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date())?.length}
+              {selectedReappointmentSubStatus === "PAST_DUE" && (  
+              <Tooltip title="Remove Filter" arrow>
+                <CancelIcon
+                  sx={{
+                    fontSize: 15,
+                    color: "#FF6562",
+                  }}
+                  className={`${style.cursorPointer} ${style.marginLeft5}`}
+                  onClick={() => setSelectedReappointmentSubStatus("")}
+                />
+              </Tooltip>
+            )}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <div className={`${style.filterTypeLightGreen} ${style.marginBottom5}`}>
-              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length}
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeLightGreen} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
+              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length} 
+              {selectedReappointmentSubStatus === "SUBMISSION_PENDING" && (  
+              <Tooltip title="Remove Filter" arrow>
+                <CancelIcon
+                  sx={{
+                    fontSize: 15,
+                    color: "#8ED12B",
+                  }}
+                  className={`${style.cursorPointer} ${style.marginLeft5}`}
+                  onClick={() => setSelectedReappointmentSubStatus("")}
+                />
+              </Tooltip>
+            )}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
-            <div className={`${style.filterTypeYellow} ${style.marginBottom5}`}>
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeYellow} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PARTIALLY_COMPLETED")}>
               Partially Completed {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
+              {selectedReappointmentSubStatus === "PARTIALLY_COMPLETED" && (  
+              <Tooltip title="Remove Filter" arrow>
+                <CancelIcon
+                  sx={{
+                    fontSize: 15,
+                    color: "#FFC100",
+                  }}
+                  className={`${style.cursorPointer} ${style.marginLeft5}`}
+                  onClick={() => setSelectedReappointmentSubStatus("")}
+                />
+              </Tooltip>
+            )}
             </div>
-            <div className={`${style.filterTypeRed} ${style.marginBottom5}`}>
+            </Tooltip>
+            <Tooltip title="Click to add filter" arrow>
+            <div className={`${style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("NOT_STARTED")}>
               Not Yet Started {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 0)?.length}
+              {selectedReappointmentSubStatus === "NOT_STARTED" && (  
+              <Tooltip title="Remove Filter" arrow>
+                <CancelIcon
+                  sx={{
+                    fontSize: 15,
+                    color: "#FF6562",
+                  }}
+                  className={`${style.cursorPointer} ${style.marginLeft5}`}
+                  onClick={() => setSelectedReappointmentSubStatus("")}
+                />
+              </Tooltip>
+            )}
             </div>
+            </Tooltip>
           </div>
         </div>
         {/* <div className={style.spaceBetween}>
@@ -690,23 +783,61 @@ const transformedOptions = departmentList?.flatMap((department) => {
             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
           </div>
         </div> */}
-        {/* Filtering section remains the same */}
           <div className={`${style.bigCardStyle1} ${style.marginTop10}`}>
-            {/* {selectedDepartment && (
-              <div className={`${style.searchChips} ${style.flex} ${style.marginLeftRight20} ${style.alignItemCenter}`}>
+            <div className={`${style.flex} ${style.gap}`}>
+            {selectedDepartment && (
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft} ${style.alignItemCenter}`}>
                 <div className={`${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
                 <Tooltip title="Remove" arrow>
-                  <CancelOutlinedIcon
+                  <CancelIcon
                     sx={{
-                      fontSize: 15,
+                      fontSize: 20,
                       color: "#06617A",
                     }}
                     className={`${style.cursorPointer} ${style.marginLeft5}`}
-                    onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                    onClick={() => { setSelectedDepartment(''); setSelectedServiceArea('') }}
                   />
                 </Tooltip>
                 </div>
-            )} */}
+            )}
+            {selectedApplicantType && (
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft5} ${style.alignItemCenter}`}>
+                <div className={`${style.marginRight5}`}>Filter by {selectedApplicantName}</div>
+                <Tooltip title="Remove" arrow>
+                  <CancelIcon
+                    sx={{
+                      fontSize: 20,
+                      color: "#06617A",
+                    }}
+                    className={`${style.cursorPointer} ${style.marginLeft5}`}
+                    onClick={() => { setSelectedApplicantType('')}}
+                  />
+                </Tooltip>
+                </div>
+            )}
+             {selectedReappointmentStatus && (
+              <div className={`${style.searchChips} ${style.flex} ${style.marginLeft5} ${style.alignItemCenter}`}>
+                <div className={`${style.marginRight5}`}>
+                  Filter by {" "}
+                   {Array.isArray(selectedReappointmentStatus) ? "Sent" : 
+                   selectedReappointmentStatus === 'RE_SENT' ? 'Retriggered' : 
+                   selectedReappointmentStatus === 'SENT' ? 'Sent' : 
+                   selectedReappointmentStatus === 'NOT_SENT' ? 'Not Sent' : 
+                   selectedReappointmentStatus}
+                </div>
+                <Tooltip title="Remove" arrow>
+                  <CancelIcon
+                    sx={{
+                      fontSize: 20,
+                      color: "#06617A",
+                    }}
+                    className={`${style.cursorPointer} ${style.marginLeft5}`}
+                    onClick={() => { setSelectedReappointmentStatus('')}}
+                  />
+                </Tooltip>
+                </div>
+            )}
+            </div>
           {isLoading ? (
             <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
               <CircularProgress sx={{ color: "#06617A" }} />
