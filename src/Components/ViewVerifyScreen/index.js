@@ -279,9 +279,7 @@ const NewActiveApplication = ({
     ).toString()
   );
   const [currentDate, setCurrentDate] = useState();
-  const [applicationType, setApplicationType] = useState(() =>
-    sessionStorage.getItem('applicationCreationType') || 'NEW'
-  );
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const workModeType = sessionStorage.getItem('workModeType')
   const dropzoneStyle = {
     width: "100%",
@@ -6294,14 +6292,14 @@ const NewActiveApplication = ({
                                                   ): null} */}
                                                       </div>
                                                       {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
-                                                      <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
-                                                        <div className={`${style.spaceEvenly}`}>
-                                                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
-                                                            RFC
+                                                        <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
+                                                          <div className={`${style.spaceEvenly}`}>
+                                                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                              RFC
+                                                            </div>
+                                                            {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                           </div>
-                                                          {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                         </div>
-                                                      </div>
                                                       )}
 
                                                     </div>
@@ -12212,7 +12210,7 @@ const NewActiveApplication = ({
                                                         ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
                                                         : 'N/A'}
                                                     </div>
-                                                    {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application'  && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
+                                                    {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
                                                       // <div className={style.twoColumnGrid}>
                                                       <div>
                                                         <div
