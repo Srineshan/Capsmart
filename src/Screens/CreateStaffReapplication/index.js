@@ -687,18 +687,25 @@ const transformedOptions = departmentList?.flatMap((department) => {
         </div>
         <div className={`${style.bigCardStyle1} ${style.marginTop5}`}>
         <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeGreen} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus(["SENT","RE_SENT"])}>
               Sent {tableData?.filter(data => (data?.reappointmentStatus === "SENT" || data?.reappointmentStatus === "RE_SENT"))?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeGrey} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("NOT_SENT")}>
               Not Sent {tableData?.filter(data => data?.reappointmentStatus === "NOT_SENT")?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeGrey} ${style.marginLeft30} ${style.marginBottom5} ${style.cursorPointer}`} onClick={() => selectedReappointmentStatus ? setSelectedReappointmentStatus("") : setSelectedReappointmentStatus("RE_SENT")}>
               Reminders Sent {tableData?.filter(data => data?.reappointmentStatus === "RE_SENT")?.length}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PAST_DUE")}>
               Past Due {tableData?.filter(data => data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date())?.length}
               {selectedReappointmentSubStatus === "PAST_DUE" && (  
@@ -714,7 +721,9 @@ const transformedOptions = departmentList?.flatMap((department) => {
               </Tooltip>
             )}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeLightGreen} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
               Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length} 
               {selectedReappointmentSubStatus === "SUBMISSION_PENDING" && (  
@@ -730,7 +739,9 @@ const transformedOptions = departmentList?.flatMap((department) => {
               </Tooltip>
             )}
             </div>
+            </Tooltip>
             {/* <div className={style.verticalBorder}></div> */}
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeYellow} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("PARTIALLY_COMPLETED")}>
               Partially Completed {tableData?.filter(data => data?.onGoingApplication?.completionPercentage !== 0 && data?.onGoingApplication?.completionPercentage !== 100)?.length}
               {selectedReappointmentSubStatus === "PARTIALLY_COMPLETED" && (  
@@ -746,6 +757,8 @@ const transformedOptions = departmentList?.flatMap((department) => {
               </Tooltip>
             )}
             </div>
+            </Tooltip>
+            <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeRed} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("NOT_STARTED")}>
               Not Yet Started {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 0)?.length}
               {selectedReappointmentSubStatus === "NOT_STARTED" && (  
@@ -761,6 +774,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
               </Tooltip>
             )}
             </div>
+            </Tooltip>
           </div>
         </div>
         {/* <div className={style.spaceBetween}>
@@ -796,7 +810,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
                       color: "#06617A",
                     }}
                     className={`${style.cursorPointer} ${style.marginLeft5}`}
-                    onClick={() => { setSelectedApplicantType()}}
+                    onClick={() => { setSelectedApplicantType('')}}
                   />
                 </Tooltip>
                 </div>
@@ -818,7 +832,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
                       color: "#06617A",
                     }}
                     className={`${style.cursorPointer} ${style.marginLeft5}`}
-                    onClick={() => { setSelectedReappointmentStatus()}}
+                    onClick={() => { setSelectedReappointmentStatus('')}}
                   />
                 </Tooltip>
                 </div>
