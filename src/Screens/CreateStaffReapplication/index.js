@@ -198,7 +198,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
         queryParams.append('applicantTypeId', selectedApplicantType);
       }
 
-      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT' && selectedReappointmentStatus !== '' &&  selectedReappointmentStatus !== undefined) {
+      if (applicationStatus && selectedReappointmentStatus !== 'NOT_SENT') {
         queryParams.append('applicationStatus', applicationStatus);
       }
 
@@ -725,7 +725,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
             {/* <div className={style.verticalBorder}></div> */}
             <Tooltip title="Click to add filter" arrow>
             <div className={`${style.filterTypeLightGreen} ${style.marginBottom5} ${style.cursorPointer} ${style.flex}`} onClick={() => selectedReappointmentSubStatus ? setSelectedReappointmentSubStatus("") : setSelectedReappointmentSubStatus("SUBMISSION_PENDING")}>
-              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100)?.length} 
+              Completed & Not Submitted {tableData?.filter(data => data?.onGoingApplication?.completionPercentage === 100 && data?.onGoingApplication?.status === "CREATED")?.length} 
               {selectedReappointmentSubStatus === "SUBMISSION_PENDING" && (  
               <Tooltip title="Remove Filter" arrow>
                 <CancelIcon
