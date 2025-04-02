@@ -31,7 +31,7 @@ import ApplicationRejection from "./applicationRejectionDialog";
 import ApplicationApprovedDeclined from "./applicationApprovedDecline";
 import CCDateDialog from "../../Components/CCDateDialog";
 import ApprovalBulkDialog from "../../Components/ApprovalWithoutNotesBulkDialog";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { GET, PUT, POST, TenantID } from "../dataSaver";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import CheckListDialog from "./checkListDialog";
@@ -74,7 +74,8 @@ const StaffApplicationList = ({
   const PDFRef = createRef();
   const navigate = useNavigate();
   const componentRef = useRef(null);
-  const [applicationId, setApplicationId] = useState(sessionStorage.getItem('applicationId'));
+  const { applicationTypeFromUrl, applicationId } = useParams()
+  const [applicationIdToUse, setApplicationIdToUse] = useState(sessionStorage.getItem('applicationId'));
   const [rejectionTab, setRejectionTab] = useState("rejected");
   const [requestAppointment, setRequestAppointment] = useState(null);
   const [sentCompletion, setSentCompletion] = useState(null);
@@ -165,7 +166,7 @@ const StaffApplicationList = ({
   //   } else {
   //     let allIds = [];
   //     const currentDate = new Date(); // Get current date
-      
+
   //     if (selectedTab === "level-3") {
   //       allIds = tableData
   //         ?.filter((data) =>
@@ -694,9 +695,18 @@ const StaffApplicationList = ({
     getPreApplication();
   }, [])
 
+  useEffect(() => {
+    if (applicationId) {
+      console.log(applicationId, 'applicationIdFromURL')
+      sessionStorage.setItem("applicationId", applicationId);
+      sessionStorage.setItem("applicationCreationType", applicationTypeFromUrl)
+      showApplicationById(applicantId);
+    }
+  }, [applicationId])
+
   const getPreApplication = async () => {
     const { data: basicForm } = await GET(
-      `application-management-service/application/${applicationId}`
+      `application-management-service/application/${applicationIdToUse}`
     );
     setForm(basicForm)
   }
@@ -956,6 +966,11 @@ const StaffApplicationList = ({
     getActiveApplicationView(true);
   };
 
+  const showApplicationById = (id) => {
+    getActiveApplicationView(true);
+    getReappointmentChangesCommentBox(true);
+    // sessionStorage.setItem("applicationId", id);
+  };
 
   const onClickViewAndVerifyLevel1Function = (data) => {
     getActiveApplicationView(true);
@@ -1103,7 +1118,7 @@ const StaffApplicationList = ({
   // useEffect(() => {
   //   let allIds = [];
   //   const currentDate = new Date(); // Get current date
-    
+
   //   if (selectedTab === "level-3") {
   //     allIds = tableData
   //       ?.filter((data) =>
@@ -1149,7 +1164,7 @@ const StaffApplicationList = ({
   //       )
   //       .map((data) => data.id);
   //   }
-    
+
   //   setFilteredIds(allIds);
   //   console.log("Filtered IDs:", allIds);
   // }, [tableData, selectedTab]);
@@ -4261,12 +4276,14 @@ const StaffApplicationList = ({
       onClick: onClickViewAndVerifyApproveFromBODFunction,
       conditionToShow: `data?.completedWorkflows?.find((wf) => wf?.role === "Board")?.meetingDate`,
     },
-    { data:  "Go to Task List",
-      requiredValue: "boolean", 
-      onClick: onClickProcessingTaskFunction, 
-      hideForRoles: "Department Head", 
+    {
+      data: "Go to Task List",
+      requiredValue: "boolean",
+      onClick: onClickProcessingTaskFunction,
+      hideForRoles: "Department Head",
       hideForRoles2: "Credentialing Committee",
-      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`, },
+      conditionToShow: `data?.completedWorkflows?.find(wf => wf?.role === "Board")?.approvalType`,
+    },
     { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog, hideForRoles: "Department Head", hideForRoles2: "Credentialing Committee" },
     // {
     //   data: "Request For Clarification",
@@ -4848,25 +4865,25 @@ const StaffApplicationList = ({
                       </Tooltip>
                     </div>
                     {/* {!(workModeType === "Staff Manager" && selectedTab === "level-5") && ( */}
-                      <div
-                        className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
-                        style={{
-                          pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
-                          opacity: checkedIds?.length > 0 ? 1 : 0.5,
-                        }}
-                        onClick={() => {
-                          setShowCCDateDialog(true);
-                        }}
-                      >
-                        <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : selectedTab === "level-4" ? "MAC Approval Date" : "BOD Approval Date"} arrow>
-                          <EventAvailableOutlinedIcon
-                            sx={{
-                              fontSize: 25,
-                              color: "#06617A",
-                            }}
-                          />
-                        </Tooltip>
-                      </div>
+                    <div
+                      className={` ${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}
+                      style={{
+                        pointerEvents: checkedIds?.length > 0 ? "auto" : "none",
+                        opacity: checkedIds?.length > 0 ? 1 : 0.5,
+                      }}
+                      onClick={() => {
+                        setShowCCDateDialog(true);
+                      }}
+                    >
+                      <Tooltip title={selectedTab === "level-3" ? "Designate CC Meeting Date" : selectedTab === "level-4" ? "MAC Approval Date" : "BOD Approval Date"} arrow>
+                        <EventAvailableOutlinedIcon
+                          sx={{
+                            fontSize: 25,
+                            color: "#06617A",
+                          }}
+                        />
+                      </Tooltip>
+                    </div>
                     {/* )} */}
                   </>
                 )}
@@ -4892,7 +4909,7 @@ const StaffApplicationList = ({
                     </div>
                   ) : ""
                 }
-                 {/* <div
+                {/* <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight20}`}
                 >
