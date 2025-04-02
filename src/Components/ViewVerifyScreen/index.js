@@ -12212,7 +12212,7 @@ const NewActiveApplication = ({
                                                         ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
                                                         : 'N/A'}
                                                     </div>
-                                                    {clarification?.clarificationStatus === 'NA' && (
+                                                    {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application'  && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
                                                       // <div className={style.twoColumnGrid}>
                                                       <div>
                                                         <div
