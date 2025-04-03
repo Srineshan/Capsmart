@@ -782,6 +782,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         {/* </div>
                         </div> */}
                         <div className={`${style.twoCol} ${style.marginTop10}`}>
+                            <Tooltip title={"Click to Upload Documents"} arrow>
                             <CommonDropZone
                                 title={"Upload Your Documents"}
                                 description={
@@ -790,6 +791,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 changeHandler={changeHandler}
                                 files={files}
                             />
+                            </Tooltip>
+                            <Tooltip title={"Click to Upload Photo"} arrow>
                             <CommonDropZone
                                 title={"Upload A Photo"}
                                 description={
@@ -799,6 +802,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                 files={files}
                                 accept="image/*"
                             />
+                            </Tooltip>
                         </div>
                         <div ref={tableRef} className={style.tableContainer}>
                             {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (

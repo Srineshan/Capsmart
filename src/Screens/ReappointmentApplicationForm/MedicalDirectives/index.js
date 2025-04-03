@@ -522,7 +522,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     ) : (
                                         <TableTwo
                                             tableHeaderValues={[
-                                                <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={(e) => setSelectedIds(medicalDirectives?.length === selectedIds.length ? [] : selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}>{medicalDirectives?.length === selectedIds.length ? 'Remove All' : 'Select All'}</div>,
+                                                <div className={`${style.sign} ${medicalDirectivesStatus === 'completed' ? style.disabled : ''}`} onClick={(e) => setSelectedIds(medicalDirectives?.length === selectedIds.length ? [] : selectedMedicalDirectiveList?.map(innerData => ({ id: innerData?.medicalDirective?.id })))}><Tooltip title={medicalDirectives?.length === selectedIds.length ? "Click to Remove All" : "Click to Select All"} arrow>{medicalDirectives?.length === selectedIds.length ? 'Remove All' : 'Select All'}</Tooltip></div>,
                                                 // <CommonCheckBox
                                                 //     size="medium"
                                                 //     checked={selectedIds.length === selectedMedicalDirectiveList.length && selectedIds.length !== 0}

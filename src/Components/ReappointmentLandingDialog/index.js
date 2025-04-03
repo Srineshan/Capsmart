@@ -369,6 +369,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 </div>
                 <div className={style.displayInRow}>
                   <div>
+                  <Tooltip title={"Click to User Guides & Tutorials"} arrow>
                     <div
                       className={`${style.userGuideButton} ${style.marginTop}`}
                       onClick={() => {
@@ -377,6 +378,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                     >
                       USER GUIDES & TUTORIALS
                     </div>
+                    </Tooltip>
                   </div>
                   <div>
                     <Tooltip title={"Click to Continue"} arrow>

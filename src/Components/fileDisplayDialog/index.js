@@ -247,7 +247,7 @@ const handleEmbedPrint = () => {
                                 </Tooltip>
                             </div>
                         </div>
-                        <div ref={componentRef} className={style.marginTop}>
+                        <div className={style.marginTop}>
                             {file?.fileType === 'application/pdf' ? (
                                 <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>
                             ) : file?.fileType?.startsWith("image/") ? (

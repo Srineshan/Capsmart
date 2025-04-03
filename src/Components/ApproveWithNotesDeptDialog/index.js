@@ -813,7 +813,7 @@ const handleCheckboxChange = (checkboxName) => (event) => {
           <div ref={componentRef} className={`${style.pagebreak}`}>
           <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
                            <div className={style.marginTop10}>
-                             <div className={`${style.gridContainer} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                             <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
                                  <div className={`${style.gridRow} `}>
                               <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
                          {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +

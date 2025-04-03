@@ -4780,6 +4780,7 @@ const StaffApplicationList = ({
                     {
                       showCardDetails && (
                         <>
+                        <Tooltip arrow title={"Click to View Declined Applications"}>
                           <div
                             className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                             onClick={() => {
@@ -4789,6 +4790,8 @@ const StaffApplicationList = ({
                             {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
                             Approved But Declined ({applicationRejected?.applicationsRejected})
                           </div>
+                          </Tooltip>
+                          <Tooltip arrow title={"Click to View Rejected Applications"}>
                           <div
                             className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                             onClick={() => {
@@ -4798,6 +4801,7 @@ const StaffApplicationList = ({
                             Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
                             {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                           </div>
+                          </Tooltip>
                         </>
                       )
                     }

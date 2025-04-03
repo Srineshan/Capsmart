@@ -3343,7 +3343,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
-                  <Tooltip title={"Click to Back"} arrow>
+                  <Tooltip title={"Click to Yes"} arrow>
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
                     onClick={() => { setPrivilegeChangeYesOrNo('Yes'); handleSubmitPrivilegeCategory() }}

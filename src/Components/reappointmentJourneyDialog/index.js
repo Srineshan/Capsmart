@@ -268,7 +268,8 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                         </>
                                     ) : (
                                         <div className={` ${style.displayInRow} ${style.marginTop}`}>
-                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div>
+                                            <Tooltip title={"Click to Logout"} arrow>
+                                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); handleLogout() }}>LOGOUT</div></Tooltip>
                                             <Tooltip
                                                 title="To submit you have to correct all errors and issues identified."
                                                 arrow
