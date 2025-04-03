@@ -295,6 +295,13 @@ body::-webkit-scrollbar {
   gap: 10px;
 }
 
+
+.applicantGrid2 {
+  display: grid;
+  grid-template-columns: 2% 15% 15% 15% 20% 5% 15% 5%;
+  grid-gap: 1%;
+}
+
 .applicationCardStyle {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D4D;
@@ -1722,7 +1729,7 @@ select {
 
 .dialogStyle {
   height: 80%;
-  width: 75% !important;
+  width: 85% !important;
   border-radius: 20px;
 }
 

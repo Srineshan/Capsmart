@@ -1212,7 +1212,7 @@ const StaffApplicationList = ({
     }
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}&role=${workModeType}`
+        `application-management-service/application?tenantId=${TenantID}&applicationStatus=REJECTED&applicationCreationType=${applicationType}`
       );
       console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
@@ -1232,7 +1232,7 @@ const StaffApplicationList = ({
         `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType}`
         // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
-      console.log("Rejection data", response?.data?.applications);
+      console.log("Declined data", response?.data?.applications);
       setDeclineListData(response?.data?.applications);
       return response?.data?.applications || [];
     } catch (error) {
@@ -1242,7 +1242,6 @@ const StaffApplicationList = ({
   };
 
   const handleClick = async () => {
-    // await getDeclineData();
     setShowApplicationRejectionDialog(true);
   };
 
@@ -1325,6 +1324,7 @@ const StaffApplicationList = ({
     await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
       .then((response) => {
         setApplicationRejected(response?.data);
+        console.log("Datas",response?.data);
         setShowCardDetails(
           response?.data?.applicationsRejected > 0 ||
             response?.data?.applicationsApprovedButDenied > 0
@@ -4157,7 +4157,7 @@ const StaffApplicationList = ({
                       showCardDetails && (
                         <>
                           <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                             onClick={() => {
                               handleClick();
                             }}
@@ -4166,7 +4166,7 @@ const StaffApplicationList = ({
                             Approved But Declined ({applicationRejected?.applicationsRejected})
                           </div>
                           <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                             onClick={() => {
                               setShowApplicationApprovedDeclineDialog(true);
                             }}
@@ -4449,6 +4449,7 @@ const StaffApplicationList = ({
               rejectionListData={rejectionListData}
               // rejectedCount={applicationRejected?.appointmentRequestsDenied}
               declineCount={applicationRejected?.applicationsRejected}
+              onClickView={onClickViewAndVerifyFunction}
             />
           )
         }
@@ -4459,6 +4460,7 @@ const StaffApplicationList = ({
               declineListData={declineListData}
               // declineCount={applicationRejected?.applicationsRejected}
               rejectedCount={applicationRejected?.appointmentRequestsDenied}
+              onClickView={onClickViewAndVerifyFunction}
             />
           )
         }
