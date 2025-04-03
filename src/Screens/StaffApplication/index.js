@@ -25,7 +25,7 @@ import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 
 const StaffApplication = () => {
-    const [selectedTab, setSelectedTab] = useState('');
+    const [selectedTab, setSelectedTab] = useState('level-1');
     const [activeApplicationView, setActiveApplicationView] = useState(false);
     const [credCommApplicationView, setCredCommApplicationView] = useState(false);
     const [activeApplicationTask, setActiveApplicationTask] = useState(false);

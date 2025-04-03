@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT ,POST, TenantID } from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -12,7 +12,7 @@ import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import DocumentClarificationDialog from "../DocumentClarificationDialog"
 
-const ClarificationDialog = ({ getIsOpen,data,type,getDocumentClarificationDialog, dateFormat, getActiveApplicationView, selectedTab }) => {
+const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDialog, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -63,94 +63,40 @@ const ClarificationDialog = ({ getIsOpen,data,type,getDocumentClarificationDialo
     }
   };
 
-     const getLog = async () => {
-        setIsLoadingImage(true);
-        const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
-        setLogDetails(basicLog);
-        console.log("basicLog" +JSON.stringify(basicLog));
-        setIsLoadingImage(false)
-      };
-
-      const checkApproveEnabled = () => {
-        const hasValidComments = userNotes.trim() !== '';
-        const hasValidSubject = clarificationSubject.trim() !== '';
-        setIsApproveEnabled(hasValidComments && hasValidSubject);
-      };
-
-    //   const getIsShowDocumentClarificationDialog = () => {
-    //     // handleSubmitRequestForClarificationNow();
-    //     getDocumentClarificationDialog();
-    // }
-
-    const onClickDocumentClarificationRequestFunction = () => {
-      handleSubmitRequestForClarificationNow();
-      // getIsShowDocumentClarificationDialog(true, data, form);
-    };
-
-    const handleSubmitRequestForClarificationNow = async () => {
-      const user = JSON.parse(sessionStorage.getItem('user'));
-      let clarificationRequiredForTitle = data?.title;
-  
-      let temp = {
-          clarificationRequiredFor: clarificationRequiredForTitle,
-          clarificationTitle: clarificationSubject,
-          clarificationDescription: userNotes,
-          clarificationRequiredFrom: type,
-          clarificationRequestedBy: {
-              id: user?.id,
-              name: {
-                  firstName: user?.name?.firstName,
-                  lastName: user?.name?.lastName,
-                  middleName: user?.name?.middleName
-              },
-              email: {
-                  officialEmail: user?.email?.officialEmail
-              },
-              title: {
-                  title: user?.title?.title
-              }
-          },
-      };
-  
-      try {
-          setIsSubmitting(true);
-          setIsLoadingImage(true)
-  
-          await POST(
-              `application-management-service/application/${id}/form/${data?.id}/clarificationRequest`,
-              temp
-          );
-  
-          console.log("API call successful");
-  
-          const { data: updatedApplication } = await GET(`application-management-service/application/${id}`);
-          
-          const updatedForm = updatedApplication?.forms?.find(form => form?.id === data?.id);
-          const latestClarification = updatedForm?.clarifications?.[updatedForm?.clarifications?.length - 1] || {};
-  
-          setForm(latestClarification);
-  
-          setIsSubmitting(false);
-          getIsOpen(false)
-          setIsLoadingImage(false)
-        
-          getDocumentClarificationDialog(true, latestClarification, data);
-  
-      } catch (error) {
-          console.log("API Error:", error);
-          setIsSubmitting(false); 
-      }
+  const getLog = async () => {
+    setIsLoadingImage(true);
+    const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+    setLogDetails(basicLog);
+    console.log("basicLog" + JSON.stringify(basicLog));
+    setIsLoadingImage(false)
   };
 
-    const handleSubmitRequestForClarification = async () => {
-      const user = JSON.parse(sessionStorage.getItem('user'));
-      let clarificationRequiredForTitle =  data?.title
-      let temp = {
-        clarificationRequiredFor: clarificationRequiredForTitle,
-        clarificationTitle: clarificationSubject,
-        clarificationDescription: userNotes,
-        clarificationRequiredFrom: type,
-        clarificationRequestedBy: {
+  const checkApproveEnabled = () => {
+    const hasValidComments = userNotes.trim() !== '';
+    const hasValidSubject = clarificationSubject.trim() !== '';
+    setIsApproveEnabled(hasValidComments && hasValidSubject);
+  };
+
+  //   const getIsShowDocumentClarificationDialog = () => {
+  //     // handleSubmitRequestForClarificationNow();
+  //     getDocumentClarificationDialog();
+  // }
+
+  const onClickDocumentClarificationRequestFunction = () => {
+    handleSubmitRequestForClarificationNow();
+    // getIsShowDocumentClarificationDialog(true, data, form);
+  };
+
+  const handleSubmitRequestForClarificationNow = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    let clarificationRequiredForTitle = data?.title;
+
+    let temp = {
+      clarificationRequiredFor: clarificationRequiredForTitle,
+      clarificationTitle: clarificationSubject,
+      clarificationDescription: userNotes,
+      clarificationRequiredFrom: type,
+      clarificationRequestedBy: {
         id: user?.id,
         name: {
           firstName: user?.name?.firstName,
@@ -164,52 +110,106 @@ const ClarificationDialog = ({ getIsOpen,data,type,getDocumentClarificationDialo
           title: user?.title?.title
         }
       },
-      }
-      await POST(`application-management-service/application/${id}/form/${data?.id}/clarificationRequest`, temp)
-        .then(response => {
-            console.log("onetwo",response)
-            getIsOpen(false)
-            getApplication()
-        })
-        .catch((error) => {
-            console.log(error)
-        })
+    };
+
+    try {
+      setIsSubmitting(true);
+      setIsLoadingImage(true)
+
+      await POST(
+        `application-management-service/application/${id}/form/${data?.id}/clarificationRequest`,
+        temp
+      );
+
+      console.log("API call successful");
+
+      const { data: updatedApplication } = await GET(`application-management-service/application/${id}`);
+
+      const updatedForm = updatedApplication?.forms?.find(form => form?.id === data?.id);
+      const latestClarification = updatedForm?.clarifications?.[updatedForm?.clarifications?.length - 1] || {};
+
+      setForm(latestClarification);
+
+      setIsSubmitting(false);
+      getIsOpen(false)
+      setIsLoadingImage(false)
+
+      getDocumentClarificationDialog(true, latestClarification, data);
+
+    } catch (error) {
+      console.log("API Error:", error);
+      setIsSubmitting(false);
     }
+  };
+
+  const handleSubmitRequestForClarification = async () => {
+    const user = JSON.parse(sessionStorage.getItem('user'));
+    let clarificationRequiredForTitle = data?.title
+    let temp = {
+      clarificationRequiredFor: clarificationRequiredForTitle,
+      clarificationTitle: clarificationSubject,
+      clarificationDescription: userNotes,
+      clarificationRequiredFrom: type,
+      clarificationRequestedBy: {
+        id: user?.id,
+        name: {
+          firstName: user?.name?.firstName,
+          lastName: user?.name?.lastName,
+          middleName: user?.name?.middleName
+        },
+        email: {
+          officialEmail: user?.email?.officialEmail
+        },
+        title: {
+          title: user?.title?.title
+        }
+      },
+    }
+    await POST(`application-management-service/application/${id}/form/${data?.id}/clarificationRequest`, temp)
+      .then(response => {
+        console.log("onetwo", response)
+        getIsOpen(false)
+        getApplication()
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
 
   return (
-<>
-   {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-        <LoadingScreen/>
-      </div>
-    )}
-{!isLoadingImage && (
-    <Dialog
-      isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-    >
-      <div>
-        <div className={Classes.DIALOG_BODY}>
-          <div className={style.spaceBetween}>
-            <div className={`${style.heading}`}>
-            Clarification Required for {data?.title} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
-            </div>
-            <div className={style.displayInRow}>
-              <img
-                src={CrossPink}
-                alt="cross"
-                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                onClick={() => {
-                  getIsOpen(false);
-                }}
-              />
-            </div>
-          </div>
-          {/* <div className={`${style.marginTop10} ${style.detailsTextStyle}`}>License / Certification Details</div> */}
-          {/* <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+    <>
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
+      {!isLoadingImage && (
+        <Dialog
+          isOpen={getIsOpen}
+          onClose={() => getIsOpen(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={`${style.heading}`}>
+                  Clarification Required for {data?.title} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
+                </div>
+                <div className={style.displayInRow}>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                    onClick={() => {
+                      getIsOpen(false);
+                    }}
+                  />
+                </div>
+              </div>
+              {/* <div className={`${style.marginTop10} ${style.detailsTextStyle}`}>License / Certification Details</div> */}
+              {/* <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
               <div className={style.spaceBetween}>
                 <div>
                     <div className={style.subHeadingtextStyle}>License/Certification Issued By</div>
@@ -233,106 +233,106 @@ const ClarificationDialog = ({ getIsOpen,data,type,getDocumentClarificationDialo
                 </div>
               </div>
             </div> */}
-            <div className={`${style.marginTop10}`}>
+              <div className={`${style.marginTop10}`}>
                 <div className={`${style.textBoxTextStyle}`}>
-                Clarification Required Subject*
+                  Clarification Required Subject*
                 </div>
-                    <CommonInputField
-                    value={clarificationSubject}
-                    onChange={(e) => setClarificationSubject(e.target.value)}
-                    className={style.marginTop5}
-                    placeholder="Enter Subject"
-                    />
-            </div>
+                <CommonInputField
+                  value={clarificationSubject}
+                  onChange={(e) => setClarificationSubject(e.target.value)}
+                  className={style.marginTop5}
+                  placeholder="Enter Subject"
+                />
+              </div>
 
-            <div className={`${style.marginTop10}`}>
+              <div className={`${style.marginTop10}`}>
                 <div className={`${style.textBoxTextStyle} ${style.marginBottom5}`}>
-                Specify the clarification that is needed*
+                  Specify the clarification that is needed*
                 </div>
                 <CKEditor
-                    editor={ClassicEditor}
-                    data={userNotes}
-                    onChange={(event, editor) => {
-                        const data = editor.getData();
-                        setUserNotes(data);
-                    }}
-                    config={{
-                        placeholder: "Enter a Clarification You Needed",
-                        toolbar: {
-                        shouldNotGroupWhenFull: true,
-                        sticky: true,
-                        items: [
-                            'undo', 'redo',
-                            '|',
-                            'heading',
-                            '|',
-                            'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                            '|',
-                            'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                            '|',
-                            'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                        ],
-                        },
-                        autoGrow: false,
-                    }}
-                    onReady={(editor) => {
-                        const editorElement = editor.editing.view.document.getRoot();
-                        editor.editing.view.change(writer => {
-                            writer.setStyle(
-                            'min-height',
-                            '150px',
-                            editorElement
-                            );
-                        });
-                    }}
-                    
-                    />
-            </div>
-            <div className={`${style.marginTop10} ${style.spaceBetween} ${style.cursorPointer}`}>
-              <div  
-              style={{ 
-                // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
-                opacity: isApproveEnabled ? 1 : 0.5,
-                cursor: isApproveEnabled ? 'pointer' : 'default' 
-              }}
-              onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
-              // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
-              // onClick={() => getIsOpen(false)}
-              >
-                <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
+                  editor={ClassicEditor}
+                  data={userNotes}
+                  onChange={(event, editor) => {
+                    const data = editor.getData();
+                    setUserNotes(data);
+                  }}
+                  config={{
+                    placeholder: "Enter a Clarification You Needed",
+                    toolbar: {
+                      shouldNotGroupWhenFull: true,
+                      sticky: true,
+                      items: [
+                        'undo', 'redo',
+                        '|',
+                        'heading',
+                        '|',
+                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                        '|',
+                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                        '|',
+                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                      ],
+                    },
+                    autoGrow: false,
+                  }}
+                  onReady={(editor) => {
+                    const editorElement = editor.editing.view.document.getRoot();
+                    editor.editing.view.change(writer => {
+                      writer.setStyle(
+                        'min-height',
+                        '150px',
+                        editorElement
+                      );
+                    });
+                  }}
+
+                />
               </div>
-              <div className={style.flex}>
+              <div className={`${style.marginTop10} ${style.spaceBetween} ${style.cursorPointer}`}>
                 <div
-                className={`${style.reviewButtonStyle}`}
-                onClick={isApproveEnabled ? () => getIsOpen(false) : undefined}
-                style={{ 
-                  // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
-                  opacity: isApproveEnabled ? 1 : 0.5,
-                  cursor: isApproveEnabled ? 'pointer' : 'default' 
-                }}
-              >
-                <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
-              </div>
-              <div
-                className={`${style.reviewButtonStyle} ${style.marginLeft}`}
-                onClick={isApproveEnabled ? () => handleSubmitRequestForClarification() : undefined}
-                style={{ 
-                  opacity: isApproveEnabled ? 1 : 0.5 ,
-                  cursor: isApproveEnabled ? 'pointer' : 'default' 
-                }}
-              >
-                <div className={style.reviewButton}>SAVE & EXIT</div>
+                  style={{
+                    // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
+                    opacity: isApproveEnabled ? 1 : 0.5,
+                    cursor: isApproveEnabled ? 'pointer' : 'default'
+                  }}
+                  onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
+                // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
+                // onClick={() => getIsOpen(false)}
+                >
+                  <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
+                </div>
+                <div className={style.flex}>
+                  {/* <div
+                    className={`${style.reviewButtonStyle}`}
+                    onClick={isApproveEnabled ? () => getIsOpen(false) : undefined}
+                    style={{
+                      // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
+                      opacity: isApproveEnabled ? 1 : 0.5,
+                      cursor: isApproveEnabled ? 'pointer' : 'default'
+                    }}
+                  >
+                    <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
+                  </div> */}
+                  <div
+                    className={`${style.reviewButtonStyle} ${style.marginLeft}`}
+                    onClick={isApproveEnabled ? () => handleSubmitRequestForClarification() : undefined}
+                    style={{
+                      opacity: isApproveEnabled ? 1 : 0.5,
+                      cursor: isApproveEnabled ? 'pointer' : 'default'
+                    }}
+                  >
+                    <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </Dialog>
-    )}
-    {/* {isOpenDocumentClarificationDialog && (
+        </Dialog>
+      )}
+      {/* {isOpenDocumentClarificationDialog && (
         <DocumentClarificationDialog getIsOpen={getIsShowDocumentClarificationDialog} form={data} data={form}/>
     )} */}
-</>
+    </>
   );
 };
 

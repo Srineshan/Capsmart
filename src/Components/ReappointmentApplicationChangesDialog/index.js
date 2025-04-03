@@ -56,8 +56,8 @@
 //   // }
 
 //   return (
-  
-    
+
+
 //     <Dialog
 //       isOpen={getIsOpen}
 //       onClose={() => getIsOpen(false)}
@@ -168,7 +168,7 @@
 //         </div>
 //       </div>
 //     </Dialog>
-    
+
 //   );
 // };
 
@@ -176,18 +176,18 @@
 
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET ,TenantID } from "../../Screens/dataSaver";
+import { GET, TenantID } from "../../Screens/dataSaver";
 import { format } from "date-fns";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import style from "./index.module.scss";
-import {formatFirstNameLastName} from "../../utils/formatting";
+import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
 
-const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab}) => {
+const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const user = jwt(userDetails);
@@ -199,7 +199,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
   const id = sessionStorage.getItem("applicationId");
   const componentRef = useRef(null);
   const [applicationCreationType, setApplicationCreationType] = useState('NEW');
-  const [applicationType, setApplicationType] = useState(() => 
+  const [applicationType, setApplicationType] = useState(() =>
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -226,8 +226,8 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
   const getLog = async () => {
     const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
     setLogDetails(basicLog);
-    console.log("basicLog" +JSON.stringify(basicLog));
-    
+    console.log("basicLog" + JSON.stringify(basicLog));
+
   };
 
   useEffect(() => {
@@ -242,6 +242,14 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
 
   const getApplicationCreationType = (value) => {
     setApplicationCreationType(value);
+  }
+
+  const onClose = () => {
+    getIsOpen(false);
+    getActiveApplicationView(false);
+    if (window.location.pathname?.includes('applicationById')) {
+      window.location.pathname = "/applications";
+    }
   }
 
   // if (!userRole?.includes('Credentialing Committee') && !userRole?.includes('Chief Of Staff')) {
@@ -286,7 +294,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                 alt="cross"
                 className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
                 onClick={() => {
-                  getIsOpen(false);getActiveApplicationView(false);
+                  onClose()
                 }}
               />
             </div>
@@ -371,16 +379,16 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
               {logDetails?.logs?.[logDetails.logs.length - 1]?.notes}
               </div>
             </div> */}
-            {/* {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => ( */}
-              <>
-              <div className={style.marginTop}>
-                {/* <div className={style.commentsNotesHeadingFontStyle}>
+                {/* {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => ( */}
+                <>
+                  <div className={style.marginTop}>
+                    {/* <div className={style.commentsNotesHeadingFontStyle}>
                  Reappointment Application has updates and changes that require verification:
                 </div> */}
-                <div className={style.commentsNotesHeadingFontStyle}>
-                Reappointment Application has been submitted with all required documents for processing.
-                </div>
-                {/* <div>
+                    <div className={style.commentsNotesHeadingFontStyle}>
+                      Reappointment Application has been submitted with all required documents for processing.
+                    </div>
+                    {/* <div>
                     {formDetails?.formSchemas?.map((item, index) => (
                         <div key={item?.id} className={`${style.commentsNotesFontStyle} ${style.marginTop10}`}>
                         <div className={`${style.twoColumnGridInner1}`}>
@@ -390,10 +398,10 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                         </div>
                     ))}
                     </div> */}
-              </div>
-              </>
-             {/* ))} */}
-            {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+                  </div>
+                </>
+                {/* ))} */}
+                {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Dept Head Comments & Notes
             </div>
             <div className={`${style.notesBorderStyle}`}>
@@ -401,7 +409,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
               </div>
             </div> */}
-            {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+                {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
             <Tooltip title={"Click to Start Verification"} arrow>
@@ -410,10 +418,10 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
             </div>
             </Tooltip>
           </div>
-        </div>
-      </div>
-    </Dialog>
-     )} 
+          </div>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 };

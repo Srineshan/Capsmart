@@ -50,6 +50,10 @@
     margin-left: 10px !important;
 }
 
+.padding0{
+    padding: 0px;
+}
+
 .isParagraph {
     font-size: 14px;
     color: #FFFFFF;
@@ -485,7 +489,7 @@ scrollbar-width: thin;
 
 .searchChips {
     background: $secondarycolor 0% 0% no-repeat padding-box;
-    font: normal normal normal 14px/18px proxima-nova;
+    font: italic normal bold 14px/18px proxima-nova;
     border: 1px solid $primarycolor;
     border-radius: 23px;
     padding: 5px 10px;

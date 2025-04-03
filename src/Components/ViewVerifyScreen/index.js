@@ -279,9 +279,7 @@ const NewActiveApplication = ({
     ).toString()
   );
   const [currentDate, setCurrentDate] = useState();
-  const [applicationType, setApplicationType] = useState(() =>
-    sessionStorage.getItem('applicationCreationType') || 'NEW'
-  );
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const workModeType = sessionStorage.getItem('workModeType')
   const dropzoneStyle = {
     width: "100%",
@@ -312,13 +310,30 @@ const NewActiveApplication = ({
   }, [applicationId])
 
   useEffect(() => {
-    if ( workModeType === "Staff Manager" && selectedTab === "level-3" && form?.upcomingCredCommitteeMeetingDate) {
-      setSelectedDateForReappoint(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
-      setSelectedDateForCC(new Date(`${form?.upcomingCredCommitteeMeetingDate}T00:00`), "MMM dd, yyyy");
+    const credentialingCommitteeDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Credentialing Committee"
+    );
+    const AdvisoryCommitteeDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Advisory Committee"
+    );
+    const BoardDate = form?.completedWorkflows?.find(
+      (workflow) => workflow?.role === "Board"
+    );
+    if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate) {
+      setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-  }, [workModeType,selectedTab,form?.upcomingCredCommitteeMeetingDate]);
-  
+    if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate) {
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+    if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.meetingDate) {
+      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+  }, [workModeType, selectedTab, form]);
+
 
   // const handleDateChange = (date, field) => {
   //   const formattedDate = date
@@ -350,7 +365,11 @@ const NewActiveApplication = ({
       setSelectedDateForReappoint(formattedDate);
     } else if (field === "ApprovedDateMac") {
       setSelectedDateForMac(formattedDate);
+    } else if (field === "MAC") {
+      setSelectedDateForMac(formattedDate);
     } else if (field === "ApprovedDateBod") {
+      setSelectedDateForBod(formattedDate);
+    } else if (field === "BOD") {
       setSelectedDateForBod(formattedDate);
     }
 
@@ -436,7 +455,7 @@ const NewActiveApplication = ({
       console.error('Error fetching application:', error);
     }
   };
-  // const isApproved = form?.forms[index]?.status === "APPROVED";
+  // const isApproved = form?.forms?.[index]?.status === "APPROVED";
 
   useEffect(() => {
     setFormIndex(
@@ -472,15 +491,15 @@ const NewActiveApplication = ({
 
 
   useEffect(() => {
-    if (form?.forms[formIndex]?.data !== null) {
+    if (form?.forms?.[formIndex]?.data !== null) {
       setSelectedPrivilegeForDisplay(form?.privileges?.obligatedPrivileges);
       setSelectedAdditionalPrivilegeForDisplay(
         form?.privileges?.additionalPrivileges
       );
-      setPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeChangeYesOrNo);
-      setPrivilegeSetChangeYesOrNo(form?.forms[formIndex]?.data?.privilegeSetChangeYesOrNo);
-      setAdditionalPrivilegeChangeYesOrNo(form?.forms[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-      setPrivilegeAtOtherHospitalYesOrNo(form?.forms[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+      setPrivilegeChangeYesOrNo(form?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+      setPrivilegeSetChangeYesOrNo(form?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+      setAdditionalPrivilegeChangeYesOrNo(form?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+      setPrivilegeAtOtherHospitalYesOrNo(form?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
       setHospitalPrivilegeSet(form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : form?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
       console.log("selectedPrivilegeForDisplay", JSON.stringify(selectedPrivilegeForDisplay, null, 2));
     }
@@ -512,7 +531,7 @@ const NewActiveApplication = ({
       // Check if all forms are approved
       const areAllFormsApproved = relevantSchemas.every((index) =>
 
-        form?.forms[index]?.status === "APPROVED"
+        form?.forms?.[index]?.status === "APPROVED"
       );
 
       //   setIsApproved(areAllFormsApproved);
@@ -521,12 +540,12 @@ const NewActiveApplication = ({
 
       // Debug logging
       relevantSchemas.forEach((_, index) => {
-        console.log(`Form ${index} status:`, form?.forms[index]?.status);
-        console.log(`Form ${index} isApproved:`, form?.forms[index]?.status === "APPROVED");
+        console.log(`Form ${index} status:`, form?.forms?.[index]?.status);
+        console.log(`Form ${index} isApproved:`, form?.forms?.[index]?.status === "APPROVED");
       });
 
       const approvalStatuses = form.formSchemas.map((_, index) =>
-        form?.forms[index]?.status === "APPROVED"
+        form?.forms?.[index]?.status === "APPROVED"
       );
 
 
@@ -729,6 +748,21 @@ const NewActiveApplication = ({
   useEffect(() => {
     setUserDetails();
   }, [users?.id])
+
+  useEffect(() => {
+    console.log(form?.forms?.filter((data) => data?.clarifications?.length > 0), 'checkforrfc', expandStates)
+    if (form?.forms?.filter((data) => data?.clarifications?.length > 0)?.length > 0) {
+      setExpandStates((prev) => ({ ...prev, section1: true }))
+    }
+    if (form?.notesDetails?.filter(log => {
+      if (!log?.notes?.notes) return false;
+      if (log?.private && log?.user?.id !== users?.id) return false;
+      return true;
+    })?.length > 0) {
+      setExpandStates((prev) => ({ ...prev, section5: true }))
+    }
+  }, [form])
+  console.log(form?.forms?.filter((data) => data?.clarifications?.length > 0), 'checkforrfc', expandStates)
 
   const setUserDetails = async () => {
     try {
@@ -1224,10 +1258,25 @@ const NewActiveApplication = ({
 
 
   const getApplicationDateForCC = async () => {
-    let meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    let role;
+    let meetingDate;
     let temp = [applicationId];
+    if (selectedTab === 'level-2') {
+      role = "Department Head";
+    } else if (selectedTab === 'level-3') {
+      role = "Credentialing Committee";
+      meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      meetingDate = format(new Date(selectedDateForBod), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+    }
 
-    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}`, temp)
+    await PUT(`application-management-service/application/updateMeetingDate/bulk?meetingDate=${meetingDate}&role=${role}`, temp)
       .then(response => {
         console.log('successfull')
         onClose();
@@ -1595,7 +1644,7 @@ const NewActiveApplication = ({
   };
 
   const getAllFormSchemas = async () => {
-    if (applicationId !== undefined) {
+    if (applicationId !== undefined && applicationId !== '') {
       const { data: allFormSchemas } = await GET(
         `application-management-service/application/${applicationId}/getSchemas`
       );
@@ -1604,7 +1653,7 @@ const NewActiveApplication = ({
   }
 
   const getMedicalDirectives = async () => {
-    if (applicationId !== undefined) {
+    if (applicationId !== undefined && applicationId !== '') {
       const { data: medicalDirectives } = await GET(
         `medical-directive-service/medicalDirectives/application/${applicationId}?isNewAppointment=${form?.creationType !== 'REAPPOINTMENT'}&isReAppointment=${form?.creationType === 'REAPPOINTMENT'}`
       );
@@ -1964,6 +2013,9 @@ const NewActiveApplication = ({
 
   const onClose = () => {
     getActiveApplicationView(false);
+    if (window.location.pathname?.includes('applicationById')) {
+      window.location.pathname = "/applications";
+    }
   };
 
   const filteredData = form?.formSchemas?.filter((data) => data?.formCategory === "Acknowledgement");
@@ -1978,12 +2030,20 @@ const NewActiveApplication = ({
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
   const reappointmentDate = form?.createdDate;
   const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
+  const credentialingCommitteeData = form?.completedWorkflows?.find(
+    (workflow) => workflow?.role === "Credentialing Committee"
+  );
+  const reviewedDateCC = credentialingCommitteeData ? new Date(credentialingCommitteeData?.reviewedDate) : null;
+  const AdvisoryCommitteeData = form?.completedWorkflows?.find(
+    (workflow) => workflow?.role === "Advisory Committee"
+  );
+  const reviewedDateMAC = AdvisoryCommitteeData ? new Date(AdvisoryCommitteeData?.reviewedDate) : null;
   const paymentmentDate = form?.payment?.paidDateTime;
   const paymentmentPaidDate = paymentmentDate ? format(new Date(paymentmentDate), "MM/dd/yyyy 'at' h:mm a") : "-";
-  const isUploadYourDoc = form?.forms[1]?.schemaCategory === 'UploadYourDoc';
-  const isMedicalDirectives = form?.forms[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
-  const allVerified = form?.forms[1]?.data?.table?.every(item => item.isVerified === true);
-  const allVerifiedMD = form?.forms[9]?.data?.table?.every(item => item.isVerified === true);
+  const isUploadYourDoc = form?.forms?.[1]?.schemaCategory === 'UploadYourDoc';
+  const isMedicalDirectives = form?.forms?.[9]?.schemaCategory === 'MEDICAL_DIRECTIVES';
+  const allVerified = form?.forms?.[1]?.data?.table?.every(item => item.isVerified === true);
+  const allVerifiedMD = form?.forms?.[9]?.data?.table?.every(item => item.isVerified === true);
 
   const buttonStyle = (isUploadYourDoc && !allVerified) ? { opacity: 0.5, pointerEvents: 'none' } : {};
 
@@ -2108,8 +2168,8 @@ const NewActiveApplication = ({
   //   // Check if logDetails.logs is an array and has elements
   //   if (logDetails?.logs && Array.isArray(logDetails.logs)) {
   //     return logDetails.logs.some((log) => {
-  //       if (log?.form?.id === form?.forms[index]?.id) {
-  //         console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id);
+  //       if (log?.form?.id === form?.forms?.[index]?.id) {
+  //         console.log("Checking log.form.id === form.forms?.[index].id:", log?.form?.id, form?.forms?.[index]?.id);
 
   //         // Check if userRole includes log.role
   //         const roleMatch = userRole?.includes(log?.role);
@@ -4013,7 +4073,7 @@ const NewActiveApplication = ({
                 <ApplicationFieldCard
                   object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.conductDisclosure2}
                   basicForm={form}
-                  stepPath={`forms[${formIndex}].data`}
+                  stepPath={`forms?.[${formIndex}].data`}
                   gridStyle={style.conductGrid}
                   baseKey={"conductDisclosure2"}
                   collapsableQuestionCard={true}
@@ -4046,7 +4106,7 @@ const NewActiveApplication = ({
                 <ApplicationFieldCard
                   object={allFormSchemas?.[index]?.formSchema?.schema?.properties?.criminalData2}
                   basicForm={form}
-                  stepPath={`forms[${formIndex}].data`}
+                  stepPath={`forms?.[${formIndex}].data`}
                   gridStyle={style.conductGrid}
                   baseKey={"criminalData2"}
                   collapsableQuestionCard={true}
@@ -5575,7 +5635,7 @@ const NewActiveApplication = ({
                                         <>
                                           <div
                                             className={`${style.marginLeft10} ${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
+                                              } ${form?.forms?.[index]?.status !== "APPROVED"
                                                 ? style.greyDotStyle
                                                 : style.greenDotStyle
                                               }`}
@@ -5604,8 +5664,8 @@ const NewActiveApplication = ({
                                                 (() => {
                                                   const isMatch = logDetails.logs.some((log) => {
                                                     if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                      const match = log.form.id === form?.forms?.[index]?.id;
+                                                      console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                       if (match) {
                                                         let Match = false;
@@ -5651,11 +5711,11 @@ const NewActiveApplication = ({
                                                           </div>
                                                         </div>
                                                       ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
+                                                        form?.forms?.[index]?.status !== "APPROVED" ? (
                                                           <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                             <div
                                                               className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                             >
                                                               Verify
                                                             </div>
@@ -5683,7 +5743,7 @@ const NewActiveApplication = ({
                                           >
                                             <div
                                               className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                } ${form?.forms?.[index]?.status !== "APPROVED"
                                                   ? style.greyDotStyle
                                                   : style.greenDotStyle
                                                 }`}
@@ -5694,7 +5754,7 @@ const NewActiveApplication = ({
                                           >
                                             <div
                                               className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                } ${form?.forms?.[index]?.status !== "APPROVED"
                                                   ? style.greyDotStyle
                                                   : style.greenDotStyle
                                                 }`}
@@ -5770,11 +5830,11 @@ const NewActiveApplication = ({
 
                               return Match && (
                                 <div>
-                                  {form?.forms[index]?.status !== "APPROVED" ? (
+                                  {form?.forms?.[index]?.status !== "APPROVED" ? (
                                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                       <div
                                         className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                       >
                                         Verify
                                       </div>
@@ -5801,7 +5861,7 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -5812,7 +5872,7 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -5882,11 +5942,11 @@ const NewActiveApplication = ({
 
                                           return isMatch && (
                                             <div>
-                                              {form?.forms[index]?.status !== "APPROVED" ? (
+                                              {form?.forms?.[index]?.status !== "APPROVED" ? (
                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                   <div
                                                     className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                   >
                                                     Verify
                                                   </div>
@@ -5909,12 +5969,12 @@ const NewActiveApplication = ({
                                 <>
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                     <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
+                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
                                     ></div>
                                   </div>
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                                     <div
-                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
+                                      className={`${style.marginLeft10} ${style.justifySpaceAround} ${form?.forms?.[index]?.status !== "APPROVED" ? style.greyDotStyle : style.greenDotStyle}`}
                                     ></div>
                                   </div>
                                   <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
@@ -5997,8 +6057,8 @@ const NewActiveApplication = ({
                                                   (() => {
                                                     const isMatch = logDetails?.logs?.some((log) => {
                                                       if (log?.form && log?.form?.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                         if (match) {
                                                           let Match = false;
@@ -6044,11 +6104,11 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                               >
                                                                 Approve
                                                               </div>
@@ -6088,8 +6148,8 @@ const NewActiveApplication = ({
                                               (() => {
                                                 const isMatch = logDetails.logs.some((log) => {
                                                   if (log?.form && log?.form?.id) {
-                                                    const match = log?.form?.id === form?.forms[index]?.id;
-                                                    console.log("Checking log.form.id === form.forms[index].id:", log?.form?.id, form?.forms[index]?.id, match);
+                                                    const match = log?.form?.id === form?.forms?.[index]?.id;
+                                                    console.log("Checking log.form.id === form.forms?.[index].id:", log?.form?.id, form?.forms?.[index]?.id, match);
 
                                                     if (match) {
                                                       let Match = false;
@@ -6138,13 +6198,13 @@ const NewActiveApplication = ({
                                                   <div key={form?.id}>
                                                     <div className={`${style.flexEnd}`}>
                                                       <div>
-                                                        {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
+                                                        {form?.forms?.[index]?.schemaCategory === 'UploadYourDoc' ? null : (
                                                           isMatch ? (
                                                             <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                               <Tooltip title="Click To Revert Verification" arrow>
                                                                 <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                   onClick={() => {
-                                                                    handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                    handleStepsVerifyRevoke(form?.forms?.[index]?.id);
                                                                   }}
                                                                 >
                                                                   Verified <RestartAltOutlinedIcon sx={{
@@ -6157,13 +6217,13 @@ const NewActiveApplication = ({
                                                             </div>
                                                           ) :
                                                             (
-                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <Tooltip title="Click To Verify">
                                                                     <div
                                                                       className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                       onClick={() => {
-                                                                        handleStepsVerify(form?.forms[index]?.id);
+                                                                        handleStepsVerify(form?.forms?.[index]?.id);
                                                                       }}
                                                                     >
                                                                       Verify
@@ -6175,27 +6235,27 @@ const NewActiveApplication = ({
                                                                   <Tooltip title="Click To Revert Verification">
                                                                     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                                       onClick={() => {
-                                                                        handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                        handleStepsVerifyRevoke(form?.forms?.[index]?.id);
                                                                       }}
                                                                     >
                                                                       Verified <RestartAltOutlinedIcon sx={{
-                                                                    fontSize: 20,
-                                                                    color: "#ffffff",
-                                                                    marginLeft: "10px",
-                                                                  }} />
+                                                                        fontSize: 20,
+                                                                        color: "#ffffff",
+                                                                        marginLeft: "10px",
+                                                                      }} />
                                                                     </div>
                                                                   </Tooltip>
                                                                 </div>
                                                               )
                                                             )
                                                         )}
-                                                        {/* {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? (
+                                                        {/* {form?.forms?.[index]?.schemaCategory === 'UploadYourDoc' ? (
                                                     // isMatch ? (
                                                     //   <div className={`${style.greenButton} ${style.cursorPointer}`}>
                                                     //     <Tooltip title="Click To Revert Verification">
                                                     //     <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                     //      onClick={() => {
-                                                    //       handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                    //       handleStepsVerifyRevoke(form?.forms?.[index]?.id);
                                                     //   }}
                                                     //     >
                                                     //       Verified
@@ -6204,7 +6264,7 @@ const NewActiveApplication = ({
                                                     //   </div>
                                                     // ) : 
                                                     (
-                                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                                      form?.forms?.[index]?.status !== "APPROVED" ? (
                                                         <div className={`${style.purpleButton} ${style.cursorPointer}`} style={buttonStyle}>
                                                           <Tooltip title="Click To Verify">
                                                             <div
@@ -6213,7 +6273,7 @@ const NewActiveApplication = ({
                                                                 if (
                                                                   !(isUploadYourDoc && !allVerified)
                                                                 ) {
-                                                                  handleStepsVerify(form?.forms[index]?.id);
+                                                                  handleStepsVerify(form?.forms?.[index]?.id);
                                                                 }
                                                               }}
                                                             >
@@ -6226,7 +6286,7 @@ const NewActiveApplication = ({
                                                           <Tooltip title="Click To Revert Verification">
                                                             <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                                               onClick={() => {
-                                                                handleStepsVerifyRevoke(form?.forms[index]?.id);
+                                                                handleStepsVerifyRevoke(form?.forms?.[index]?.id);
                                                               }}
                                                             >
                                                               Verified
@@ -6237,21 +6297,23 @@ const NewActiveApplication = ({
                                                     )
                                                   ): null} */}
                                                       </div>
-                                                      <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
-                                                        <div className={`${style.spaceEvenly}`}>
-                                                          <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
-                                                            RFC
+                                                      {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
+                                                        <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
+                                                          <div className={`${style.spaceEvenly}`}>
+                                                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
+                                                              RFC
+                                                            </div>
+                                                            {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                           </div>
-                                                          {isOpenToggle[index] ? <KeyboardArrowUpOutlinedIcon /> : <KeyboardArrowDownOutlinedIcon />}
                                                         </div>
-                                                      </div>
+                                                      )}
 
                                                     </div>
                                                     {isOpenToggle[index] && (
                                                       <div className={`${style.dropdownContainer}`}>
                                                         <div className={`${style.dropdownItem}`}>Request for Clarification</div>
                                                         <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`} onClick={() => {
-                                                          onClickDocumentClarificationRequestFunction(form?.forms[index], "APPLICANT");
+                                                          onClickDocumentClarificationRequestFunction(form?.forms?.[index], "APPLICANT");
                                                         }}>From Applicant</div>
                                                         {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30} ${style.cursorPointer}`}>From Internal Staff</div> */}
                                                         {/* <div className={`${style.dropDownTextStyle} ${style.marginLeft30}`}>From Institution</div> */}
@@ -6431,8 +6493,8 @@ const NewActiveApplication = ({
                                                     {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                                       const isMatch = logDetails.logs.some((log) => {
                                                         if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                          const match = log.form.id === form?.forms?.[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                           if (match) {
                                                             let Match = false;
@@ -6486,11 +6548,11 @@ const NewActiveApplication = ({
                                                               </div>
                                                             </div>
                                                           ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
                                                                   Verify
                                                                 </div>
@@ -6585,7 +6647,7 @@ const NewActiveApplication = ({
                                                       <div className={style.grid2}>
                                                         <div
                                                           onClick={
-                                                            form?.forms[index]?.staffEsign === null
+                                                            form?.forms?.[index]?.staffEsign === null
                                                               ? () =>
                                                                 handleStaffEsign(
                                                                   form?.forms?.filter(
@@ -6790,7 +6852,7 @@ const NewActiveApplication = ({
                                           </div>
                                           {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
-                            {form?.forms[index]?.status === "APPROVED" ? (
+                            {form?.forms?.[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
                             ) : (
                               <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
@@ -6810,8 +6872,8 @@ const NewActiveApplication = ({
                                                       (() => {
                                                         const isMatch = logDetails.logs.some((log) => {
                                                           if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                            const match = log.form.id === form?.forms?.[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                             if (match) {
                                                               let Match = false;
@@ -6857,11 +6919,11 @@ const NewActiveApplication = ({
                                                                 </div>
                                                               </div>
                                                             ) : (
-                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <div
                                                                     className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                   >
                                                                     Approve
                                                                   </div>
@@ -6900,8 +6962,8 @@ const NewActiveApplication = ({
                                                   (() => {
                                                     const isMatch = logDetails.logs.some((log) => {
                                                       if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                         if (match) {
                                                           let Match = false;
@@ -6947,11 +7009,11 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                               >
                                                                 Approve
                                                               </div>
@@ -7048,11 +7110,11 @@ const NewActiveApplication = ({
 
                                       return isMatch && (
                                         <div>
-                                          {form?.forms[index]?.status !== "APPROVED" ? (
+                                          {form?.forms?.[index]?.status !== "APPROVED" ? (
                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                               <div
                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                               >
                                                 Approve
                                               </div>
@@ -7113,8 +7175,8 @@ const NewActiveApplication = ({
                                                       (() => {
                                                         const isMatch = logDetails.logs.some((log) => {
                                                           if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                            const match = log.form.id === form?.forms?.[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                             if (match) {
                                                               let Match = false;
@@ -7160,11 +7222,11 @@ const NewActiveApplication = ({
                                                                 </div>
                                                               </div>
                                                             ) : (
-                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <div
                                                                     className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                   >
                                                                     Approve
                                                                   </div>
@@ -7203,8 +7265,8 @@ const NewActiveApplication = ({
                                                   (() => {
                                                     const isMatch = logDetails.logs.some((log) => {
                                                       if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                         if (match) {
                                                           let Match = false;
@@ -7250,11 +7312,11 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                               >
                                                                 Approve
                                                               </div>
@@ -7287,7 +7349,7 @@ const NewActiveApplication = ({
                                                 )}
                                               </>
                                             )}
-                                            {/* {form?.forms[index]?.schemaCategory === 'PrivilegeSelection' && (
+                                            {/* {form?.forms?.[index]?.schemaCategory === 'PrivilegeSelection' && (
                                                     <div className={style.padding20}>
                                                       <div className={`${style.cardTitle} ${style.advanceBoxStyle}  ${style.marginTop10}`}>
                                                         Application Payment Status
@@ -7529,8 +7591,8 @@ const NewActiveApplication = ({
                                                     {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                                       const isMatch = logDetails.logs.some((log) => {
                                                         if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                          const match = log.form.id === form?.forms?.[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                           if (match) {
                                                             let Match = false;
@@ -7584,11 +7646,11 @@ const NewActiveApplication = ({
                                                               </div>
                                                             </div>
                                                           ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
                                                                   Approve
                                                                 </div>
@@ -7634,7 +7696,7 @@ const NewActiveApplication = ({
                                             <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
                                             {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
                                               <div className={style.grid2}>
-                                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
                                                   <ESignature
                                                     userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
                                                     encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
@@ -8097,7 +8159,7 @@ const NewActiveApplication = ({
                                       >
                                         <div
                                           className={`${style.marginLeft10} ${style.justifySpaceAround
-                                            } ${form?.forms[index]?.status !== "APPROVED"
+                                            } ${form?.forms?.[index]?.status !== "APPROVED"
                                               ? style.greyDotStyle
                                               : style.greenDotStyle
                                             }`}
@@ -8112,14 +8174,14 @@ const NewActiveApplication = ({
                                       </div>
                                       {/* {expand?.status && expand?.index === index + 1 ? ( 
                           <>
-                            {form?.forms[index]?.status !== "APPROVED" ? (
+                            {form?.forms?.[index]?.status !== "APPROVED" ? (
                               <div
                                 className={`${style.purpleButton} ${style.cursorPointer} `}
                               >
                                 <div
                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
                                   onClick={() =>
-                                    handleStepsVerify(form?.forms[index]?.id)
+                                    handleStepsVerify(form?.forms?.[index]?.id)
                                   }
                                 >
                                   Verify
@@ -8144,7 +8206,7 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -8155,7 +8217,7 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -8189,8 +8251,8 @@ const NewActiveApplication = ({
                                                   (() => {
                                                     const isMatch = logDetails.logs.some((log) => {
                                                       if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                         if (match) {
                                                           let Match = false;
@@ -8236,11 +8298,11 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                               >
                                                                 Verify
                                                               </div>
@@ -8267,7 +8329,7 @@ const NewActiveApplication = ({
                                           >
                                             <div
                                               className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                } ${form?.forms?.[index]?.status !== "APPROVED"
                                                   ? style.greyDotStyle
                                                   : style.greenDotStyle
                                                 }`}
@@ -8278,7 +8340,7 @@ const NewActiveApplication = ({
                                           >
                                             <div
                                               className={`${style.marginLeft10}${style.justifySpaceAround
-                                                } ${form?.forms[index]?.status !== "APPROVED"
+                                                } ${form?.forms?.[index]?.status !== "APPROVED"
                                                   ? style.greyDotStyle
                                                   : style.greenDotStyle
                                                 }`}
@@ -8450,8 +8512,8 @@ const NewActiveApplication = ({
                                                     {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                                       const isMatch = logDetails.logs.some((log) => {
                                                         if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                          const match = log.form.id === form?.forms?.[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                           if (match) {
                                                             let Match = false;
@@ -8505,11 +8567,11 @@ const NewActiveApplication = ({
                                                               </div>
                                                             </div>
                                                           ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
                                                                   Approve
                                                                 </div>
@@ -8604,7 +8666,7 @@ const NewActiveApplication = ({
                                                       <div className={style.grid2}>
                                                         <div
                                                           onClick={
-                                                            form?.forms[index]?.staffEsign === null
+                                                            form?.forms?.[index]?.staffEsign === null
                                                               ? () =>
                                                                 handleStaffEsign(
                                                                   form?.forms?.filter(
@@ -8794,7 +8856,7 @@ const NewActiveApplication = ({
                                         </div>
                                         {/* {!(expand?.status && expand?.index === index + 1) && (
                           <>
-                            {form?.forms[index]?.status === "APPROVED" ? (
+                            {form?.forms?.[index]?.status === "APPROVED" ? (
                               <div className={`${style.approvedButtonStyle} ${style.ApprovedTextStyle}`}>Approved</div>
                             ) : (
                               <div className={`${style.assessInCred} ${style.assessTextStyle}`}>4 to Assess</div>
@@ -8810,11 +8872,11 @@ const NewActiveApplication = ({
                                 }
                                 )[0]?.approvalRequired === true ? (
                                 <>
-                                    {form?.forms[index]?.status !== "APPROVED" ? (
+                                    {form?.forms?.[index]?.status !== "APPROVED" ? (
                                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                         <div
                                         className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                         >
                                         Approve
                                         </div>
@@ -8844,8 +8906,8 @@ const NewActiveApplication = ({
                               (() => {
                                 const isMatch = logDetails.logs.some((log) => {
                                   if (log.form && log.form.id) {
-                                    const match = log.form.id === form?.forms[index]?.id;
-                                    console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                    const match = log.form.id === form?.forms?.[index]?.id;
+                                    console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                     if (match) {
                                       let Match = false;
@@ -8891,11 +8953,11 @@ const NewActiveApplication = ({
                                         </div>
                                     </div>
                                     ) : (
-                                    form?.forms[index]?.status !== "APPROVED" ? (
+                                    form?.forms?.[index]?.status !== "APPROVED" ? (
                                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                         <div
                                         className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                        onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                        onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                         >
                                         Approve
                                         </div>
@@ -8928,8 +8990,8 @@ const NewActiveApplication = ({
                                                   (() => {
                                                     const isMatch = logDetails.logs.some((log) => {
                                                       if (log.form && log.form.id) {
-                                                        const match = log.form.id === form?.forms[index]?.id;
-                                                        console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                        const match = log.form.id === form?.forms?.[index]?.id;
+                                                        console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                         if (match) {
                                                           let Match = false;
@@ -8975,11 +9037,11 @@ const NewActiveApplication = ({
                                                             </div>
                                                           </div>
                                                         ) : (
-                                                          form?.forms[index]?.status !== "APPROVED" ? (
+                                                          form?.forms?.[index]?.status !== "APPROVED" ? (
                                                             <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                               <div
                                                                 className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                               >
                                                                 Approve
                                                               </div>
@@ -9064,8 +9126,8 @@ const NewActiveApplication = ({
                                         {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                           const isMatch = logDetails.logs.some((log) => {
                                             if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms[index]?.id;
-                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                              const match = log.form.id === form?.forms?.[index]?.id;
+                                              console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                               if (match) {
                                                 let Match = false;
@@ -9119,11 +9181,11 @@ const NewActiveApplication = ({
                                         </div>
                                       </div>
                                     ) : (
-                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                      form?.forms?.[index]?.status !== "APPROVED" ? (
                                         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                           <div
                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                            onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                           >
                                             Approve
                                           </div>
@@ -9159,8 +9221,8 @@ const NewActiveApplication = ({
                                                     {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                                       const isMatch = logDetails.logs.some((log) => {
                                                         if (log.form && log.form.id) {
-                                                          const match = log.form.id === form?.forms[index]?.id;
-                                                          console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                          const match = log.form.id === form?.forms?.[index]?.id;
+                                                          console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                           if (match) {
                                                             let Match = false;
@@ -9214,11 +9276,11 @@ const NewActiveApplication = ({
                                                               </div>
                                                             </div>
                                                           ) : (
-                                                            form?.forms[index]?.status !== "APPROVED" ? (
+                                                            form?.forms?.[index]?.status !== "APPROVED" ? (
                                                               <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                 <div
                                                                   className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                  onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                  onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                 >
                                                                   Approve
                                                                 </div>
@@ -9264,7 +9326,7 @@ const NewActiveApplication = ({
                                             <iframe src={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles[form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.uploadedFiles?.length - 1]?.fileURL} width="100%" height="600px"></iframe>
                                             {(data?.description === 'Statement of Confidentiality and Non-Disclosure' || data?.description === 'Conflict Of Interest Policy') && (
                                               <div className={style.grid2}>
-                                                <div onClick={form?.forms[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
+                                                <div onClick={form?.forms?.[index]?.staffEsign === null ? () => handleStaffEsign(form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.id) : () => { }} >
                                                   <ESignature
                                                     userName={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.name : ""}
                                                     encData={form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign !== null ? form?.forms?.filter(data => data?.formCategory === 'Acknowledgement')[index]?.staffEsign?.esign : ''}
@@ -9675,8 +9737,8 @@ const NewActiveApplication = ({
                                     >
                                       <div
                                         className={`${style.marginLeft10} ${style.justifySpaceAround
-                                          } ${form?.forms[index]?.status !== "APPROVED" &&
-                                            form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                          } ${form?.forms?.[index]?.status !== "APPROVED" &&
+                                            form?.forms?.[index]?.schemaCategory !== "UploadYourDoc"
                                             ? style.greyDotStyle
                                             : style.greenDotStyle
                                           }`}
@@ -9724,15 +9786,15 @@ const NewActiveApplication = ({
                                     </div>
                                     {/* {expand?.status && expand?.index === index + 1 ? (
                           <>
-                            {form?.forms[index]?.status !== "APPROVED" &&
-                             form?.forms[index]?.schemaCategory !== "UploadYourDoc" ? (
+                            {form?.forms?.[index]?.status !== "APPROVED" &&
+                             form?.forms?.[index]?.schemaCategory !== "UploadYourDoc" ? (
                               <div
                                 className={`${style.purpleButton} ${style.cursorPointer} `}
                               >
-                               {form?.forms[index]?.schemaCategory !== "UploadYourDoc" && (
+                               {form?.forms?.[index]?.schemaCategory !== "UploadYourDoc" && (
                                     <div
                                       className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                      onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                      onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                     >
                                       Verify
                                     </div>
@@ -9757,8 +9819,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED" &&
-                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED" &&
+                                      form?.forms?.[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -9769,8 +9831,8 @@ const NewActiveApplication = ({
                             >
                               <div
                                 className={`${style.marginLeft10}${style.justifySpaceAround
-                                  } ${form?.forms[index]?.status !== "APPROVED" &&
-                                      form?.forms[index]?.schemaCategory !== "UploadYourDoc"
+                                  } ${form?.forms?.[index]?.status !== "APPROVED" &&
+                                      form?.forms?.[index]?.schemaCategory !== "UploadYourDoc"
                                     ? style.greyDotStyle
                                     : style.greenDotStyle
                                   }`}
@@ -9804,8 +9866,8 @@ const NewActiveApplication = ({
                                                 (() => {
                                                   const isMatch = logDetails.logs.some((log) => {
                                                     if (log.form && log.form.id) {
-                                                      const match = log.form.id === form?.forms[index]?.id;
-                                                      console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                      const match = log.form.id === form?.forms?.[index]?.id;
+                                                      console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                       if (match) {
                                                         let Match = false;
@@ -9851,11 +9913,11 @@ const NewActiveApplication = ({
                                                           </div>
                                                         </div>
                                                       ) : (
-                                                        form?.forms[index]?.status !== "APPROVED" ? (
+                                                        form?.forms?.[index]?.status !== "APPROVED" ? (
                                                           <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                             <div
                                                               className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                              onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                              onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                             >
                                                               Verify
                                                             </div>
@@ -9882,7 +9944,7 @@ const NewActiveApplication = ({
                                         >
                                           <div
                                             className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
+                                              } ${form?.forms?.[index]?.status !== "APPROVED"
                                                 ? style.greyDotStyle
                                                 : style.greenDotStyle
                                               }`}
@@ -9893,7 +9955,7 @@ const NewActiveApplication = ({
                                         >
                                           <div
                                             className={`${style.marginLeft10}${style.justifySpaceAround
-                                              } ${form?.forms[index]?.status !== "APPROVED"
+                                              } ${form?.forms?.[index]?.status !== "APPROVED"
                                                 ? style.greyDotStyle
                                                 : style.greenDotStyle
                                               }`}
@@ -10066,8 +10128,8 @@ const NewActiveApplication = ({
                                         {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                           const isMatch = logDetails.logs.some((log) => {
                                             if (log.form && log.form.id) {
-                                              const match = log.form.id === form?.forms[index]?.id;
-                                              console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                              const match = log.form.id === form?.forms?.[index]?.id;
+                                              console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                               if (match) {
                                                 let Match = false;
@@ -10121,11 +10183,11 @@ const NewActiveApplication = ({
                                         </div>
                                       </div>
                                     ) : (
-                                      form?.forms[index]?.status !== "APPROVED" ? (
+                                      form?.forms?.[index]?.status !== "APPROVED" ? (
                                         <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                           <div
                                             className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                            onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                            onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                           >
                                             Approve
                                           </div>
@@ -10164,8 +10226,8 @@ const NewActiveApplication = ({
                                                       {logDetails?.logs && Array.isArray(logDetails.logs) && (() => {
                                                         const isMatch = logDetails.logs.some((log) => {
                                                           if (log.form && log.form.id) {
-                                                            const match = log.form.id === form?.forms[index]?.id;
-                                                            console.log("Checking log.form.id === form.forms[index].id:", log.form.id, form?.forms[index]?.id, match);
+                                                            const match = log.form.id === form?.forms?.[index]?.id;
+                                                            console.log("Checking log.form.id === form.forms?.[index].id:", log.form.id, form?.forms?.[index]?.id, match);
 
                                                             if (match) {
                                                               let Match = false;
@@ -10219,11 +10281,11 @@ const NewActiveApplication = ({
                                                                 </div>
                                                               </div>
                                                             ) : (
-                                                              form?.forms[index]?.status !== "APPROVED" ? (
+                                                              form?.forms?.[index]?.status !== "APPROVED" ? (
                                                                 <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                                                                   <div
                                                                     className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                                                                    onClick={() => handleStepsVerify(form?.forms[index]?.id)}
+                                                                    onClick={() => handleStepsVerify(form?.forms?.[index]?.id)}
                                                                   >
                                                                     Approve
                                                                   </div>
@@ -10326,7 +10388,7 @@ const NewActiveApplication = ({
                                                     <div className={style.grid2}>
                                                       <div
                                                         onClick={
-                                                          form?.forms[index]?.staffEsign === null
+                                                          form?.forms?.[index]?.staffEsign === null
                                                             ? () =>
                                                               handleStaffEsign(
                                                                 form?.forms?.filter(
@@ -11034,7 +11096,7 @@ const NewActiveApplication = ({
 
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
-                            minDate={form?.upcomingCredCommitteeMeetingDate ? new Date(form?.upcomingCredCommitteeMeetingDate) : sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForReappoint}
                             renderInput={(params) => (
@@ -11130,7 +11192,110 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForMAC")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyleSaveButton}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              MAC Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'MAC')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+
+                            // minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForMac}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter MAC Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            SAVE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForBOD")) ? (
+                    <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
+                      <div className={`${style.cardLeftStyleSaveButton}`}>
+                        <div className={`${style.displayInCol}`}>
+                          <div
+                            className={`${style.spaceBetween} ${style.marginLeftRight20}`}
+                          >
+                            <span className={`${style.tableHeaderHeadingTextStyle} ${style.marginTop20}`}>
+                              BOD Approval Date*
+                            </span>
+                          </div>
+                          <CommonDateField
+                            className={style.dateWidth}
+                            onChange={(date) => handleDateChange(date, 'BOD')}
+                            open={calendarStart}
+                            onOpen={() => setCalendarStart(true)}
+                            onClose={() => setCalendarStart(false)}
+                            // minDate={sub(new Date(), { years: 3 })}
+                            // maxDate={add(new Date(), { years: 3 })}
+                            minDate={reviewedDateMAC || sub(new Date(), { years: 3 })}
+                            // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
+                            maxDate={getJune30thOfCurrentYear()}
+                            value={selectedDateForBod}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                inputProps={{
+                                  ...params.inputProps,
+                                  placeholder: 'Enter BOD Approval Date',
+                                  readOnly: true
+                                }}
+                                variant="outlined"
+                                margin="normal"
+                                fullWidth
+                              />
+                            )}
+                          />
+                        </div>
+                        <div
+                          className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
+                          style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
+                          onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
+                        >
+                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                            SAVE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (" ")
+                  }
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -11143,7 +11308,7 @@ const NewActiveApplication = ({
                             open={calendarStart}
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
-                            minDate={sub(new Date(), { years: 3 })}
+                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}                        
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForMac}
@@ -11185,7 +11350,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11203,8 +11368,9 @@ const NewActiveApplication = ({
                             onOpen={() => setCalendarStart(true)}
                             onClose={() => setCalendarStart(false)}
 
-                            minDate={sub(new Date(), { years: 3 })}
+                            // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
+                            minDate={reviewedDateMAC || sub(new Date(), { years: 3 })}
                             maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForBod}
                             renderInput={(params) => (
@@ -11234,7 +11400,7 @@ const NewActiveApplication = ({
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
-                            onClick={isButtonDisabled ? undefined : getApplicationApproveAndMoveToNext}
+                            onClick={isButtonDisabled ? undefined : handleApplicationAccept}
                           >
                             <Tooltip title={"Click to Approved By BOD"} arrow>
                             <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
@@ -12118,7 +12284,7 @@ const NewActiveApplication = ({
                                                         ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
                                                         : 'N/A'}
                                                     </div>
-                                                    {clarification?.clarificationStatus === 'NA' && (
+                                                    {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
                                                       // <div className={style.twoColumnGrid}>
                                                       <div>
                                                         <div

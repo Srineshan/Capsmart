@@ -237,62 +237,33 @@ const handleEmbedPrint = () => {
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
-                 <Tooltip title={"Click to Close"} arrow>           
-                <img
-                  src={CrossPink}
-                  alt="cross"
-                  className={`${style.crossStyle} ${style.cursorPointer} `}
-                  onClick={() => {
-                    getIsOpen(false);
-                  }}
-                />
-                </Tooltip>
-              </div>
-            </div>
-            <div className={style.marginTop}>
-              {file?.fileType === "application/pdf" ? (
-                <iframe
-                  src={`${corsUrl}${file?.fileURL}#toolbar=0&view=fitH`}
-                 ref={fileRef}
-                  width="100%"
-                  height="600px"
-                ></iframe>
-              ) : file?.fileType?.startsWith("image/") ? (
-                <img
-                  src={file?.fileURL}
-                  ref={fileRef}
-                  alt=""
-                  width="100%"
-                  height="600px"
-                  className={style.objectFitContain}
-                />
-              ) : (
-                <iframe
-                  src={`${file?.fileURL}#toolbar=0&view=fitH`}
-                  width="100%"
-                  height="600px"
-                ></iframe>
-              )}
-            </div>
-            <div
-              className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}
-            >
-              <Tooltip title={"Click to Close"} arrow>
-              <div
-                className={`${style.continue} ${style.marginLeft}`}
-                onClick={() => {
-                  getIsOpen(false);
-                }}
-              >
-                CLOSE
-              </div>
-              </Tooltip>
-            </div>
-          </div>
-        </div>
-      </Dialog>
-    </>
-  );
-};
+                            <Tooltip title={"Click to Close"} arrow>
+                                <img
+                                    src={CrossPink}
+                                    alt="cross"
+                                    className={`${style.crossStyle} ${style.cursorPointer} `}
+                                    onClick={() => { getIsOpen(false) }}
+                                />
+                                </Tooltip>
+                            </div>
+                        </div>
+                        <div ref={componentRef} className={style.marginTop}>
+                            {file?.fileType === 'application/pdf' ? (
+                                <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>
+                            ) : file?.fileType?.startsWith("image/") ? (
+                                <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
+                            ) : <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>}
+                        </div>
+                        <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
+                          <Tooltip title={"Click to Close"} arrow>
+                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div></Tooltip>
+                        </div>
+                    </div>
+
+                </div>
+            </Dialog >
+        </>
+    )
+}
 
 export default FileDisplayDialog;
