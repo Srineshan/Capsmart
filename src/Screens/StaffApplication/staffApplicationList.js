@@ -1486,11 +1486,11 @@ const StaffApplicationList = ({
   });
 
   const handleNavigate = () => {
-    navigate("/reportTypeOverview/oneTimeContract", { state: { tableData } });
+    navigate("/reportTypeOverview/staffReappointments", { state: { tableData } });
   };
 
   const handleNavigateNotes = () => {
-    navigate("/reportTypeOverview/upcomingContractRenewals", { state: { tableData } });
+    navigate("/reportTypeOverview/staffReappointmentsNotes", { state: { tableData } });
   };
 
   const getRejectionCounts = async () => {

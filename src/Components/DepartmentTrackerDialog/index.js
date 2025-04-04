@@ -290,7 +290,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   };
 
   const handleNavigateStatus = () => {
-    navigate("/reportTypeOverview/submittedTimesheetsPaymentStatus", { state: { tableData } });
+    navigate("/reportTypeOverview/staffReappointmentTracker", { state: { tableData } });
   };
   
   const getTableValues = () => {

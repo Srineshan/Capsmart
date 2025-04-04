@@ -73,8 +73,8 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         ACTIVITES_SERVICES_LOG_SUMMARY: 'activitiesOrServices',
         ADDON_ACTIVITES_SERVICES_LOG_SUMMARY: 'addOnActivities',
         // key: 'scheduledActivity',
-        UPCOMING_CONTRACT_RENEWALS: 'upcomingContractRenewals',
-        ONE_TIME_CONTRACT: 'oneTimeContract',
+        UPCOMING_CONTRACT_RENEWALS: 'staffReappointmentsNotes',
+        ONE_TIME_CONTRACT: 'staffReappointments',
         // key: 'complianceStatus',
         PAID_CONSULTING_HOURS_BILLING_PRODUCTIVITY_INDEX_BY_CONTRACTOR: 'paidConsultingHours',
         // key: 'scheduledActivityByContract',
@@ -84,7 +84,7 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
         SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY: 'siteDepartmentSpecificContractorSummary',
         TIMESHEET_PROCESSING_SUMMARY: 'timesheetProcessingSummary',
         LISTING_OF_TIMESHEETS_NOTPAID: 'listingOfTimesheetsNotPaid',
-        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'submittedTimesheetsPaymentStatus',
+        SUBMITTED_TIMESHEETS_PAYMENT_STATUS: 'staffReappointmentTracker',
         CURRENT_REMIT_TO_ADDRESS: 'currentRemitToAddressForActiveContracts',
         CONTRACT_DOCUMENT_ON_FILE: 'contractDocumentsOnFile',
         CONTRACT_WITH_BUSINESS_ENTITY: 'contractsWithABusinessEntity',
@@ -345,21 +345,21 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                     <div className={style.scrollStyle}>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                             <div className={style.tableDataReportsFontStyle}>1</div>
-                                            <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
+                                            <Link to="/reportTypeOverview/staffReappointmentsNotes" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
                                             <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
                                             <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/upcomingContractRenewals"} className={style.linkStyle}>
+                                            <Link to={"/reportTypeOverview/staffReappointmentsNotes"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>
                                         <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                             <div className={style.tableDataReportsFontStyle}>2</div>
-                                            <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
+                                            <Link to="/reportTypeOverview/staffReappointments" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
                                             <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy HH:mm')} </div>
                                             <div className={style.tableDataReportsFontStyle}>{formatInTimeZone(new Date(), 'America/New_York', 'd MMM yyyy')}</div>
-                                            <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
+                                            <Link to={"/reportTypeOverview/staffReappointments"} className={style.linkStyle}>
                                                 <Run />
                                             </Link>
                                         </div>
@@ -435,23 +435,23 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                 <div className={style.scrollStyle}>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>1</div>
-                                        <Link to="/reportTypeOverview/upcomingContractRenewals" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
+                                        <Link to="/reportTypeOverview/staffReappointmentsNotes" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Upcoming Contract Renewals</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/upcomingContractRenewals"} className={style.linkStyle}>
+                                        <Link to={"/reportTypeOverview/staffReappointmentsNotes"} className={style.linkStyle}>
                                             <Run />
                                         </Link>
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>2</div>
-                                        <Link to="/reportTypeOverview/oneTimeContract" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
+                                        <Link to="/reportTypeOverview/staffReappointments" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>List of One Time Contracts that will Terminate on Expiration</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022, 14:20 </div>
                                         <div className={style.tableDataReportsFontStyle}>Carlos C</div>
                                         <div className={style.tableDataReportsFontStyle}>Jan 1 2022</div>
-                                        <Link to={"/reportTypeOverview/oneTimeContract"} className={style.linkStyle}>
+                                        <Link to={"/reportTypeOverview/staffReappointments"} className={style.linkStyle}>
                                             <Run />
                                         </Link>
                                     </div>
@@ -548,12 +548,12 @@ const TimeSheetReports = ({ getShowSampleReport }) => {
                                     </div>
                                     <div className={`${style.reportsTableGrid} ${style.marginTop20}`}>
                                         <div className={style.tableDataReportsFontStyle}>3</div>
-                                        <Link to="/reportTypeOverview/submittedTimesheetsPaymentStatus" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div></Link>
+                                        <Link to="/reportTypeOverview/staffReappointmentTracker" className={style.linkStyle}><div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div></Link>
                                         <div className={style.tableDataReportsFontStyle}>Submitted Timesheets Payment Status</div>
                                         <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy, H:m')} </div>
                                         <div className={style.tableDataReportsFontStyle}>{currentUserDetails?.fullName}</div>
                                         <div className={style.tableDataReportsFontStyle}>{format(new Date(), 'MMM d yyyy')} </div>
-                                        <Link to={"/reportTypeOverview/submittedTimesheetsPaymentStatus"} className={style.linkStyle}>
+                                        <Link to={"/reportTypeOverview/staffReappointmentTracker"} className={style.linkStyle}>
                                             <Run />
                                         </Link>
                                     </div>
