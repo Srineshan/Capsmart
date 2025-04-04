@@ -202,6 +202,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
     sessionStorage.getItem('applicationCreationType') || 'NEW'
   );
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
     sessionStorage.setItem("fromSummary", false);
@@ -261,6 +262,10 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
   const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
 
   if ((applicationType === "NEW")) {
+    return null;
+  }
+
+  if ((workModeType !== "Staff Manager")) {
     return null;
   }
 

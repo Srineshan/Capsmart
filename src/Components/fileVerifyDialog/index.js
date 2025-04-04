@@ -33,6 +33,8 @@ import Cookies from 'universal-cookie';
 import jwt from 'jwt-decode';
 import FileWithFields from '../FileWithFields';
 import { SuccessToaster2 } from '../../utils/toaster';
+import { corsUrl } from "../../utils/formatting";
+import { Download } from "@mui/icons-material";
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -63,6 +65,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [rejectSubject, setRejectSubject] = useState('');
     const [rejectClarification, setRejectClarification] = useState('');
     const [showFileWithFields, setShowFileWithFields] = useState(false);
+    const pdfUrl = file?.fileURL ? encodeURI(file?.fileURL) : "";
+    console.log("URLLLLLLLLLLLLLLLLLLL",pdfUrl, file?.documentType);
 
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
@@ -76,6 +80,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             return () => clearTimeout(timer);
         }
     }, [file?.fileURL]);
+
+    console.log("fileVerifyyyyyy", fileArray, selectedFileIndex, selectedRowTableName, selectedFormId, form)
 
     useEffect(() => {
         setChangedData(metaData);
@@ -167,6 +173,71 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             setIsLoading(false);
         }
     };
+
+     const handlePrint = async (url) => {
+        if (!url) {
+            console.error("No URL provided for printing");
+            return;
+        }
+
+        try {
+            const response = await fetch(corsUrl + encodeURIComponent(url)); // Use the proxy
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+            const blob = await response.blob();
+            const pdfUrl = URL.createObjectURL(blob);
+
+            // Create a hidden iframe
+            const iframe = document.createElement("iframe");
+            iframe.style.position = "absolute";
+            iframe.style.width = "0px";
+            iframe.style.height = "0px";
+            iframe.style.border = "none";
+            iframe.src = pdfUrl;
+            
+            document.body.appendChild(iframe);
+
+            // Wait for the PDF to load, then print
+            iframe.onload = () => {
+                iframe.contentWindow.print();
+            };
+
+            // Cleanup after printing
+            setTimeout(() => {
+                URL.revokeObjectURL(pdfUrl);
+                document.body.removeChild(iframe);
+            }, 30000);
+        } catch (error) {
+            console.error("Error printing the PDF:", error);
+        }
+    };
+
+    const downloadPDF = async (url, filename) => {
+        try {
+            const response = await fetch(corsUrl + encodeURIComponent(url));
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
+            const blob = await response.blob();
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            console.error("Error downloading the PDF:", error);
+        }
+        };
+        
+
+        const handleDownload = (url,fileName) => {
+        if (!url) {
+            console.error("No URL provided for download");
+            return;
+        }
+        downloadPDF(url,fileName );
+        };
 
     // useEffect(() => {
     //     console.log("1234567:", file);
@@ -500,17 +571,28 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Verification of Data & Documents</div>
                             <div className={style.displayInRow}>
-                                {/* <div
+                                <Tooltip title="Download" arrow >
+                                <Download
+                                    sx={{
+                                        fontSize: 25,
+                                        color: "#06617A",
+                                    }}
+                                    className={style.cursorPointer}
+                                    onClick={() => handleDownload(pdfUrl,file?.documentType)}
+                                />
+                                </Tooltip>
+                                <div
                                 className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                            >
+                            ><Tooltip title="Print" arrow >
                                 <PrintOutlinedIcon
                                     sx={{
                                         fontSize: isPrintClicked ? 20 : 25,
                                         color: isPrintClicked ? "#fff" : "#06617A",
                                     }}
-                                    onClick={handlePrintClick}
+                                    onClick={() => handlePrint(pdfUrl)}
                                 />
-                            </div> */}
+                                </Tooltip>
+                            </div>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
@@ -930,10 +1012,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             {!isLoading && (
                                                 <div className={style.height}>
                                                     {file?.fileType === 'application/pdf' ? (
-                                                        <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                                        <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=1&view=fitV`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
                                                     ) : fileToDisplayAlternative?.fileType?.startsWith("image/") ? (
-                                                        <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                                                    ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                                        <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreviewImage} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                                    ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=1&view=fitV`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
                                                 </div>
                                             )}
                                         </div>

@@ -303,6 +303,11 @@ const ApplicationSetup = React.lazy(() =>
 const MedicalDirectivesAttestRFC = React.lazy(() =>
   import("./Screens/MedicalDirectiveAttestRFC")
 );
+
+const MedicalDirectivesAttestDisplay = React.lazy(() =>
+  import("./Screens/MedicalDirectivesAttestDisplay")
+);
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -766,7 +771,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -806,7 +811,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1313,6 +1318,10 @@ const App = ({ props }) => {
                 <Route
                   path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
                   element={<ProtectedRoute><MedicalDirectivesAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/medicalDirective/:applicationId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"
