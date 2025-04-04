@@ -70,6 +70,7 @@ const StaffApplicationList = ({
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
+  getMdTrackerDialog
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -566,7 +567,7 @@ const StaffApplicationList = ({
     true,
     false
   ]
-  const clarificationColSortValues  = applicationType === "NEW" ? [
+  const clarificationColSortValues = applicationType === "NEW" ? [
     false,
     true,
     // true,
@@ -893,6 +894,10 @@ const StaffApplicationList = ({
   const onClickDepttrackerDialog = (data) => {
     getDeptTrackerDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickMdTrackerDialog = (data) => {
+    getMdTrackerDialog(true);
   };
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -3709,8 +3714,8 @@ const StaffApplicationList = ({
       //   }
       // });
       lastUpdated.push(
-        data?.clarificationUpdatedDate 
-          ? format(new Date(data?.clarificationUpdatedDate), "MMM dd, yyyy") 
+        data?.clarificationUpdatedDate
+          ? format(new Date(data?.clarificationUpdatedDate), "MMM dd, yyyy")
           : "-"
       );
       // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
@@ -4636,6 +4641,27 @@ const StaffApplicationList = ({
                         </div>
                       </div>
                       <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                    </div>
+                  </div>
+                ) : null}
+
+                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        MD Attestation Status Tracker
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div>
                     </div>
                   </div>
                 ) : null}
