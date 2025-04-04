@@ -109,7 +109,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         SUBMITTED_DATE: ['Submitted'],
         APPLICANT_ID: ['Applicant ID'],
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
-        MEETING_DATE: ['CC Meeting Date', 'MAC Meeting Date', ,'BOD Meeting Date'],
+        MEETING_DATE: ['Meeting Date'],
         REVIEWED_DATE: ['Reviewed On'],
         COMPLETION_PERCENTAGE: ['Completed %']
     }
@@ -129,9 +129,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Reappointment': 'REAPPOINTMENT_STATUS',
         'Dept / Division & Specialty': 'DEPARTMENT',
         'Department': 'DEPARTMENT',
-        'CC Meeting Date': 'MEETING_DATE',
-        'MAC Meeting Date' : 'MEETING_DATE',
-        'BOD Meeting Date' : 'MEETING_DATE',
+        'Meeting Date': 'MEETING_DATE',
         'Reviewed On': 'REVIEWED_DATE',
         'Status': 'REAPPOINTMENT_STATUS',
         'Completed %': 'COMPLETION_PERCENTAGE'
@@ -416,7 +414,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                     position: "relative",
                                                                     mt: "10px",
                                                                     "&::before": {
-                                                                        backgroundColor: "#06617A",
+                                                                        backgroundColor: "#737575",
                                                                         content: '""',
                                                                         display: "block",
                                                                         position: "absolute",

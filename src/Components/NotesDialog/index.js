@@ -348,7 +348,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
               </div>
               <div className={`${style.marginTop10} ${style.flexCenter}`}>
                 <CommonSwitch label={notesVisible ? 'YES' : 'NO'} checked={notesVisible} onChange={(e) => setNotesVisible(e.target.checked)} labelName={'Make Notes Visible to Others'} />
-                <div className={`${style.notesVisibleText}`}>Your Note will be {notesVisible ? 'Public' : 'Private'}.</div>
+                <div className={`${style.notesVisibleText}`}>{notesVisible ? '' : 'NOTE will be visible ONLY to you'}</div>
               </div>
               <div className={`${style.marginTop10}`}>
                 <CKEditor
