@@ -6,8 +6,11 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import LoadingScreen from "../LoadingScreen";
-
+import { corsUrl } from "../../utils/formatting";
+import { Download } from "@mui/icons-material";
+import Tooltip from "@mui/material/Tooltip";
 import style from './index.module.scss'
+import jsPDF from "jspdf";
 
 const FileDisplayDialog = ({ getIsOpen, file }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -46,6 +49,35 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
         removeAfterPrint: true,
     });
 
+    const downloadPDF = async (url, filename) => {
+        try {
+          const response = await fetch(corsUrl + encodeURIComponent(url)); // Use the proxy
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
+          const blob = await response.blob();
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+        } catch (error) {
+          console.error("Error downloading the PDF:", error);
+        }
+      };
+      
+
+      const handleDownload = (url,fileName) => {
+        if (!url) {
+          console.error("No URL provided for download");
+          return;
+        }
+        downloadPDF(url,fileName );
+      };
+      const pdfUrl =
+    "https://pre-staging-document-mgmt-service.s3.amazonaws.com/APPLICATION/64246d491b70b07241d37aa1/67c555863049e3311c8b55c9/Sample CME Transcript_Redacted.pdf";
+
     return (
         <>
             {isLoading && (
@@ -72,6 +104,15 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                                         onClick={handlePrintClick}
                                     />
                                 </div> */}
+                                <Tooltip title="Download" arrow >
+                                <Download
+                                    sx={{
+                                        fontSize: 25,
+                                        color: "#06617A",
+                                    }}
+                                    onClick={() => handleDownload(pdfUrl,file?.fileName)}
+                                />
+                                </Tooltip>
                                 {!isExpanded ? (
                                     <FullscreenSharpIcon
                                         className={`${style.iconStyle} ${style.cursorPointer} `}

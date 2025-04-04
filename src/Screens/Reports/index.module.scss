@@ -1498,8 +1498,14 @@
 
 // @page {
 //     size: auto;
-//     margin: 3mm 0mm 10mm 0mm;
-// }
+//     margin: 20px 0 20px 0; /* Top and bottom margin */
+//   }
+  
+
+//   .printContainer {
+//     padding-top: 50px !important;
+//     page-break-before: always; /* Ensures spacing on new pages */
+//   }
 
 // @media print {
 //     a[href]:after {
@@ -1510,6 +1516,32 @@
 //         content: none !important;
 //     }
 // }
+
+/* In your CSS file */
+@page {
+    margin-top: 20px;
+  }
+  
+  @media print {
+    /* Ensure your header stays at top */
+    .reportBackgroundCard {
+      break-inside: avoid;
+    }
+    
+    /* Optional: Adjust any other print-specific styles */
+    body {
+      padding-top: 0;
+    }
+  }
+// @media print {
+//     @page {
+//       margin-top: 50px; /* Adjust the top margin */
+//     }
+  
+//     .print-container {
+//       padding-top: 50px; /* Ensures space at the top of each page */
+//     }
+//   }
 
 .summaryGrid {
     display: grid;
@@ -1769,6 +1801,6 @@
 
 .permanentStaffGrid {
     display: grid;
-    grid-template-columns: 3% 15% 12% 16% 10% 19% 10% 11%;
+    grid-template-columns: 3% 14% 11% 19% 8% 19% 10% 12%;
     grid-gap: 5px;
   }

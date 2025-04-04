@@ -539,9 +539,9 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     />
                   </Tooltip>
                 </div>
-                {/* <div
+                <div
                   className={`${style.alignCenter
-                    } ${style.cursorPointer} ${style.marginRight10}`}
+                    } ${style.cursorPointer} ${style.marginLeft10}`}
                 >
                   <Tooltip title='Print Data' arrow >
                   <PrintOutlinedIcon
@@ -552,11 +552,11 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     onClick={handleNavigateStatus}
                   />
                   </Tooltip>
-                </div> */}
+                </div>
                 <img
                   src={CrossPink}
                   alt="cross"
-                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
                   onClick={() => {
                     getIsOpen(false);
                   }}

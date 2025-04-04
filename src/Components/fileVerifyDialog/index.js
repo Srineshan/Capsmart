@@ -77,6 +77,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         }
     }, [file?.fileURL]);
 
+    console.log("fileVerifyyyyyy", fileArray, selectedFileIndex, selectedRowTableName, selectedFormId, form)
+
     useEffect(() => {
         setChangedData(metaData);
     }, [metaData])
@@ -930,10 +932,10 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             {!isLoading && (
                                                 <div className={style.height}>
                                                     {file?.fileType === 'application/pdf' ? (
-                                                        <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
+                                                        <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=1&view=fitV`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>
                                                     ) : fileToDisplayAlternative?.fileType?.startsWith("image/") ? (
-                                                        <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreview} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
-                                                    ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=0`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
+                                                        <img src={fileToDisplayAlternative?.fileURL} alt="" className={style.filePreviewImage} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} />
+                                                    ) : <iframe src={`${fileToDisplayAlternative?.fileURL}#toolbar=1&view=fitV`} onLoad={() => setIsLoading(false)} style={{ display: isLoading ? 'none' : 'block' }} className={style.filePreview}></iframe>}
                                                 </div>
                                             )}
                                         </div>
