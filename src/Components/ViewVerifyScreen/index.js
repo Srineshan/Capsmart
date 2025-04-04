@@ -12218,7 +12218,8 @@ const NewActiveApplication = ({
                                 {form?.forms
                                   ?.filter((data) => data?.clarifications?.length > 0)
                                   .map((data) => {
-                                    const isExpanded = expandStates[`section6_${data.id}`] || false;
+                                    // const isExpanded = expandStates[`section6_${data.id}`] || false;
+                                    const isExpanded = expandStates[`section6_${data.id}`] ?? data?.clarifications?.some(clarification => clarification?.clarificationStatus === "RESPONDED");
 
                                     return (
                                       <div key={data.id} className={`${style.marginLeftRight20} ${style.marginTop20} ${style.marginBottom20}`}>
@@ -12244,7 +12245,8 @@ const NewActiveApplication = ({
                                         {/* Show clarifications when expanded */}
                                         {isExpanded &&
                                           data?.clarifications?.map((clarification, index) => {
-                                            const isExpandedData = expandStates[`section7_${data.id}_${index}`] || false;
+                                            // const isExpandedData = expandStates[`section7_${data.id}_${index}`] || false;
+                                            const isExpandedData = expandStates[`section7_${data.id}_${index}`] ?? (clarification?.clarificationStatus === "RESPONDED");
                                             return (
                                               <div key={`${data.id}-${index}`} className={`${style.marginBottom10} ${style.marginTop10} ${style.clarificationCardStyle}`}>
                                                 <div className={`${style.gridGap3}`}>
@@ -12274,16 +12276,19 @@ const NewActiveApplication = ({
                                                 {isExpandedData && (
                                                   <div>
                                                     <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
-                                                      Clarification requested from {clarification?.clarificationRequest?.clarificationRequiredFrom.toLowerCase()}
+                                                      Clarification requested on{' '}
+                                                      {clarification?.clarificationRequest?.createdDate
+                                                        ? format(new Date(clarification.clarificationRequest.createdDate), 'MMM d, yyyy, HH:mm')
+                                                        : '-'}
                                                     </div>
                                                     <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
                                                       <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationRequest?.clarificationDescription }} />
                                                     </div>
-                                                    <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
+                                                    {/* <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
                                                       {clarification?.clarificationRequest?.createdDate
                                                         ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
                                                         : 'N/A'}
-                                                    </div>
+                                                    </div> */}
                                                     {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
                                                       // <div className={style.twoColumnGrid}>
                                                       <div>
@@ -12305,7 +12310,7 @@ const NewActiveApplication = ({
                                                     {clarification?.clarificationStatus !== "NA" && (
                                                       <div>
                                                         <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
-                                                          Response from {clarification?.clarificationResponse?.title}
+                                                          Responded from {clarification?.clarificationResponse?.title || 'Applicant'} on {" "} {clarification?.clarificationResponse?.createdDate ? format(new Date(clarification?.clarificationResponse?.createdDate), 'MMM d, yyyy, HH:mm') : "-"}
                                                         </div>
                                                         <div className={`${style.marginTop10} ${style.rfcResponseTextStyle}`}>
                                                           <div dangerouslySetInnerHTML={{ __html: clarification?.clarificationResponse?.clarificationDescription }} />
@@ -12318,9 +12323,29 @@ const NewActiveApplication = ({
                                                                   <div className={`${style.threeColGrid} ${style.backgroundColorStyle} ${style.marginBottom10}`}>
                                                                     <div
                                                                       className={style.cursorPointer}
+                                                                      // onClick={() => {
+                                                                      //   setShowFileDisplayDialog(true);
+                                                                      //   setselectedFile(file);
+                                                                      // }}
                                                                       onClick={() => {
-                                                                        setShowFileDisplayDialog(true);
-                                                                        setselectedFile(file);
+                                                                        if (
+                                                                          clarification?.clarificationRequest?.clarificationRequiredFor === 'Required Documents for Processing Your Application' ||
+                                                                          clarification?.clarificationRequest?.clarificationRequiredFor === null
+                                                                        ) {
+                                                                          const matchedIndex = form?.documents?.documentDetails?.findIndex(
+                                                                            (doc) => doc?.file?.fileName === file?.fileName
+                                                                          );
+                                                                    
+                                                                          if (matchedIndex !== -1) {
+                                                                            handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
+                                                                          } else {
+                                                                            setShowFileDisplayDialog(true);
+                                                                            setselectedFile(file);
+                                                                          }
+                                                                        } else {
+                                                                          setShowFileDisplayDialog(true);
+                                                                          setselectedFile(file);
+                                                                        }
                                                                       }}
                                                                     >
                                                                       <PictureAsPdfIcon
@@ -12331,8 +12356,24 @@ const NewActiveApplication = ({
                                                                     <div
                                                                       className={`${style.cursorPointer} ${style.notesTitle}`}
                                                                       onClick={() => {
-                                                                        setShowFileDisplayDialog(true);
-                                                                        setselectedFile(file);
+                                                                        if (
+                                                                          clarification?.clarificationRequest?.clarificationRequiredFor === 'Required Documents for Processing Your Application' ||
+                                                                          clarification?.clarificationRequest?.clarificationRequiredFor === null
+                                                                        ) {
+                                                                          const matchedIndex = form?.documents?.documentDetails?.findIndex(
+                                                                            (doc) => doc?.file?.fileName === file?.fileName
+                                                                          );
+                                                                    
+                                                                          if (matchedIndex !== -1) {
+                                                                            handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
+                                                                          } else {
+                                                                            setShowFileDisplayDialog(true);
+                                                                            setselectedFile(file);
+                                                                          }
+                                                                        } else {
+                                                                          setShowFileDisplayDialog(true);
+                                                                          setselectedFile(file);
+                                                                        }
                                                                       }}
                                                                     >
                                                                       {file?.fileName}
@@ -12361,11 +12402,6 @@ const NewActiveApplication = ({
                                                             })}
                                                           </div>
                                                         )}
-                                                        <div className={`${style.rfcDateTextStyle} ${style.marginTop5}`}>
-                                                          {clarification?.clarificationResponse?.createdDate
-                                                            ? `Created on ${format(new Date(clarification?.clarificationResponse?.createdDate), 'MMM d, yyyy, HH.mm')}`
-                                                            : 'N/A'}
-                                                        </div>
                                                         {clarification?.clarificationStatus === "RESPONDED" && (
                                                           <div>
                                                             <div className={`${style.twoColumnGrid}`}>

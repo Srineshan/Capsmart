@@ -119,8 +119,8 @@ const ResolveDialog = ({ getIsOpen, data, formData, form, dateFormat, getActiveA
           <div className={style.spaceBetween}>
             <div className={`${style.heading}`}>
             {data === "unresolve" 
-                ? `Clarification Required for ${form?.title} from ${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} Marked as Unresolved`
-                : `Resolve Clarification Required For ${form?.title} From  ${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName}`
+                ? `Clarification Required for ${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} Marked as Unresolved`
+                : `Resolve the Clarification open for ${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName}`
             }
             </div>
             <div className={style.displayInRow}>

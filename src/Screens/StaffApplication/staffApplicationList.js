@@ -317,7 +317,7 @@ const StaffApplicationList = ({
     // "Dept. Head",
     // "Submitted",
     "Reviewed On",
-    "CC Meeting Date",
+    "Meeting Date",
     "",
   ];
   const macHeaderValues = applicationType === "NEW" ? [
@@ -344,7 +344,7 @@ const StaffApplicationList = ({
     // "Docs",
     // "CRs",
     "Notes",
-    "MAC Meeting Date",
+    "Meeting Date",
     // "Task List",
     // "CC Status",
     "",
@@ -373,7 +373,7 @@ const StaffApplicationList = ({
     // "Ref",
     // "CRs",
     "Notes",
-    "BOD Meeting Date",
+    "Meeting Date",
     // "Task List",
     // "CC Status",
     // "MAC Status",
@@ -1874,7 +1874,36 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       // crs.push(data?.clarificationRequiredFor || "0");
       // crsHoverText.push(["Ontario Medical Society"]);
-      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      
+      crsHoverText.push(crsHoverTextArray);
+      // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
@@ -1895,7 +1924,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -1948,8 +1977,8 @@ const StaffApplicationList = ({
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
-        // type: "countWithHover",
-        type: "text",
+        type: "textWithHover",
+        // type: "text",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -2092,9 +2121,38 @@ const StaffApplicationList = ({
       //   : "grey");
       // disclosures.push(data?.disclosures || '7/9');
       // crs.push(data?.clarificationRequiredFor || "0");
-      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+      // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
       // crsHoverText.push(["Ontario Medical Society"]);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      
+      crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
@@ -2123,7 +2181,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2175,7 +2233,7 @@ const StaffApplicationList = ({
       // { type: "dot", value: dataStatus },
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
-        type: "text",
+        type: "iconWithCount",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -2441,7 +2499,37 @@ const StaffApplicationList = ({
       // ceoStatus.push(data?.ceoStatus || "grey");
       // crs.push(data?.clarificationRequiredFor || "0");
       // crsHoverText.push(["Ontario Medical Society"]);
-      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      
+      crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -2463,7 +2551,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2563,7 +2651,7 @@ const StaffApplicationList = ({
       // { type: "dot", value: ceoStatus },
 
       {
-        type: "text",
+        type: "textWithHover",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -2745,8 +2833,37 @@ const StaffApplicationList = ({
       // commiteeStatus.push(data?.commiteeStatus || "yellow");
       // boardStatus.push(data?.boardStatus || "green");
       // ceoStatus.push(data?.ceoStatus || "grey");
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society"]);
+      // crs.push(data?.clarificationRequiredFor || "0");
+      // crsHoverText.push(["Ontario Medical Society"]);
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       notes.push(validNotes?.length || "-");
       notesIcon.push(
@@ -2765,7 +2882,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -2984,8 +3101,38 @@ const StaffApplicationList = ({
         docsIcon.push(<TextSnippetOutlinedIcon style={{ fontSize: 20, color: '#00C07F' }} />);
       }
 
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      // crs.push(data?.clarificationRequiredFor || "0");
+      // crsHoverText.push(["Ontario Medical Society", "Ontario Medical Society"]);
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      
+      crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -3007,7 +3154,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -3080,7 +3227,7 @@ const StaffApplicationList = ({
       //   icon: docsIcon,
       // },
       // {
-      //   type: "text",
+      //   type: "tectWithHover",
       //   value: crs,
       //   hoverText: crsHoverText,
       //   isShowHoverText: true,
@@ -3260,8 +3407,36 @@ const StaffApplicationList = ({
       //   )
       // } else { ccapproval.push("-") }
 
-      crs.push(data?.clarificationRequiredFor || "0");
-      crsHoverText.push(["Ontario Medical Society"]);
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];
+      
+      crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -3283,7 +3458,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -3367,7 +3542,7 @@ const StaffApplicationList = ({
       //   icon: docsIcon,
       // },
       // {
-      //   type: "text",
+      //   type: "textWithHover",
       //   value: crs,
       //   hoverText: crsHoverText,
       //   isShowHoverText: true,
@@ -3679,7 +3854,35 @@ const StaffApplicationList = ({
       // disclosures.push(data?.disclosures || '7/9');
       // crs.push(data?.clarificationRequiredFor || "0");
       // crsHoverText.push(["Ontario Medical Society"]);
-      crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
+      const closedCount = data?.clarificationCount?.closedCount ?? 0;
+      const totalCount = data?.clarificationCount?.totalCount ?? 0;
+
+      crs.push(closedCount === 0 && totalCount === 0 ? "-" : `${closedCount}/${totalCount}`);
+
+      const clarifications = data?.clarificationCount?.clarifications || [];
+      const crsHoverTextArray = clarifications?.length > 0
+        ? clarifications.map((clarification, index) => {
+            const verifiedIndicator = clarification?.status === "ACCEPTED"
+              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "REJECTED"
+              ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
+              : clarification?.status === "RESPONDED"
+              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+      
+            return (
+              <div key={index} className={style.fullWidth}>
+                <span>
+                  {verifiedIndicator} {clarification?.title}
+                </span>
+                {index !== clarifications.length - 1 && (
+                  <hr style={{ margin: '5px 0 -10px 0px' }} />
+                )}
+              </div>
+            );
+          })
+        : ["-"];  
+      crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
       ) || [];
@@ -3700,7 +3903,7 @@ const StaffApplicationList = ({
             <div key={index}>
               {note?.private && <span className={style.privateBorderText}>Private</span>}
               {" "}{noteContent}
-              <div>{text}</div>
+              <div className={style.boldNotesText}>{text}</div>
               {/* { validNotes?.length  && <hr style={{ borderColor: '#E0E0E0' }} />} */}
               {index !== validNotes.length && (
                 <hr style={{ margin: '5px 0px -10px 0' }} />
@@ -3756,7 +3959,7 @@ const StaffApplicationList = ({
       // { "type": "iconWithCount", "value": disclosures, "hoverText": docsHoverText, 'isShowHoverText': true, "icon": docsIcon },
       {
         // type: "countWithHover",
-        type: "text",
+        type: "textWithHover",
         value: crs,
         hoverText: crsHoverText,
         isShowHoverText: true,
@@ -4941,7 +5144,7 @@ const StaffApplicationList = ({
                   </>
                 ) : ""}
                 {selectedDepartment && (
-                  <div className={`${style.filterBackground} ${style.displayInRow}`}>
+                  <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
                     <Tooltip title="Remove" arrow>
                       <CancelOutlinedIcon
@@ -4950,7 +5153,7 @@ const StaffApplicationList = ({
                           color: "#06617A",
                         }}
                         className={style.cursorPointer}
-                        onClick={() => { setSelectedDepartment(); setSelectedServiceArea() }}
+                        onClick={() => { setSelectedDepartment(''); setSelectedServiceArea('') }}
                       />
                     </Tooltip>
                   </div>
@@ -5021,7 +5224,7 @@ const StaffApplicationList = ({
                     </div>
                   ) : ""
                 }
-                {/* <div
+                <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight20}`}
                 >
@@ -5049,7 +5252,7 @@ const StaffApplicationList = ({
                       onClick={handleNavigate}
                     />
                   </Tooltip>
-                </div> */}
+                </div>
               </div >
             </div >
             <div className={`${style.borderStyleTiles} ${style.marginLeft20}`}></div>

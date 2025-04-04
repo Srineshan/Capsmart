@@ -6,11 +6,11 @@ import FullscreenExitIcon from "@mui/icons-material/FullscreenExit";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 import ReactToPrint, { useReactToPrint } from "react-to-print";
 import LoadingScreen from "../LoadingScreen";
-
-import style from "./index.module.scss";
 import { corsUrl } from "../../utils/formatting";
 import { Download } from "@mui/icons-material";
-import { Tooltip } from '@mui/material';
+import Tooltip from "@mui/material/Tooltip";
+import style from './index.module.scss'
+import jsPDF from "jspdf";
 
 const FileDisplayDialog = ({ getIsOpen, file }) => {
   const [isContinue, setIsContinue] = useState(false);
@@ -19,20 +19,20 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   const [isLoading, setIsLoading] = useState(false);
   const fileRef = useRef(null);
 
-    useEffect(() => {
-        console.log("filesssssssssssssssss", file);
-        // getPreApplicationTask();
-    }, []);
+  useEffect(() => {
+    console.log("filesssssssssssssssss", file);
+    // getPreApplicationTask();
+  }, []);
 
-    useEffect(() => {
-        if (file?.fileURL) {
-            setIsLoading(true);
-            const timer = setTimeout(() => {
-                setIsLoading(false);
-            }, 500);
-            return () => clearTimeout(timer);
-        }
-    }, [file?.fileURL]);
+  useEffect(() => {
+    if (file?.fileURL) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [file?.fileURL]);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
@@ -44,20 +44,20 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
         // Fetch the file content through the CORS proxy
         const response = await fetch(`${corsUrl}${file?.fileURL}`, {
           method: "GET",
-          mode:'cors'
+          mode: 'cors'
         });
-        
-        
+
+
         if (!response.ok) {
           throw new Error(`Failed to fetch file: ${response.statusText}`);
         }
-  
-        
-  
+
+
+
         // Create a temporary URL for the Blob
         const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-  console.log("bloburl",blobUrl);
-  
+        console.log("bloburl", blobUrl);
+
         // Create a temporary anchor element to trigger the download
         const link = document.createElement('a');
         link.href = blobUrl;
@@ -65,7 +65,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
         link.style.display = 'none'; // Hide the link
         document.body.appendChild(link); // Append the link to the DOM
         link.click(); // Trigger the download
-  
+
         // Clean up by removing the link and revoking the Blob URL
         document.body.removeChild(link);
         window.URL.revokeObjectURL(blobUrl);
@@ -77,7 +77,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
       console.warn("No file URL provided for download.");
     }
   };
-  
+
 
   // const handleEmbedPrint = useReactToPrint({
   //   content: () => fileRef.current, 
@@ -86,7 +86,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   //   onAfterPrint: () => setIsPrintClicked(false), 
   // });
 
-const handleEmbedPrint = () => {
+  const handleEmbedPrint = () => {
     if (file.fileType === "application/pdf") {
       const iframe = fileRef.current;
       if (iframe && iframe.contentWindow) {
@@ -101,42 +101,42 @@ const handleEmbedPrint = () => {
   };
 
 
-// const handleEmbedPrint = async () => {
-//   if (file.fileType === "application/pdf") {
-//     try {
-//       setIsPrintClicked(true);
-//       const completeFileUrl = `${corsUrl}${file.fileURL}`; // Full URL with CORS
-//       const response = await fetch(completeFileUrl, {method:"GET", mode: "no-cors" }); // Fetch PDF file
+  // const handleEmbedPrint = async () => {
+  //   if (file.fileType === "application/pdf") {
+  //     try {
+  //       setIsPrintClicked(true);
+  //       const completeFileUrl = `${corsUrl}${file.fileURL}`; // Full URL with CORS
+  //       const response = await fetch(completeFileUrl, {method:"GET", mode: "no-cors" }); // Fetch PDF file
 
-//       if (!response.ok) {
-//         throw new Error(`Failed to fetch PDF: ${response.statusText}`);
-//       }
+  //       if (!response.ok) {
+  //         throw new Error(`Failed to fetch PDF: ${response.statusText}`);
+  //       }
 
-//       const blob = await response.blob();
-//       const blobUrl = URL.createObjectURL(blob); // Convert to Blob URL
+  //       const blob = await response.blob();
+  //       const blobUrl = URL.createObjectURL(blob); // Convert to Blob URL
 
-//       const iframe = document.createElement("iframe"); // Create hidden iframe
-//       iframe.style.display = "none";
-//       iframe.src = blobUrl; // Load PDF
+  //       const iframe = document.createElement("iframe"); // Create hidden iframe
+  //       iframe.style.display = "none";
+  //       iframe.src = blobUrl; // Load PDF
 
-//       document.body.appendChild(iframe);
+  //       document.body.appendChild(iframe);
 
-//       iframe.onload = () => {
-//         iframe.contentWindow.focus();
-//         iframe.contentWindow.print(); // Print the PDF
-//         document.body.removeChild(iframe); // Clean up after printing
-//         URL.revokeObjectURL(blobUrl); // Free memory
-//         setIsPrintClicked(false);
-//       };
-//     } catch (error) {
-//       console.error("Error printing PDF:", error);
-//       alert("Failed to print PDF. Please try again.");
-//       setIsPrintClicked(false);
-//     }
-//   } else {
-//     alert("Printing is only supported for PDF files.");
-//   }
-// };
+  //       iframe.onload = () => {
+  //         iframe.contentWindow.focus();
+  //         iframe.contentWindow.print(); // Print the PDF
+  //         document.body.removeChild(iframe); // Clean up after printing
+  //         URL.revokeObjectURL(blobUrl); // Free memory
+  //         setIsPrintClicked(false);
+  //       };
+  //     } catch (error) {
+  //       console.error("Error printing PDF:", error);
+  //       alert("Failed to print PDF. Please try again.");
+  //       setIsPrintClicked(false);
+  //     }
+  //   } else {
+  //     alert("Printing is only supported for PDF files.");
+  //   }
+  // };
 
 
 
@@ -169,11 +169,10 @@ const handleEmbedPrint = () => {
       <Dialog
         isOpen={getIsOpen}
         onClose={() => getIsOpen(false)}
-        className={`${style.eSignDialog}  ${
-          isExpanded
-            ? style.eSignDialogBackground1
-            : style.eSignDialogBackground
-        } ${isExpanded ? style.expandedDialog : ""}`}
+        className={`${style.eSignDialog}  ${isExpanded
+          ? style.eSignDialogBackground1
+          : style.eSignDialogBackground
+          } ${isExpanded ? style.expandedDialog : ""}`}
         canOutsideClickClose={false}
         canEscapeKeyClose={false}
       >
@@ -185,51 +184,50 @@ const handleEmbedPrint = () => {
                 {file?.fileUploaded !== undefined
                   ? `${file?.documentType} ${file?.fileUploaded}`
                   : file?.fileName !== undefined
-                  ? ` ${file?.fileName}`
-                  : ""}
+                    ? ` ${file?.fileName}`
+                    : ""}
               </div>
               <div className={style.displayInRow}>
-              <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}>
-              <Tooltip title="Download" arrow >
-                                <Download
-                                    sx={{
-                                        fontSize: 25,
-                                        color: "#06617A",
-                                    }}
-                                    onClick={handleDownload} 
-                                />
-                                </Tooltip>
-                            </div>
+                <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}>
+                  <Tooltip title="Download" arrow >
+                    <Download
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
+                      onClick={handleDownload}
+                    />
+                  </Tooltip>
+                </div>
                 <div
-                  className={`${isPrintClicked && style.addStyle} ${
-                    style.alignCenter
-                  } ${style.cursorPointer} ${style.marginRight}`}
+                  className={`${isPrintClicked && style.addStyle} ${style.alignCenter
+                    } ${style.cursorPointer} ${style.marginRight}`}
                 >
                   <Tooltip title="Print" arrow >
-                  <PrintOutlinedIcon
-                    sx={{
-                      fontSize: isPrintClicked ? 20 : 25,
-                      color: isPrintClicked ? "#fff" : "#06617A",
-                    }}
-                    onClick={handlePrintClick}
-                  />
+                    <PrintOutlinedIcon
+                      sx={{
+                        fontSize: isPrintClicked ? 20 : 25,
+                        color: isPrintClicked ? "#fff" : "#06617A",
+                      }}
+                      onClick={handlePrintClick}
+                    />
                   </Tooltip>
                 </div>
                 {!isExpanded ? (
                   <Tooltip title="Click to Expand" arrow >
-                  <FullscreenSharpIcon
-                    className={`${style.iconStyle} ${style.cursorPointer} `}
-                    onClick={toggleExpand}
-                    sx={{ color: "#06617A" }}
-                  />
+                    <FullscreenSharpIcon
+                      className={`${style.iconStyle} ${style.cursorPointer} `}
+                      onClick={toggleExpand}
+                      sx={{ color: "#06617A" }}
+                    />
                   </Tooltip>
                 ) : (
                   <Tooltip title="Click to Minimize" arrow >
-                  <FullscreenExitIcon
-                    className={`${style.iconStyle} ${style.cursorPointer} `}
-                    onClick={toggleExpand}
-                    sx={{ color: "#06617A" }}
-                  />
+                    <FullscreenExitIcon
+                      className={`${style.iconStyle} ${style.cursorPointer} `}
+                      onClick={toggleExpand}
+                      sx={{ color: "#06617A" }}
+                    />
                   </Tooltip>
                 )}
                 {/* <FullscreenSharpIcon
@@ -237,33 +235,33 @@ const handleEmbedPrint = () => {
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
-                            <Tooltip title={"Click to Close"} arrow>
-                                <img
-                                    src={CrossPink}
-                                    alt="cross"
-                                    className={`${style.crossStyle} ${style.cursorPointer} `}
-                                    onClick={() => { getIsOpen(false) }}
-                                />
-                                </Tooltip>
-                            </div>
-                        </div>
-                        <div className={style.marginTop}>
-                            {file?.fileType === 'application/pdf' ? (
-                                <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>
-                            ) : file?.fileType?.startsWith("image/") ? (
-                                <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
-                            ) : <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>}
-                        </div>
-                        <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                          <Tooltip title={"Click to Close"} arrow>
-                            <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div></Tooltip>
-                        </div>
-                    </div>
+                <Tooltip title={"Click to Close"} arrow>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} `}
+                    onClick={() => { getIsOpen(false) }}
+                  />
+                </Tooltip>
+              </div>
+            </div>
+            <div className={style.marginTop}>
+              {file?.fileType === 'application/pdf' ? (
+                <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>
+              ) : file?.fileType?.startsWith("image/") ? (
+                <img src={file?.fileURL} alt="" width="100%" height="600px" className={style.objectFitContain} />
+              ) : <iframe src={`${file?.fileURL}#toolbar=1&view=fitH`} width="100%" height="600px"></iframe>}
+            </div>
+            <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
+              <Tooltip title={"Click to Close"} arrow>
+                <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div></Tooltip>
+            </div>
+          </div>
 
-                </div>
-            </Dialog >
-        </>
-    )
+        </div>
+      </Dialog >
+    </>
+  )
 }
 
 export default FileDisplayDialog;

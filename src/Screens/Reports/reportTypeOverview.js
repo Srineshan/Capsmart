@@ -320,15 +320,35 @@ const ReportTypeOverview = () => {
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
+    // const handlePrint = useReactToPrint({
+    //     content: reactToPrintContent,
+    //     documentTitle: `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`,
+    //     // onBeforeGetContent: handleOnBeforeGetContent,
+    //     // onBeforePrint: handleBeforePrint,
+    //     // onAfterPrint: handleAfterPrint,
+    //     removeAfterPrint: true
+    // });
+
     const handlePrint = useReactToPrint({
         content: reactToPrintContent,
         documentTitle: `${reportTitleList[reportType]}_${userDetail?.userName}_${format(new Date(), 'MM_dd_yy')}`,
-        // onBeforeGetContent: handleOnBeforeGetContent,
-        // onBeforePrint: handleBeforePrint,
-        // onAfterPrint: handleAfterPrint,
-        removeAfterPrint: true
-    });
-
+        removeAfterPrint: true,
+        pageStyle: `
+          @page {
+            margin-top: 20px;
+          }
+          @media print {
+            .reportBackgroundCard {
+              break-inside: avoid;
+            }
+            body, html {
+              padding-top: 0;
+              margin-top: 0;
+            }
+          }
+        `
+      });
+      
     const getIsExpanded = (value) => {
         setIsExpanded(value);
     }
@@ -908,7 +928,7 @@ const ReportTypeOverview = () => {
     }
 
     const headerValuesStatus = [
-        "No.",
+        "No",
         "Staff",
         "Staff Type",
         "Department / Specialty",
@@ -1761,7 +1781,7 @@ const ReportTypeOverview = () => {
                     <ReportPerformanceAndOptions handle={handle} handlePrint={handlePrint} dataToUseInReport={dataToUseInReport} refToUse={PDFRef} getIsDownloadClicked={getIsDownloadClicked} isNoData={isNoData} />
                     <FullScreen handle={handle} className={handle.active ? style.scroll : ''}>
                         <div className={`Report`} ref={PDFRef}>
-                            <div className={`${style.reportBackgroundCard} ${style.marginTop20} `} ref={componentRef}>
+                            <div className={`${style.reportBackgroundCard} ${style.marginTop20} ${style.printContainer} `} ref={componentRef}>
                                 <table style={{ width: '100%' }}>
                                     <thead>
                                         <ReportHeader />
