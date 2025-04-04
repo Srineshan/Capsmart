@@ -303,6 +303,11 @@ const ApplicationSetup = React.lazy(() =>
 const MedicalDirectivesAttestRFC = React.lazy(() =>
   import("./Screens/MedicalDirectiveAttestRFC")
 );
+
+const MedicalDirectivesAttestDisplay = React.lazy(() =>
+  import("./Screens/MedicalDirectivesAttestDisplay")
+);
+
 const App = ({ props }) => {
   const [accessToken, setAccessToken] = useState(Auth());
   const { isAuthenticated, isSessionLoading } = useSession();
@@ -1315,6 +1320,10 @@ const App = ({ props }) => {
                 <Route
                   path="/reappointmentApplicationForm/:applicationId/:section/:step/:medicalDirectivesId"
                   element={<ProtectedRoute><MedicalDirectivesAttest /></ProtectedRoute>}
+                />
+                <Route
+                  path="/medicalDirective/:applicationId/:medicalDirectivesId"
+                  element={<ProtectedRoute><MedicalDirectivesAttestDisplay /></ProtectedRoute>}
                 />
                 <Route
                   path="/locumApplicationForm/:applicationId/:section/:step"

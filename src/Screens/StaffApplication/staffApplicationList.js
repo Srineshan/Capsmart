@@ -4645,7 +4645,7 @@ const StaffApplicationList = ({
                   </div>
                 ) : null}
 
-                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                {/* {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
@@ -4664,7 +4664,7 @@ const StaffApplicationList = ({
                       <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div>
                     </div>
                   </div>
-                ) : null}
+                ) : null} */}
 
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
                   <div
