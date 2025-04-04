@@ -82,6 +82,7 @@ const StaffApplicationList = ({
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showCardAppointment, setShowCardAppointment] = useState(false);
   const [showCardCompletion, setShowCardCompletion] = useState(false);
+  const [reappointmentCount, setReappointmentCount] = useState(0);
   const [showDepartmentCardStatus, setShowDepartmentCardStatus] = useState(false);
   const [applicationRejected, setApplicationRejected] = useState({
     totalRejections: 0,
@@ -1229,6 +1230,10 @@ const StaffApplicationList = ({
   }, []);
 
   useEffect(() => {
+    getStaffTotalCount();
+  }, []);
+
+  useEffect(() => {
     getDeclineData();
   }, [showApplicationApprovedDeclineDialog]);
 
@@ -1397,6 +1402,18 @@ const StaffApplicationList = ({
       return [];
     }
   };
+
+
+  const getStaffTotalCount = async () =>{
+    try {
+      const response = await GET(`application-management-service/staff?status=ACTIVE`);
+      setReappointmentCount(response?.data?.numberOfElements);
+      return response?.data?.numberOfElements || 0;
+    } catch (error) {
+      console.error("Error fetching NumberofElements:", error);
+      return [];
+    }
+  }
 
   const getDeclineData = async () => {
     if (applicationType === "LOCUM") {
@@ -4591,6 +4608,84 @@ const StaffApplicationList = ({
                     className=`${style.searchInput}`}
                   />
                 </div> */}
+
+{(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        Reappointments Sent ({reappointmentCount})
+                      </div>
+                      <div className={`${style.marginLeft10} `}>
+                        {!showCardAppointment ? (
+                           <Tooltip title={"Click to Expand"} arrow>
+                          <AddIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardAppointment(!showCardAppointment)}
+                          />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title={"Click to Minimize"} arrow>
+                          <RemoveIcon
+                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                            onClick={() => setShowCardAppointment(!showCardAppointment)}
+                          />
+                          </Tooltip>
+                        )}
+                      </div>
+                    </div>
+                    {showCardAppointment && (
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      <div
+                        className={`${style.displayInCol} ${style.marginTop}`}
+                      >
+                        <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                          <div className={style.progressbarStyle}>
+                            <div className={style.spaceBetween}>
+                              <div className={style.DepartmentHeadingTextStyle}>
+                                Physician / Doctor (30)
+                              </div>
+                              <KeyboardArrowRightIcon
+                                sx={{ fontSize: 20, color: "#06617A" }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
+                          <div className={style.progressbarStyle}>
+                            <div className={style.spaceBetween}>
+                              <div className={style.DepartmentHeadingTextStyle}>
+                                Nurse (19)
+                              </div>
+                              <KeyboardArrowRightIcon
+                                sx={{ fontSize: 20, color: "#06617A" }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
+                          <div className={style.progressbarStyle}>
+                            <div className={style.spaceBetween}>
+                              <div className={style.DepartmentHeadingTextStyle}>
+                                Midwife (1)
+                              </div>
+                              <KeyboardArrowRightIcon
+                                sx={{ fontSize: 20, color: "#06617A" }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    )}
+                  </div>
+                ) : null}
 
                 {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
