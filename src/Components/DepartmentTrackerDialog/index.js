@@ -292,7 +292,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const handleNavigateStatus = () => {
     navigate("/reportTypeOverview/submittedTimesheetsPaymentStatus", { state: { tableData } });
   };
-  
+
   const getTableValues = () => {
     const No = [];
     const staff = [];
@@ -539,29 +539,29 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     />
                   </Tooltip>
                 </div>
-                {/* <div
+                <div
                   className={`${style.alignCenter
-                    } ${style.cursorPointer} ${style.marginRight10}`}
+                    } ${style.cursorPointer} ${style.marginLeft10}`}
                 >
                   <Tooltip title='Print Data' arrow >
-                  <PrintOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
-                    }}
-                    onClick={handleNavigateStatus}
-                  />
+                    <PrintOutlinedIcon
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
+                      onClick={handleNavigateStatus}
+                    />
                   </Tooltip>
-                </div> */}
-                 <Tooltip title="Close" arrow>
-                <img
-                  src={CrossPink}
-                  alt="cross"
-                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                  onClick={() => {
-                    getIsOpen(false);
-                  }}
-                />
+                </div>
+                <Tooltip title="Close" arrow>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
+                    onClick={() => {
+                      getIsOpen(false);
+                    }}
+                  />
                 </Tooltip>
               </div>
             </div>
