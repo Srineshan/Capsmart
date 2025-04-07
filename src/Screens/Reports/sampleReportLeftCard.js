@@ -522,7 +522,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
 
     return (
         <div>
-            <div className={`${style.leftCard} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
+            <div className={`${style.leftCard} ${style.leftCardDisplay} ${style.marginTop20} ${style.bigCalendarLeftCardWidth}`}>
                 <div className={`${style.reporttypeLeftBackGround}`}>
                   <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
                 </div>
