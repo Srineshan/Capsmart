@@ -177,66 +177,66 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
     }
   };
 
-   const handleApplicationAccept = async () => {
-      let role;
-      let title;
-      let notes = userRoleComments;
-      let isDelegate = true;
-      let applicationIdsParam = checkedIds?.length
+  const handleApplicationAccept = async () => {
+    let role;
+    let title;
+    let notes = userRoleComments;
+    let isDelegate = true;
+    let applicationIdsParam = checkedIds?.length
       ? checkedIds.map(id => `&applicationIds=${id}`).join("")
       : "";
-  
-      // Determine role based on selectedTab and applicationType
-      if (selectedTab === 'level-2') {
-        if (workModeType === "Department Head") {
-          role = "Department Head";
-          isDelegate = false;
-          title = "Dept. Head / Chief Review"
-        } else {
-          role = "Department Head";
-          title = "Dept. Head / Chief Review"
-        }
-      } else if (selectedTab === 'level-3') {
-        if (workModeType === "Credentialing Committee") {
-          role = "Credentialing Committee";
-          title = "Credentialing Committee Review";
-          isDelegate = false;
-        } else if (workModeType === "Chief Of Staff") {
-          role = "Chief Of Staff";
-          isDelegate = false;
-          title = "Chief Of Staff Review";
-        }
-      } else if (selectedTab === 'level-4') {
-        role = "Advisory Committee";
-        title = "MAC Review";
-      } else if (selectedTab === 'level-5') {
-        role = "Board";
-        title = "BOD Approval";
-      } else if (selectedTab === 'level-1') {
-        role = "Staff Manager";
-        title = "Staff Manager Verification";
+
+    // Determine role based on selectedTab and applicationType
+    if (selectedTab === 'level-2') {
+      if (workModeType === "Department Head") {
+        role = "Department Head";
         isDelegate = false;
+        title = "Dept. Head / Chief Review"
+      } else {
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
       }
-  
-      // Prepare the payload
-      let temp = {
-        role: isDelegate ? role : "",
-        notes: notes,
-        title: title
-      };
-  
-  
-      // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
-      // const requestData = { ...temp, notes: "" };
-      await PUT(`application-management-service/application/workflow/complete/bulk/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES${applicationIdsParam}`, temp)
-        .then(response => {
-          console.log('success')
-          onClose()
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+    } else if (selectedTab === 'level-3') {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review";
+        isDelegate = false;
+      } else if (workModeType === "Chief Of Staff") {
+        role = "Chief Of Staff";
+        isDelegate = false;
+        title = "Chief Of Staff Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      role = "Advisory Committee";
+      title = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      role = "Board";
+      title = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      role = "Staff Manager";
+      title = "Staff Manager Verification";
+      isDelegate = false;
+    }
+
+    // Prepare the payload
+    let temp = {
+      role: isDelegate ? role : "",
+      notes: notes,
+      title: title
     };
+
+
+    // const isDelegate = selectedTab === 'level-2' || selectedTab === 'level-3' || selectedTab === 'level-4' || selectedTab === 'level-5';
+    // const requestData = { ...temp, notes: "" };
+    await PUT(`application-management-service/application/workflow/complete/bulk/APPROVED?isDelegate=${isDelegate}&approvalType=RECOMMENDED_WITH_NOTES${applicationIdsParam}`, temp)
+      .then(response => {
+        console.log('success')
+        onClose()
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleApplicationApprove = async () => {
     let role;
@@ -323,66 +323,66 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
 
       return (
         <div key={formDetails?.displayId} className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-        <div className={style.marginTop10}>
-          <div className={`${style.gridContainer} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+          <div className={style.marginTop10}>
+            <div className={`${style.gridContainer} ${style.marginLeftRight20} ${style.marginBottom10}`}>
               <div className={`${style.gridRow} `}>
-           <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
-      {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-       formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-      {formDetails?.basicDetails?.applicant?.name?.firstName
-          ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-            formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-          : ""}
-  </span>
-  <span className={`${style.rejectionTextStyle}`}>
-      {", "}{formDetails?.providerType?.serviceProviderType}
-  </span>
-  </div>
-            <div>
-            <span className={`${style.rejectionHeadingTextStyle}`}>
-{formDetails?.basicDetails?.departmentSpecialty?.department || ""}
-{formDetails?.basicDetails?.departmentSpecialty?.specialty
-  ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
-  : ""}
-</span>
-            </div>
-            <div className={`${style.twoColumnGridInner} `}>
-            <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-            <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-          </div>
-          </div>
-          <div className={style.gridRow}>
-          {
-              entity?.multiSiteEntity && (
-                  <div className={`${style.twoColumnGridInner}`}>
-                  <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                  <span className={`${style.rejectionTextStyle1}`}>
-                      {entity?.multiSiteEntity?.[0]?.name || "-"}
+                <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                  {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                    formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                  {formDetails?.basicDetails?.applicant?.name?.firstName
+                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                    formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                    : ""}
+                </span>
+                  <span className={`${style.rejectionTextStyle}`}>
+                    {", "}{formDetails?.providerType?.serviceProviderType}
                   </span>
-                  </div>
-              )
-              }
-               <div className={`${style.twoColumnGridInner}`}>
-              <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-              <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-            </div>
-            <div className={`${style.twoColumnGridInner}`}>
-              <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-              <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-            </div>
-            <div className={`${style.twoColumnGridInner}`}>
-              <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-              <span className={`${style.rejectionTextStyle1}`}>
-                {formDetails?.basicDetails?.applicant?.name?.firstName
-                ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-              </span>
-            </div>
+                </div>
+                <div>
+                  <span className={`${style.rejectionHeadingTextStyle}`}>
+                    {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                    {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                      ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                      : ""}
+                  </span>
+                </div>
+                <div className={`${style.twoColumnGridInner} `}>
+                  <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                  <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                </div>
+              </div>
+              <div className={style.gridRow}>
+                {
+                  entity?.multiSiteEntity && (
+                    <div className={`${style.twoColumnGridInner}`}>
+                      <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                      <span className={`${style.rejectionTextStyle1}`}>
+                        {entity?.multiSiteEntity?.[0]?.name || "-"}
+                      </span>
+                    </div>
+                  )
+                }
+                <div className={`${style.twoColumnGridInner}`}>
+                  <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                  <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                </div>
+                <div className={`${style.twoColumnGridInner}`}>
+                  <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                  <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                </div>
+                <div className={`${style.twoColumnGridInner}`}>
+                  <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                  <span className={`${style.rejectionTextStyle1}`}>
+                    {formDetails?.basicDetails?.applicant?.name?.firstName
+                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       );
     });
   };
@@ -415,8 +415,8 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                 {selectedTab === "level-3"
                   ? "Staff Reappointments Approved by the Cred. Comm." :
                   selectedTab === "level-4"
-                  ? "Staff Reappointments Approved by the MAC."
-                  : "Staff Reappointments Approved by the BOD."}
+                    ? "Staff Reappointments Approved by the MAC."
+                    : "Staff Reappointments Approved by the BOD."}
               </div>
               <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} />
             </div>
@@ -457,9 +457,9 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
             <div className={`${style.marginTop10} ${style.commentsNotesHeadingFontStyle}`}>
               {selectedTab === "level-3"
                 ? "Notes /Comments By The Cred Comm*"
-                :selectedTab === "level-4"
-                ? "Notes /Comments By The MAC*"
-                : " Notes /Comments By The BOD*"}
+                : selectedTab === "level-4"
+                  ? "Notes /Comments By The MAC*"
+                  : " Notes /Comments By The BOD*"}
             </div>
             <div className={`${style.marginTop10}`}>
               <CKEditor

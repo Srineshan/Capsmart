@@ -97,7 +97,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     useOptionsHide(countHoverRef);
     useOptionsHide(textHoverRef);
     const isInitialLoad = useRef(true);
-    console.log("filteredIds",filteredIds)
+    console.log("filteredIds", filteredIds)
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
@@ -163,36 +163,36 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorElIcon(null);
     };
 
-const handleClickIconWithCount = (event, index, tableDataIndex) => {
-  const rect = event.currentTarget.getBoundingClientRect();
-  const windowHeight = window.innerHeight;
+    const handleClickIconWithCount = (event, index, tableDataIndex) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
 
-  // Check if there's enough space below; if not, flip the popover
-  const flip = rect.bottom + 150 > windowHeight; // Adjust 150px threshold as needed
-  setIsFlipped(flip);
+        // Check if there's enough space below; if not, flip the popover
+        const flip = rect.bottom + 150 > windowHeight; // Adjust 150px threshold as needed
+        setIsFlipped(flip);
 
-  setAnchorElIconWithCount(event.currentTarget);
-  setCursorPosition({
-    left: event.clientX,
-    top: flip ? rect.top : rect.bottom, 
-  });
-  setSelectedMenuIndex(index);
-  setSelectedMenuColIndex(tableDataIndex);
-};
+        setAnchorElIconWithCount(event.currentTarget);
+        setCursorPosition({
+            left: event.clientX,
+            top: flip ? rect.top : rect.bottom,
+        });
+        setSelectedMenuIndex(index);
+        setSelectedMenuColIndex(tableDataIndex);
+    };
 
-const handleMouseMove = (event) => {
-  if (openIconWithCount) {
-    setCursorPosition({
-      left: event.clientX,
-      top: event.clientY,
-    });
-  }
-};
+    const handleMouseMove = (event) => {
+        if (openIconWithCount) {
+            setCursorPosition({
+                left: event.clientX,
+                top: event.clientY,
+            });
+        }
+    };
 
 
-const handleCloseIconWithCount = () => {
-  setAnchorElIconWithCount(null);
-};
+    const handleCloseIconWithCount = () => {
+        setAnchorElIconWithCount(null);
+    };
 
 
     const handleClickCountWithHover = (event, index, tableDataIndex) => {
@@ -519,98 +519,98 @@ const handleCloseIconWithCount = () => {
                                                     </div>
                                                 </div>
                                             ) : tableData?.type === "iconWithCount" ? (
-                                               <div
-    onMouseEnter={(e) => handleClickIconWithCount(e, index, tableDataIndex)}
-    onMouseLeave={handleCloseIconWithCount}
-    onMouseMove={handleMouseMove}
-    aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
-    aria-haspopup="true"
-    style={{ display: 'inline-block', position: 'relative' }}
-  >
+                                                <div
+                                                    onMouseEnter={(e) => handleClickIconWithCount(e, index, tableDataIndex)}
+                                                    onMouseLeave={handleCloseIconWithCount}
+                                                    onMouseMove={handleMouseMove}
+                                                    aria-owns={openIconWithCount ? 'mouse-over-popover' : undefined}
+                                                    aria-haspopup="true"
+                                                    style={{ display: 'inline-block', position: 'relative' }}
+                                                >
                                                     <Typography className={`${style.cursorPointer} ${style.verticalAlignCenter}`}  >
                                                         {tableData?.icon?.[index]}
                                                         <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
                                                         {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
-                                                          <Popover
-            id="mouse-over-popover"
-            open={openIconWithCount}
-            anchorEl={anchorElIconWithCount}
-            onClose={handleCloseIconWithCount}
-            anchorOrigin={{
-              vertical: isFlipped ? 'top' : 'bottom',
-              horizontal: 'center',
-            }}
-            transformOrigin={{
-              vertical: isFlipped ? 'bottom' : 'top',
-              horizontal: 'center',
-            }}
-            sx={{
-              pointerEvents: 'none',
-              '& .MuiPopover-paper': {
-                backgroundColor: 'transparent',
-                boxShadow: 'none',
-                overflow: 'visible',
-              },
-            }}
-            disableRestoreFocus
-          >
-           <Box
-              sx={{
-                position: "absolute",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: 0,
-                height: 0,
-                borderLeft: "6px solid transparent",
-                borderRight: "6px solid transparent",
-                borderBottom: isFlipped ? "none" : "6px solid #737575",
-                borderTop: isFlipped ? "6px solid #737575" : "none",
-                top: isFlipped ? "auto" : "-6px",
-                bottom: isFlipped ? "-6px" : "auto",
-                zIndex: 1,
-              }}
-            />
-                <Box
-              sx={{
-                backgroundColor: "#737575",
-                borderRadius: "4px",
-                maxHeight:
-                  tableData?.hoverText?.[index]?.length > 3 ? "100px" : "auto",
-                overflowY: tableData?.hoverText?.[index]?.length > 3 ? "scroll" : "auto",
-                position: "relative",
-                pointerEvents: 'auto',
-                '& > *': { pointerEvents: 'none' },
-                zIndex: 1,
-                width: "280px",
-                margin: "0 auto",
-                padding: "8px",
-                color: "white",
-                fontSize: "14px", 
-                scrollbarWidth: 'thin',
-                '&::-webkit-scrollbar': {
-                  width: "8px", 
-                },
-                '&::-webkit-scrollbar-track': {
-                  background: "rgba(0,0,0,0.2)",
-                  borderRadius: "4px",
-                },
-                '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: "rgba(255,255,255,0.5)", // More visible
-                  borderRadius: "4px",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  '&:hover': {
-                    backgroundColor: "rgba(255,255,255,0.7)",
-                  }
-                },
-              }}
-            >
-                                                                {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
-                                                                    <div className={style.multipleOptionsCard}>
-                                                                        <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {data}</div>
-                                                                    </div>
-                                                                ))}
+                                                            <Popover
+                                                                id="mouse-over-popover"
+                                                                open={openIconWithCount}
+                                                                anchorEl={anchorElIconWithCount}
+                                                                onClose={handleCloseIconWithCount}
+                                                                anchorOrigin={{
+                                                                    vertical: isFlipped ? 'top' : 'bottom',
+                                                                    horizontal: 'center',
+                                                                }}
+                                                                transformOrigin={{
+                                                                    vertical: isFlipped ? 'bottom' : 'top',
+                                                                    horizontal: 'center',
+                                                                }}
+                                                                sx={{
+                                                                    pointerEvents: 'none',
+                                                                    '& .MuiPopover-paper': {
+                                                                        backgroundColor: 'transparent',
+                                                                        boxShadow: 'none',
+                                                                        overflow: 'visible',
+                                                                    },
+                                                                }}
+                                                                disableRestoreFocus
+                                                            >
+                                                                <Box
+                                                                    sx={{
+                                                                        position: "absolute",
+                                                                        left: "50%",
+                                                                        transform: "translateX(-50%)",
+                                                                        width: 0,
+                                                                        height: 0,
+                                                                        borderLeft: "6px solid transparent",
+                                                                        borderRight: "6px solid transparent",
+                                                                        borderBottom: isFlipped ? "none" : "6px solid #737575",
+                                                                        borderTop: isFlipped ? "6px solid #737575" : "none",
+                                                                        top: isFlipped ? "auto" : "-6px",
+                                                                        bottom: isFlipped ? "-6px" : "auto",
+                                                                        zIndex: 1,
+                                                                    }}
+                                                                />
+                                                                <Box
+                                                                    sx={{
+                                                                        backgroundColor: "#737575",
+                                                                        borderRadius: "4px",
+                                                                        maxHeight:
+                                                                            tableData?.hoverText?.[index]?.length > 3 ? "100px" : "auto",
+                                                                        overflowY: tableData?.hoverText?.[index]?.length > 3 ? "scroll" : "auto",
+                                                                        position: "relative",
+                                                                        pointerEvents: 'auto',
+                                                                        '& > *': { pointerEvents: 'none' },
+                                                                        zIndex: 1,
+                                                                        width: "280px",
+                                                                        margin: "0 auto",
+                                                                        padding: "8px",
+                                                                        color: "white",
+                                                                        fontSize: "14px",
+                                                                        scrollbarWidth: 'thin',
+                                                                        '&::-webkit-scrollbar': {
+                                                                            width: "8px",
+                                                                        },
+                                                                        '&::-webkit-scrollbar-track': {
+                                                                            background: "rgba(0,0,0,0.2)",
+                                                                            borderRadius: "4px",
+                                                                        },
+                                                                        '&::-webkit-scrollbar-thumb': {
+                                                                            backgroundColor: "rgba(255,255,255,0.5)", // More visible
+                                                                            borderRadius: "4px",
+                                                                            border: "1px solid rgba(255,255,255,0.2)",
+                                                                            '&:hover': {
+                                                                                backgroundColor: "rgba(255,255,255,0.7)",
+                                                                            }
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
+                                                                        <div className={style.multipleOptionsCard}>
+                                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {data}</div>
+                                                                        </div>
+                                                                    ))}
 
-</Box>
+                                                                </Box>
                                                             </Popover>
                                                         )}
                                                     </Typography>
@@ -753,14 +753,14 @@ const handleCloseIconWithCount = () => {
                                                             )
                                                         : visibleActions?.length === 1 ? (
                                                             <Tooltip title={'Click to View'} arrow>
-                                                            <span className={`${style.singleActionText}`}
-                                                                onClick={() => {
-                                                                    visibleActions[0]?.onClick(data);
-                                                                    handleClose();
-                                                                }}
-                                                                key={0}>
-                                                                {visibleActions[0]?.data}
-                                                            </span>
+                                                                <span className={`${style.singleActionText}`}
+                                                                    onClick={() => {
+                                                                        visibleActions[0]?.onClick(data);
+                                                                        handleClose();
+                                                                    }}
+                                                                    key={0}>
+                                                                    {visibleActions[0]?.data}
+                                                                </span>
                                                             </Tooltip>
                                                         ) : (
                                                             <Tooltip title={'Click to take action'} arrow>

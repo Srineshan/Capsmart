@@ -1,20 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import style from './index.module.scss';
-import ApplicationHeader from '../../../../Components/ApplicationHeaders';
-import { GET, POST } from '../../../dataSaver';
+import ApplicationHeader from '../../Components/ApplicationHeaders';
+import { GET, POST } from '../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
-import PdfViewer from '../../pdfViewer';
 import CryptoJS from 'crypto-js';
-import CommonCheckBox from '../../../../Components/CommonFields/CommonCheckBox';
+import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { Tooltip } from '@mui/material';
-import ESignature from '../../../../Components/ESignature';
+import ESignature from '../../Components/ESignature';
 import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
+import PdfViewer from '../ReappointmentApplicationForm/pdfViewer';
 
-const MedicalDirectivesAttest = () => {
+const MedicalDirectivesAttestDisplay = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
     const [medicalDirectives, setMedicalDirectives] = useState()
     const [medicalDirectivesAttestationLog, setMedicalDirectivesAttestationLog] = useState()
@@ -49,9 +49,9 @@ const MedicalDirectivesAttest = () => {
         getAttestationLog()
     }, [applicationId])
 
-    useEffect(() => {
-        setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
-    }, [basicForm, step])
+    // useEffect(() => {
+    //     setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)))
+    // }, [basicForm, step])
 
     useEffect(() => {
         setCurrentDate(format(new Date(), canadaData?.dateFormat || 'dd/MM/yyyy'))
@@ -278,4 +278,4 @@ const MedicalDirectivesAttest = () => {
     )
 }
 
-export default MedicalDirectivesAttest;
+export default MedicalDirectivesAttestDisplay;

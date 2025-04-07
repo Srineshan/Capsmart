@@ -1801,6 +1801,42 @@
 
 .permanentStaffGrid {
     display: grid;
-    grid-template-columns: 3% 14% 11% 19% 8% 19% 10% 12%;
+    grid-template-columns: 4% 14% 11% 19% 21% 13% 13%;
     grid-gap: 5px;
   }
+
+//   @media print {
+//     .reportBackgroundCard {
+//       padding: 20px !important;
+//     }
+
+//     @page {
+//         margin-top: 50px; 
+//       }
+//   }
+
+  @media print {
+    @page {
+        margin-top: 100px;
+    }
+
+    .printContainer {
+        page-break-inside: avoid;
+    }
+
+    .printContainer > * {
+        page-break-before: auto;
+        page-break-inside: avoid;
+    }
+
+    .reportBackgroundCard {
+        padding: 20px !important;
+      }
+
+      .tableRow { 
+        page-break-inside: avoid; /* Ensure table rows do not split across pages */
+    }
+    .reportSection { 
+        page-break-before: always; /* Force sections to start on a new page if needed */
+    }
+}

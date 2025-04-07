@@ -74,10 +74,10 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
         addOnActivities: 'ACTIVITY',
         timesheetProcessingSummary: 'TIMESHEET',
         listingOfTimesheetsNotPaid: 'TIMESHEET',
-        submittedTimesheetsPaymentStatus: 'TIMESHEET',
+        staffReappointmentTracker: 'TIMESHEET',
         paymentsProcessingSummary: 'TIMESHEET',
-        upcomingContractRenewals: 'CONTRACT',
-        oneTimeContract: 'CONTRACT',
+        staffReappointmentsNotes: 'CONTRACT',
+        staffReappointments: 'CONTRACT',
         contractDocumentsOnFile: 'CONTRACT',
         contractsWithABusinessEntity: 'CONTRACT',
         multiProviderContractsList: 'CONTRACT',
@@ -150,7 +150,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     }
     console.log(currentUserDetails?.roles?.length >= 2, currentUserDetails?.roles?.length === 1, currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)
     const getContractAndUserList = async () => {
-        // if (reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+        // if (reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
         //     reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
         //     reportType !== "contractsWithABusinessEntity" && reportType !== "currentRemitToAddressForActiveContracts") {
         if (currentUserDetails?.roles?.length >= 2 || (currentUserDetails?.roles?.length === 1 && currentUserDetails?.roles?.filter(data => data?.roleName === "Activity Logger")?.length === 0)) {
@@ -293,7 +293,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
     // }, isMyReport ? [currentUserDetails] : [selectedSitesToSend, selectedDepartmentsToSend, selectedContractsToSend, currentUserDetails]);
 
     useEffect(() => {
-        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus") {
+        if (reportType === "activitiesOrServices" || reportType === "paymentsProcessingSummary" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "staffReappointmentTracker") {
             const quarter = Math.floor((new Date().getMonth() / 3));
             const lastyear = new Date(new Date().getFullYear() - 1, 0, 1);
             if (reportingTimePeriod === 'Current Week') {
@@ -526,14 +526,14 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                 <div className={`${style.reporttypeLeftBackGround}`}>
                   <div className={style.reportLeftTextStyle}>Save Parameter Selection As My Report</div>
                 </div>
-                {(reportType === "upcomingContractRenewals" || reportType === "oneTimeContract" ||
+                {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
                     reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                     reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                    reportType === 'nonCompliant' || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker" || reportType === "submittedTimesheetsPaymentStatus") ? (
+                    reportType === 'nonCompliant' || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
                     <>
-                        {/* {reportType === "upcomingContractRenewals" && (
+                        {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
-                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
+                                <InputLabel id="demo-simple-select-standard-label1">{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Time Frame</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-standard-label1"
                                     id="demo-simple-select-standard1"
@@ -542,9 +542,9 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     label="Renewal Time Frame"
                                     disabled={isMyReport || isLoading}
                                 >
-                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
-                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
-                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "upcomingContractRenewals" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
+                                    <MenuItem value={30} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 30 days</MenuItem>
+                                    <MenuItem value={60} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 60 days</MenuItem>
+                                    <MenuItem value={90} disabled={isMyReport || isLoading}>{reportType === "staffReappointmentsNotes" ? 'Renewal' : 'Expiration'} Within Next 90 days</MenuItem>
                                 </Select>
                             </FormControl>
                         )} */}
@@ -872,7 +872,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                     </Select>
                                 </FormControl>
                             )}
-                        {/* {reportType === "upcomingContractRenewals" && (
+                        {/* {reportType === "staffReappointmentsNotes" && (
                             <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>
                                 <InputLabel id="demo-simple-select-standard-label4">Contract Continuation Policy</InputLabel>
                                 <Select
@@ -997,7 +997,7 @@ const SampleReportLeftCard = ({ getDataToUseInReport, isLoading }) => {
                                 </Select>
                             </FormControl>
                         )} */}
-                        {/* {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "submittedTimesheetsPaymentStatus" || reportType === "paymentsProcessingSummary") && (
+                        {/* {(reportType === "activitiesOrServices" || reportType === "addOnActivities" || reportType === "timesheetProcessingSummary" || reportType === "listingOfTimesheetsNotPaid" || reportType === "staffReappointmentTracker" || reportType === "paymentsProcessingSummary") && (
                             <>
                                 {reportType !== "paymentsProcessingSummary" && ( */}
                         <FormControl variant="standard" sx={{ m: 1, width: '250px', marginTop: '20px' }}>

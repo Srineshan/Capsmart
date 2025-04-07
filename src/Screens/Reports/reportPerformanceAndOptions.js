@@ -50,10 +50,10 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
     const openInfo = Boolean(anchorElInfo);
 
     const reportTitleList = {
-        // upcomingContractRenewals: 'Upcoming Contract Renewals',
-        upcomingContractRenewals: 'Staff Reappointments to Process',
-        // oneTimeContract: "List of One Time Contracts that will Terminate on Expiration",
-        oneTimeContract: "Staff Reappointments to Process",
+        // staffReappointmentsNotes: 'Upcoming Contract Renewals',
+        staffReappointmentsNotes: 'Staff Reappointments to Process',
+        // staffReappointments: "List of One Time Contracts that will Terminate on Expiration",
+        staffReappointments: "Staff Reappointments to Process",
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -62,8 +62,8 @@ const ReportPerformanceAndOptions = ({ handle, handlePrint, dataToUseInReport, r
         compensationCostAnalysis: 'Compensation Cost Analysis',
         timesheetProcessingSummary: 'Timesheet Processing Summary',
         listingOfTimesheetsNotPaid: 'Listing Of Timesheets Not Paid',
-        // submittedTimesheetsPaymentStatus: 'Submitted Timesheets Payment Status',
-        submittedTimesheetsPaymentStatus: 'Locum Renewal Status Tracker For {All Locum Staff}',
+        // staffReappointmentTracker: 'Submitted Timesheets Payment Status',
+        staffReappointmentTracker: 'Staff Reappointment Status Tracker',
         addOnActivities: 'Add On Activities/ Services Requests Status Summary',
         activitiesOrServices: 'Activities/ Services Log Status Summary',
         contractDocumentsOnFile: 'Contract Documents On File',

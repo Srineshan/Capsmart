@@ -410,7 +410,8 @@ const ApplicantPortalRFC = () => {
             console.log("Response data:", response?.data);
             setUploadFileData(prevData => {
                 // Merge previous data with new data
-                return [...(prevData || []), ...(response?.data || [])];
+                // return [...(prevData || []), ...(response?.data || [])];
+                return response?.data || []
             });
             setIsLoadingImageDocs(false);
             console.log("Responseupload:", uploadFileData);
@@ -1868,6 +1869,7 @@ const ApplicantPortalRFC = () => {
                                     }
                                     changeHandler={changeHandler}
                                     files={files}
+                                    maxFiles={1}
                                 />
                                 {/* <CommonDropZone
                                     title={"Upload A Photo"}

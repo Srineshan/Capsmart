@@ -369,27 +369,27 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 </div>
                 <div className={style.displayInRow}>
                   <div>
-                  <Tooltip title={"Click to User Guides & Tutorials"} arrow>
-                    <div
-                      className={`${style.userGuideButton} ${style.marginTop}`}
-                      onClick={() => {
-                        handleOpenUserGuide();
-                      }}
-                    >
-                      USER GUIDES & TUTORIALS
-                    </div>
+                    <Tooltip title={"Click to User Guides & Tutorials"} arrow>
+                      <div
+                        className={`${style.userGuideButton} ${style.marginTop}`}
+                        onClick={() => {
+                          handleOpenUserGuide();
+                        }}
+                      >
+                        USER GUIDES & TUTORIALS
+                      </div>
                     </Tooltip>
                   </div>
                   <div>
                     <Tooltip title={"Click to Continue"} arrow>
-                    <div
-                      className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
-                      onClick={processReappointment !== '' ? () => {
-                        handleContinue();
-                      } : () => { }}
-                    >
-                      CONTINUE
-                    </div>
+                      <div
+                        className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
+                        onClick={processReappointment !== '' ? () => {
+                          handleContinue();
+                        } : () => { }}
+                      >
+                        CONTINUE
+                      </div>
                     </Tooltip>
                   </div>
                 </div>
@@ -426,20 +426,20 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           </div>
           <div className={style.spaceBetween}>
             <Tooltip title={"Click to Cancel"} arrow>
-            <div
-              className={`${style.saveInProgress} ${style.marginTop}`}
-              onClick={() => setShowAlert(false)}
-            >
-              CANCEL
-            </div>
+              <div
+                className={`${style.saveInProgress} ${style.marginTop}`}
+                onClick={() => setShowAlert(false)}
+              >
+                CANCEL
+              </div>
             </Tooltip>
             <Tooltip title={"Click to Okay"} arrow>
-            <div
-              className={`${style.continue} ${style.marginTop}`}
-              onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
-            >
-              OKAY & EXIT
-            </div>
+              <div
+                className={`${style.continue} ${style.marginTop}`}
+                onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}
+              >
+                OKAY & EXIT
+              </div>
             </Tooltip>
           </div>
 
@@ -491,12 +491,12 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
           <div className={style.spaceBetween}>
             <div></div>
             <Tooltip title={"Click to Close"} arrow>
-            <div
-              className={`${style.saveInProgress} ${style.marginTop}`}
-              onClick={() => setShowUserGuide(false)}
-            >
-              CLOSE
-            </div>
+              <div
+                className={`${style.saveInProgress} ${style.marginTop}`}
+                onClick={() => setShowUserGuide(false)}
+              >
+                CLOSE
+              </div>
             </Tooltip>
           </div>
 

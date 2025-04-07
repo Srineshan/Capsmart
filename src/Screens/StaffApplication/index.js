@@ -23,6 +23,7 @@ import IdleTimer from '../../Components/IdleTimer';
 import DepartmentTrackerDialog from '../../Components/DepartmentTrackerDialog'
 import PDFGenerateBox from '../../Components/PdfGenerate'
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
+import MDTrackerDialog from '../../Components/MDTrackerDialog';
 
 const StaffApplication = () => {
     const [selectedTab, setSelectedTab] = useState('level-1');
@@ -43,6 +44,7 @@ const StaffApplication = () => {
     const [showResolveDialog, setShowResolveDialog] = useState(false);
     const [showRequestOverrideDialog, setShowRequestOverrideDialog] = useState(false);
     const [showDeptTrackerDialog, setShowDeptTrackerDialog] = useState(false);
+    const [showMdTrackerDialog, setShowMdTrackerDialog] = useState(false);
     const [showTimerDialog, setShowTimerDialog] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [staffView, setStaffView] = useState(false);
@@ -104,6 +106,10 @@ const StaffApplication = () => {
 
     const getDeptTrackerDialog = (value) => {
         setShowDeptTrackerDialog(value);
+    };
+
+    const getMdTrackerDialog = (value) => {
+        setShowMdTrackerDialog(value);
     };
 
     const getPdfGenerateBox = (value) => {
@@ -192,6 +198,7 @@ const StaffApplication = () => {
                         getStaffView={getStaffView}
                         staffView={staffView}
                         ccDateSetMode={ccDateSetMode}
+                        getMdTrackerDialog={getMdTrackerDialog}
                     />
                 </Fragment>
             )}
@@ -250,6 +257,9 @@ const StaffApplication = () => {
             )} */}
             {showDeptTrackerDialog && (
                 <DepartmentTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getDeptTrackerDialog} getActiveApplicationView={getActiveApplicationView} getNotesDialog={getNotesDialog} />
+            )}
+            {showMdTrackerDialog && (
+                <MDTrackerDialog isLoading={isLoading} getloading={getloading} getIsOpen={getMdTrackerDialog} />
             )}
             {showTimerDialog && (
                 <IdleTimer getIsOpen={getTimerDialog} />

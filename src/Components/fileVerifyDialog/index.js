@@ -33,6 +33,8 @@ import Cookies from 'universal-cookie';
 import jwt from 'jwt-decode';
 import FileWithFields from '../FileWithFields';
 import { SuccessToaster2 } from '../../utils/toaster';
+import { corsUrl } from "../../utils/formatting";
+import { Download } from "@mui/icons-material";
 
 const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFileIndex, setSelectedFileIndex, selectedRowTableName, selectedFormId, form, setForm, handleStepsVerify, setHasVerificationAttempted, getPreApplicationForReplace }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -63,6 +65,8 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [rejectSubject, setRejectSubject] = useState('');
     const [rejectClarification, setRejectClarification] = useState('');
     const [showFileWithFields, setShowFileWithFields] = useState(false);
+    const pdfUrl = file?.fileURL ? encodeURI(file?.fileURL) : "";
+    console.log("URLLLLLLLLLLLLLLLLLLL", pdfUrl, file?.documentType);
 
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
@@ -168,6 +172,71 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             setSelectedFileIndex(prevIndex => prevIndex + 1);
             setIsLoading(false);
         }
+    };
+
+    const handlePrint = async (url) => {
+        if (!url) {
+            console.error("No URL provided for printing");
+            return;
+        }
+
+        try {
+            const response = await fetch(corsUrl + encodeURIComponent(url)); // Use the proxy
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+            const blob = await response.blob();
+            const pdfUrl = URL.createObjectURL(blob);
+
+            // Create a hidden iframe
+            const iframe = document.createElement("iframe");
+            iframe.style.position = "absolute";
+            iframe.style.width = "0px";
+            iframe.style.height = "0px";
+            iframe.style.border = "none";
+            iframe.src = pdfUrl;
+
+            document.body.appendChild(iframe);
+
+            // Wait for the PDF to load, then print
+            iframe.onload = () => {
+                iframe.contentWindow.print();
+            };
+
+            // Cleanup after printing
+            setTimeout(() => {
+                URL.revokeObjectURL(pdfUrl);
+                document.body.removeChild(iframe);
+            }, 30000);
+        } catch (error) {
+            console.error("Error printing the PDF:", error);
+        }
+    };
+
+    const downloadPDF = async (url, filename) => {
+        try {
+            const response = await fetch(corsUrl + encodeURIComponent(url));
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+            const blob = await response.blob();
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+        } catch (error) {
+            console.error("Error downloading the PDF:", error);
+        }
+    };
+
+
+    const handleDownload = (url, fileName) => {
+        if (!url) {
+            console.error("No URL provided for download");
+            return;
+        }
+        downloadPDF(url, fileName);
     };
 
     // useEffect(() => {
@@ -502,25 +571,34 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Verification of Data & Documents</div>
                             <div className={style.displayInRow}>
-                                {/* <div
-                                className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                            >
-                                <PrintOutlinedIcon
-                                    sx={{
-                                        fontSize: isPrintClicked ? 20 : 25,
-                                        color: isPrintClicked ? "#fff" : "#06617A",
-                                    }}
-                                    onClick={handlePrintClick}
-                                />
-                            </div> */}
-                            <Tooltip title={"Click to Close"} arrow>
+                                <Tooltip title="Download" arrow >
+                                    <Download
+                                        sx={{
+                                            fontSize: 25,
+                                            color: "#06617A",
+                                        }}
+                                        className={style.cursorPointer}
+                                        onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                                    />
+                                </Tooltip>
+                                <div
+                                    className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                                ><Tooltip title="Print" arrow >
+                                        <PrintOutlinedIcon
+                                            sx={{
+                                                fontSize: isPrintClicked ? 20 : 25,
+                                                color: isPrintClicked ? "#fff" : "#06617A",
+                                            }}
+                                            onClick={() => handlePrint(pdfUrl)}
+                                        />
+                                    </Tooltip>
+                                </div>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer}`}
                                     onClick={() => { getIsOpen(false) }}
                                 />
-                                </Tooltip>
                             </div>
                         </div>
                         <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
@@ -545,9 +623,9 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 )} */}
                                 <div className={` ${selectedFileIndex === 0 ? style.cursorNotAllowed : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowLeftOnHover(true)} onBlur={() => setArrowLeftOnHover(false)}>
-                                    <Tooltip title={"Click to Previous"} arrow>
-                                        {/* <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
-                                        <img src={arrowLeftOnHover ? ArrowHoverLeft : selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={style.icon} />
+                                        <Tooltip title={"Click to Previous"} arrow>
+                                            {/* <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
+                                            <img src={arrowLeftOnHover ? ArrowHoverLeft : selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={style.icon} />
                                         </Tooltip>
                                         {/* <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={`${style.icon} ${style.hoverImg}`} />
                                         <img src={selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowDefaultLeft} className={`${style.icon} ${style.defaultImg}`} /> */}
@@ -561,7 +639,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowRightOnHover(true)} onBlur={() => setArrowRightOnHover(false)}>
                                         {/* <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
                                         <Tooltip title={"Click to Next"} arrow>
-                                        <img src={arrowRightOnHover ? ArrowHoverRight : selectedFileIndex === fileArray?.length - 1 ? ArrowDisabledRight : ArrowHoverRight} className={style.icon} />
+                                            <img src={arrowRightOnHover ? ArrowHoverRight : selectedFileIndex === fileArray?.length - 1 ? ArrowDisabledRight : ArrowHoverRight} className={style.icon} />
                                         </Tooltip>
                                     </div>
                                 </div>

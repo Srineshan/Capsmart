@@ -500,11 +500,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData =>  {
-                        return(
-                        <Tooltip title="Click to Delete" arrow>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
-                 } ), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData => {
+                        return (
+                            <Tooltip title="Click to Delete" arrow>
+                                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /> </Tooltip>);
+                    }), 'isShowHoverText': false
                 });
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
@@ -783,25 +783,25 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         </div> */}
                         <div className={`${style.twoCol} ${style.marginTop10}`}>
                             <Tooltip title={"Click to Upload Documents"} arrow>
-                            <CommonDropZone
-                                title={"Upload Your Documents"}
-                                description={
-                                    "Upload your files or drag & drop from your document cabinet"
-                                }
-                                changeHandler={changeHandler}
-                                files={files}
-                            />
+                                <CommonDropZone
+                                    title={"Upload Your Documents"}
+                                    description={
+                                        "Upload your files or drag & drop from your document cabinet"
+                                    }
+                                    changeHandler={changeHandler}
+                                    files={files}
+                                />
                             </Tooltip>
                             <Tooltip title={"Click to Upload Photo"} arrow>
-                            <CommonDropZone
-                                title={"Upload A Photo"}
-                                description={
-                                    "Take a picture with your Camera or Upload from Gallery."
-                                }
-                                changeHandler={changeHandler}
-                                files={files}
-                                accept="image/*"
-                            />
+                                <CommonDropZone
+                                    title={"Upload A Photo"}
+                                    description={
+                                        "Take a picture with your Camera or Upload from Gallery."
+                                    }
+                                    changeHandler={changeHandler}
+                                    files={files}
+                                    accept="image/*"
+                                />
                             </Tooltip>
                         </div>
                         <div ref={tableRef} className={style.tableContainer}>
@@ -917,11 +917,11 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                     <div className={style.threeColForButton}>
                         <div></div>
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Back"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Continue"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -959,10 +959,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
-             <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
-                            SAVE IN PROGRESS
-                        </div>
+                        <Tooltip title={"Click to Save In Progress"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
+                                SAVE IN PROGRESS
+                            </div>
                         </Tooltip>
                         {/* <div
                         className={`${style.saveInProgress} ${style.marginTop10} ${basicForm?.forms?.[formIndex]?.data !== null &&
@@ -980,13 +980,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         SKIP FOR NOW
                     </div> */}
                         <div className={style.twoColForButton}>
-                        <Tooltip title={"Click to Back"} arrow>
-                            <div
-                                className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => handleBackClick()}
-                            >
-                                BACK
-                            </div>
+                            <Tooltip title={"Click to Back"} arrow>
+                                <div
+                                    className={`${style.continue} ${style.marginTop10}`}
+                                    onClick={() => handleBackClick()}
+                                >
+                                    BACK
+                                </div>
                             </Tooltip>
                             {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
@@ -1002,8 +1002,8 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         >
                             CONTINUE
                         </div> */}
-                        <Tooltip title={"Click to Continue"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
+                            <Tooltip title={"Click to Continue"} arrow>
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     {/* <div className={style.marginTop}>
@@ -1133,26 +1133,26 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             </div>
                         ))}
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                        <Tooltip title={"Click to Skip for Now"} arrow>
-                            <div
-                                className={`${style.saveInProgressValidation}`}
-                                onClick={() => {
-                                    setIsShowUploadValidation(false);
-                                    handleContinue("skipped");
-                                }}
-                            >
-                                SKIP FOR NOW
-                            </div>
+                            <Tooltip title={"Click to Skip for Now"} arrow>
+                                <div
+                                    className={`${style.saveInProgressValidation}`}
+                                    onClick={() => {
+                                        setIsShowUploadValidation(false);
+                                        handleContinue("skipped");
+                                    }}
+                                >
+                                    SKIP FOR NOW
+                                </div>
                             </Tooltip>
                             <Tooltip title={"Click to Continue Uploading"} arrow>
-                            <div
-                                className={`${style.continueValidation} ${style.marginLeft}`}
-                                onClick={() => {
-                                    setIsShowUploadValidation(false);
-                                }}
-                            >
-                                CONTINUE UPLOADING
-                            </div>
+                                <div
+                                    className={`${style.continueValidation} ${style.marginLeft}`}
+                                    onClick={() => {
+                                        setIsShowUploadValidation(false);
+                                    }}
+                                >
+                                    CONTINUE UPLOADING
+                                </div>
                             </Tooltip>
                         </div>
                     </div>

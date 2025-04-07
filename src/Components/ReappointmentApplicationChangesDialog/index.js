@@ -272,43 +272,43 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
 
   return (
     <>
-    {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-          <LoadingScreen/>
-      </div>
-    )}
-    {!isLoadingImage && (
-    <Dialog
-      isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-      getApplicationCreationType={getApplicationCreationType}
-    >
-      <div>
-        <div className={Classes.DIALOG_BODY}>
-          <div className={style.spaceBetween}>
-            <div className={`${style.heading}`}>
-             Reappointment Application Data & Document Verification
-            </div>
-            
-            <div className={style.displayInRow}>
-            <Tooltip title={"Click to Close"} arrow>
-              <img
-                src={CrossPink}
-                alt="cross"
-                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                onClick={() => {
-                  onClose()
-                }}
-              />
-              </Tooltip>
-            </div>
-            
-          </div>
-          <div ref={componentRef} className={`${style.pagebreak}`}>
-            {/* <div className={`${style.spaceBetween}`}>
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
+      {!isLoadingImage && (
+        <Dialog
+          isOpen={getIsOpen}
+          onClose={() => getIsOpen(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+          getApplicationCreationType={getApplicationCreationType}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={`${style.heading}`}>
+                  Reappointment Application Data & Document Verification
+                </div>
+
+                <div className={style.displayInRow}>
+                  <Tooltip title={"Click to Close"} arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        onClose()
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+
+              </div>
+              <div ref={componentRef} className={`${style.pagebreak}`}>
+                {/* <div className={`${style.spaceBetween}`}>
               <div className={`${style.fontstyle} ${style.marginTop10}`}>
               <span className={`${style.fontstyleassociate}`}>
                 {applicationType === "NEW" 
@@ -317,68 +317,68 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
               </span>
               </div>
             </div> */}
-            <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                                      <div className={style.marginTop10}>
-                                        <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                                            <div className={`${style.gridRow} `}>
-                                         <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
-                                    {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                                     formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-                                    {formDetails?.basicDetails?.applicant?.name?.firstName
-                                        ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                                          formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                                        : ""}
-                                </span>
-                                <span className={`${style.rejectionTextStyle}`}>
-                                    {", "}{formDetails?.providerType?.serviceProviderType}
-                                </span>
-                                </div>
-                                          <div>
-                                          <span className={`${style.rejectionHeadingTextStyle}`}>
+                <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                      <div className={`${style.gridRow} `}>
+                        <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                          {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                            formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                          {formDetails?.basicDetails?.applicant?.name?.firstName
+                            ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                            formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                            : ""}
+                        </span>
+                          <span className={`${style.rejectionTextStyle}`}>
+                            {", "}{formDetails?.providerType?.serviceProviderType}
+                          </span>
+                        </div>
+                        <div>
+                          <span className={`${style.rejectionHeadingTextStyle}`}>
                             {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
                             {formDetails?.basicDetails?.departmentSpecialty?.specialty
-                                ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
-                                : ""}
-                        </span>
-                                          </div>
-                                          <div className={`${style.twoColumnGridInner} `}>
-                                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                                        </div>
-                                        </div>
-                                        <div className={style.gridRow}>
-                                        {
-                                            entity?.multiSiteEntity && (
-                                                <div className={`${style.twoColumnGridInner}`}>
-                                                <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                                                <span className={`${style.rejectionTextStyle1}`}>
-                                                    {entity?.multiSiteEntity?.[0]?.name || "-"}
-                                                </span>
-                                                </div>
-                                            )
-                                            }
-                                             <div className={`${style.twoColumnGridInner}`}>
-                                            <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                                            <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                                          </div>
-                                          <div className={`${style.twoColumnGridInner}`}>
-                                            <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                                            <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                                          </div>
-                                          <div className={`${style.twoColumnGridInner}`}>
-                                            <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                                            <span className={`${style.rejectionTextStyle1}`}>
-                                              {formDetails?.basicDetails?.applicant?.name?.firstName
-                                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                                            </span>
-                                          </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-            {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+                              ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                              : ""}
+                          </span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner} `}>
+                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                        </div>
+                      </div>
+                      <div className={style.gridRow}>
+                        {
+                          entity?.multiSiteEntity && (
+                            <div className={`${style.twoColumnGridInner}`}>
+                              <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                              <span className={`${style.rejectionTextStyle1}`}>
+                                {entity?.multiSiteEntity?.[0]?.name || "-"}
+                              </span>
+                            </div>
+                          )
+                        }
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>
+                            {formDetails?.basicDetails?.applicant?.name?.firstName
+                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
             {logDetails?.logs?.[logDetails.logs.length - 1]?.role} Comments & Notes
             </div>
             <div className={`${style.notesBorderStyle}`}>
@@ -419,13 +419,13 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                 {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
-            <Tooltip title={"Click to Start Verification"} arrow>
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-              <div className={style.reviewButton}>START VERIFICATION</div>
+                <Tooltip title={"Click to Start Verification"} arrow>
+                  <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
+                    <div className={style.reviewButton}>START VERIFICATION</div>
+                  </div>
+                </Tooltip>
+              </div>
             </div>
-            </Tooltip>
-          </div>
-          </div>
           </div>
         </Dialog>
       )}
