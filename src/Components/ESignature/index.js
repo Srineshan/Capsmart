@@ -48,7 +48,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
   console.log("stylesign", eSignTypeContentStyle);
   console.log("textsign", eSignTypeContent);
   console.log("Esign", eSignImg);
-  console.log("formIndex", form)
+  console.log("formIndex", form, userName)
   return (
     <>
       <div className={removePadding ? style.signatureWithoutPadding : style.signature}>
@@ -77,7 +77,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
               />
             ) : (
               <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>
-                {eSignTypeContent || ""}
+                {(userName && userName !== 'undefined') ? userName : eSignTypeContent || ""}
               </span>
             )}
             {/* {!showData ? (

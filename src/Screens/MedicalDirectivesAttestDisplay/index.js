@@ -167,7 +167,7 @@ const MedicalDirectivesAttestDisplay = () => {
     }
 
     const handleClose = () => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${section}/${step}`);
+        navigate(`/applications`);
     }
     return (
         <div className={style.screenBackground}>
@@ -181,9 +181,9 @@ const MedicalDirectivesAttestDisplay = () => {
                 </span>
             </div>
             <div className={style.screenPadding}>
-                <div>
+                {/* <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
-                </div>
+                </div> */}
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={style.medicalDirectivesCard}>
@@ -215,7 +215,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                             <div
                                             >
                                                 <ESignature
-                                                    userName={isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : ""}
+                                                    userName={isSigned ? `${medicalDirectivesAttestationLog?.[0]?.esign?.name} ` : ""}
                                                     encData={isSigned ? encryptedText : ''}
                                                     showData={isSigned}
                                                     showDatais={true}
@@ -225,26 +225,26 @@ const MedicalDirectivesAttestDisplay = () => {
                                             <div className={style.verticalAlignCenter}>
                                                 <div className={style.displayInRow}>
                                                     <div className={`${style.dateTitle}`}>Date: </div>
-                                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== undefined) ? medicalDirectivesAttestationLog?.[0]?.esign?.signedDate : currentDate : ""}</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        {(!isScrolledToBottom) && (
+                                        {/* {(!isScrolledToBottom) && (
                                             <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
-                                        )}
-                                        <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div>
+                                        )} */}
+                                        {/* <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div> */}
                                     </div>
                                 </Tooltip>
                             ) : (
                                 <>
                                     <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
-                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
+                                        <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                     </div>
                                     <div>
                                         <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}
                                         >
                                             <ESignature
-                                                userName={isSigned ? `${basicForm?.basicDetails?.applicant?.name?.firstName} ${basicForm?.basicDetails?.applicant?.name?.lastName} ` : ""}
+                                                userName={isSigned ? `${medicalDirectivesAttestationLog?.[0]?.esign?.name}` : ""}
                                                 encData={isSigned ? encryptedText : ''}
                                                 showData={isSigned}
                                                 showDatais={true}
@@ -254,19 +254,19 @@ const MedicalDirectivesAttestDisplay = () => {
                                         <div className={style.verticalAlignCenter}>
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.dateTitle}`}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (basicForm?.forms?.[formIndex]?.esign?.signedDate !== '' && basicForm?.forms?.[formIndex]?.esign?.signedDate !== undefined) ? basicForm?.forms?.[formIndex]?.esign?.signedDate : currentDate : ""}</div>
+                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== undefined) ? medicalDirectivesAttestationLog?.[0]?.esign?.signedDate : currentDate : ""}</div>
                                             </div>
                                         </div>
                                     </div>
-                                    {(!isScrolledToBottom) && (
+                                    {/* {(!isScrolledToBottom) && (
                                         <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
-                                    )}
-                                    <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                    )} */}
+                                    {/* <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div> */}
                                 </>
                             )}
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
-                            <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
+                            <div className={style.title}><strong>{`Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
                                 <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>
                             ))}
