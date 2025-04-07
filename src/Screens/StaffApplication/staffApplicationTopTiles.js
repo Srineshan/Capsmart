@@ -491,6 +491,7 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const applicationId = "66dc44ec788741fedc982b01";
+  const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
 
   useEffect(() => {
@@ -499,6 +500,23 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   }, [searchTermForTable]);
 
 console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
+
+   useEffect(() => {
+    getActiveUserData();
+  });
+
+  const getActiveUserData = async () => {
+    try {
+      const response = await GET(
+        `application-management-service/staff`
+      );
+      setTotalCountLocum(response?.data?.numberOfElements);
+      return response?.data?.staffs;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
+    }
+  };
 
   const getTitleCounts = async (type) => {
     try {
@@ -545,7 +563,7 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
           ? 'NewApplicants'
           : storedApplicationType === 'REAPPOINTMENT'
             ? 'StaffReappointments'
-            : 'LocumRenewals'
+            : 'LocumRenewalsApplicant'
       );
     } else {
       sessionStorage.setItem('applicationCreationType', 'NEW');
@@ -610,7 +628,7 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
       newType = 'NEW';
     } else if (tab === 'StaffReappointments') {
       newType = 'REAPPOINTMENT';
-    } else if (tab === 'LocumRenewals') {
+    } else if (tab === 'LocumRenewalsApplicant') {
       newType = 'LOCUM';
     }
 
@@ -651,15 +669,16 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
         currentTile="StaffReappointments"
         isLoading={isLoading}
       />
-      {/* {userRole?.includes("Department Head") &&
+      {workModeType === "Department Head" &&
         <TopTileApplication 
           selectedTab={selectedTab} 
           getSelectedTab={getSelectedTab} 
           tileLabel="Locum Renewals" 
-          currentTile="LocumRenewals"
+          tileCount={totalCountLocum}
+          currentTile="LocumRenewalsApplicant"
           isLoading={isLoading}
         />
-      } */}
+      }
     </div>
   );
 };

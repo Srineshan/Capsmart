@@ -20,7 +20,7 @@ import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import TableTwo from "../../Components/TableDesignTwo";
 import PublicIcon from "@mui/icons-material/Public";
 import PermIdentityIcon from "@mui/icons-material/PermIdentity";
@@ -1211,7 +1211,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     getWorkflowUserData(selectedTab);
     setCheckedIds([]);
-  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea]);
+  }, [selectedTab, sortField, sortValue, page, totalCount, showAssignee, selectedDepartment, selectedServiceArea,applicationType]);
 
   useEffect(() => {
     getWorkflowUserData();
@@ -1299,10 +1299,13 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
+        setIsLoadingImage(true);
         response = await GET(`application-management-service/staff`);
         console.log("LOCUM data", response?.data.staffs);
         setTableData(response?.data?.staffs);
         setTotalCount(response?.data?.numberOfElements);
+        setShowAssignee(false);
+        setIsLoadingImage(false);
         console.log("LOCUM data length", response?.data?.numberOfElements);
         return response?.data.staffs || [];
       } else {
@@ -4103,13 +4106,23 @@ const StaffApplicationList = ({
     action = [];
 
     tableData?.map((data) => {
-      applicantName.push(`${data?.applicant?.name?.firstName.charAt(0).toUpperCase() + data?.applicant?.name?.firstName.slice(1).toLowerCase()},  ${data?.applicant?.name?.lastName.toUpperCase()}` ||
-        " ");
+      applicantName.push(
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      );
       applicantType.push(data?.staffId || "-");
       clarificationTitle.push(data?.type || "-");
       raisedBy.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name || "-");
-      createdOn.push(data?.expiryDate || "-");
-      lastUpdatedOn.push("lastUpdatedOn");
+      // createdOn.push(data?.onGoingApplication?.expiryDate || "-")
+      createdOn.push(
+        data?.onGoingApplication?.expiryDate
+          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          : "-"
+      );
+      lastUpdatedOn.push(
+        data?.onGoingApplication?.expiryDate
+          ? `${differenceInDays(new Date(), new Date(data.onGoingApplication.expiryDate))} days ago`
+          : "-"
+      );
       action.push(true);
     });
 
@@ -4589,7 +4602,7 @@ const StaffApplicationList = ({
   let tableHeaderValues =
     selectedTab === "level-1"
       ? applicantHeaderValues
-      : selectedTab === "level-2"
+      : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadHeaderValues
         : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
           ? applicationHeaderValues
@@ -4599,7 +4612,7 @@ const StaffApplicationList = ({
               ? macHeaderValues
               : selectedTab === "level-5"
                 ? bodHeaderValues
-                : selectedTab === "LocumRenewals"
+                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                   ? locumHeaderValues
                   : selectedTab === "clarificationsRequired"
                     ? clarificationHeaderValues
@@ -4611,8 +4624,8 @@ const StaffApplicationList = ({
                       : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
-      ? applicantColSortValues
-      : selectedTab === "level-2"
+      ? applicantColSortValues 
+      : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadColSortValues
         : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
           ? applicationColSortValues
@@ -4622,7 +4635,7 @@ const StaffApplicationList = ({
               ? macColSortValues
               : selectedTab === "level-5"
                 ? bodColSortValues
-                : selectedTab === "LocumRenewals"
+                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                   ? locumColSortValues
                   : selectedTab === "clarificationsRequired"
                     ? clarificationColSortValues
@@ -4635,7 +4648,7 @@ const StaffApplicationList = ({
   let tableDataValues =
     selectedTab === "level-1"
       ? getApplicantValues()
-      : selectedTab === "level-2"
+      : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? getDepartmentHeadValues()
         : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
           ? getApplicationValues()
@@ -4645,7 +4658,7 @@ const StaffApplicationList = ({
               ? getMacValues()
               : selectedTab === "level-5"
                 ? getBodValues()
-                : selectedTab === "LocumRenewals"
+                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                   ? getLocumValues()
                   : selectedTab === "clarificationsRequired"
                     ? getClarificationValues()
@@ -4658,7 +4671,7 @@ const StaffApplicationList = ({
   let actions =
     selectedTab === "level-1"
       ? applicantActionsData
-      : selectedTab === "level-2"
+      : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadActionsData
         : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
           ? applicationActionsData
@@ -4668,7 +4681,7 @@ const StaffApplicationList = ({
               ? macActionsData
               : selectedTab === "level-5"
                 ? bodActionsData
-                : selectedTab === "LocumRenewals"
+                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                   ? departmentHeadActionsData
                   : selectedTab === "clarificationsRequired"
                     ? clarificationActionsData
@@ -4683,7 +4696,7 @@ const StaffApplicationList = ({
       ? style.applicantStaffGrid
       : selectedTab === "level-1" && applicationType === "REAPPOINTMENT"
         ? style.applicantStaffReappointGrid
-        : selectedTab === "level-2"
+        : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
           ? style.departmentHeadStaffGrid
           : selectedTab === "level-3" && applicationType === "NEW"
             ? style.applicationStaffGrid
@@ -4699,7 +4712,7 @@ const StaffApplicationList = ({
                       ? style.bodStaffGrid
                       : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
                         ? style.bodStaffReappointGrid
-                        : selectedTab === "LocumRenewals"
+                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
                           ? style.locumStaffGrid
                           : selectedTab === "clarificationsRequired" && applicationType === "NEW"
                             ? style.applicantStaffGrid
@@ -4732,7 +4745,7 @@ const StaffApplicationList = ({
                     <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
                   </div>
                 )}
-                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) && applicationType !== "LOCUM") ? (
                   <div
                     className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                   >
@@ -4796,11 +4809,11 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                {((applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) || (applicationType === "LOCUM")) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        Reappointments Status Tracker
+                        {applicationType === "LOCUM" ? "Locum Renewal Status Tracker" : "Reappointments Status Tracker"}
                         {/* (
                           {totalCountDept || 0}) */}
                         {/* <span
@@ -4869,7 +4882,7 @@ const StaffApplicationList = ({
                   </div>
                 ) : null} */}
 
-                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) && applicationType !== "LOCUM") ? (
                   <div
                     className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                   >
