@@ -1409,7 +1409,7 @@ const StaffApplicationList = ({
   };
 
 
-  const getStaffTotalCount = async () =>{
+  const getStaffTotalCount = async () => {
     try {
       const response = await GET(`application-management-service/staff?status=ACTIVE`);
       setReappointmentCount(response?.data?.numberOfElements);
@@ -1521,7 +1521,7 @@ const StaffApplicationList = ({
     await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
       .then((response) => {
         setApplicationRejected(response?.data);
-        console.log("Datas",response?.data);
+        console.log("Datas", response?.data);
         setShowCardDetails(
           response?.data?.applicationsRejected > 0 ||
             response?.data?.applicationsApprovedButDenied > 0
@@ -4750,40 +4750,40 @@ const StaffApplicationList = ({
                   </div>
                 )}
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                                       <Tooltip title={applicationType === "REAPPOINTMENT" ? "Click to Staff for Reappointment" : "Create New Application" } arrow>
-                  <div
-                    className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
-                  >
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                      {applicationType === "NEW" && (
-                        <AddCircleOutlineIcon
-                          sx={{ fontSize: 20, color: "white" }}
+                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "Click to Staff for Reappointment" : "Create New Application"} arrow>
+                    <div
+                      className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                    >
+                      <div className={`${style.displayInRow} ${style.alignCenter}`}>
+                        {applicationType === "NEW" && (
+                          <AddCircleOutlineIcon
+                            sx={{ fontSize: 20, color: "white" }}
+                            onClick={() =>
+                              applicationType === "NEW"
+                                ? navigate("/createStaffMemberApplication")
+                                : navigate("/createStaffReapplication")
+                            }
+                          />
+                        )}
+
+                        <div
+                          className={`${style.alignCenter} ${style.marginLeft10}`}
                           onClick={() =>
                             applicationType === "NEW"
                               ? navigate("/createStaffMemberApplication")
                               : navigate("/createStaffReapplication")
+                            // : navigate("/ApplicantPortalRFC")
+
+
                           }
-                        />
-                      )}
- 
-                      <div
-                        className={`${style.alignCenter} ${style.marginLeft10}`}
-                        onClick={() =>
-                          applicationType === "NEW"
-                            ? navigate("/createStaffMemberApplication")
-                            : navigate("/createStaffReapplication")
-                          // : navigate("/ApplicantPortalRFC")
+                        >
+                          {applicationType === "REAPPOINTMENT"
+                            ? `Staff for Reappointment (${reappointCount})`
+                            : "Create New Application"}
+                        </div>
 
-
-                        }
-                      >
-                        {applicationType === "REAPPOINTMENT"
-                          ? `Staff for Reappointment (${reappointCount})`
-                          : "Create New Application"}
                       </div>
-                    
                     </div>
-                  </div>
                   </Tooltip>
                 ) : null}
 
@@ -4817,7 +4817,7 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-{(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
@@ -4825,72 +4825,72 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardAppointment ? (
-                           <Tooltip title={"Click to Expand"} arrow>
-                          <AddIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardAppointment(!showCardAppointment)}
-                          />
+                          <Tooltip title={"Click to Expand"} arrow>
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardAppointment(!showCardAppointment)}
+                            />
                           </Tooltip>
                         ) : (
                           <Tooltip title={"Click to Minimize"} arrow>
-                          <RemoveIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardAppointment(!showCardAppointment)}
-                          />
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardAppointment(!showCardAppointment)}
+                            />
                           </Tooltip>
                         )}
                       </div>
                     </div>
                     {showCardAppointment && (
-                    <div
-                      style={{
-                        maxHeight: "200px",
-                        overflowY: "auto",
-                        scrollbarWidth: "thin",
-                        scrollbarColor: "gray transparent",
-                      }}
-                    >
                       <div
-                        className={`${style.displayInCol} ${style.marginTop}`}
+                        style={{
+                          maxHeight: "200px",
+                          overflowY: "auto",
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "gray transparent",
+                        }}
                       >
-                        <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
-                          <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                              <div className={style.DepartmentHeadingTextStyle}>
-                                Physician / Doctor (30)
+                        <div
+                          className={`${style.displayInCol} ${style.marginTop}`}
+                        >
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.DepartmentHeadingTextStyle}>
+                                  Physician / Doctor (30)
+                                </div>
+                                <KeyboardArrowRightIcon
+                                  sx={{ fontSize: 20, color: "#06617A" }}
+                                />
                               </div>
-                              <KeyboardArrowRightIcon
-                                sx={{ fontSize: 20, color: "#06617A" }}
-                              />
                             </div>
                           </div>
-                        </div>
-                        <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
-                          <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                              <div className={style.DepartmentHeadingTextStyle}>
-                                Nurse (19)
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.DepartmentHeadingTextStyle}>
+                                  Nurse (19)
+                                </div>
+                                <KeyboardArrowRightIcon
+                                  sx={{ fontSize: 20, color: "#06617A" }}
+                                />
                               </div>
-                              <KeyboardArrowRightIcon
-                                sx={{ fontSize: 20, color: "#06617A" }}
-                              />
                             </div>
                           </div>
-                        </div>
-                        <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
-                          <div className={style.progressbarStyle}>
-                            <div className={style.spaceBetween}>
-                              <div className={style.DepartmentHeadingTextStyle}>
-                                Midwife (1)
+                          <div className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginTop}`}>
+                            <div className={style.progressbarStyle}>
+                              <div className={style.spaceBetween}>
+                                <div className={style.DepartmentHeadingTextStyle}>
+                                  Midwife (1)
+                                </div>
+                                <KeyboardArrowRightIcon
+                                  sx={{ fontSize: 20, color: "#06617A" }}
+                                />
                               </div>
-                              <KeyboardArrowRightIcon
-                                sx={{ fontSize: 20, color: "#06617A" }}
-                              />
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
                     )}
                   </div>
                 ) : null}
@@ -4943,7 +4943,7 @@ const StaffApplicationList = ({
                         </div>
                       </div>
                       <Tooltip title={'Click to View Current Status'} arrow >
-                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
+                        <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
                     </div>
                   </div>
                 ) : null}
@@ -4988,17 +4988,17 @@ const StaffApplicationList = ({
                       <div className={`${style.marginLeft10} `}>
                         {!showCardCompletion ? (
                           <Tooltip title={"Click to Expand"} arrow>
-                          <AddIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardCompletion(!showCardCompletion)}
-                          />
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardCompletion(!showCardCompletion)}
+                            />
                           </Tooltip>
                         ) : (
                           <Tooltip title={"Click to Minimize"} arrow>
-                          <RemoveIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardCompletion(!showCardCompletion)}
-                          />
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardCompletion(!showCardCompletion)}
+                            />
                           </Tooltip>
                         )}
                       </div>
@@ -5085,18 +5085,18 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardDetails ? (
-                           <Tooltip title={"Click to Expand"} arrow>
-                          <AddIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardDetails(!showCardDetails)}
-                          />
+                          <Tooltip title={"Click to Expand"} arrow>
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardDetails(!showCardDetails)}
+                            />
                           </Tooltip>
                         ) : (
                           <Tooltip title={"Click to Minimize"} arrow>
-                          <RemoveIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardDetails(!showCardDetails)}
-                          />
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardDetails(!showCardDetails)}
+                            />
                           </Tooltip>
                         )}
                       </div>
@@ -5104,27 +5104,27 @@ const StaffApplicationList = ({
                     {
                       showCardDetails && (
                         <>
-                        <Tooltip arrow title={"Click to View Declined Applications"}>
-                          <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
-                            onClick={() => {
-                              handleClick();
-                            }}
-                          >
-                            {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                            Approved But Declined ({applicationRejected?.applicationsRejected})
-                          </div>
+                          <Tooltip arrow title={"Click to View Declined Applications"}>
+                            <div
+                              className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                handleClick();
+                              }}
+                            >
+                              {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                              Approved But Declined ({applicationRejected?.applicationsRejected})
+                            </div>
                           </Tooltip>
                           <Tooltip arrow title={"Click to View Rejected Applications"}>
-                          <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
-                            onClick={() => {
-                              setShowApplicationApprovedDeclineDialog(true);
-                            }}
-                          >
-                            Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
-                            {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
-                          </div>
+                            <div
+                              className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                setShowApplicationApprovedDeclineDialog(true);
+                              }}
+                            >
+                              Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                              {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                            </div>
                           </Tooltip>
                         </>
                       )

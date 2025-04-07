@@ -69,8 +69,8 @@
 //   // }
 
 //   return (
-  
-    
+
+
 //     // <Dialog
 //     //   isOpen={getIsOpen}
 //     //   onClose={() => getIsOpen(false)}
@@ -322,7 +322,7 @@
 //              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
 //               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
 //               </div>
-               
+
 //               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
 //               Assigned Credentials Committee: Name
 //               </div>
@@ -347,7 +347,7 @@
 //       </div>
 //     </Dialog>
 
-    
+
 //   );
 // };
 
@@ -408,7 +408,7 @@
 //     const { data: basicLog } = await GET(`application-management-service/application/${userId}/logs`);
 //     setLogDetails(basicLog);
 //     console.log("basicLog" +JSON.stringify(basicLog));
-    
+
 //   };
 
 //   useEffect(() => {
@@ -433,7 +433,7 @@
 //   const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MMM dd, yyyy") : "-";
 //   const CredUpcomingDate = formDetails?.upcomingCredCommitteeMeetingDate;
 //   const upcomingCredCommitteeMeetingDate = CredUpcomingDate ? format(new Date(CredUpcomingDate), "MMM dd, yyyy") : "-";
-  
+
 
 //   // if ((applicationType === "NEW")) {
 //   //   return null;
@@ -458,8 +458,8 @@
 //   // }
 
 //   return (
-  
-    
+
+
 //     <Dialog
 //       isOpen={getIsOpen}
 //       onClose={() => getIsOpen(false)}
@@ -601,7 +601,7 @@
 //              <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
 //               Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
 //               </div>
-               
+
 //               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
 //               Assigned Credentials Committee: Name
 //               </div>
@@ -625,14 +625,14 @@
 //         </div>
 //       </div>
 //     </Dialog>
-    
+
 //   );
 // };
 
 // export default NotesCommentsDialog;
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT , POST , TenantID } from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -640,7 +640,7 @@ import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import CryptoJS from 'crypto-js';
 import { format } from 'date-fns';
-import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import { Tooltip } from "@mui/material";
@@ -672,13 +672,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   const [files, setFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const dropzoneStyle = {
-      width: "100%",
-      height: "auto",
-      borderWidth: 2,
-      borderColor: "rgb(102, 102, 102)",
-      borderStyle: "dashed",
-      borderRadius: 5,
-    };
+    width: "100%",
+    height: "auto",
+    borderWidth: 2,
+    borderColor: "rgb(102, 102, 102)",
+    borderStyle: "dashed",
+    borderRadius: 5,
+  };
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const workModeType = sessionStorage.getItem('workModeType')
   const [isApproverDept1, setIsApproverDept1] = useState("");
@@ -688,42 +688,42 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   let approverDetails;
   let approverDetailsCred;
 
-   useEffect(() => {
-        getApplicationEntity();
-        getLog();
-      }, [applicationType]);
+  useEffect(() => {
+    getApplicationEntity();
+    getLog();
+  }, [applicationType]);
 
-      useEffect(() => {
-        sessionStorage.setItem("fromSummary", false);
-        getApplication();
-      }, [applicationType,id]);
+  useEffect(() => {
+    sessionStorage.setItem("fromSummary", false);
+    getApplication();
+  }, [applicationType, id]);
 
   useEffect(() => {
     // if (getIsOpen) {
     // console.log("Updated firstnameuserssssss", userFirstName);
     // console.log("Updated Lastnameuserssssss", userLastName);
     // let approverDetails;
-    
+
     if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
       approverDetails = formDetails?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Department Head"
       );
-    } 
+    }
     // else if (workModeType === "Credentialing Committee") {
     //   approverDetails = formDetails?.completedWorkflows?.find(
     //     (workflow) => workflow?.role === "Credentialing Committee"
     //   );
     // }
-  
+
     const firstName = approverDetails?.approverDetail?.name?.firstName;
     const lastName = approverDetails?.approverDetail?.name?.lastName;
 
-    console.log("Updated firstname:", approverDetails , formDetails?.id);
+    console.log("Updated firstname:", approverDetails, formDetails?.id);
     console.log("Updated lastname:", lastName);
-  
+
     // console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`);
 
-  
+
     if (firstName === userFirstName && lastName === userLastName) {
       // if (workModeType === "Department Head") {
       //   setIsApproverDept1("Approve");
@@ -733,7 +733,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       //   setIsApproverCred("Approve");
       // }
       setIsApproverDept1("Approve");
-    } else{
+    } else {
       setIsApproverDept1("notApproved")
     }
     // if (firstName !== userFirstName && lastName !== userLastName) {
@@ -756,31 +756,31 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     //   }
     // }
     // console.log("approvebydept",isApproverDept1)
-  // }
+    // }
 
     // console.log(`Approverssssss ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`);
-  }, [workModeType, formDetails, userFirstName, userLastName,id]);
+  }, [workModeType, formDetails, userFirstName, userLastName, id]);
 
-  useEffect(() => {  
+  useEffect(() => {
     if (workModeType === "Credentialing Committee") {
       approverDetailsCred = formDetails?.completedWorkflows?.find(
         (workflow) => workflow?.role === "Credentialing Committee"
       );
-    } 
-  
+    }
+
     const firstName = approverDetailsCred?.approverDetail?.name?.firstName;
     const lastName = approverDetailsCred?.approverDetail?.name?.lastName;
 
-    console.log("Updated firstname:", approverDetailsCred , formDetails?.id);
+    console.log("Updated firstname:", approverDetailsCred, formDetails?.id);
     console.log("Updated lastname:", lastName);
 
- 
+
     if (firstName === userFirstName && lastName === userLastName) {
       setIsApproverDept1("Approve");
-    } else{
+    } else {
       setIsApproverDept1("notApproved")
     }
-  }, [ workModeType, formDetails, userFirstName, userLastName,id]);
+  }, [workModeType, formDetails, userFirstName, userLastName, id]);
 
   // const setUserDetails = async () => {
   //   try {
@@ -795,17 +795,17 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //     console.error("Error fetching user details:", error);
   //   }
   // };
-  
+
   // Run logic after formDetails & user details are updated
 
   // useEffect(() => {
   //   // if (!formDetails) return;
-  
+
   //   console.log("Updated firstname:", userFirstName);
   //   console.log("Updated lastname:", userLastName);
-  
+
   //   // let approverDetails = null;
-  
+
   //   if (
   //     workModeType === "Department Head" ||
   //     workModeType === "Chief Of Staff"
@@ -818,10 +818,10 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //       (workflow) => workflow?.role === "Credentialing Committee"
   //     );
   //   }
-  
+
   //   firstName = approverDetails?.approverDetail?.name?.firstName || "";
   //   lastName = approverDetails?.approverDetail?.name?.lastName || "";
-  
+
   //   if (firstName !== userFirstName && lastName !== userLastName) {
   //     setIsApproverDept1("notApproved");
   //     console.log("approvebydept11111111111");
@@ -829,7 +829,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //     setIsApproverDept1("Approve");
   //     console.log("approvebydept2222222222");
   //   }
-  
+
   //   console.log("approvebydept", isApproverDept1);
   //   console.log(
   //     `Approvers ${workModeType}: ${firstName} ${lastName} ${isApproverDept1}`
@@ -839,7 +839,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   console.log(`Approverssssss ${workModeType}: ${isApproverDept1}`);
 
 
-  console.log("approvebydept",isApproverDept1)
+  console.log("approvebydept", isApproverDept1)
   console.log("Updated Lastnameuserssssss", userFirstName);
   console.log("Updated Lastnameuserssssss", userLastName);
 
@@ -883,50 +883,50 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   // }, [])
 
   const changeHandler = async (event) => {
-      setIsLoading(true);
-      const filesArray = Array.from(event);
-      setFiles(filesArray);
-      console.log(event, 'Test');
-  
-  
-      const formData = new FormData();
-      let fileNameArray = [];
-      filesArray?.forEach(file => {
-        fileNameArray.push({ "fileName": file?.name });
-        formData.append('documents', file);
-      });
-  
-  
-  
-  
-      formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
-        type: "application/json"
-      }));
-  
-      fileNameArray.forEach(file => {
-        console.log("File name:", file.fileName);
-      });
-  
-      console.log("file?.name" + JSON.stringify(fileNameArray));
-      console.log(fileNameArray)
-      console.log(event?.name);
-  
-      try {
-        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-        SuccessToaster('File Uploaded Successfully');
-        console.log(response?.data?.fileName);
-  
-  
-  
-        setIsLoading(false);
-        return response?.data;
-      } catch (error) {
-        ErrorToaster('File Upload Failed');
-        console.error(error);
-        setIsLoading(false);
-        return null;
-      }
-    };
+    setIsLoading(true);
+    const filesArray = Array.from(event);
+    setFiles(filesArray);
+    console.log(event, 'Test');
+
+
+    const formData = new FormData();
+    let fileNameArray = [];
+    filesArray?.forEach(file => {
+      fileNameArray.push({ "fileName": file?.name });
+      formData.append('documents', file);
+    });
+
+
+
+
+    formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    }));
+
+    fileNameArray.forEach(file => {
+      console.log("File name:", file.fileName);
+    });
+
+    console.log("file?.name" + JSON.stringify(fileNameArray));
+    console.log(fileNameArray)
+    console.log(event?.name);
+
+    try {
+      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+      SuccessToaster('File Uploaded Successfully');
+      console.log(response?.data?.fileName);
+
+
+
+      setIsLoading(false);
+      return response?.data;
+    } catch (error) {
+      ErrorToaster('File Upload Failed');
+      console.error(error);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
   // const setUserDetails = async () => {
   //   const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
@@ -938,18 +938,18 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //   setUserLastName(`${userData?.name?.lastName}`);
   // }
 
-   const setUserDetails = async () => {
-      try {
-        const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
-        console.log("userdataaaa", JSON.stringify(userData));
-        sessionStorage.setItem('user', JSON.stringify(userData));
-        setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
-        setUserFirstName(`${userData?.name?.firstName}`);
-        setUserLastName(`${userData?.name?.lastName}`);
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
+  const setUserDetails = async () => {
+    try {
+      const { data: userData } = await GET(`user-management-service/user/${users?.id}`);
+      console.log("userdataaaa", JSON.stringify(userData));
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      setUserRole(userData?.roles?.map((data) => data?.roleName) || []);
+      setUserFirstName(`${userData?.name?.firstName}`);
+      setUserLastName(`${userData?.name?.lastName}`);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    }
+  };
 
   const getApplicationEntity = async () => {
     const { data: basicFormEntity } = await GET(`entity-service/entity/${TenantID}`);
@@ -957,12 +957,12 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   };
 
   const getLog = async () => {
-        setIsLoadingImage(true);
-        const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
-        setLogDetails(basicLog);
-        console.log("basicLog" +JSON.stringify(basicLog));
-        setIsLoadingImage(false)
-      };
+    setIsLoadingImage(true);
+    const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+    setLogDetails(basicLog);
+    console.log("basicLog" + JSON.stringify(basicLog));
+    setIsLoadingImage(false)
+  };
 
   const getApplication = async () => {
     try {
@@ -1017,14 +1017,14 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
-          role = "Department Head";
-          isDelegate = false;
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
       } else {
-          role = "Department Head";
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
       }
-     }else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -1130,14 +1130,14 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
-          role = "Department Head";
-          isDelegate = false;
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
       } else {
-          role = "Department Head";
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
       }
-     }else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -1177,7 +1177,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
       .catch((error) => {
         console.log(error);
       });
-};
+  };
 
 
   // const getApplicationMoveToNext = async () => {
@@ -1313,13 +1313,13 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   // }
 
   if (
-    workModeType === 'Staff Manager' 
+    workModeType === 'Staff Manager'
     // || 
     // (workModeType === 'Department Head' && isApproverDept1 === "notApproved") || 
     // (workModeType === 'Chief Of Staff' && isApproverDept1 === "notApproved") ||
     // (workModeType === 'Credentialing Committee' && isApproverCred === "notApproved")
   ) {
-       return (
+    return (
       isLoadingImage && (
         <div className={style.loadingOverlay}>
           <LoadingScreen />
@@ -1329,44 +1329,44 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   }
 
   return (
-<>
- {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-        <LoadingScreen/>
-      </div>
-    )}
+    <>
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
 
- {!isLoadingImage && (
+      {!isLoadingImage && (
 
-    <Dialog
-      isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-    >
-      <div>
-        <div className={Classes.DIALOG_BODY}>
-          <div className={style.spaceBetween}>
-            <div className={`${style.heading}`}>
-              {/* {userRoleTab} Review & Approval */}
-              Staff Reappointment for Review & Approval
-            </div>
-            <div className={style.displayInRow}>
-            <Tooltip title={"Click to Cancel"} arrow>
-              <img
-                src={CrossPink}
-                alt="cross"
-                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                onClick={() => {
-                  getIsOpen(false);getActiveApplicationView(false);
-                }}
-              />
-              </Tooltip>
-            </div>
-          </div>
-          <div ref={componentRef} className={`${style.pagebreak}`}>
-            {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
+        <Dialog
+          isOpen={getIsOpen}
+          onClose={() => getIsOpen(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={`${style.heading}`}>
+                  {/* {userRoleTab} Review & Approval */}
+                  Staff Reappointment for Review & Approval
+                </div>
+                <div className={style.displayInRow}>
+                  <Tooltip title={"Click to Cancel"} arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false); getActiveApplicationView(false);
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+              </div>
+              <div ref={componentRef} className={`${style.pagebreak}`}>
+                {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.namefontstyle} ${style.marginTop10}`}>
                   {formDetails?.basicDetails?.applicant?.name?.firstName
@@ -1386,114 +1386,114 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   <div className={`${style.marginBothText} ${style.marginBottom}`}>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
 
             </div> */}
-             <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                           <div className={style.marginTop10}>
-                             <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                                 <div className={`${style.gridRow} `}>
-                              <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
-                         {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-                          formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-                         {formDetails?.basicDetails?.applicant?.name?.firstName
-                             ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                               formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                             : ""}
-                     </span>
-                     <span className={`${style.rejectionTextStyle}`}>
-                         {", "}{formDetails?.providerType?.serviceProviderType}
-                     </span>
-                     </div>
-                               <div>
-                               <span className={`${style.rejectionHeadingTextStyle}`}>
-                 {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
-                 {formDetails?.basicDetails?.departmentSpecialty?.specialty
-                     ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
-                     : ""}
-             </span>
-                               </div>
-                               <div className={`${style.twoColumnGridInner} `}>
-                               <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                               <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                             </div>
-                             </div>
-                             <div className={style.gridRow}>
-                             {
-                                 entity?.multiSiteEntity && (
-                                     <div className={`${style.twoColumnGridInner}`}>
-                                     <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                                     <span className={`${style.rejectionTextStyle1}`}>
-                                         {entity?.multiSiteEntity?.[0]?.name || "-"}
-                                     </span>
-                                     </div>
-                                 )
-                                 }
-                                  <div className={`${style.twoColumnGridInner}`}>
-                                 <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                                 <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                               </div>
-                               <div className={`${style.twoColumnGridInner}`}>
-                                 <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                                 <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                               </div>
-                               <div className={`${style.twoColumnGridInner}`}>
-                                 <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                                 <span className={`${style.rejectionTextStyle1}`}>
-                                   {formDetails?.basicDetails?.applicant?.name?.firstName
-                                   ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                                   formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                                   : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                                 </span>
-                               </div>
-                               </div>
-                             </div>
-                           </div>
-                         </div>
-            {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
-              <>
-              <div className={style.marginTop}>
-                 <div className={style.commentsNotesHeadingFontStyle}>
-                   {log.title} Comments & Notes
-                   {/* Staff Manager Comments & Notes */}
-                 </div>
-                 <hr color="grey" size="2"></hr>
-                 <div>
-                   <div className={style.commentsNotesFontStyle}>
-                   {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
-                   <div dangerouslySetInnerHTML={{ __html:(log.notes) }} />
-                   </div>
-                 </div>
-               </div>
-               </>
-               ))}
-              {((workModeType === "Department Head") || (workModeType === "Chief Of Staff")) &&
-              <>
-              {/* <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+                <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+                  <div className={style.marginTop10}>
+                    <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                      <div className={`${style.gridRow} `}>
+                        <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                          {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                            formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                          {formDetails?.basicDetails?.applicant?.name?.firstName
+                            ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                            formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                            : ""}
+                        </span>
+                          <span className={`${style.rejectionTextStyle}`}>
+                            {", "}{formDetails?.providerType?.serviceProviderType}
+                          </span>
+                        </div>
+                        <div>
+                          <span className={`${style.rejectionHeadingTextStyle}`}>
+                            {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                            {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                              ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                              : ""}
+                          </span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner} `}>
+                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                        </div>
+                      </div>
+                      <div className={style.gridRow}>
+                        {
+                          entity?.multiSiteEntity && (
+                            <div className={`${style.twoColumnGridInner}`}>
+                              <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                              <span className={`${style.rejectionTextStyle1}`}>
+                                {entity?.multiSiteEntity?.[0]?.name || "-"}
+                              </span>
+                            </div>
+                          )
+                        }
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>
+                            {formDetails?.basicDetails?.applicant?.name?.firstName
+                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {logDetails?.logs?.filter(log => log.role && log.notes).map((log, index) => (
+                  <>
+                    <div className={style.marginTop}>
+                      <div className={style.commentsNotesHeadingFontStyle}>
+                        {log.title} Comments & Notes
+                        {/* Staff Manager Comments & Notes */}
+                      </div>
+                      <hr color="grey" size="2"></hr>
+                      <div>
+                        <div className={style.commentsNotesFontStyle}>
+                          {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy. */}
+                          <div dangerouslySetInnerHTML={{ __html: (log.notes) }} />
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ))}
+                {((workModeType === "Department Head") || (workModeType === "Chief Of Staff")) &&
+                  <>
+                    {/* <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
                Upcoming Credentials Committee Meeting Date: {upcomingCredCommitteeMeetingDate}
                </div> */}
-               
-               <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
-               Assigned Credentials Committee: {
-                  formDetails?.completedWorkflows
-                    ?.find(workflow => workflow.role === "Credentialing Committee")
-                    ?.approverDetail?.name
-                    ? `${formDetails?.completedWorkflows
-                        .find(workflow => workflow.role === "Credentialing Committee")
-                        ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
-                        .find(workflow => workflow.role === "Credentialing Committee")
-                        ?.approverDetail?.name?.lastName}, Credentialing Committee`
-                    : "No approver found"
+
+                    <div className={`${style.marginTop} ${style.credDateTextStyle}`}>
+                      Assigned Credentials Committee: {
+                        formDetails?.completedWorkflows
+                          ?.find(workflow => workflow.role === "Credentialing Committee")
+                          ?.approverDetail?.name
+                          ? `${formDetails?.completedWorkflows
+                            .find(workflow => workflow.role === "Credentialing Committee")
+                            ?.approverDetail?.name?.firstName} ${formDetails?.completedWorkflows
+                              .find(workflow => workflow.role === "Credentialing Committee")
+                              ?.approverDetail?.name?.lastName}, Credentialing Committee`
+                          : "No approver found"
+                      }
+                    </div>
+                  </>
                 }
-               </div>
-               </>
-               }
-            <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-               {workModeType === "Department Head" ? <Tooltip title={"Click to Start Review"} arrow><div className={style.reviewButton}>START REVIEW</div></Tooltip> :<Tooltip title={"Click to Continue"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
-             </div>
+                <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
+                  {workModeType === "Department Head" ? <Tooltip title={"Click to Start Review"} arrow><div className={style.reviewButton}>START REVIEW</div></Tooltip> : <Tooltip title={"Click to Continue"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </Dialog>
-)}
-</>
+        </Dialog>
+      )}
+    </>
   );
 };
 

@@ -307,10 +307,10 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
     const handleContinue = async () => {
         // if (isSigned) {
         console.log(medicalDirectives)
-        const totalCount = (allMedicalDirectives?.completed?.length || 0) + 
-                   (allMedicalDirectives?.pastDue?.length || 0) + 
-                   (allMedicalDirectives?.pending?.length || 0) + 
-                   (allMedicalDirectives?.reviewInprogress?.length || 0);
+        const totalCount = (allMedicalDirectives?.completed?.length || 0) +
+            (allMedicalDirectives?.pastDue?.length || 0) +
+            (allMedicalDirectives?.pending?.length || 0) +
+            (allMedicalDirectives?.reviewInprogress?.length || 0);
 
         const completedCount = allMedicalDirectives?.completed?.length || 0;
         let payload = medicalDirectives?.filter(data => data?.status === "COMPLETED")?.map((innerData, index) => ({
@@ -327,7 +327,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             data: {
                 table: payload,
             },
-            unFilledFields : completedCount === totalCount ? ["Completed"] : completedCount === 0? ["notYetStarted"]  : ["inProgress"],
+            unFilledFields: completedCount === totalCount ? ["Completed"] : completedCount === 0 ? ["notYetStarted"] : ["inProgress"],
             acknowledged: true,
             esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
@@ -593,14 +593,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                    <Tooltip title={"Click to Skip for Now"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Skip for Now"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Back"} arrow>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                         <Tooltip title={"Click to Continue"} arrow>
-                        <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
+                            <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -627,15 +627,15 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
-                    <Tooltip title={"Click to Skip for Now"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Skip for Now"} arrow>
+                            <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                            <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                        <Tooltip title={"Click to Back"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <Tooltip title={"Click to Back"} arrow>
+                                <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
                             <Tooltip title={"Click to Continue"} arrow>
-                            <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
+                                <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 

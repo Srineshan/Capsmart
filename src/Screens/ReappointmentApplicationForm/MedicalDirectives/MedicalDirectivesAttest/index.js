@@ -175,10 +175,10 @@ const MedicalDirectivesAttest = () => {
                 <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
-                  <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
-                  <span className={style.verticalAlignCenter}>
-                        <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
-                  </span>
+                <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
+                <span className={style.verticalAlignCenter}>
+                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                </span>
             </div>
             <div className={style.screenPadding}>
                 <div>

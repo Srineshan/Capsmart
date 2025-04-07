@@ -962,7 +962,7 @@ const NewActiveApplication = ({
                   className={`${style.floatRight} ${style.cursorPointer}`}
                 >
                   <Tooltip title={"Click to Delete"} arrow>
-                  <DeleteOutlineIcon sx={{ color: "#F94848" }} />
+                    <DeleteOutlineIcon sx={{ color: "#F94848" }} />
                   </Tooltip>
                 </div>
               </div>
@@ -1770,21 +1770,21 @@ const NewActiveApplication = ({
                   ? (
                     <div className={`${style.greenButton} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Revert Verification"} arrow>
-                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                        onClick={() => handleVerifyClickDocs(array, index)}
-                      >
-                        Verified
-                      </div>
+                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                          onClick={() => handleVerifyClickDocs(array, index)}
+                        >
+                          Verified
+                        </div>
                       </Tooltip>
                     </div>
                   ) : (
                     <div className={`${style.purpleButton} ${style.cursorPointer}`}>
                       <Tooltip title={"Click to Verify"} arrow>
-                      <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
-                        onClick={() => handleVerifyClickDocs(array, index)}
-                      >
-                        Verify
-                      </div>
+                        <div className={`${style.buttonGreyTextStyle} ${style.alignCenter}`}
+                          onClick={() => handleVerifyClickDocs(array, index)}
+                        >
+                          Verify
+                        </div>
                       </Tooltip>
                     </div>
                   )
@@ -10557,31 +10557,31 @@ const NewActiveApplication = ({
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <Tooltip title={"Click to Save In Progress"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              onClose();
-                            }}
-                          >
-                            SAVE IN PROGRESS
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                onClose();
+                              }}
+                            >
+                              SAVE IN PROGRESS
+                            </div>
                           </Tooltip>
                         </div>
                         <div
                           className={`${style.buttonCardStyle} ${style.cursorPointer}`}
                         >
                           <Tooltip title={"Click to Reject"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            // onClick={() => {
-                            //   setShowApplicationDeclineDialog(true);
-                            // }}
-                            onClick={() => {
-                              setShowApplicationDeclineDialog(true);
-                            }}
-                          >
-                            REJECT
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              // onClick={() => {
+                              //   setShowApplicationDeclineDialog(true);
+                              // }}
+                              onClick={() => {
+                                setShowApplicationDeclineDialog(true);
+                              }}
+                            >
+                              REJECT
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10590,14 +10590,14 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                            <Tooltip title={"Click to Verified, send later to Department Head"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalDeptFunction}
-                            onClick={isApproved ? onClose : undefined}
-                          >
-                            Verified, send later to Department Head
-                          </div>
+                          <Tooltip title={"Click to Verified, send later to Department Head"} arrow>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalDeptFunction}
+                              onClick={isApproved ? onClose : undefined}
+                            >
+                              Verified, send later to Department Head
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10606,14 +10606,14 @@ const NewActiveApplication = ({
                           // className={`${style.bigButtonStyle1} ${style.cursorPointer}`}
                           className={`${style.bigButtonStyle1} ${isApproved ? style.cursorPointer : ''}`}
                           style={{ opacity: isApproved ? 1 : 0.5 }}>
-                            <Tooltip title={"Click to Verified, Send to Department Head"} arrow>
-                          <div
-                            className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                            // onClick={onClickApprovalDeptFunction}
-                            onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                          >
-                            Verified, Send to Department Head
-                          </div>
+                          <Tooltip title={"Click to Verified, Send to Department Head"} arrow>
+                            <div
+                              className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                              // onClick={onClickApprovalDeptFunction}
+                              onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                            >
+                              Verified, Send to Department Head
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10623,15 +10623,15 @@ const NewActiveApplication = ({
                     <>
                       <div className={`${style.twoColumnGrid}`}>
                         <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                            onClick={() => {
-                              onClose();
-                            }}
-                          >
-                            SAVE IN PROGRESS
-                          </div>
+                          <Tooltip title={"Click to Save In Progress"} arrow>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                              onClick={() => {
+                                onClose();
+                              }}
+                            >
+                              SAVE IN PROGRESS
+                            </div>
                           </Tooltip>
                         </div>
                         <div
@@ -10639,16 +10639,16 @@ const NewActiveApplication = ({
                         // className={`${style.buttonCardStyle} ${isApproved ? style.cursorPointer : ''}`}
                         // style={{ opacity: isApproved ? 1 : 0.5 }}
                         >
-                           <Tooltip title={"Click to Reject"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                          // onClick={() => {
-                          //   onClickApprovalDeptFunction();
-                          // }}
-                          // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
-                          >
-                            Reject
-                          </div>
+                          <Tooltip title={"Click to Reject"} arrow>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                            // onClick={() => {
+                            //   onClickApprovalDeptFunction();
+                            // }}
+                            // onClick={isApproved ? onClickApprovalDeptFunction : undefined}
+                            >
+                              Reject
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10657,26 +10657,26 @@ const NewActiveApplication = ({
 
                   {(applicationType === "NEW" && selectedTab === "level-1") ? (
                     <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
-                       <Tooltip title={"Click to Verify & Send For Department Head"} arrow>
-                      <div
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApproveMoveFunction}
-                      >
-                        VERIFY & SEND FOR DEPARTMENT HEAD
-                      </div>
+                      <Tooltip title={"Click to Verify & Send For Department Head"} arrow>
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          onClick={onClickApproveMoveFunction}
+                        >
+                          VERIFY & SEND FOR DEPARTMENT HEAD
+                        </div>
                       </Tooltip>
                     </div>
                   ) : ("")}
 
                   {(applicationType === "NEW" && selectedTab === "level-2") ? (
                     <div className={`${style.bigButtonStyle1} ${style.cursorPointer} ${style.marginTop20}`}>
-                       <Tooltip title={"Click to Verify & Send For Cred. Comm."} arrow>
-                      <div
-                        className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                        onClick={onClickApproveMoveFunction}
-                      >
-                        VERIFY & SEND FOR CRED. COMM.
-                      </div>
+                      <Tooltip title={"Click to Verify & Send For Cred. Comm."} arrow>
+                        <div
+                          className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                          onClick={onClickApproveMoveFunction}
+                        >
+                          VERIFY & SEND FOR CRED. COMM.
+                        </div>
                       </Tooltip>
                     </div>
                   ) : ("")}
@@ -10692,10 +10692,10 @@ const NewActiveApplication = ({
                         }
                       }}
                     >
-                       <Tooltip title={"Click to Approve Applicant"} arrow>
-                      <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
-                        APPROVE APPLICANT
-                      </div>
+                      <Tooltip title={"Click to Approve Applicant"} arrow>
+                        <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
+                          APPROVE APPLICANT
+                        </div>
                       </Tooltip>
                     </div>
                   ) : (
@@ -10836,14 +10836,14 @@ const NewActiveApplication = ({
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                          onClick={() => {
-                            onClose();
-                          }}
-                        >
-                          SAVE IN PROGRESS
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
                         </Tooltip>
                       </div>
                       <div
@@ -10851,17 +10851,17 @@ const NewActiveApplication = ({
                       >
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <Tooltip title={"Click to Not Recommended"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          // onClick={() => {
-                          //   setShowApplicationDeclineDialog(true);
-                          // }}
-                          onClick={() => {
-                            setShowApplicationDeclineDialog(true);
-                          }}
-                        >
-                          NOT RECOMMENDED
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            // onClick={() => {
+                            //   setShowApplicationDeclineDialog(true);
+                            // }}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}
+                          >
+                            NOT RECOMMENDED
+                          </div>
                         </Tooltip>
                       </div>
                       {/* </div> */}
@@ -10869,26 +10869,26 @@ const NewActiveApplication = ({
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                           <Tooltip title={"Click to Recommended with Comments"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                            // onClick={onClickApproveFunction}
-                            onClick={() => {
-                              onClickApprovalFunction();
-                            }}
-                          >
-                            RECOMMENDED WITH COMMENTS
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                              // onClick={onClickApproveFunction}
+                              onClick={() => {
+                                onClickApprovalFunction();
+                              }}
+                            >
+                              RECOMMENDED WITH COMMENTS
+                            </div>
                           </Tooltip>
                         </div>
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                           <Tooltip title={"Click to Recommend"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                            onClick={onClickApprovalwithoutnotesFunction}
-                          >
-                            RECOMMEND
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                              onClick={onClickApprovalwithoutnotesFunction}
+                            >
+                              RECOMMEND
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10900,14 +10900,14 @@ const NewActiveApplication = ({
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                          onClick={() => {
-                            onClose();
-                          }}
-                        >
-                          SAVE IN PROGRESS
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
                         </Tooltip>
                       </div>
                       <div
@@ -10915,17 +10915,17 @@ const NewActiveApplication = ({
                       >
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <Tooltip title={"Click to Not Recommended"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          // onClick={() => {
-                          //   setShowApplicationDeclineDialog(true);
-                          // }}
-                          onClick={() => {
-                            setShowApplicationDeclineDialog(true);
-                          }}
-                        >
-                          NOT RECOMMENDED
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            // onClick={() => {
+                            //   setShowApplicationDeclineDialog(true);
+                            // }}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}
+                          >
+                            NOT RECOMMENDED
+                          </div>
                         </Tooltip>
                       </div>
                       {/* </div> */}
@@ -10933,26 +10933,26 @@ const NewActiveApplication = ({
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                           <Tooltip title={"Click to Recommended with Comments"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                            // onClick={onClickApproveFunction}
-                            onClick={() => {
-                              onClickApprovalFunction();
-                            }}
-                          >
-                            RECOMMENDED WITH COMMENTS
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                              // onClick={onClickApproveFunction}
+                              onClick={() => {
+                                onClickApprovalFunction();
+                              }}
+                            >
+                              RECOMMENDED WITH COMMENTS
+                            </div>
                           </Tooltip>
                         </div>
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                           <Tooltip title={"Click to Recommend"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                            onClick={onClickApprovalwithoutnotesFunction}
-                          >
-                            RECOMMEND
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                              onClick={onClickApprovalwithoutnotesFunction}
+                            >
+                              RECOMMEND
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -10964,14 +10964,14 @@ const NewActiveApplication = ({
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.yellowDotStyle}`} />
                         <Tooltip title={"Click to Save In Progress"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
-                          onClick={() => {
-                            onClose();
-                          }}
-                        >
-                          SAVE IN PROGRESS
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignItem} ${style.marginLeft10}`}
+                            onClick={() => {
+                              onClose();
+                            }}
+                          >
+                            SAVE IN PROGRESS
+                          </div>
                         </Tooltip>
                       </div>
                       <div
@@ -10979,17 +10979,17 @@ const NewActiveApplication = ({
                       >
                         <div className={`${style.marginLeft10} ${style.alignItem} ${style.redDotStyle}`} />
                         <Tooltip title={"Click to Not Recommended"} arrow>
-                        <div
-                          className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                          // onClick={() => {
-                          //   setShowApplicationDeclineDialog(true);
-                          // }}
-                          onClick={() => {
-                            setShowApplicationDeclineDialog(true);
-                          }}
-                        >
-                          NOT RECOMMENDED
-                        </div>
+                          <div
+                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                            // onClick={() => {
+                            //   setShowApplicationDeclineDialog(true);
+                            // }}
+                            onClick={() => {
+                              setShowApplicationDeclineDialog(true);
+                            }}
+                          >
+                            NOT RECOMMENDED
+                          </div>
                         </Tooltip>
                       </div>
                       {/* </div> */}
@@ -10997,26 +10997,26 @@ const NewActiveApplication = ({
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.lightGreenDotStyle}`} />
                           <Tooltip title={"Click to Recommended with Comments"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
-                            // onClick={onClickApproveFunction}
-                            onClick={() => {
-                              onClickApprovalFunction();
-                            }}
-                          >
-                            RECOMMENDED WITH COMMENTS
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginLeft10}`}
+                              // onClick={onClickApproveFunction}
+                              onClick={() => {
+                                onClickApprovalFunction();
+                              }}
+                            >
+                              RECOMMENDED WITH COMMENTS
+                            </div>
                           </Tooltip>
                         </div>
                         <div className={` ${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer} ${style.marginTop20} ${style.marginBottom20}`}>
                           <div className={`${style.marginLeft10} ${style.alignItem} ${style.greenDotStyle}`} />
                           <Tooltip title={"Click to Recommend"} arrow>
-                          <div
-                            className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
-                            onClick={onClickApprovalwithoutnotesFunction}
-                          >
-                            RECOMMEND
-                          </div>
+                            <div
+                              className={`${style.buttonTextStyle} ${style.alignCenter} ${style.marginLeft10}`}
+                              onClick={onClickApprovalwithoutnotesFunction}
+                            >
+                              RECOMMEND
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -11116,22 +11116,22 @@ const NewActiveApplication = ({
                         </div>
                         <>
                           <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
-                          <Tooltip title={"Click to Rejected By Cred Comm"} arrow>
-                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              onClick={() => {
-                                setShowApplicationDeclineDialog(true);
-                              }}>REJECTED BY CRED COMM</div>
-                              </Tooltip>
+                            <Tooltip title={"Click to Rejected By Cred Comm"} arrow>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                onClick={() => {
+                                  setShowApplicationDeclineDialog(true);
+                                }}>REJECTED BY CRED COMM</div>
+                            </Tooltip>
                           </div>
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
                             style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
                             onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesFunction()}
                           >
-<Tooltip title={"Click to Approved By Cred Comm"} arrow>
-                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
-                              APPROVED BY CRED COMM
-                            </div>
+                            <Tooltip title={"Click to Approved By Cred Comm"} arrow>
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                                APPROVED BY CRED COMM
+                              </div>
                             </Tooltip>
                           </div>
                         </>
@@ -11183,9 +11183,9 @@ const NewActiveApplication = ({
                           onClick={isButtonDisabled ? undefined : onClickCCDateSetFunction}
                         >
                           <Tooltip title={"Click to Save"} arrow>
-                          <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
-                            SAVE
-                          </div>
+                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop10} ${style.marginBottom10}`}>
+                              SAVE
+                            </div>
                           </Tooltip>
                         </div>
                       </div>
@@ -11340,9 +11340,9 @@ const NewActiveApplication = ({
                             onClick={isButtonDisabled ? undefined : () => onClickApprovalwithoutnotesMACFunction()}
                           >
                             <Tooltip title={"Click to Recommended By MAC"} arrow>
-                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                              RECOMMENDED BY MAC
-                            </div>
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                                RECOMMENDED BY MAC
+                              </div>
                             </Tooltip>
                           </div>
                         </div>
@@ -11390,12 +11390,12 @@ const NewActiveApplication = ({
                         </div>
                         <>
                           <div className={`${style.buttonCardStyle2} ${style.cursorPointer} ${style.marginTop10}`}>
-                          <Tooltip title={"Click to Rejected By BOD"} arrow>
-                            <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                              onClick={() => {
-                                setShowApplicationDeclineDialog(true);
-                              }}>REJECTED BY BOD</div>
-                              </Tooltip>
+                            <Tooltip title={"Click to Rejected By BOD"} arrow>
+                              <div className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                onClick={() => {
+                                  setShowApplicationDeclineDialog(true);
+                                }}>REJECTED BY BOD</div>
+                            </Tooltip>
                           </div>
                           <div
                             className={`${style.bigButtonStyle2} ${isButtonDisabled ? undefined : style.cursorPointer}`}
@@ -11403,9 +11403,9 @@ const NewActiveApplication = ({
                             onClick={isButtonDisabled ? undefined : handleApplicationAccept}
                           >
                             <Tooltip title={"Click to Approved By BOD"} arrow>
-                            <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
-                              APPROVED BY BOD
-                            </div>
+                              <div className={`${style.bigButtonTextStyle} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`}>
+                                APPROVED BY BOD
+                              </div>
                             </Tooltip>
                           </div>
                         </>
@@ -11441,12 +11441,12 @@ const NewActiveApplication = ({
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <Tooltip title={"Click to Override For Temporary Privileges"} arrow>
-                              <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                                onClick={onClickApproveMoveFunction}
-                              >
-                                OVERRIDE FOR TEMPORARY PRIVILEGES
-                              </div>
+                                <div
+                                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                  onClick={onClickApproveMoveFunction}
+                                >
+                                  OVERRIDE FOR TEMPORARY PRIVILEGES
+                                </div>
                               </Tooltip>
                             </div>
                           )}
@@ -11460,15 +11460,15 @@ const NewActiveApplication = ({
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <Tooltip title={"Click to Recommended with Comments"} arrow>
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
-                                // onClick={isApproved ? onClickApproveFunction : undefined}
-                                onClick={() => {
-                                  onClickApprovalFunction();
-                                }}
-                              >
-                                RECOMMENDED WITH COMMENTS
-                              </div>
+                                <div
+                                  className={`${style.buttonTextStyle} ${style.alignCenter} ${style.cursorPointer}`}
+                                  // onClick={isApproved ? onClickApproveFunction : undefined}
+                                  onClick={() => {
+                                    onClickApprovalFunction();
+                                  }}
+                                >
+                                  RECOMMENDED WITH COMMENTS
+                                </div>
                               </Tooltip>
                             </div>
                             <div
@@ -11477,25 +11477,25 @@ const NewActiveApplication = ({
                             //  style={{ opacity: isApproved ? 1 : 0.5 }}
                             >
                               <Tooltip title={"Click to Recommend"} arrow>
-                              <div
-                                className={`${style.buttonTextStyle} ${style.alignCenter}`}
-                                // onClick={isApproved ? onClickApproveMoveFunction : undefined}
-                                onClick={onClickApprovalFunction}
-                              >
-                                RECOMMEND
-                              </div>
+                                <div
+                                  className={`${style.buttonTextStyle} ${style.alignCenter}`}
+                                  // onClick={isApproved ? onClickApproveMoveFunction : undefined}
+                                  onClick={onClickApprovalFunction}
+                                >
+                                  RECOMMEND
+                                </div>
                               </Tooltip>
                             </div>
                           </div>
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <Tooltip title={"Click to Override For Temporary Privileges"} arrow>
-                              <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              // onClick={onClickApprovalFunction}
-                              >
-                                OVERRIDE FOR TEMPORARY PRIVILEGES
-                              </div>
+                                <div
+                                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                // onClick={onClickApprovalFunction}
+                                >
+                                  OVERRIDE FOR TEMPORARY PRIVILEGES
+                                </div>
                               </Tooltip>
                             </div>
                           )}
@@ -11534,12 +11534,12 @@ const NewActiveApplication = ({
                           {applicationType === "NEW" && (
                             <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                               <Tooltip title={"Click to Override For Temporary Privileges"} arrow>
-                              <div
-                                className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
-                              // onClick={onClickApprovalFunction}
-                              >
-                                OVERRIDE FOR TEMPORARY PRIVILEGES
-                              </div>
+                                <div
+                                  className={`${style.bigButtonTextStyle} ${style.alignCenter}`}
+                                // onClick={onClickApprovalFunction}
+                                >
+                                  OVERRIDE FOR TEMPORARY PRIVILEGES
+                                </div>
                               </Tooltip>
                             </div>
                           )}
@@ -11985,24 +11985,24 @@ const NewActiveApplication = ({
                                   className={`${style.marginLeft10} ${style.tableDataFontStyle1}`} onClick={() => toggleExpand("section5")}
                                 >
                                   {expandStates.section5 ? (
-                                     <Tooltip title={"Click to Minimize"} arrow>
-                                    <RemoveIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                    <Tooltip title={"Click to Minimize"} arrow>
+                                      <RemoveIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   ) : (
                                     <Tooltip title={"Click to Expand"} arrow>
-                                    <AddIcon
-                                      sx={{
-                                        fontSize: 20,
-                                        color: "#94979A",
-                                        cursor: "pointer",
-                                      }}
-                                    />
+                                      <AddIcon
+                                        sx={{
+                                          fontSize: 20,
+                                          color: "#94979A",
+                                          cursor: "pointer",
+                                        }}
+                                      />
                                     </Tooltip>
                                   )}
                                 </div>
@@ -12335,7 +12335,7 @@ const NewActiveApplication = ({
                                                                           const matchedIndex = form?.documents?.documentDetails?.findIndex(
                                                                             (doc) => doc?.file?.fileName === file?.fileName
                                                                           );
-                                                                    
+
                                                                           if (matchedIndex !== -1) {
                                                                             handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
                                                                           } else {
@@ -12363,7 +12363,7 @@ const NewActiveApplication = ({
                                                                           const matchedIndex = form?.documents?.documentDetails?.findIndex(
                                                                             (doc) => doc?.file?.fileName === file?.fileName
                                                                           );
-                                                                    
+
                                                                           if (matchedIndex !== -1) {
                                                                             handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
                                                                           } else {

@@ -496,6 +496,7 @@
   grid-gap: 2%;
   justify-items: start;
 }
+
 .rejectionTextStyle1 {
   text-align: left;
   font: normal normal medium 20px/24px proxima-nova;
@@ -614,7 +615,7 @@
 
 .gridRow {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   align-items: center;
   justify-content: center;
@@ -625,9 +626,9 @@
   gap: 10px;
   align-items: center;
 }
+
 .gridItem1 {
   display: flex;
   gap: 0;
   align-items: center;
 }
-
