@@ -53,6 +53,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
+  const [medicalDirectiveSummary, setMedicalDirectiveSummary] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
@@ -92,7 +93,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   }
 
   useEffect(() => {
-    getActiveUserData()
+    getMedicalDirectiveSummary()
   }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable]);
 
   useEffect(() => {
@@ -130,6 +131,13 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       `entity-service/applicantType`
     );
     setApplicantType(applicant);
+  }
+
+  const getMedicalDirectiveSummary = async () => {
+    const { data: medicalDirectiveSummary } = await GET(
+      `medical-directive-service/medicalDirectives/medicalDirectivesSummary?sortBy=${sortValue}&sortByField=${'LAST_MODIFIED_DATE'}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}`
+    );
+    setMedicalDirectiveSummary(medicalDirectiveSummary);
   }
 
 
