@@ -70,6 +70,7 @@ const StaffApplicationList = ({
   getTitleCounts,
   showNotesDialog,
   getDeptTrackerDialog,
+  getMdTrackerDialog
 }) => {
   const PDFRef = createRef();
   const navigate = useNavigate();
@@ -567,7 +568,7 @@ const StaffApplicationList = ({
     true,
     false
   ]
-  const clarificationColSortValues  = applicationType === "NEW" ? [
+  const clarificationColSortValues = applicationType === "NEW" ? [
     false,
     true,
     // true,
@@ -894,6 +895,10 @@ const StaffApplicationList = ({
   const onClickDepttrackerDialog = (data) => {
     getDeptTrackerDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickMdTrackerDialog = (data) => {
+    getMdTrackerDialog(true);
   };
 
   const onClickViewAndVerifyFunction = (data) => {
@@ -1502,11 +1507,11 @@ const StaffApplicationList = ({
   });
 
   const handleNavigate = () => {
-    navigate("/reportTypeOverview/oneTimeContract", { state: { tableData } });
+    navigate("/reportTypeOverview/staffReappointments", { state: { tableData } });
   };
 
   const handleNavigateNotes = () => {
-    navigate("/reportTypeOverview/upcomingContractRenewals", { state: { tableData } });
+    navigate("/reportTypeOverview/staffReappointmentsNotes", { state: { tableData } });
   };
 
   const getRejectionCounts = async () => {
@@ -1877,27 +1882,27 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
-      
+
       crsHoverText.push(crsHoverTextArray);
       // crs.push(data?.clarificationCount?.closedCount + "/" + data?.clarificationCount?.totalCount || "");
       const closedCount = data?.clarificationCount?.closedCount ?? 0;
@@ -2131,27 +2136,27 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
-      
+
       crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -2508,27 +2513,27 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
-      
+
       crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
@@ -2843,25 +2848,25 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
       crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
@@ -3111,27 +3116,27 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
-      
+
       crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
@@ -3415,27 +3420,27 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
         : ["-"];
-      
+
       crsHoverText.push(crsHoverTextArray);
       // const validNotes = data?.notesDetails?.filter(note => note?.notes?.notes) || [];
       const validNotes = data?.notesDetails?.filter(
@@ -3862,26 +3867,26 @@ const StaffApplicationList = ({
       const clarifications = data?.clarificationCount?.clarifications || [];
       const crsHoverTextArray = clarifications?.length > 0
         ? clarifications.map((clarification, index) => {
-            const verifiedIndicator = clarification?.status === "ACCEPTED"
-              ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
-              : clarification?.status === "REJECTED"
+          const verifiedIndicator = clarification?.status === "ACCEPTED"
+            ? <CircleIcon style={{ color: '#8ED12B', fontSize: '12px', marginRight: '5px' }} />
+            : clarification?.status === "REJECTED"
               ? <CircleIcon style={{ color: '#FF6562', fontSize: '12px', marginRight: '5px' }} />
               : clarification?.status === "RESPONDED"
-              ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
-              : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
-      
-            return (
-              <div key={index} className={style.fullWidth}>
-                <span>
-                  {verifiedIndicator} {clarification?.title}
-                </span>
-                {index !== clarifications.length - 1 && (
-                  <hr style={{ margin: '5px 0 -10px 0px' }} />
-                )}
-              </div>
-            );
-          })
-        : ["-"];  
+                ? <CircleIcon style={{ color: '#FFC100', fontSize: '12px', marginRight: '5px' }} />
+                : <CircleIcon style={{ color: '#B0A6A6', fontSize: '12px', marginRight: '5px' }} />;
+
+          return (
+            <div key={index} className={style.fullWidth}>
+              <span>
+                {verifiedIndicator} {clarification?.title}
+              </span>
+              {index !== clarifications.length - 1 && (
+                <hr style={{ margin: '5px 0 -10px 0px' }} />
+              )}
+            </div>
+          );
+        })
+        : ["-"];
       crsHoverText.push(crsHoverTextArray);
       const validNotes = data?.notesDetails?.filter(
         log => log?.notes?.notes && (!log?.private || log?.user?.id === users?.id)
@@ -3929,8 +3934,8 @@ const StaffApplicationList = ({
       //   }
       // });
       lastUpdated.push(
-        data?.clarificationUpdatedDate 
-          ? format(new Date(data?.clarificationUpdatedDate), "MMM dd, yyyy") 
+        data?.clarificationUpdatedDate
+          ? format(new Date(data?.clarificationUpdatedDate), "MMM dd, yyyy")
           : "-"
       );
       // lastUpdatedBy.push(["Last Updated By", data?.updatedBy?.name?.firstName]);
@@ -4939,6 +4944,27 @@ const StaffApplicationList = ({
                       </div>
                       <Tooltip title={'Click to View Current Status'} arrow >
                       <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
+                    </div>
+                  </div>
+                ) : null}
+
+                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        MD Attestation Status Tracker
+                      </div>
+                    </div>
+
+                    <div
+                      style={{
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "gray transparent",
+                      }}
+                    >
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div>
                     </div>
                   </div>
                 ) : null}

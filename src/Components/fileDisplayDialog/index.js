@@ -10,14 +10,16 @@ import { corsUrl } from "../../utils/formatting";
 import { Download } from "@mui/icons-material";
 import Tooltip from "@mui/material/Tooltip";
 import style from './index.module.scss'
-import jsPDF from "jspdf";
 
 const FileDisplayDialog = ({ getIsOpen, file }) => {
   const [isContinue, setIsContinue] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isPrintClicked, setIsPrintClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const fileRef = useRef(null);
+  const componentRef = useRef(null);
+  const PDFRef = createRef();
+  const pdfUrl = file?.fileURL ? encodeURI(file?.fileURL) : "";
+  console.log("URLLLLLLLLLLLLLLLLLLL", pdfUrl, file?.documentType);
 
   useEffect(() => {
     console.log("filesssssssssssssssss", file);
@@ -38,44 +40,69 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
     setIsExpanded(!isExpanded);
   };
 
-  const handleDownload = async () => {
-    if (file?.fileURL) {
-      try {
-        // Fetch the file content through the CORS proxy
-        const response = await fetch(`${corsUrl}${file?.fileURL}`, {
-          method: "GET",
-          mode: 'cors'
-        });
-
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch file: ${response.statusText}`);
-        }
-
-
-
-        // Create a temporary URL for the Blob
-        const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-        console.log("bloburl", blobUrl);
-
-        // Create a temporary anchor element to trigger the download
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = file?.fileName || "download"; // Use the provided file name or default name
-        link.style.display = 'none'; // Hide the link
-        document.body.appendChild(link); // Append the link to the DOM
-        link.click(); // Trigger the download
-
-        // Clean up by removing the link and revoking the Blob URL
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-        console.error("Failed to download file:", error);
-        alert("Failed to download file. Please try again.");
-      }
-    } else {
-      console.warn("No file URL provided for download.");
+  const handlePrint = async (url) => {
+    if (!url) {
+      console.error("No URL provided for printing");
+      return;
     }
+
+    try {
+      const response = await fetch(corsUrl + encodeURIComponent(url)); // Use the proxy
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const blob = await response.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+
+      // Create a hidden iframe
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "absolute";
+      iframe.style.width = "0px";
+      iframe.style.height = "0px";
+      iframe.style.border = "none";
+      iframe.src = pdfUrl;
+
+      document.body.appendChild(iframe);
+
+      // Wait for the PDF to load, then print
+      iframe.onload = () => {
+        iframe.contentWindow.print();
+      };
+
+      // Cleanup after printing
+      setTimeout(() => {
+        URL.revokeObjectURL(pdfUrl);
+        document.body.removeChild(iframe);
+      }, 30000);
+    } catch (error) {
+      console.error("Error printing the PDF:", error);
+    }
+  };
+
+  const downloadPDF = async (url, filename) => {
+    try {
+      const response = await fetch(corsUrl + encodeURIComponent(url));
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Error downloading the PDF:", error);
+    }
+  };
+
+
+  const handleDownload = (url, fileName) => {
+    if (!url) {
+      console.error("No URL provided for download");
+      return;
+    }
+    downloadPDF(url, fileName);
   };
 
 
@@ -85,20 +112,6 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   //   removeAfterPrint: true,
   //   onAfterPrint: () => setIsPrintClicked(false), 
   // });
-
-  const handleEmbedPrint = () => {
-    if (file.fileType === "application/pdf") {
-      const iframe = fileRef.current;
-      if (iframe && iframe.contentWindow) {
-        iframe.contentWindow.focus(); // Focus on the iframe
-        iframe.contentWindow.print(); // Trigger the print dialog
-      } else {
-        console.error("Iframe reference is not available.");
-      }
-    } else {
-      alert("Printing is only supported for PDF files.");
-    }
-  };
 
 
   // const handleEmbedPrint = async () => {
@@ -138,27 +151,6 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
   //   }
   // };
 
-
-
-
-  // Print functionality for images (img element)
-  const handleImagePrint = useReactToPrint({
-    content: () => fileRef.current, // Access the img element
-    documentTitle: "Staff Application",
-    removeAfterPrint: true,
-    onAfterPrint: () => setIsPrintClicked(false), // Reset print state after printing
-  });
-
-  // Conditionally handle print based on file type
-  const handlePrintClick = () => {
-    setIsPrintClicked(true);
-    if (file?.fileType === "application/pdf") {
-      handleEmbedPrint(); // Print iframe content for PDFs
-    } else if (file?.fileType?.startsWith("image/")) {
-      handleImagePrint(); // Print img element for images
-    }
-  };
-
   return (
     <>
       {isLoading && (
@@ -166,39 +158,13 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
           <LoadingScreen />
         </div>
       )}
-      <Dialog
-        isOpen={getIsOpen}
-        onClose={() => getIsOpen(false)}
-        className={`${style.eSignDialog}  ${isExpanded
-          ? style.eSignDialogBackground1
-          : style.eSignDialogBackground
-          } ${isExpanded ? style.expandedDialog : ""}`}
-        canOutsideClickClose={false}
-        canEscapeKeyClose={false}
-      >
+      <Dialog isOpen={getIsOpen} onClose={() => getIsOpen(false)} className={`${style.eSignDialog}  ${isExpanded ? style.eSignDialogBackground1 : style.eSignDialogBackground} ${isExpanded ? style.expandedDialog : ''}`} canOutsideClickClose={false} canEscapeKeyClose={false} ref={PDFRef}>
         <div>
           <div className={Classes.DIALOG_BODY}>
             {/* <div className={` ${isExpanded ? style.dialog :Classes.DIALOG_BODY}`}> */}
             <div className={style.spaceBetween}>
-              <div className={style.heading}>
-                {file?.fileUploaded !== undefined
-                  ? `${file?.documentType} ${file?.fileUploaded}`
-                  : file?.fileName !== undefined
-                    ? ` ${file?.fileName}`
-                    : ""}
-              </div>
+              <div className={style.heading}>{file?.fileUploaded !== undefined ? `${file?.documentType} ${file?.fileUploaded}` : file?.fileName !== undefined ? ` ${file?.fileName}` : ''}</div>
               <div className={style.displayInRow}>
-                <div className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}>
-                  <Tooltip title="Download" arrow >
-                    <Download
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
-                      onClick={handleDownload}
-                    />
-                  </Tooltip>
-                </div>
                 <div
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
@@ -209,27 +175,35 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                         fontSize: isPrintClicked ? 20 : 25,
                         color: isPrintClicked ? "#fff" : "#06617A",
                       }}
-                      onClick={handlePrintClick}
+                      onClick={() => handlePrint(pdfUrl)}
                     />
                   </Tooltip>
                 </div>
+                <Tooltip title="Download" arrow >
+                  <Download
+                    sx={{
+                      fontSize: 25,
+                      color: "#06617A",
+                    }}
+                    className={style.cursorPointer}
+                    onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                  />
+                </Tooltip>
                 {!isExpanded ? (
-                  <Tooltip title="Click to Expand" arrow >
+                  <Tooltip title="Maximize" arrow >
                     <FullscreenSharpIcon
                       className={`${style.iconStyle} ${style.cursorPointer} `}
                       onClick={toggleExpand}
-                      sx={{ color: "#06617A" }}
-                    />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title="Click to Minimize" arrow >
-                    <FullscreenExitIcon
-                      className={`${style.iconStyle} ${style.cursorPointer} `}
-                      onClick={toggleExpand}
-                      sx={{ color: "#06617A" }}
-                    />
-                  </Tooltip>
-                )}
+                      sx={{ color: '#06617A' }}
+                    /></Tooltip>) : (<Tooltip title="Minimize" arrow >
+                      <FullscreenExitIcon
+                        className={`${style.iconStyle} ${style.cursorPointer} `}
+                        onClick={toggleExpand}
+                        sx={{ color: '#06617A' }}
+                      />
+                    </Tooltip>
+                )
+                }
                 {/* <FullscreenSharpIcon
                                 className={`${style.iconStyle} ${style.cursorPointer} `}
                                 onClick={toggleExpand}
@@ -256,9 +230,9 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
               <Tooltip title={"Click to Close"} arrow>
                 <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); }}>CLOSE</div></Tooltip>
             </div>
-          </div>
+          </div >
 
-        </div>
+        </div >
       </Dialog >
     </>
   )

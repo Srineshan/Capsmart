@@ -80,7 +80,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
     const [userDetails, setUserDetails] = useState({});
     // const category = (reportType === 'activitiesOrServices' || reportType === 'addOnActivities' || reportType === 'scheduledActivity') ?
     //     'SERVICES_ACTIVITIES' :
-    //     (reportType === 'upcomingContractRenewals' || reportType === 'oneTimeContract') ?
+    //     (reportType === 'staffReappointmentsNotes' || reportType === 'staffReappointments') ?
     //         'CONTRACT_MANAGEMENT' :
     //         (reportType === 'complianceStatus' || reportType === 'nonCompliant') ?
     //             'CONTRACT_COMPLIANCE' :
@@ -104,8 +104,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'activitiesOrServices': 'SERVICES_ACTIVITIES',
         'addOnActivities': 'SERVICES_ACTIVITIES',
         'scheduledActivity': 'SERVICES_ACTIVITIES',
-        'upcomingContractRenewals': 'CONTRACT_MANAGEMENT',
-        'oneTimeContract': 'CONTRACT_MANAGEMENT',
+        'staffReappointmentsNotes': 'CONTRACT_MANAGEMENT',
+        'staffReappointments': 'CONTRACT_MANAGEMENT',
         'complianceStatus': 'CONTRACT_COMPLIANCE',
         'nonCompliant': 'CONTRACT_COMPLIANCE',
         'paidConsultingHours': 'CONTRACT_PERFORMANCE',
@@ -116,7 +116,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'PAYMENT',
         'timesheetProcessingSummary': 'TIMESHEET',
         'listingOfTimesheetsNotPaid': 'TIMESHEET',
-        'submittedTimesheetsPaymentStatus': 'TIMESHEET',
+        'staffReappointmentTracker': 'TIMESHEET',
         'contractDocumentsOnFile': 'CONTRACT_MANAGEMENT',
         'contractsWithABusinessEntity': 'CONTRACT_MANAGEMENT',
         'multiProviderContractsList': 'CONTRACT_MANAGEMENT',
@@ -135,8 +135,8 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'activitiesOrServices': 'ACTIVITES_SERVICES_LOG_SUMMARY',
         'addOnActivities': 'ADDON_ACTIVITES_SERVICES_LOG_SUMMARY',
         'scheduledActivity': '',
-        'upcomingContractRenewals': 'UPCOMING_CONTRACT_RENEWALS',
-        'oneTimeContract': 'ONE_TIME_CONTRACT',
+        'staffReappointmentsNotes': 'UPCOMING_CONTRACT_RENEWALS',
+        'staffReappointments': 'ONE_TIME_CONTRACT',
         'complianceStatus': '',
         'nonCompliant': '',
         'paidConsultingHours': '',
@@ -147,7 +147,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
         'siteDepartmentSpecificContractorSummary': 'SITE_DEPARTMENT_SPECIFIC_CONTRACTOR_SUMMARY',
         'timesheetProcessingSummary': 'TIMESHEET_PROCESSING_SUMMARY',
         'listingOfTimesheetsNotPaid': 'LISTING_OF_TIMESHEETS_NOTPAID',
-        'submittedTimesheetsPaymentStatus': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
+        'staffReappointmentTracker': 'SUBMITTED_TIMESHEETS_PAYMENT_STATUS',
         'contractDocumentsOnFile': 'CONTRACT_DOCUMENT_ON_FILE',
         'contractsWithABusinessEntity': 'CONTRACT_WITH_BUSINESS_ENTITY',
         'multiProviderContractsList': 'MULTI_PROVIDER_CONTRACT',
@@ -233,7 +233,7 @@ const SaveReport = ({ getSaveReportDialog, dataToUseInReport, reportType }) => {
             }
         }
         if (reportName !== '' && reportDescription !== '' && deliverySchedule !== '') {
-            await POST((reportType !== "upcomingContractRenewals" && reportType !== "oneTimeContract" &&
+            await POST((reportType !== "staffReappointmentsNotes" && reportType !== "staffReappointments" &&
                 reportType !== "contractDocumentsOnFile" && reportType !== "multiProviderContractsList" &&
                 reportType !== "contractsWithABusinessEntity") ?
                 'timesheet-management-service/report/myReport/' : 'contract-managment-service/reports/myReport/', JSON.stringify(data))
