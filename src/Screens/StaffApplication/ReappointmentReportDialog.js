@@ -12,15 +12,15 @@ import { useNavigate } from "react-router-dom";
 const ReappointmentReportDialog = ({
   open,
   onClose,
-  applications,
+  tableData,
   applicantType,
 }) => {
   const navigate = useNavigate();
   const [isPrintClicked, setIsPrintClicked] = useState(false);
 
   const handleNavigate = () => {
-    navigate("/reportTypeOverview/oneTimeContract", {
-      state: { applications },
+    navigate("/reportTypeOverview/staffbyTypes", {
+      state: {tableData} ,
     });
   };
 
@@ -32,7 +32,6 @@ const ReappointmentReportDialog = ({
     "OHIP Number",
     "Privilege Category",
     "Department / Division",
-    "Query",
     "Date Sent",
     "Due Date",
   ];
@@ -45,11 +44,10 @@ const ReappointmentReportDialog = ({
     let ohipNumber = [];
     let privilegeCategory = [];
     let deptDivision = [];
-    let query = [];
     let dateSent = [];
     let dueDate = [];
 
-    applications?.map((data) => {
+    tableData?.map((data) => {
       const colors = "grey";
       No.push(colors);
       staffforReappointment.push(
@@ -73,12 +71,11 @@ const ReappointmentReportDialog = ({
             ? ` / ${data.basicDetailReferences.specialty.name}`
             : "")
       );
-      query.push("2");
       dateSent.push(
         `${format(new Date(data?.reAppointmentSentDate), "MM/dd/yyyy")}`
       );
       dueDate.push(
-        data?.expiryDate ? format(new Date(data.expiryDate), "MM/dd/yyyy") : "-"
+        data?.expiryDate ? format(new Date(data?.expiryDate), "MM/dd/yyyy") : "-"
       );
     });
     return [
@@ -89,7 +86,6 @@ const ReappointmentReportDialog = ({
       { type: "text", value: ohipNumber },
       { type: "text", value: privilegeCategory },
       { type: "text", value: deptDivision },
-      { type: "text", value: query },
       { type: "text", value: dateSent },
       { type: "text", value: dueDate },
     ];
@@ -109,11 +105,9 @@ const ReappointmentReportDialog = ({
             <div className={`${style.heading1}`}>
               Staff Reappointments Application Status of {applicantType}
             </div>
-            <div className={style.displayInRow}>
+            <div className={style.displayInRow1}>
               <div
-                className={`${isPrintClicked && style.addStyle} ${
-                  style.alignCenter
-                } ${style.cursorPointer} ${style.marginRight}`}
+                className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer}`}
               >
                 <Tooltip title="Print Report" arrow>
                   <PrintOutlinedIcon
@@ -129,7 +123,7 @@ const ReappointmentReportDialog = ({
                 <img
                   src={CrossPink}
                   alt="cross"
-                  className={`${style.crossStyle1} ${style.cursorPointer} ${style.marginLeft20}`}
+                  className={`${style.crossStyle1} ${style.cursorPointer}`}
                   onClick={() => {
                     onClose();
                   }}
@@ -142,7 +136,7 @@ const ReappointmentReportDialog = ({
             <TableTwo
               tableHeaderValues={tableHeader}
               tableDataValues={getTableDataValues()}
-              tableData={applications}
+              tableData={tableData}
               gridStyle={style.applicantGrid3}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}

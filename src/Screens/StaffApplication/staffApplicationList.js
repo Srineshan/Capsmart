@@ -1433,9 +1433,11 @@ const StaffApplicationList = ({
       const response = await GET("entity-service/applicantType");
       const types = response?.data || [];
 
+      const typesWithoutFirst = types.slice(1);
+
       // Fetch staff count for each applicantTypeId
       const typesWithCount = await Promise.all(
-        types.map(async (type) => {
+        typesWithoutFirst.map(async (type) => {
           try {
             const res = await GET(
               `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT`
@@ -5488,7 +5490,7 @@ const StaffApplicationList = ({
               setDialogOpen(false);
               setSelectedApplicantType(null);
             }}
-            applications={staffApplications}
+            tableData={staffApplications}
             applicantType={selectedApplicantType?.applicantType}
           />
         )}
