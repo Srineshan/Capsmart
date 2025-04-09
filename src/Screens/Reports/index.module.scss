@@ -103,6 +103,17 @@
     padding: 10px;
 }
 
+.leftCardDisplay {
+    min-height: calc(100vh - 215px);
+    overflow: scroll;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 10px 20px #C4C8D066;
+    border-radius: 8px;
+    opacity: 1;
+    padding: 10px;
+    display: none;
+}
+
 .displayInRow {
     display: flex;
     flex-direction: row;
