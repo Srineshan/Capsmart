@@ -220,6 +220,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                                     showData={isSigned}
                                                     showDatais={true}
                                                     removePadding={true}
+                                                    alternateSignature={isSigned ? `${medicalDirectivesAttestationLog?.[0]?.esign?.name} ` : ""}
                                                 />
                                             </div>
                                             <div className={style.verticalAlignCenter}>
@@ -250,6 +251,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                                 showData={isSigned}
                                                 showDatais={true}
                                                 removePadding={true}
+                                                alternateSignature={isSigned ? `${medicalDirectivesAttestationLog?.[0]?.esign?.name} ` : ""}
                                             />
                                         </div>
                                         <div className={style.verticalAlignCenter}>
