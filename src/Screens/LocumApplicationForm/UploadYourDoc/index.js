@@ -10,6 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import CryptoJS from 'crypto-js';
 import { GET, PUT, POST, DELETE } from '../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import PDFDocs from './../../../images/PDFDocs.png';
@@ -19,7 +20,7 @@ import JourneyStep2 from './../../../images/journeyStep2.png';
 import { Dialog, Classes } from '@blueprintjs/core';
 import CrossPink from "./../../../images/crossPink.png";
 import DeleteIcon from './../../../images/deleteHcRow.png';
-import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
+import { ErrorToaster, ErrorToaster2, SuccessToaster } from '../../../utils/toaster';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import TextSnippetOutlinedIcon from '@mui/icons-material/TextSnippetOutlined';
 import style from './index.module.scss';
@@ -31,21 +32,31 @@ import TableTwo from '../../../Components/TableDesignTwo';
 import CommonSelectField from '../../../Components/CommonFields/CommonSelectField';
 import ApplicationFieldCard from '../../../Components/ApplicationFieldCard';
 import CommonDivider from '../../../Components/CommonFields/CommonDivider';
-import { fileLoadingURL, getValueByPath } from '../../../utils/formatting';
+import { fileLoadingURL, getValueByPath, dataLoadingGIF } from '../../../utils/formatting';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
 import ESignConfirmationDialog from '../../../Components/ESignConfirmation';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { loadStripe } from "@stripe/stripe-js";
+import ESignature from '../../../Components/ESignature';
+import MenuIcon from "@mui/icons-material/Menu";
+import EditIcon from '@mui/icons-material/Edit';
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
+import Close from './../../../images/close.png';
+import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
+import { Tooltip } from '@mui/material';
+import FileWithFields from '../../../Components/FileWithFields';
+import DeleteConfirmation from '../../../Components/DeleteConfirmation';
 
 const stripePromise = loadStripe("your-publishable-key");
 
-const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication }) => {
+const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const { section, step } = useParams()
     const [sessionDetails, setSessionDetails] = useState(null);
     const [formSchema, setFormSchema] = useState();
     const fileInputRef = useRef(null);
+    const tableRef = useRef(null);
     const [isEdited, setIsEdited] = useState(false);
     const [openCategoryIndex, setOpenCategoryIndex] = useState(-1);
     const [applicantProfile, setApplicantProfile] = useState();
@@ -55,8 +66,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const [isCollapsableCard, setIsCollapsableCard] = useState(true);
     const [replaceFileIndex, setReplaceFileIndex] = useState(-1);
     const [showFileDisplayDialog, setShowFileDisplayDialog] = useState(false);
+    const [showFileWithFields, setShowFileWithFields] = useState(false);
+    const [fields, setFields] = useState([]);
+    const [fileMetadata, setFileMetadata] = useState();
+    const [file, setFile] = useState();
+    const [applicationDocumentId, setApplicationDocumentId] = useState('');
     const [selectedFile, setselectedFile] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isLoadingDocs, setIsLoadingDocs] = useState(false);
     const [isShowUploadValidation, setIsShowUploadValidation] = useState(false);
     const [formIndex, setFormIndex] = useState();
     let eSignTitle = getValueByPath(basicForm, `forms[${formIndex}].data.setUpYourSignature.title`);
@@ -68,14 +85,25 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     let tempValue = basicForm?.forms?.[formIndex]?.data === null ? { setUpYourSignature: {}, table: [] } : basicForm?.forms?.[formIndex]?.data;
     const navigate = useNavigate()
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
+    const publicKey = "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
+    const [dateTime, setDateTime] = useState(new Date().toISOString());
+    const [encryptedText, setEncryptedText] = useState(CryptoJS.AES.encrypt(eSignTypeContent + dateTime, publicKey).toString());
+    // const [decryptedText, setDecryptedText] = useState(CryptoJS.AES.decrypt(encryptedText, publicKey).toString(CryptoJS.enc.Utf8));
+    const [currentDate, setCurrentDate] = useState(format(new Date(), dateFormat));
+    const [showInfo, setShowInfo] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+    const [deleteData, setDeleteData] = useState();
+    const [refetchRefDoc, setRefetchRefDoc] = useState(false);
     useEffect(() => {
         if (basicForm) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -86,6 +114,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     useEffect(() => {
         getApplicantProfile()
     }, [applicationId])
+
+    useEffect(() => {
+        if (fileMetadata) {
+            setShowFileWithFields(true)
+        }
+        console.log(fileMetadata, file, fields, 'fieldsssss')
+    }, [fileMetadata])
 
     useEffect(() => {
         const fetchSessionDetails = async () => {
@@ -121,10 +156,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
 
     const getFormSchema = async () => {
-        const { data: form } = await GET(
-            `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
-        );
-        setFormSchema(form?.schema)
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
+            const { data: form } = await GET(
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
+            );
+            setFormSchema(form?.schema)
+        }
     }
 
     const getIsOpen = (value) => {
@@ -135,8 +172,26 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         setIsSaveInProgressOpen(value);
     }
 
+    const getShowDeleteConfirmation = (value) => {
+        setShowDeleteConfirmation(value);
+    }
+
+    const getDeleteConfirmation = (value) => {
+        if (value) {
+            handleDelete()
+        }
+    }
+
+    const getResetRefetch = () => {
+        setRefetchRefDoc(false);
+    }
+
     const getIsOpenESignConfirmation = (value) => {
         setIsShowESignConfirmationDialog(value);
+    }
+
+    const getIsOpenFileWithFields = (value) => {
+        setShowFileWithFields(value);
     }
 
     const updateFunc = () => {
@@ -167,17 +222,21 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         setShowJourneyDialog(value);
     }
 
+    const generateRandomId = () => {
+        return `id-${Math.random().toString(36).substr(2, 9)}-${Date.now()}`;
+    };
+
     const handleFileUpload = async (e, id) => {
         setIsEdited(true);
         let file = await addNewDocument(e.target.files[0]);
         if (tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] === undefined) {
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName
             tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['mandatory'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.required
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] = [{ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true }]
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'] = [{ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true }]
         } else {
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documentName'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName
             tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['mandatory'] = tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.required
-            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'].push({ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.name, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true })
+            tempValue.requiredDocuments.filter(data => data?.document?.id === id)[0]['documents'].push({ file: file, fileName: e.target.files[0]?.name, documentName: tempValue?.requiredDocuments?.filter(data => data?.document?.id === id)[0]?.document?.shortName, dateUploaded: format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'"), valid: true, verified: true })
         }
         console.log(tempValue, e.target.files[0])
     }
@@ -216,8 +275,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
+                setRefetchRefDoc(true);
                 console.log(response)
                 setBasicForm(response?.data)
+                getPreApplication();
                 SuccessToaster("Application Updated Successfully");
             })
             .catch((error) => {
@@ -226,6 +287,39 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             });
     }
     console.log(formSchema, basicForm, tempValue)
+
+    useEffect(() => {
+        if (tempValue?.table?.length > 0) {
+            tableRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [tempValue?.table]);
+
+    const getIsDocRequired = (shortName) => {
+        let documentData = basicForm?.documentsRequired?.filter(data => data?.document?.shortName === shortName)?.[0]
+        if (!documentData?.departmentSpecific) {
+            return documentData?.documentType?.shortName === "Profile Picture" ? "Optional" : documentData?.required ? 'Required' : 'Recommended';
+        } else {
+            if (documentData?.document?.shortName === "Profile Picture") {
+                return "Optional";
+            } else {
+                let isDepartmentMatching = documentData?.departments?.map(deptData => deptData?.department?.id)?.includes(basicForm?.basicDetailReferences?.department?.id)
+                if (isDepartmentMatching) {
+                    if (documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialitySpecific) {
+                        let isSpecialtyMatching = documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.map(specialtyData => specialtyData?.specialty?.id)?.includes(basicForm?.basicDetailReferences?.specialty?.id);
+                        if (isSpecialtyMatching) {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.specialities?.filter(specialtyData => specialtyData?.specialty?.id === basicForm?.basicDetailReferences?.specialty?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        } else {
+                            return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                        }
+                    } else {
+                        return documentData?.departments?.filter(deptData => deptData?.department?.id === basicForm?.basicDetailReferences?.department?.id)?.[0]?.required ? 'Required' : 'Recommended';
+                    }
+                } else {
+                    return documentData?.required ? 'Required' : 'Recommended';
+                }
+            }
+        }
+    }
 
     const changeHandler = async (event) => {
         setIsLoading(true);
@@ -249,12 +343,12 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
             event.map((data, index) => {
-                table.push({ documentType: response?.data[index]?.classification !== null ? response?.data[index]?.classification : '', fileURL: response?.data[index]?.fileURL, fileType: response?.data[index]?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[index]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified })
+                table.push({ documentType: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName : '', fileURL: response?.data[index]?.file?.fileURL, fileType: response?.data[index]?.file?.fileType, fileUploaded: data?.name, requirement: response?.data[index]?.documentType !== null ? response?.data[index]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[index]?.documentType?.shortName) : '', valid: response?.data[index]?.valid, verified: response?.data[index]?.verified, rowId: response?.data[index]?.id })
             })
             for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
                 try {
-                    if (response?.data[triggerIndex]?.classification !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData`, { documentType: response?.data[triggerIndex]?.classification !== null ? response?.data[triggerIndex]?.classification : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.fileURL, fileType: response?.data[triggerIndex]?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.classification !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.classification)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified });
+                    if (response?.data[triggerIndex]?.documentType !== null) {
+                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.shortName}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.shortName === "Profile Picture" ? 'Optional' : getIsDocRequired(response?.data[triggerIndex]?.documentType?.shortName) : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
                     }
                     console.log(response);
                 } catch (error) {
@@ -271,6 +365,19 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             return null;
         }
     };
+
+    const getDocument = async (rowId) => {
+        const { data: response } = await GET(
+            `document-management-service/document/${rowId}`
+        );
+        console.log(response);
+        setFields(response?.fields);
+        setFile(response?.file);
+        setFileMetadata(response?.metaData);
+        setApplicationDocumentId(response?.id);
+        setIsLoadingDocs(false);
+        console.log("fields", fields)
+    }
 
     const handleChange = async (value, index) => {
         setIsLoading(true)
@@ -301,12 +408,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         //     });
         temp[index].documentType = value;
         if (value !== null || value !== "") {
-            temp[index].requirement = basicForm?.documentsRequired?.filter(data => data?.document?.name === value)?.[0]?.required ? 'Required' : 'Recommended';
+            temp[index].requirement = value === 'Profile Picture' ? 'Optional' : getIsDocRequired(value);
         }
         console.log(temp)
-        await PUT(`application-management-service/application/${applicationId}/form/updateData`, temp[index])
+        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${value}&applicationDocumentId=${temp[index]?.rowId}&manuallyClassified=${true}`, temp[index])
             .then(response => {
                 console.log(response)
+                temp[index].valid = response?.data?.valid;
+                temp[index].verified = response?.data?.verified
                 setIsLoading(false)
             })
             .catch((error) => {
@@ -319,14 +428,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         let value = [];
         basicForm?.documentsRequired?.map(data => {
             if (data?.multiFile) {
-                console.log(data?.document?.name)
-                value.push(data?.document?.name)
-            } else if (type === data?.document?.name) {
-                value.push(data?.document?.name)
+                console.log(data?.document?.shortName)
+                value.push(data?.document?.shortName)
+            } else if (type === data?.document?.shortName) {
+                value.push(data?.document?.shortName)
             } else {
-                if (tempValue?.table?.filter(singleFileData => singleFileData?.documentType === data?.document?.name)?.length === 0) {
-                    value.push(data?.document?.name)
-                    console.log(data?.document?.name, tempValue?.table, data)
+                if (tempValue?.table?.filter(singleFileData => singleFileData?.documentType === data?.document?.shortName)?.length === 0) {
+                    value.push(data?.document?.shortName)
+                    console.log(data?.document?.shortName, tempValue?.table, data)
                 }
             }
         })
@@ -341,10 +450,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.map((data, index) => {
             if (data === "file") {
                 temp.push({
-                    "type": "icon", "icon": array?.map(innerData => innerData?.fileType === 'application/pdf' ?
-                        <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} />
-                        : innerData?.fileType?.startsWith("image/") ?
-                            <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setShowFileDisplayDialog(true); setselectedFile(innerData) }} /> : <TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />), 'isShowHoverText': false
+                    "type": "icon", "icon": array?.map(innerData => {
+                        const rowId = innerData?.rowId; return innerData?.fileType === 'application/pdf' ?
+                            (<Tooltip title="Click to Open" arrow>
+                                <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
+                            ) : innerData?.fileType?.startsWith("image/") ?
+                                (<Tooltip title="Click to Open" arrow>
+                                    <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20, color: `${data?.subStatus}` }} onClick={() => { window.open(innerData?.fileURL, '_blank'); }} />)
+                    }), 'isShowHoverText': false
                 });
             } else {
                 if (data === "documentType") {
@@ -361,38 +474,53 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         />)
                     });
                 } else if (data === "valid") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
                 } else if (data === "verified") {
-                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
+                    temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 20 }} /> : innerData[data] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 20 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 20 }} />), 'isShowHoverText': false });
                 } else {
                     temp.push({
                         "type": "text",
-                        "value": array?.map(innerData =>
-                            innerData[data] && (
-                                <span
-                                    onClick={() => {
-                                        setShowFileDisplayDialog(true);
-                                        setselectedFile(innerData);
-                                    }}
-                                >
-                                    {innerData[data]}
-                                </span>
-                            )
-                        )
+                        "value": array?.map(innerData => {
+                            const rowId = innerData?.rowId;
+                            return innerData[data] && (
+                                <Tooltip title="Click to Open" arrow>
+                                    <span
+                                        onClick={() => {
+                                            setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId)
+                                        }}
+                                    >
+                                        {innerData[data]}
+                                    </span>
+                                </Tooltip>
+                            );
+                        })
                     });
-                    ;
                 }
             }
             if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
                 // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
                 temp.push({
                     "type": "icon", "icon": array?.map(innerData =>
-                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { handleDelete(innerData) }} />
+                        <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
                     ), 'isShowHoverText': false
                 });
             }
+            if (index === Object.keys(formSchema?.properties?.table?.tableHeaders || {})?.length - 1) {
+                // temp.push({ "type": "action", "value": array?.map(innerData => actions) })
+                temp.push({
+                    type: "icon", icon: array?.map(innerData => {
+                        const rowId = innerData?.rowId;
+                        return (
+                            <Tooltip title="Click to Edit" arrow>
+                                <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+                            </Tooltip>
+                        );
+                    }),
+                    isShowHoverText: false
+                });
+            }
         })
-        console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.name))
+        console.log(temp, array, basicForm?.documentsRequired?.map(data => data?.document?.shortName))
         return temp;
     }
 
@@ -417,18 +545,20 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         handleSubmitApplicationReq(temp)
     };
 
-    const handleDelete = async (data) => {
+    const handleDelete = async () => {
         let temp = tempValue?.table;
-        temp = temp.filter(obj => !isEqual(obj, data))
-        console.log(temp, data)
-        await DELETE(`application-management-service/application/${applicationId}/files`, [data])
+        temp = temp.filter(obj => !isEqual(obj, deleteData))
+        console.log(temp, deleteData)
+        await DELETE(`application-management-service/application/${applicationId}/deleteFiles?applicationDocumentIds=${[deleteData?.rowId]}`, [deleteData])
             .then((response) => {
                 SuccessToaster("File Deleted Successfully");
+                handleSubmitApplicationReq(temp)
+                getPreApplication();
+                setRefetchRefDoc(true);
             })
             .catch((error) => {
                 ErrorToaster("Unexpected Error Deleting File");
             });
-        handleSubmitApplicationReq(temp)
     }
 
     const isEqual = (obj1, obj2) => {
@@ -448,14 +578,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
 
     const handleContinue = async (skip) => {
         if (tempValue?.table?.filter(data => data?.documentType === "")?.length !== 0 && tempValue?.table !== undefined) {
-            ErrorToaster('Please select the missing document type for the uploaded documents')
+            ErrorToaster2('Please select the missing document type for the uploaded documents')
         }
         else {
             setIsLoading(true);
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: getMissingDocs()?.map(data => data?.document?.name),
+                unFilledFields: getMissingDocs()?.map(data => data?.document?.shortName),
                 acknowledged: skip === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -490,6 +620,10 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
         }
     }
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     // if (isLoading) {
     //     return (
     //         <div className={`${style.verticalAlignCenter} ${style.justifyCenter}`}>
@@ -501,14 +635,14 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
     const getMissingDocs = () => {
         let temp = []
         basicForm?.documentsRequired?.map((data, index) => {
-            if ((basicForm?.forms?.[formIndex]?.data !== null && tempValue?.table?.filter(tableData => tableData?.documentType === data?.document?.name)?.length === 0 && data?.required)) {
+            if ((((tempValue?.table || [])?.filter(tableData => tableData?.documentType === data?.document?.shortName)?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)))) {
                 temp.push(data)
             }
         })
         return temp;
     }
 
-    console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.name), getMissingDocs())
+    console.log(tempValue?.table?.filter(tableData => !tableData?.documentType?.includes(basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName))), 'checkconsole', tempValue?.table, basicForm?.documentsRequired?.filter(data => data?.required)?.map(data => data?.document?.shortName), getMissingDocs())
 
     return (
         <div>
@@ -516,10 +650,27 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                 <div
                     className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
                 >
-                    <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                    <div className={style.uploadContainer}>
+                        <div className={style.fileImportingMsg}>We are importing your documents and extracting the required data.</div>
+                        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+                        <div className={style.fileImportingMsg}>Please wait! Do not close your browser window.</div>
+                        {/* <div className={style.rotating_text}>
+                            {['text', 'text 2', 'text 3', 'text 4']?.map((message) => (
+                                <span key={message}>{message}</span>
+                            ))}
+                        </div> */}
+                    </div>
                 </div>
             )}
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            {isLoadingDocs && (
+                <div
+                    className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+                >
+                    <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyleCapLogo} />
+                </div>
+            )}
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
                     <ReappointmentProgressCard
                         step={""}
@@ -548,7 +699,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     stepPath={`forms[${formIndex}].data`}
                                 />
                             )}
-                        <div className={`${style.addMoreBorder} ${style.marginTop}`}>
+                        {/* <div className={`${style.addMoreBorder}`}>
                             <div className={style.padding20}>
                                 <div className={style.spaceBetween}>
                                     <div className={style.collapsableCardText}>
@@ -563,76 +714,72 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                             <KeyboardArrowDownIcon sx={{ color: "#c4bef3" }} />
                                         </div>
                                     )}
-                                </div>
-                                {isCollapsableCard && (
+                                </div> */}
+                        {/* {isCollapsableCard && (
                                     <>
-                                        <CommonDivider />
-                                        <div
-                                            className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
-                                        >
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            >
-                                                Documents you will require
-                                            </div>
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            >
-                                                {/* Requirements */}
-                                            </div>
-                                            <div
-                                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
-                                            ></div>
-                                        </div>
-                                        {basicForm?.documentsRequired?.map((data, index) => (
-                                            <div>
-                                                <div
-                                                    className={`${style.requiredDocumentCard} ${style.tableGrid
-                                                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
-                                                            tempValue?.table?.filter(
-                                                                (tableData) =>
-                                                                    tableData?.documentType ===
-                                                                    data?.document?.name
-                                                            )?.length === 0 &&
-                                                            data?.required
-                                                            ? style.redBorder
-                                                            : ""
-                                                        } ${index % 2 === 0
-                                                            ? style.requiredDocumentCardAlternativeColor
-                                                            : ""
-                                                        }  ${style.marginTop5}`}
-                                                >
-                                                    <div
-                                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        <div
-                                                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                        >
-                                                            {data?.document?.name}
-                                                        </div>
-                                                        <InfoOutlinedIcon
-                                                            sx={{ fontSize: 14, marginLeft: "10px" }}
-                                                            className={style.info}
-                                                        />
-                                                    </div>
-                                                    <div
-                                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        {data?.required ? "Required" : "Recommended"}
-                                                    </div>
-                                                    <div
-                                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
-                                                    >
-                                                        {data?.instruction}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </>
-                                )}
+                                        <CommonDivider /> */}
+                        {/* <div
+                            className={`${style.tableHeader} ${style.tableGrid} ${style.marginTop}`}
+                        >
+                            <div
+                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                            >
+                                Documents you will require
                             </div>
-                        </div>
-                        <div className={`${style.twoCol} ${style.marginTop}`}>
+                            
+                            <div
+                                className={`${style.tableHeaderText} ${style.verticalAlignCenter}`}
+                            ></div>
+                        </div> */}
+                        {basicForm?.documentsRequired?.map((data, index) => (
+                            <div>
+                                <div
+                                    className={`${style.requiredDocumentCard} ${style.tableGrid
+                                        } ${basicForm?.forms?.[formIndex]?.data !== null &&
+                                            (tempValue?.table?.filter(
+                                                (tableData) =>
+                                                    tableData?.documentType ===
+                                                    data?.document?.shortName
+                                            )?.length === 0 || !(tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.verified && tempValue?.table?.filter((tableData) => tableData?.documentType === data?.document?.shortName)?.[0]?.valid)) &&
+                                            getIsDocRequired(data?.document?.shortName) === "Required"
+                                            ? style.redBorder
+                                            : ""
+                                        } ${index % 2 === 0
+                                            ? style.requiredDocumentCardAlternativeColor
+                                            : ""
+                                        }  ${style.marginTop2}`}
+                                >
+                                    <div
+                                        className={`${style.displayInRow} ${style.verticalAlignCenter}`}
+                                    >
+                                        <div
+                                            className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                        >
+                                            {data?.document?.shortName}
+                                        </div>
+                                        {/* <InfoOutlinedIcon
+                                            sx={{ fontSize: 14, marginLeft: "10px" }}
+                                            className={style.info}
+                                        /> */}
+                                    </div>
+                                    <div
+                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                    >
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
+                                    </div>
+                                    <div
+                                        className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
+                                    >
+                                        {data?.instruction}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                        {/* </>
+                                )} */}
+                        {/* </div>
+                        </div> */}
+                        <div className={`${style.twoCol} ${style.marginTop10}`}>
                             <CommonDropZone
                                 title={"Upload Your Documents"}
                                 description={
@@ -644,42 +791,43 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                             <CommonDropZone
                                 title={"Upload A Photo"}
                                 description={
-                                    "Click a picture with your Camera or Upload from Gallery."
+                                    "Take a picture with your Camera or Upload from Gallery."
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
                                 accept="image/*"
                             />
                         </div>
-                        {tempValue?.table?.length !== 0 && (
-                            <TableTwo
-                                tableHeaderValues={[
-                                    "",
-                                    "File Uploaded",
-                                    "",
-                                    "Document Type",
-                                    "",
-                                    "Verified",
-                                    "Valid",
-                                    "",
-                                ]}
-                                tableDataValues={getApplicantValues(tempValue?.table)}
-                                tableData={tempValue?.table || []}
-                                gridStyle={style.gridStyle}
-                                actions={actions}
-                                // scrollStyle={style.contractScrollStyle}
-                                tableSortValues={[]}
-                                heading={"You have not yet uploaded any documents."}
-                                onClickFunction={() => { }}
-                            />
-                        )}
+                        <div ref={tableRef} className={style.tableContainer}>
+                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
+                                <TableTwo
+                                    tableHeaderValues={[
+                                        "",
+                                        "File Uploaded",
+                                        "Document Type",
+                                        "",
+                                        "Verified",
+                                        "Valid",
+                                        "",
+                                    ]}
+                                    tableDataValues={getApplicantValues(tempValue?.table)}
+                                    tableData={tempValue?.table || []}
+                                    gridStyle={style.gridStyle}
+                                    actions={actions}
+                                    // scrollStyle={style.contractScrollStyle}
+                                    tableSortValues={[]}
+                                    heading={"You have not yet uploaded any documents."}
+                                    onClickFunction={() => { }}
+                                />
+                            )}
+                        </div>
                         <input
                             type="file"
                             ref={fileInputRef}
                             onChange={handleFileChange}
                             style={{ display: "none" }} // Hide the actual file input
                         />
-                        {((basicForm?.forms?.[formIndex]?.data !== null &&
+                        {/* {((basicForm?.forms?.[formIndex]?.data !== null &&
                             !showRedBorderForESign) || basicForm?.applicant?.signature?.updated) ? (
                             <>
                                 <div
@@ -708,6 +856,31 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         fontSize: "24px",
                                     }}>{eSignTypeContent}</div>
                                 </div>
+                                <div className={`${style.eSignatureOnFileCard} ${style.marginTop10}`}>
+                                    <div className={style.eSignatureOnFileTitle}>Your eSignature On File</div>
+                                    <div>
+                                        <div className={style.eSignGrid}>
+                                            <ESignature
+                                                userName={name}
+                                                encData={encryptedText}
+                                                showData={true}
+                                                showDatais={true}
+                                            />
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.displayInRow}>
+                                                    <div className={style.dateTitle}>Date: </div>
+                                                    <div className={`${style.date} ${style.marginLeft}`}>{currentDate}</div>
+                                                </div>
+                                            </div>
+                                            <div className={style.verticalAlignCenter}>
+                                                <div className={style.dateTitle}>{eSignTitle}</div>
+                                            </div>
+                                        </div>
+                                        <div className={style.eSignatureOnFileButton}>
+                                            <div className={`${style.continue} ${style.eSignatureOnFileButtonPadding}`} onClick={() => setIsShowESignDialog(true)}>CLICK TO UPDATE</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </>
                         ) : (
                             <div
@@ -722,34 +895,59 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         }`}
                                 >
                                     <p className={style.uploadTextStyle}>
-                                        {"Confirm Your Electronic Signature"}
+                                        {"Confirm Your eSignature"}
                                     </p>
 
                                     <p className={style.uploadDescriptionText}>
                                         {
-                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting."
+                                            "Our paperless automated application submission uses electronic signatures with digital fingerprinting.Set up your electronic signature"
                                         }
                                     </p>
-                                    <p className={style.uploadDescriptionText}>
-                                        {"Click here to setup your electronic signature for use."}
-                                    </p>
+
                                 </div>
                             </div>
-                        )}
+                        )} */}
                     </div>
                     <div className={style.threeColForButton}>
-                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div></div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div>
                     </div>
                 </div>
+
                 <div>
-                    <ApplicationAssistanceCard
-                        user={"Neena Greenly"}
-                        designation={"{Designation}"}
-                        contactNumber={"{Contact Number}"}
-                        email={"{Email}"}
-                    />
+                    {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
+                                || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Required Documents</span>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard
+                                    user={"Neena Greenly"}
+                                    designation={"{Designation}"}
+                                    contactNumber={"{Contact Number}"}
+                                    email={"{Email}"}
+                                />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments refetchRefDoc={refetchRefDoc} getResetRefetch={getResetRefetch} />
+                            </div>
+                        </div>
+
+                    </div>
+
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || isShowESignDialog || showJourneyDialog || isShowUploadValidation
                         || showFileDisplayDialog || isShowESignConfirmationDialog ? style.hiddenStickyContainer : ""}`}>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>
@@ -773,7 +971,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                         <div className={style.twoColForButton}>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
-                                onClick={() => navigate(-1)}
+                                onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>
@@ -844,6 +1042,9 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             {showJourneyDialog && (
                 <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Leveling Up! Keep Up The Good Work.`} img={JourneyStep2} formIndex={formIndex} basicForm={basicForm} continueClick={handleContinue} />
             )}
+            {showFileWithFields && (
+                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={basicForm?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
+            )}
             <Dialog
                 isOpen={isShowUploadValidation}
                 onClose={() => setIsShowUploadValidation(false)}
@@ -902,7 +1103,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                         <div
                                             className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                         >
-                                            {data?.document?.name}
+                                            {data?.document?.shortName}
                                         </div>
                                         <InfoOutlinedIcon
                                             sx={{ fontSize: 14, marginLeft: "10px" }}
@@ -912,7 +1113,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
                                     <div
                                         className={`${style.documentTextStyle} ${style.verticalAlignCenter}`}
                                     >
-                                        {data?.required ? "Required" : "Recommended"}
+                                        {data?.document?.shortName === 'Profile Picture' ? 'Optional' : getIsDocRequired(data?.document?.shortName)}
                                     </div>
                                 </div>
                             </div>
@@ -942,6 +1143,13 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             {
                 isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
+                )
+            }
+            {
+                showDeleteConfirmation && (
+                    <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
+                        getDeleteConfirmation={getDeleteConfirmation}
+                        confirmationText="Do you want to delete this document?" />
                 )
             }
         </div>

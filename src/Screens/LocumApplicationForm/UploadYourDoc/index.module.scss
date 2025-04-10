@@ -16,16 +16,40 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .stickyContainer {
     position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
 }
 
 .hiddenStickyContainer {
@@ -47,6 +71,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -60,6 +93,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -68,6 +109,9 @@
     border-radius: 20px;
     border: 0.4000000059604645px solid #e5e6e6;
     padding: 20px;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    // gap: 20px;
 }
 
 .progressStyle {
@@ -77,7 +121,7 @@
 }
 
 .progressStyleBackground {
-    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 15%, #E9E9F0 20%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
+    background: transparent linear-gradient(90deg, $primarycolor 0%, $primarycolor 20%, #E9E9F0 30%, #E9E9F0 100%) 0% 0% no-repeat padding-box;
 }
 
 .titleText {
@@ -135,7 +179,7 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 50% 15% 32%;
+    grid-template-columns: 30% 15% 52%;
     gap: 1%;
 }
 
@@ -147,8 +191,8 @@
 
 
 .requiredDocumentCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     padding: 10px 15px;
 }
@@ -158,7 +202,7 @@
 }
 
 .requiredDocumentCardAlternativeColor {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .documentTextStyle {
@@ -183,14 +227,117 @@
     margin-top: 5px;
 }
 
+.marginTop2 {
+    margin-top: 2px;
+}
+
 .cursorPointer {
     cursor: pointer;
+}
+
+.toggleButton {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .toggleButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        color: white;
+        padding: 10px 5px;
+        border-radius: 0 0 0 12px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .infoContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        padding: 20px;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        width: 40%;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .infoContainer.show {
+        display: block;
+    }
+}
+
+.closeIcon {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
+}
+
+.blurredBackground {
+    pointer-events: none;
+}
+
+.bgdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    z-index: 999;
+}
+
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
 }
 
 .twoCol {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 10px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .twoColForButton {
@@ -200,9 +347,13 @@
 }
 
 .threeColForButton {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 70px;
+    display: none;
+
+    @media (max-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
 }
 
 .setupCompleteGrid {
@@ -227,7 +378,11 @@
 }
 
 .redBorder {
-    border: 1px solid $statusred !important;
+    border: 3px solid $statusred !important;
+}
+
+.yellowBorder {
+    border: 3px solid $statusyellow !important;
 }
 
 .uploadDescriptionText {
@@ -236,10 +391,33 @@
     color: #2C2C2C;
 }
 
+.tableContainer {
+    overflow-x: auto !important;
+    max-width: 100%;
+}
+
+@media (max-width: 1120px) and (min-width: 320px) {
+    .tableContainer {
+        max-width: 100%;
+        overflow-x: auto !important;
+        overflow-y: hidden;
+    }
+}
+
 .gridStyle {
     display: grid;
-    grid-template-columns: 3% 23% 1% 32% 16% 10% 6% 2%;
+    grid-template-columns: 3% 24% 32% 14% 9% 7% 3% 3%;
     gap: 1%;
+}
+
+.contractScrollStyle {
+    overflow-x: auto !important;
+}
+
+@media (max-width: 1130px) {
+    .contractScrollStyle {
+        overflow-x: scroll !important;
+    }
 }
 
 .fullWidth {
@@ -309,10 +487,42 @@
     object-fit: contain;
 }
 
+.docTypeEditImgStyle {
+    height: 20px;
+    width: auto;
+    object-fit: contain;
+    color: $primarycolor
+}
+
 .fileLoadingStyle {
     height: auto;
+    width: 60%;
+    object-fit: contain;
+
+    @media (max-width: 1130px) {
+        width: 20%;
+    }
+}
+
+.fileLoadingStyleCapLogo {
+    height: 200px;
     width: 40%;
     object-fit: contain;
+}
+
+
+.uploadContainer {
+    background-color: #FFF;
+    padding: 40px;
+    border-radius: 20px;
+    transition: all 5s ease-in-out;
+}
+
+.fileImportingMsg {
+    text-align: center;
+    font: normal normal bold 20px/28px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
 }
 
 .loadingOverlay {
@@ -329,9 +539,13 @@
 }
 
 .disabledButton {
-    color: #fff !important;
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
-    background: #94979A 0% 0% no-repeat padding-box !important;
+}
+
+.disabledButton :hover {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
 }
 
 .heading {
@@ -354,7 +568,12 @@
 
 .eSignDialog {
     height: 75%;
-    width: 40% !important;
+    width: 40%;
+
+    @media (max-width: 1130px) {
+        height: auto;
+        width: auto;
+    }
 }
 
 .eSignDialogBackground {
@@ -366,6 +585,11 @@
 .crossStyle {
     height: 18px;
     width: 18px;
+
+    @media (max-width: 1000px) {
+        height: 16px;
+        width: 16px;
+    }
 }
 
 .continueValidation {
@@ -382,6 +606,13 @@
     width: 240px;
 }
 
+.continueValidation:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
+}
+
 .saveInProgressValidation {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
@@ -395,4 +626,140 @@
     padding: 5px;
     cursor: pointer;
     width: 240px;
+}
+
+.saveInProgressValidation:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.eSignatureOnFileCard {
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px dashed $primarycolor;
+    border-radius: 8px;
+    padding: 20px 40px;
+}
+
+.eSignatureOnFileTitle {
+    text-align: center;
+    font: normal normal 600 23px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+}
+
+.eSignatureOnFileButton {
+    display: flex;
+    justify-content: end;
+}
+
+.eSignatureOnFileButtonPadding {
+    padding: 5px 30px;
+}
+
+.dateTitle {
+    text-align: left;
+    font: normal normal bold 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.date {
+    text-align: left;
+    font: normal normal normal 17px/26px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+}
+
+.eSignGrid {
+    display: grid;
+    grid-template-columns: 49% 24% 24%;
+    gap: 1%;
+
+    @media (max-width: 1130px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.rotating_text {
+    position: relative;
+    height: 1.5rem;
+    /* Adjust this based on your text height */
+    overflow: hidden;
+}
+
+.rotating_text span {
+    display: block;
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    white-space: nowrap;
+    font-weight: 500;
+    font-size: 1.1rem;
+    left: 0;
+    opacity: 0;
+    transform: translateY(100%);
+    color: #2C2C2C;
+    animation: rotateWord 24s linear infinite;
+}
+
+.rotating_text span:nth-child(1) {
+    animation-delay: 1s;
+}
+
+.rotating_text span:nth-child(2) {
+    animation-delay: 3s;
+}
+
+.rotating_text span:nth-child(3) {
+    animation-delay: 6s;
+}
+
+.rotating_text span:nth-child(4) {
+    animation-delay: 9s;
+}
+
+.rotating_text span:nth-child(5) {
+    animation-delay: 12s;
+}
+
+.rotating_text span:nth-child(6) {
+    animation-delay: 15s;
+}
+
+.rotating_text span:nth-child(7) {
+    animation-delay: 18s;
+}
+
+.rotating_text span:nth-child(8) {
+    animation-delay: 21s;
+}
+
+@keyframes rotateWord {
+    0% {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+
+    50% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
 }

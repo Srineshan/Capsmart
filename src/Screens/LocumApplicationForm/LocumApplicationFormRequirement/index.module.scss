@@ -10,10 +10,15 @@
     display: grid;
     grid-template-columns: 3fr 1fr;
     grid-gap: 20px;
+    position: relative;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 }
 
 .screenBackground {
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
 }
 
 .marginTop {
@@ -28,25 +33,38 @@
     margin-top: 5px;
 }
 
-.marginLeft {
-    margin-left: 10px;
-}
-
 .stickyContainer {
     position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        display: none;
+    }
 }
 
 .hiddenStickyContainer {
     opacity: 0;
     pointer-events: none;
-    // filter: blur(5px); 
-    // box-shadow: 0 0 10px 5px #06617A;
 }
 
 .saveInProgress {
@@ -55,12 +73,44 @@
     border: 0.5px solid $primarycolor;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 15px/30px proxima-nova;
+    font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.userGuideButton {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.userGuideButton:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -68,12 +118,20 @@
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
     text-align: center;
-    font: normal normal bold 15px/30px proxima-nova;
+    font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -92,23 +150,14 @@
 }
 
 .requiredDocumentCard {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
+    background: $tableRow1 0% 0% no-repeat padding-box;
+    border: 0.4000000059604645px solid $primarycolor;
     border-radius: 4px;
     padding: 10px 15px;
 }
 
 .info {
     visibility: hidden;
-}
-
-.requiredDocumentCard:hover {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
-
-    .info {
-        visibility: visible;
-        opacity: 0.7;
-    }
 }
 
 .documentTextStyle {
@@ -129,10 +178,116 @@
     height: 100%;
 }
 
+.toggleButton {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .toggleButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        color: white;
+        padding: 10px 5px;
+        border-radius: 0 0 0 12px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .infoContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        padding: 20px;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        width: 40%;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .infoContainer.show {
+        display: block;
+    }
+}
+
+.closeIcon {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
+}
+
+.blurredBackground {
+    pointer-events: none;
+}
+
+.bgdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    z-index: 999;
+}
+
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}
+
 .twoCol {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+}
+
+.threeColForButton {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        float: right;
+        gap: 10px;
+    }
 }
 
 .tableHeader {
@@ -152,209 +307,71 @@
 
 .tableGrid {
     display: grid;
-    grid-template-columns: 50% 15% 32%;
+    grid-template-columns: 30% 15% 52%;
     gap: 1%;
 }
 
 .requiredDocumentCardAlternativeColor {
-    background: #f0f0f5 0% 0% no-repeat padding-box;
+    background: $tableRowAlternative 0% 0% no-repeat padding-box;
 }
 
-.cursorPointer {
-    cursor: pointer !important;
-}
-
-.privilegeCard {
-    background: #14358F00 0% 0% no-repeat padding-box;
-    // box-shadow: 0px 0px 8px #040B2014;
-    // border: 0.4000000059604645px solid #5087D9;
-    border-radius: 5px;
-    padding: 10px;
-    z-index: 99999 !important;
-}
-
-.privilegeCardWithBorder {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 8px #040B2014;
-    border: 0.4000000059604645px solid #5087D9;
-    border-radius: 5px;
-    padding: 10px;
-    z-index: 99999 !important;
-}
-
-.primaryColor {
-    color: $primarycolor !important;
-}
-
-.privilegeContentCard {
-    background: #1D24370A 0% 0% no-repeat padding-box;
-    box-shadow: 0px 0px 8px #040B2014;
-    border-radius: 8px;
-    padding: 10px;
-}
-
-.privilegeHeading {
-    text-align: left;
-    font: normal normal medium 18px/24px proxima-nova;
-    letter-spacing: 0px;
-    color: #1D2437;
-}
-
-.privilegeHeadingReappointment {
-    text-align: left;
-    font: normal normal medium 18px/24px proxima-nova;
-    letter-spacing: 0px;
-    color: $primarycolor;
-}
-
-.privilegeTitleStyle {
-    text-align: left;
-    font: normal normal bold 16px/24px proxima-nova;
-    letter-spacing: 0px;
-    color: $textgrey;
-}
-
-.eSignDialogBackground {
-    background: #ffffff 0% 0% no-repeat padding-box;
-    padding: 20px 40px 0px 40px;
-    border-radius: 20px !important;
-}
-
-.eSignDialog {
-    height: 75%;
-    width: 75% !important;
-}
-
-.spaceBetween {
+.justifyCenter {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
 }
 
-.heading {
-    text-align: left;
-    font: normal normal bold 20px/28px proxima-nova;
-    color: $primarycolor;
-    text-transform: capitalize;
-}
-
-.crossStyle {
-    height: 18px;
-    width: 18px;
-}
-
-.displayInRowRev {
+.loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
-    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
 }
 
-.reappointmentButton {
-    background: $primarycolor 0% 0% no-repeat padding-box;
-    border-radius: 8px;
-    padding: 10px 15px;
-    color: #fff;
-    min-width: 120px !important;
-    font: normal normal bold 15px/15px proxima-nova;
-    cursor: pointer;
-    text-align: center;
-}
-
-.cardTitle {
-    text-align: left;
-    font: normal normal bold 20px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-    // text-transform: capitalize;
-}
-
-.categoryGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
-
-.itemLeft {
-    padding: 10px;
-    /* Inner padding for each line */
-    text-align: left;
-}
-
-.privilegeCodeGrid {
-    display: grid;
-    grid-template-columns: 50px 1fr;
-    gap: 10px;
-}
-
-
-.restrictedPrivilegeGrid {
-    display: grid;
-    grid-template-columns: 5% 78% 15%;
-    gap: 1%;
-}
-
-.restrictedPrivilegeGrid> :nth-child(4) {
-    grid-column: 1 / -1;
-}
-
-.restrictedPrivilegeGrid> :nth-child(5) {
-    grid-column: 1 / -1;
-}
-
-.restrictedPrivilegeGrid> :nth-child(6) {
-    grid-column: 1 / -1;
-}
-
-.dateTitle {
-    text-align: left;
-    font: normal normal bold 17px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-}
-
-.date {
-    text-align: left;
-    font: normal normal normal 17px/26px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-}
-
-.disabledButton {
-    cursor: not-allowed;
-    opacity: 0.4;
-}
-
-.uploadButton {
-    background: $secondarycolor 0% 0% no-repeat padding-box;
-    border: 0.4000000059604645px solid $secondarycolor;
-    border-radius: 4px;
-    padding: 5px 10px;
-}
-
-.uploadText {
-    text-align: left !important;
-    font: normal normal bold 13px/20px proxima-nova;
-    letter-spacing: 0px;
-    color: #2C2C2C;
-}
-
-.uploadTextButton {
-    display: inline-block !important;
-    font: normal normal bold 13px/20px proxima-nova;
-    color: #2C2C2C;
-    border: 1px solid #2C2C2C;
-    border-radius: 4px;
-    padding: 5px;
-    text-align: center !important;
-    cursor: pointer;
-}
-
-.imgIcon {
-    height: 30px;
-    width: auto;
+.fileLoadingStyle {
+    height: 200px;
+    width: 40%;
     object-fit: contain;
 }
 
-.uploadGrid {
-    display: grid;
-    grid-template-columns: 3% 80% 15%;
-    gap: 1%;
+@media (max-width: 900px) {
+    .screenPadding {
+        padding: 10px;
+        overflow: scroll;
+    }
+
+    .documentTextStyle {
+        text-align: left;
+        font: normal normal normal 14px/15px proxima-nova;
+        letter-spacing: 0px;
+        color: #2C2C2C;
+    }
+}
+
+
+.footerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 0 20px;
+}
+
+.footerIconStyle {
+    height: 25px;
+    width: 80px;
+    object-fit: contain;
+    margin-right: 5px;
+}
+
+.poweredBy {
+    text-align: center;
+    font: normal normal normal 14px/20px proxima-nova;
+    color: $primarycolor;
+    margin: 0;
 }

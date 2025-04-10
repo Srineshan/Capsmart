@@ -12,12 +12,6 @@
     margin-top: 10px;
 }
 
-.applicationScreenGrid {
-    display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-gap: 20px;
-}
-
 .cursorPointer {
     cursor: pointer;
 }
@@ -29,14 +23,50 @@
     color: #2C2C2C;
 }
 
+.applicationScreenGrid {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-gap: 20px;
+    position: relative;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
 .stickyContainer {
     position: fixed;
-    right: 100px;
-    left: calc(75% - 45px);
-    bottom: 20px;
+    bottom: 0;
     z-index: 10;
-    padding: 0 20px 20px 20px;
-    background: #EDEDF3 0% 0% no-repeat padding-box;
+    padding: 0px 20px 20px 20px;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    right: 100px;
+    width: calc(25% - 50px);
+}
+
+@media (max-width: 948px) {
+    .stickyContainer {
+        position: fixed;
+        bottom: 0;
+        left: auto;
+        right: auto;
+        width: auto;
+        padding: 0px 20px 20px 20px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .stickyContainer {
+        // position: sticky;
+        // padding: 20px;
+        // display: flex;
+        // flex-direction: column;
+        // align-items: center; 
+        // float: right;
+        display: none;
+    }
 }
 
 .hiddenStickyContainer {
@@ -44,6 +74,30 @@
     pointer-events: none;
     // filter: blur(5px); 
     // box-shadow: 0 0 10px 5px #06617A;
+}
+
+.saveInProgress1 {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 17px/30px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+    width: 240px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress1:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .saveInProgress {
@@ -58,6 +112,15 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .continue {
@@ -71,6 +134,14 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .applicationCardStyle {
@@ -87,6 +158,101 @@
     gap: 20px;
 }
 
+.toggleButton {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .toggleButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        color: white;
+        padding: 10px 5px;
+        border-radius: 0 0 0 12px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .infoContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: $primarycolor;
+        padding: 20px;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        z-index: 999;
+        width: 40%;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+
+    .infoContainer.show {
+        display: block;
+    }
+}
+
+.closeIcon {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
+}
+
+.blurredBackground {
+    pointer-events: none;
+}
+
+.bgdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    z-index: 999;
+}
+
+.hidden {
+    @media (max-width: 768px) {
+        display: none !important;
+    }
+}
+
 .twoColForButton {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -94,9 +260,13 @@
 }
 
 .threeColForButton {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 70px;
+    display: none;
+
+    @media (max-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+    }
 }
 
 .fourCol {
@@ -172,23 +342,23 @@
 }
 
 .applicantGrid> :nth-child(1) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .applicantGrid> :nth-child(2) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .applicantGrid> :nth-child(3) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .applicantGrid> :nth-child(4) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .applicantGrid> :nth-child(5) {
-    grid-column: span 2;
+    grid-column: span 3;
 }
 
 .homeMailingAddressGrid {
@@ -351,10 +521,10 @@
 }
 
 .reappointmentCard {
-    background: #F5F7FB 0% 0% no-repeat padding-box;
-    border: 1px solid $secondarycolor;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
+    border: 1px solid $buttonBorder;
     border-radius: 8px;
-    padding: 20px;
+    padding: 0 20px 20px 20px;
 }
 
 
@@ -379,17 +549,34 @@
     min-width: 120px !important;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButton:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .reappointmentButtonOutlined {
-    background: #14358F1A 0% 0% no-repeat padding-box;
+    background: $secondarycolor 0% 0% no-repeat padding-box;
     border-radius: 8px;
-    border: 1px solid $primarycolor;
+    border: 1px solid $buttonBorder;
     padding: 10px 15px;
     color: $primarycolor;
     min-width: 120px;
     font: normal normal bold 15px/15px proxima-nova;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.reappointmentButtonOutlined:hover {
+    background: #DBE8EA 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000029;
+    border: 0.5px solid #06617A;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .viewMyInfoText {
@@ -400,6 +587,11 @@
 }
 
 .disabledButtonLook {
-    opacity: 0.5;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.disabledButtonLook:hover {
+    opacity: 0.5 !important;
     cursor: not-allowed !important;
 }

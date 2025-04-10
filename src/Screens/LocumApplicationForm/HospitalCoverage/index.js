@@ -60,7 +60,16 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
           ? basicForm?.forms?.[formIndex]?.data?.whoCoversObstetrics
           : ""
       );
-      setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+      setNavigateURL(
+        basicForm?.forms?.filter((data) => data?.formCategory === 'Form' || 'Disclosure')
+          ?.length ===
+          formIndex + 1
+          ? `/locumApplicationForm/${applicationId}/Form/${btoa(
+            `ApplicantAcknowledgement`
+          )}`
+          : `/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory
+          }/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`
+      );
     }
   }, [basicForm, formIndex]);
 
@@ -165,9 +174,9 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   };
 
   const getFormSchema = async () => {
-    if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+    if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
       const { data: form } = await GET(
-        `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+        `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
       );
       setFormSchema(form?.schema || {});
       setFormSchemaWholeObject(form || {});

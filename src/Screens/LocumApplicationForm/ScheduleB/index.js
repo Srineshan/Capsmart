@@ -20,10 +20,8 @@ import ApplicationSubmitDialog from '../../../Components/ApplicationSubmitDialog
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../utils/formatting';
-import MenuIcon from "@mui/icons-material/Menu";
-import Close from './../../../images/close.png';
 
-const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
+const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
     const navigate = useNavigate()
     const targetRef = useRef();
@@ -42,7 +40,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
     const [isSaveInProgressOpen, setIsSaveInProgressOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [showInfo, setShowInfo] = useState(false);
+    const [navigateURL, setNavigateURL] = useState();
     const [navigateBackURL, setNavigateBackURL] = useState();
     useEffect(() => {
         if (basicForm && !formSchema) {
@@ -52,10 +50,9 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         // setEncryptedText(basicForm?.forms?.[formIndex]?.esign?.esign)
         setSignText(basicForm?.forms?.[formIndex]?.acknowledged ? basicForm?.forms?.[formIndex]?.esign?.esign : '');
         setIsSigned((basicForm?.forms?.[formIndex]?.esign?.esign !== undefined && basicForm?.forms?.[formIndex]?.acknowledged) ? true : false);
-        if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
-        }
         // setDecryptedText(CryptoJS.AES.decrypt(basicForm?.forms?.[formIndex]?.esign?.esign, publicKey).toString(CryptoJS.enc.Utf8))
+        setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex + 1]?.schemaCategory)}`);
+        setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
     }, [basicForm, formIndex])
 
     useEffect(() => {
@@ -102,7 +99,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     const addNewDocument = async (file) => {
         console.log(file, file?.name, 'Test')
         let fileName = {
-            "fileName": 'acknowledgement.pdf'
+            "fileName": 'scheduleB.pdf'
         };
         const formData = new FormData();
 
@@ -176,43 +173,44 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
         navigate(navigateBackURL)
     }
 
-    const handleSubmitApplicationReq = async () => {
+    const handleSubmitApplicationReq = async (data) => {
         setIsLoading(true)
-        if (isSigned) {
-            let temp = {
-                schemaId: basicForm?.forms?.[formIndex]?.schemaId,
-                data: !isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? name + " " + currentDate : '' },
-                acknowledged: isSigned,
-                esign: { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
-            }
-            await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
-                .then(response => {
-                    console.log(response)
-                    getPreApplication()
-                    SuccessToaster("Application Updated Successfully");
-                    handleDownload();
-                    getFormSchema();
-                    // if (sessionStorage.getItem('fromSummary') === 'true') {
-                    //     navigate(-1);
-                    // }
-                    // else {
-                    //     navigate('/applicationForm/section1/acknowledgementStep2')
-                    // }
-                })
-                .catch((error) => {
-                    setIsLoading(false)
-                    console.log(error)
-                    ErrorToaster("Unexpected Error Updating Application");
-                });
+        // if (isSigned) {
+        let temp = {
+            schemaId: basicForm?.forms?.[formIndex]?.schemaId,
+            data: data !== "skipped" ? (!isEdited ? basicForm?.forms?.[formIndex]?.data : { esignDate: isSigned ? `${name} ${currentDate}` : '' }) : {},
+            acknowledged: true,
+            unFilledFields: data === "skipped" ? ["skipped"] : ["continue"],
+            esign: data !== "skipped" ? { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' } : null
         }
-        else {
-            setIsLoading(false)
-            // if (sessionStorage.getItem('fromSummary') === 'true') {
-            //     navigate(-1);
-            // } else {
-            //     navigate('/applicationForm/section1/acknowledgementStep2')
-            // }
-        }
+        await PUT(`application-management-service/application/${basicForm?.id}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
+            .then(response => {
+                console.log(response)
+                getPreApplication()
+                SuccessToaster("Application Updated Successfully");
+                handleDownload();
+                getFormSchema();
+                if (sessionStorage.getItem('fromSummary') === 'true') {
+                    navigate(-1);
+                }
+                else {
+                    navigate(navigateURL)
+                }
+            })
+            .catch((error) => {
+                setIsLoading(false)
+                console.log(error)
+                ErrorToaster("Unexpected Error Updating Application");
+            });
+        // }
+        // else {
+        //     setIsLoading(false)
+        //     if (sessionStorage.getItem('fromSummary') === 'true') {
+        //         navigate(-1);
+        //     } else {
+        //         navigate(navigateURL)
+        //     }
+        // }
     }
     return (
         <div>
@@ -223,8 +221,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     <img src={dataLoadingGIF} alt="" className={style.fileLoadingStyle} />
                 </div>
             )}
-            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
-            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
+            <div className={`${style.applicationScreenGrid}`}>
                 <div>
                     <ReappointmentProgressCard step={'STEP 1'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={32} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={`${style.applicationCardStyle} ${style.applicationCardScrollStyle} ${style.marginTop}`} ref={targetRef}>
@@ -244,7 +241,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         {formSchema?.disclaimer?.title !== null && (
                             <div className={style.cardTitle}>{formSchema?.disclaimer?.title}</div>
                         )}
-                        {/* <div className={`${style.checkGrid} ${style.marginTop}`}>
+                        <div className={`${style.checkGrid} ${style.marginTop}`}>
                             {formContent?.disclaimer?.content !== null && (
                                 <CommonCheckBox checked={isChecked} onChange={(e) => handleIsChecked(e.target.checked)} bigCheckbox={true} />
                             )}
@@ -252,11 +249,11 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                                 className={`${style.leftAlign} ${style.marginTop10}`}
                                 dangerouslySetInnerHTML={{ __html: formContent?.disclaimer?.content }}
                             />
-                        </div> */}
+                        </div>
                         {formSchema?.esignatureRequired && (
                             <div className={style.twoCol}>
-                                <div onClick={() => { setIsSigned(!isSigned); setIsEdited(true) }}
-                                // className={!isChecked ? style.disabled : ''}
+                                <div onClick={isChecked ? () => { setIsSigned(!isSigned); setIsEdited(true) } : () => { }}
+                                    className={!isChecked ? style.disabled : ''}
                                 >
                                     <ESignature
                                         userName={isSigned ? name : ""}
@@ -275,47 +272,29 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div></div>
+                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div> */}
+                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div> */}
                     </div>
                 </div>
                 <div>
-                    {!showInfo && (
-                        <div>
-                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
-                                <MenuIcon className={style.toggleIcon} />
-                            </div>
-                            <div className={`${style.headerData} ${isSaveInProgressOpen || showJourneyDialog ? style.hidden : ""}`}>
-                                <span style={{ marginLeft: '20px' }}>Confirm Your Acknowledgement And Agreement</span>
-                            </div>
-                        </div>
-                    )}
-                    <div>
-                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
-                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-                            <div className={style.marginTop}>
-                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
-                            </div>
-                            <div className={style.marginTop}>
-                                <ApplicationReferenceDocuments />
-                            </div>
-                        </div>
+                    <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                    <div className={style.marginTop}>
+                        <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq("skipped")}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                            <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div>
                         </div>
                     </div>
-
+                    <div className={style.marginTop}>
+                        <ApplicationReferenceDocuments />
+                    </div>
                 </div>
-                {showJourneyDialog && (
-                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
-                )}
                 {isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
                 )}
@@ -324,4 +303,4 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
     )
 }
 
-export default ApplicantAcknowledgement;
+export default ScheduleB;
