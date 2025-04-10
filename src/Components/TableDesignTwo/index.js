@@ -95,12 +95,12 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     useOptionsHide(countHoverRef);
     useOptionsHide(textHoverRef);
     const isInitialLoad = useRef(true);
-    console.log("filteredIds",filteredIds)
+    console.log("filteredIds", filteredIds)
 
     const availableSortValue = {
         // APPLICANT_NAME: applicationType === "NEW" ? 'Applicant Name' : "Staff for Reappointment",
         APPLICANT_NAME: ["Applicant Name", "Staff for Reappointment"],
-        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff"],
+        APPLICANT_LAST_NAME: ["Staff for Reappointment", "Staff", "Applicant Name"],
         DEPARTMENT: ["Dept / Division & Specialty", "Department"],
         STAFF_LAST_NAME: ['Staff Name'],
         APPLICANT_TYPE: ['Applicant Type', 'Type', 'Staff Type'],
@@ -111,11 +111,13 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         REAPPOINTMENT_STATUS: ['Reappointment', 'Status'],
         MEETING_DATE: ['Meeting Date'],
         REVIEWED_DATE: ['Reviewed On'],
-        COMPLETION_PERCENTAGE: ['Completed %']
+        COMPLETION_PERCENTAGE: ['Completed %'],
+        MDID: ['MD ID'],
+        TITLE: ['MD Title']
     }
 
     const availableSortValueEnum = {
-        'Applicant Name': 'APPLICANT_NAME',
+        'Applicant Name': 'APPLICANT_LAST_NAME',
         'Staff for Reappointment': 'APPLICANT_LAST_NAME',
         'Staff': 'APPLICANT_LAST_NAME',
         'Staff Name': 'STAFF_LAST_NAME',
@@ -132,7 +134,9 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Meeting Date': 'MEETING_DATE',
         'Reviewed On': 'REVIEWED_DATE',
         'Status': 'REAPPOINTMENT_STATUS',
-        'Completed %': 'COMPLETION_PERCENTAGE'
+        'Completed %': 'COMPLETION_PERCENTAGE',
+        'MD ID': 'MDID',
+        'MD Title': 'TITLE',
     }
 
 
