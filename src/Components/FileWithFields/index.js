@@ -161,7 +161,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
     }
 
     const handleContinue = async () => {
-        if (isEdited || changedData === null) {
+        if (isEdited || changedData === null || window.location.pathname.includes('Q01F')) {
             let updateData = {
                 data: changedData,
                 notes: {

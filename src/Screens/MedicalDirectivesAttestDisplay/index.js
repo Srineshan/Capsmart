@@ -237,11 +237,12 @@ const MedicalDirectivesAttestDisplay = () => {
                                 </Tooltip>
                             ) : (
                                 <>
-                                    <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
+                                    <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
                                         <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                     </div>
-                                    <div>
-                                        <div onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}
+                                    <div className={style.disabled}>
+                                        <div
+                                        // onClick={medicalDirectivesAttestation ? () => { setIsSigned(!isSigned); } : () => { }}
                                         >
                                             <ESignature
                                                 userName={isSigned ? `${medicalDirectivesAttestationLog?.[0]?.esign?.name}` : ""}

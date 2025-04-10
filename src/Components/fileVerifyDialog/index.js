@@ -66,7 +66,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
     const [rejectClarification, setRejectClarification] = useState('');
     const [showFileWithFields, setShowFileWithFields] = useState(false);
     const pdfUrl = file?.fileURL ? encodeURI(file?.fileURL) : "";
-    console.log("URLLLLLLLLLLLLLLLLLLL",pdfUrl, file?.documentType);
+    console.log("URLLLLLLLLLLLLLLLLLLL", pdfUrl, file?.documentType);
 
     const availableDocumentStatus = {
         'ACCEPT_DOCUMENT': 'Accept Document Provided', 'REJECT_DOCUMENT': 'Reject Alternate Document Provided', 'REJECT_AND_REPLACE_DOCUMENT': 'Reject and replace Document Provided'
@@ -174,7 +174,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         }
     };
 
-     const handlePrint = async (url) => {
+    const handlePrint = async (url) => {
         if (!url) {
             console.error("No URL provided for printing");
             return;
@@ -194,7 +194,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
             iframe.style.height = "0px";
             iframe.style.border = "none";
             iframe.src = pdfUrl;
-            
+
             document.body.appendChild(iframe);
 
             // Wait for the PDF to load, then print
@@ -216,7 +216,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         try {
             const response = await fetch(corsUrl + encodeURIComponent(url));
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
+
             const blob = await response.blob();
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
@@ -228,16 +228,16 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         } catch (error) {
             console.error("Error downloading the PDF:", error);
         }
-        };
-        
+    };
 
-        const handleDownload = (url,fileName) => {
+
+    const handleDownload = (url, fileName) => {
         if (!url) {
             console.error("No URL provided for download");
             return;
         }
-        downloadPDF(url,fileName );
-        };
+        downloadPDF(url, fileName);
+    };
 
     // useEffect(() => {
     //     console.log("1234567:", file);
@@ -572,27 +572,27 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                             <div className={style.heading}>Verification of Data & Documents</div>
                             <div className={style.displayInRow}>
                                 <Tooltip title="Download" arrow >
-                                <Download
-                                    sx={{
-                                        fontSize: 25,
-                                        color: "#06617A",
-                                    }}
-                                    className={style.cursorPointer}
-                                    onClick={() => handleDownload(pdfUrl,file?.documentType)}
-                                />
+                                    <Download
+                                        sx={{
+                                            fontSize: 25,
+                                            color: "#06617A",
+                                        }}
+                                        className={style.cursorPointer}
+                                        onClick={() => handleDownload(pdfUrl, file?.documentType)}
+                                    />
                                 </Tooltip>
                                 <div
-                                className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                            ><Tooltip title="Print" arrow >
-                                <PrintOutlinedIcon
-                                    sx={{
-                                        fontSize: isPrintClicked ? 20 : 25,
-                                        color: isPrintClicked ? "#fff" : "#06617A",
-                                    }}
-                                    onClick={() => handlePrint(pdfUrl)}
-                                />
-                                </Tooltip>
-                            </div>
+                                    className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
+                                ><Tooltip title="Print" arrow >
+                                        <PrintOutlinedIcon
+                                            sx={{
+                                                fontSize: isPrintClicked ? 20 : 25,
+                                                color: isPrintClicked ? "#fff" : "#06617A",
+                                            }}
+                                            onClick={() => handlePrint(pdfUrl)}
+                                        />
+                                    </Tooltip>
+                                </div>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
