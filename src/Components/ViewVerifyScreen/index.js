@@ -12215,24 +12215,24 @@ const NewActiveApplication = ({
                                                         ? `Created on ${format(new Date(clarification?.clarificationRequest?.createdDate), 'MMM d, yyyy, HH.mm')}`
                                                         : 'N/A'}
                                                     </div> */}
-                                                    {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && (
-                                                      // <div className={style.twoColumnGrid}>
-                                                      <div>
-                                                        <div
-                                                          className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
-                                                          onClick={() => onClickDocumentClarificationFunction(clarification, data)}
-                                                        >
-                                                          <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
-                                                            Document Clarification
-                                                          </div>
+                                                    {/* {clarification?.clarificationRequest?.clarificationRequiredFor !== 'Required Documents for Processing Your Application' && clarification?.clarificationRequest?.clarificationRequiredFor !== null && clarification?.clarificationStatus === 'NA' && ( */}
+                                                    {/* <div className={style.twoColumnGrid}> */}
+                                                    <div>
+                                                      <div
+                                                        className={`${style.buttonCardStyleDoc} ${style.cursorPointer}`}
+                                                        onClick={() => onClickDocumentClarificationFunction(clarification, data)}
+                                                      >
+                                                        <div className={`${style.buttonTextStyleDocs} ${style.alignCenter}`}>
+                                                          Resolve Clarification
                                                         </div>
-                                                        {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
+                                                      </div>
+                                                      {/* <div className={`${style.bigButtonStyle1} ${style.cursorPointer}`}>
                                                           <div className={`${style.bigButtonTextStyle} ${style.alignCenter}`}>
                                                             Send by Email
                                                           </div>
                                                         </div> */}
-                                                      </div>
-                                                    )}
+                                                    </div>
+                                                    {/* )} */}
                                                     {clarification?.clarificationStatus !== "NA" && (
                                                       <div>
                                                         <div className={`${style.rfcSubHeadingTextStyle} ${style.marginTop10}`}>
