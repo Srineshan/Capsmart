@@ -15,6 +15,7 @@ import PaymentDisplayDialog from '../../Components/PaymentDisplayDialog';
 import EmailDialog from '../../Components/EmailDialog';
 import CCdateDialog from '../../Components/CCDateDialog';
 import NotesDialog from "../../Components/NotesDialog";
+import LocumExtensionDialog from "../../Components/LocumExtensionDialog";
 import ClarificationRequestFromApplicantDialog from "../../Components/ClarificationRequestFromApplicantDialog";
 import DocumentClarificationDialog from "../../Components/DocumentClarificationDialog";
 import ResolveDialog from "../../Components/ResolveDialog";
@@ -39,6 +40,7 @@ const StaffApplication = () => {
     const [paymentDisplayBox, setPaymentDisplayBox] = useState(false);
     const [emailDialogBox, setEmailDialogBox] = useState(false);
     const [showNotesDialog, setShowNotesDialog] = useState(false);
+    const [showLocumExtensiveDialog, setShowLocumExtensiveDialog] = useState(false);
     const [showClarificationRequestFromApplicantDialog, setShowClarificationRequestFromApplicantDialog] = useState(false);
     const [showDocumentClarificationDialog, setShowDocumentClarificationDialog] = useState(false);
     const [showResolveDialog, setShowResolveDialog] = useState(false);
@@ -51,6 +53,7 @@ const StaffApplication = () => {
     const [clarificationMode, setClarificationMode] = useState('');
     const [clarificationModeType, setClarificationModeType] = useState({});
     const [clarificationFormMode, setClarificationFormMode] = useState({});
+    const [tableDataLocum, setTableDataLocum] = useState({});
     const [clarificationRequestFormMode, setClarificationRequestFormMode] = useState({});
     const [ccDateSetMode, setCcDateSetMode] = useState('');
     const [approveMeetDateSet, setApproveMeetDateSet] = useState();
@@ -79,6 +82,11 @@ const StaffApplication = () => {
 
     const getNotesDialog = (value) => {
         setShowNotesDialog(value);
+    };
+
+    const getLocumExtensiveDialog = (value,tableDataValue) => {
+        setShowLocumExtensiveDialog(value);
+        setTableDataLocum(tableDataValue)
     };
 
     const getClarificationRequestFromApplicantDialog = (value, formId, Type) => {
@@ -187,6 +195,7 @@ const StaffApplication = () => {
                         showTimerDialog={showTimerDialog}
                         showNotesDialog={showNotesDialog}
                         getNotesDialog={getNotesDialog}
+                        getLocumExtensiveDialog ={getLocumExtensiveDialog}
                         getClarificationRequestFromApplicantDialog={getClarificationRequestFromApplicantDialog}
                         getDocumentClarificationDialog={getDocumentClarificationDialog}
                         getResolveDialog={getResolveDialog}
@@ -231,6 +240,9 @@ const StaffApplication = () => {
             )}
             {showNotesDialog && (
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
+            )}
+            {showLocumExtensiveDialog && (
+                <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} tableDataValue ={tableDataLocum} getloading={getloading} getActiveApplicationView={getActiveApplicationView} />
             )}
             {
                 showClarificationRequestFromApplicantDialog && (

@@ -12,6 +12,7 @@ import CapSmartTransparent from "./../../images/capSmartTransparent.png";
 import SearchIcon from "./../../images/search.png";
 import HapiCare from "./../../images/PoweredHapiCare.png";
 import StaffApplicationTiles from "./staffApplicationTiles";
+import StaffApplicationLocumTiles from "./StaffApplicationLocumTiles";
 import StaffApplicationTopTiles from "./staffApplicationTopTiles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -62,6 +63,7 @@ const StaffApplicationList = ({
   getActiveApplicationTask,
   getNotesCommentBox,
   getNotesDialog,
+  getLocumExtensiveDialog,
   getClarificationRequestFromApplicantDialog,
   getReappointmentChangesCommentBox,
   getApprovalNotesCommentBoxDept,
@@ -110,12 +112,16 @@ const StaffApplicationList = ({
   );
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
+  const [userDepartment, setUserDepartment] = useState('');
   const [applicationIsLocum, setApplicationIsLocum] = useState(() =>
     sessionStorage.getItem('isLocum') || false
   );
   const [workModeType, setWorkModeType] = useState(() =>
     sessionStorage.getItem("workModeType") || ''
   );
+  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  let userDepartmentList;
+  let userSpecialty;
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [filteredIds, setFilteredIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -132,6 +138,8 @@ const StaffApplicationList = ({
     departmentList?.serviceAreas?.find(serviceArea =>
       serviceArea?.id === selectedServiceArea
     )?.name || "";
+
+    console.log("userDetails1234",userDetails)
 
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
@@ -160,6 +168,13 @@ const StaffApplicationList = ({
       setCheckedIds(allIds);
     }
   };
+
+  useEffect(() => {
+    userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+    userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.serviceAreas[0]?.id;
+    console.log("userSpecialty",userDepartmentList,userSpecialty)
+  }, [applicationType,selectedTab])
+  
 
   // const handleSelectAllClick = () => {
   //   if (checkedIds?.length === tableData?.length) {
@@ -455,6 +470,18 @@ const StaffApplicationList = ({
     "Actions",
   ];
 
+  const headerValuesLocum = [
+    "Locum Staff",
+    "Locum ID",
+    "Locum Type",
+    "Privilege Category",
+    "Expiration Date",
+    "Days Past Expiration",
+    "Action",
+  ];
+
+  const colLocumSortValues = [false, false, false, false, false, false, false, false, false, false];
+
   const applicantColSortValues = applicationType === "NEW" ? [
     false,
     true,
@@ -694,6 +721,7 @@ const StaffApplicationList = ({
   useEffect(() => {
     sessionStorage.removeItem("applicationIdForDialog");
     getPreApplication();
+    console.log("userDepartment",userDepartment)
   }, [])
 
   useEffect(() => {
@@ -817,7 +845,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     setUserDetails();
-  }, [users?.id, workModeType])
+  }, [users?.id, workModeType, selectedTab,applicationType])
 
   const getDepartmentList = async () => {
     const { data: department } = await GET(
@@ -879,6 +907,11 @@ const StaffApplicationList = ({
   const onClickNotesDialog = (data) => {
     getNotesDialog(true);
     sessionStorage.setItem("applicationId", data?.id);
+  };
+
+  const onClickNotesLocumDialog = (data) => {
+    getLocumExtensiveDialog(true , tableData);
+    sessionStorage.setItem("applicationId", data?.currentApplication?.id);
   };
 
   const onClickClarificationRequrstFromApplicantDialog = (data) => {
@@ -1218,7 +1251,7 @@ const StaffApplicationList = ({
     // getNotesDialog();
     getReFetchMetaData(true);
     console.log("getReFetchMetaData", reFetchMetaData)
-  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, activeApplicationTask]);
+  }, [showNotesDialog, showCCDateDialog, approvalnotesCommentsBoxDept, showBulkApproveDialog, activeApplicationTask,applicationType]);
 
   // useEffect(() => {
   //   getApplicationCreationType();
@@ -1300,7 +1333,10 @@ const StaffApplicationList = ({
       let response;
       if (applicationType === "LOCUM") {
         setIsLoadingImage(true);
-        response = await GET(`application-management-service/staff`);
+        const specialtyParam = userSpecialty ? `%23${userSpecialty}` : "";
+        const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&departmentSpecialties=${userDepartmentList}&noOfDays=30`;
+        // const url = `application-management-service/staff?limit=30`;
+        response = await GET(url);
         console.log("LOCUM data", response?.data.staffs);
         setTableData(response?.data?.staffs);
         setTotalCount(response?.data?.numberOfElements);
@@ -1339,7 +1375,7 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
-        response = await GET(`application-management-service/staff`);
+        response = await GET(`application-management-service/staff?status=ACTIVE&departmentSpecialties=${userDepartmentList}`);
         console.log("LOCUM data", response?.data.staffs);
         setTableData(response?.data?.staffs);
         setTotalCount(response?.data?.numberOfElements);
@@ -4137,6 +4173,47 @@ const StaffApplicationList = ({
     ];
   };
 
+  const getLocumExpiredValues = () => {
+    applicantName = [];
+    applicantType = [];
+    clarificationTitle = [];
+    raisedBy = [];
+    createdOn = [];
+    lastUpdatedOn = [];
+    action = [];
+
+    tableData?.map((data) => {
+      applicantName.push(
+        `${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}` || " "
+      );
+      applicantType.push(data?.staffId || "-");
+      clarificationTitle.push(data?.type || "-");
+      raisedBy.push(data?.basicDetailReferences?.credentialingAndPrivilegingCategory?.name || "-");
+      // createdOn.push(data?.onGoingApplication?.expiryDate || "-")
+      createdOn.push(
+        data?.onGoingApplication?.expiryDate
+          ? format(new Date(data?.onGoingApplication?.expiryDate), "MMM dd, yyyy")
+          : "-"
+      );
+      lastUpdatedOn.push(
+        data?.onGoingApplication?.expiryDate
+          ? `${differenceInDays(new Date(), new Date(data.onGoingApplication.expiryDate))} days ago`
+          : "-"
+      );
+      action.push(true);
+    });
+
+    return [
+      { type: "text", value: applicantName },
+      { type: "text", value: applicantType },
+      { type: "text", value: clarificationTitle },
+      { type: "text", value: raisedBy },
+      { type: "text", value: createdOn },
+      { type: "text", value: lastUpdatedOn },
+      { type: "action", value: action },
+    ];
+  };
+
   const getApprovedValues = () => {
     dot = [];
     applicantName = [];
@@ -4569,6 +4646,26 @@ const StaffApplicationList = ({
     { data: "MAC Approval", requiredValue: "boolean", onClick: "" },
     { data: "Print Summary For MAC", requiredValue: "boolean", onClick: "" },
     { data: applicationType === "NEW" ? "Applicant Processing Tasks" : "Staff Processing Tasks", requiredValue: "boolean", onClick: "" },
+  ];
+
+  const departmentHeadLocumActionsData = [
+    {
+      data: "Review to Extend Locum Period",
+      requiredValue: "boolean",
+      // onClick: onClickViewFunction,
+      onClick: "",
+    },
+    {
+      data: "Create Note",
+      requiredValue: "boolean",
+      onClick: onClickNotesLocumDialog,
+    },
+    {
+      data: "Change Privilege Category",
+      requiredValue: "boolean",
+      // onClick: onClickViewFunction,
+      onClick: "",
+    },
   ];
 
   const approvedActionsData = [
@@ -5044,11 +5141,11 @@ const StaffApplicationList = ({
           </div> */}
             <div className={`${style.marginLeft20} ${style.spaceBetween}`}>
               <StaffApplicationTopTiles
-                getSelectedTab={getSelectedTab}
-                selectedTab={selectedTab}
-                applicationCreationType={applicationCreationType}
-                getApplicationCreationType={getApplicationCreationType}
-                searchTermForTable={searchTermForTable}
+                getSelectedTab = {getSelectedTab}
+                selectedTab = {selectedTab}
+                applicationCreationType = {applicationCreationType}
+                getApplicationCreationType = {getApplicationCreationType}
+                searchTermForTable = {searchTermForTable}
               />
               <div className={`${style.spaceBetween} ${style.marginLeft} ${style.textAlign} `}>
                 {workModeType === "Credentialing Committee" || workModeType === "Department Head" || workModeType === "Chief Of Staff" ? (
@@ -5233,6 +5330,7 @@ const StaffApplicationList = ({
                 showBulkApproveDialog={showBulkApproveDialog}
                 searchTermForTable={searchTermForTable}
                 activeApplicationTask={activeApplicationTask}
+                totalCount = {totalCount}
               // applicationCreationType={applicationCreationType}
               // getApplicationCreationType = {getApplicationCreationType}
               />
@@ -5278,6 +5376,68 @@ const StaffApplicationList = ({
                 </div>
               )}
             </div>
+            {(applicationType === "LOCUM" & workModeType === "Department Head") ? (
+              <div className={`${style.marginTop20}`}>
+            <div
+              className={`${style.spaceBetween} ${style.marginTop10} ${style.marginLeft20}`}
+            >
+              <StaffApplicationLocumTiles
+                // getSelectedTab={getSelectedTab}
+                // selectedTab={selectedTab}
+                // reFetchMetaData={reFetchMetaData}
+                // getReFetchMetadata={getReFetchMetaData}
+                // approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
+                // showBulkApproveDialog={showBulkApproveDialog}
+                // searchTermForTable={searchTermForTable}
+                // activeApplicationTask={activeApplicationTask}
+              // applicationCreationType={applicationCreationType}
+              // getApplicationCreationType = {getApplicationCreationType}
+              totalCount = {totalCount}
+              />
+            </div>
+            <div className={`${style.bigCardStyle}`}>
+              {isLoading ? (
+                <div
+                  className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
+                >
+                  <CircularProgress sx={{ color: "#06617A" }} />
+                </div>
+              ) : (
+                <div ref={componentRef} className={`${style.pagebreak}`}>
+                  <div
+                    className={`${style.reduceMarginTop10} ${style.marginLeftRight20} staffApplicationList`}
+                    ref={PDFRef}
+                  >
+                    <TableTwo
+                      tableHeaderValues={headerValuesLocum}
+                      tableDataValues={getLocumExpiredValues()}
+                      tableData={tableData}
+                      gridStyle={style.locumStaffGrid}
+                      actions={departmentHeadLocumActionsData}
+                      scrollStyle={style.contractScrollStyle}
+                      tableSortValues={colLocumSortValues}
+                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Record for you to manage"}
+                      onClickFunction={() => { }}
+                      getHandleSort={getHandleSort}
+                      sortValue={{ sortBy: sortValue, sortByField: sortField }}
+                      getSelectedPage={getSelectedPage}
+                      totalCount={totalCount}
+                      page={page}
+                      checkedIds={checkedIds}
+                      filteredIds={filteredIds}
+                      // Optional: pass the checkbox click handler if TableTwo needs it
+                      handleCheckboxClick={handleCheckboxClick}
+                      searchTermForTable={searchTermForTable}
+                      searchCount={searchCount}
+                      setSearchTermForTable={setSearchTermForTable}
+                      onLimitChange={handleLimitChange}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+            </div>
+            ) : ("")}
           </div >
         </div >
         <div className={style.spaceBetween}>

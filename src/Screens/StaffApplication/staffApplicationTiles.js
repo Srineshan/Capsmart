@@ -637,7 +637,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -661,7 +661,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
 
-  console.log("searchTermForTable",searchTermForTable)
+
+  console.log("tileLocumCOunt", totalCount)
+
+  // console.log("searchTermForTable",searchTermForTable)
 
   // Listen for session storage changes
   useEffect(() => {
@@ -721,9 +724,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     }
   };
 
-    useEffect(() => {
-    getActiveUserData();
-  }, [totalCountLocum,applicationType]);
+  //   useEffect(() => {
+  //   getActiveUserData();
+  // }, [totalCountLocum,applicationType]);
 
   const getActiveUserData = async () => {
     try {
@@ -871,9 +874,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           ? "level-1"
           : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
       }
-      console.log("Setting initial:", initialTabSet);
+      // console.log("Setting initial:", initialTabSet);
       if (initialTab && !initialTabSet) {
-        console.log("Setting initial tab to:", initialTab);
+        // console.log("Setting initial tab to:", initialTab);
         getSelectedTab(initialTab);
         setInitialTabSet(true);
       }
@@ -983,7 +986,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           selectedTab={selectedTab} 
           getSelectedTab={handleTabClick} 
           tileLabel="Renewals to Review" 
-          tileCount={totalCountLocum}
+          tileCount={totalCount}
           currentTile="LocumRenewals"
         />
       )}

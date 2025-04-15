@@ -493,6 +493,17 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const applicationId = "66dc44ec788741fedc982b01";
   const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
+  const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
+  const applicationType =
+      sessionStorage.getItem('applicationCreationType')
+  let userDepartmentList;
+  let userSpecialty;
+
+  useEffect(() => {
+      userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
+      userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.serviceAreas[0]?.id;
+      console.log("userSpecialty",userDepartmentList,userSpecialty)
+    }, [applicationType,selectedTab])
 
   useEffect(() => {
     getTitleCounts('REAPPOINTMENT');
@@ -502,14 +513,16 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
 console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
 
    useEffect(() => {
-    getActiveUserData();
-  });
+    if(applicationType==="LOCUM"){
+      getActiveUserData();
+    }
+  }, [applicationType]);
 
   const getActiveUserData = async () => {
     try {
-      const response = await GET(
-        `application-management-service/staff`
-      );
+      const specialtyParam = userSpecialty ? `%23${userSpecialty}` : "";
+      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&departmentSpecialties=${userDepartmentList}&noOfDays=30`;
+      const response = await GET(url);
       setTotalCountLocum(response?.data?.numberOfElements);
       return response?.data?.staffs;
     } catch (error) {
