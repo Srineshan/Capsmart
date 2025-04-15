@@ -379,12 +379,9 @@
 
 .filePreviewImage {
     width: 100%;
-    min-height: 600px;
-    border: none;
+    height: 600px;
     object-fit: contain;
-    margin-bottom: 0;
-    height: 100%;
-    flex-grow: 1;
+    // height: 100%;
 }
 
 .height {

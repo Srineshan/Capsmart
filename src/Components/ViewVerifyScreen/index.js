@@ -6291,7 +6291,7 @@ const NewActiveApplication = ({
                                                     )
                                                   ): null} */}
                                                       </div>
-                                                      {form?.forms[index]?.schemaCategory === 'UploadYourDoc' ? null : (
+                                                      {(
                                                         <div className={`${style.whiteButton} ${style.cursorPointer}`} onClick={() => toggleDropdown(index)}>
                                                           <div className={`${style.spaceEvenly}`}>
                                                             <div className={`${style.buttonTextStyle} ${style.alignCenter}`}>
@@ -11159,8 +11159,8 @@ const NewActiveApplication = ({
                             // minDate={sub(new Date(), { years: 3 })}
                             // maxDate={add(new Date(), { years: 3 })}
                             // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
-                            minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
-                            maxDate={getJune30thOfCurrentYear()}
+                            // minDate={reviewedDateCC || sub(new Date(), { years: 3 })}
+                            // maxDate={getJune30thOfCurrentYear()}
                             value={selectedDateForMac}
                             renderInput={(params) => (
                               <TextField
@@ -12261,7 +12261,7 @@ const NewActiveApplication = ({
                                                                           const matchedIndex = form?.documents?.documentDetails?.findIndex(
                                                                             (doc) => doc?.file?.fileName === file?.fileName
                                                                           );
-                                                                    
+
                                                                           if (matchedIndex !== -1) {
                                                                             handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
                                                                           } else {
@@ -12289,7 +12289,7 @@ const NewActiveApplication = ({
                                                                           const matchedIndex = form?.documents?.documentDetails?.findIndex(
                                                                             (doc) => doc?.file?.fileName === file?.fileName
                                                                           );
-                                                                    
+
                                                                           if (matchedIndex !== -1) {
                                                                             handleVerifyClickDocs(form?.documents?.documentDetails, matchedIndex);
                                                                           } else {
