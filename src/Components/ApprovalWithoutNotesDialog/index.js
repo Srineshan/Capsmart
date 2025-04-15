@@ -634,9 +634,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
               
             </div> */}
                 <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                  <div className={style.marginTop10}>
+                  <div className={`${style.marginTop10} ${style.displayInRowCenter}`}>
                     <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                      <div className={`${style.gridRow} `}>
+                      <div className={`${style.gridRow}`}>
                         <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
                           {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
                             formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
@@ -657,7 +657,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                               : ""}
                           </span>
                         </div>
-                        <div className={`${style.twoColumnGridInner} `}>
+                        <div className={`${style.twoColumnGridInner2} `}>
                           <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
                           <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
                         </div>
@@ -681,7 +681,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                           <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
                           <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
                         </div>
-                        <div className={`${style.twoColumnGridInner}`}>
+                        <div className={`${style.twoColumnGridInner2}`}>
                           <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
                           <span className={`${style.rejectionTextStyle1}`}>
                             {formDetails?.basicDetails?.applicant?.name?.firstName

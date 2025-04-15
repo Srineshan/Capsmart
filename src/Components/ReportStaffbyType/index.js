@@ -39,31 +39,47 @@ const ReportsStaffTable = ({ tableData}) => {
   };
 
 
-  // const getApplicationStatus = (data) => {
-  //   if (Array.isArray(data?.completedWorkflows) && data?.completedWorkflows?.length > 0) {
-  //     let lastApproval = data?.completedWorkflows
-  //       .filter(item => item.approvalType !== null)
-  //       .pop();
-  
-  //     if (lastApproval) {
-  //       const formattedApprovalType = lastApproval?.approvalType.replace(/_/g, " ")
-  //         .split(" ")
-  //         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-  //         .join(" ");
-  //       return `${lastApproval?.role}, ${formattedApprovalType}`;
-  //     }
-  //   }
-  
-  //   if (data?.status === "DECLINED") {
-  //     return "Reappointment Application Declined";
-  //   } else if (data?.formFillingStatus === "COMPLETED" && data?.status === "CREATED") {
-  //     return "Reappointment Application Not Submitted";
-  //   } else if (data?.formFillingStatus === "IN_PROGRESS") {
-  //     return "Reappointment Application In-Progress";
-  //   } else {
-  //     return "Reappointment Application Not Started";
-  //   }
-  // };
+  const getApplicationStatus = (data) => {
+    const now = new Date();
+    if (
+      data.onGoingApplication.subStatus === "NOT_STARTED" &&
+      data.onGoingApplication.completionPercentage === 0
+    ) {
+      return "Application Not Yet Started";
+    } else if (
+      data.onGoingApplication.completionPercentage > 0 &&
+      data.onGoingApplication.completionPercentage < 100
+    ) {
+      return "Application Completion In-Progress"
+    } else if (new Date(data.onGoingApplication.expiryDate) < now) {
+      return "Application Submission Past Due"
+    } else if (
+      data.onGoingApplication.subStatus === "STARTED" &&
+      data.onGoingApplication.completionPercentage === 100
+    ) {
+      return "Application Completed, Not Yet Submitted";
+    } else if (
+      data.onGoingApplication.status === "COMPLETED" &&
+      data.onGoingApplication.completionPercentage === 100
+    ) {
+      return "Application Completed";
+    }
+     else if (
+        data.onGoingApplication.status === "DECLINED" &&
+        data.onGoingApplication.completionPercentage === 100
+      ) {
+        return "Application Declined";
+    } 
+    else if (
+      data.onGoingApplication.status === "REVIEW_INPROGRESS" &&
+      data.onGoingApplication.completionPercentage === 100
+    ) {
+      return "Application Review In Progress";
+    }
+    else {
+      return "Application Not Yet Started";
+    };
+  };
   
 
   const renderApplicationDetails = () => {
@@ -72,7 +88,7 @@ return tableData.map((data, index) => {
   ? format(new Date(data.reAppointmentSentDate), "MM/dd/yyyy")
   : "-";
 
-    const dueDate = data?.expiryDate ?  format(new Date(data?.expiryDate), "MM/dd/yyyy") : "-";
+    const dueDate = data?.onGoingApplication.expiryDate ?  format(new Date(data?.onGoingApplication.expiryDate), "MM/dd/yyyy") : "-";
        return (
          <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
            <div className={style.marginTop10}>
@@ -91,6 +107,7 @@ return tableData.map((data, index) => {
             {data?.basicDetailReferences?.applicantType?.serviceProviderType}
           </div>
           <div className={`${style.rejectionHeadingTextStyle} ${style.marginLeft10}`}>
+            {getApplicationStatus(data)}
           </div>
         </div>
       </div>
@@ -106,10 +123,10 @@ return tableData.map((data, index) => {
                <span className={`${style.rejectionTextStyle}`}>Email ID:</span>
                <span className={`${style.rejectionTextStyle1}`}>{data?.applicant?.email?.officialEmail || "-"}</span>
              </div>
-             <div className={`${style.twoColumnGridInner}`}>
+             {/* <div className={`${style.twoColumnGridInner}`}>
                <span className={`${style.rejectionTextStyle}`}>Delivery Status:</span>
                <span className={`${style.rejectionTextStyle1}`}>Email Delivered</span>
-             </div>
+             </div> */}
                <div className={style.twoColumnGridInner}>
                  <span className={style.rejectionTextStyle}>Department:</span>
                  <span className={style.rejectionTextStyle1}>{data?.basicDetailReferences?.department?.name || "-"}</span>
@@ -128,10 +145,10 @@ return tableData.map((data, index) => {
                    <span className={style.rejectionTextStyle1}>{entity?.multiSiteEntity?.[0]?.name || "-"}</span>
                  </div>
                )}
-               <div className={style.twoColumnGridInner}>
+               {/* <div className={style.twoColumnGridInner}>
                  <span className={style.rejectionTextStyle}>OHIP Number:</span>
                  <span className={style.rejectionTextStyle1}>{data?.applicant?.ohipNumber || "-"}</span>
-               </div>
+               </div> */}
                 <div className={style.twoColumnGridInner}>
                   <span className={style.rejectionTextStyle}>Sent On:</span>
                   <span className={style.rejectionTextStyle1}>{reappointmentDate}</span>

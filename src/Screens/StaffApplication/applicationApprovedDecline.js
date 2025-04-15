@@ -57,7 +57,7 @@ const ApplicationApprovedDecline = ({
         `${data?.basicDetailReferences?.applicantType?.serviceProviderType}`
       );
       const lastNoteHtml = data?.notesDetails?.at(-1)?.notes?.notes;
-      const lastNoteText = lastNoteHtml?.replace(/<[^>]+>/g, "").trim() || "";
+      const lastNoteText = lastNoteHtml?.replace(/<[^>]+>/g, "").trim() || "-";
       RejectionNote.push(lastNoteText);
       crs.push(
         `${data?.clarificationCount?.totalCount}/${data?.clarificationCount?.closedCount}` ||

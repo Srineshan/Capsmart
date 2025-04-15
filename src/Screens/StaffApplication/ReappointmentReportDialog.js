@@ -29,7 +29,6 @@ const ReappointmentReportDialog = ({
     "Staff for Reappointment",
     "Email ID",
     "Delivery Status",
-    "OHIP Number",
     "Privilege Category",
     "Department / Division",
     "Date Sent",
@@ -38,18 +37,63 @@ const ReappointmentReportDialog = ({
 
   const getTableDataValues = () => {
     let No = [];
+    let dotTooltipValues = [];
     let staffforReappointment = [];
     let emailId = [];
     let DeliveryStatus = [];
-    let ohipNumber = [];
     let privilegeCategory = [];
     let deptDivision = [];
     let dateSent = [];
     let dueDate = [];
 
     tableData?.map((data) => {
-      const colors = "grey";
-      No.push(colors);
+      const now = new Date();
+if (
+  data.onGoingApplication.subStatus === "NOT_STARTED" &&
+  data.onGoingApplication.completionPercentage === 0
+) {
+  No.push("grey");
+  dotTooltipValues.push("Not Yet Started");
+} else if (
+  data.onGoingApplication.completionPercentage > 0 &&
+  data.onGoingApplication.completionPercentage < 100
+) {
+  No.push("yellow");
+  dotTooltipValues.push("In-Progress");
+} else if (new Date(data.onGoingApplication.expiryDate) < now) {
+  No.push("red");
+  dotTooltipValues.push("Past Due");
+} else if (
+  data.onGoingApplication.subStatus === "STARTED" &&
+  data.onGoingApplication.completionPercentage === 100
+) {
+  No.push("lightgreen");
+  dotTooltipValues.push("Not Yet Submitted");
+} else if (
+  data.onGoingApplication.status === "COMPLETED" &&
+  data.onGoingApplication.completionPercentage === 100
+) {
+  No.push("darkgreen");
+ dotTooltipValues.push("Completed");
+}
+ else if (
+    data.onGoingApplication.status === "DECLINED" &&
+    data.onGoingApplication.completionPercentage === 100 && data.onGoingApplication.subStatus === "STARTED"
+  ) {
+    No.push("red");
+    dotTooltipValues.push("Declined");
+} 
+else if (
+  data.onGoingApplication.status === "REVIEW_INPROGRESS" &&
+  data.onGoingApplication.completionPercentage === 100
+) {
+  No.push("purple");
+  dotTooltipValues.push("Review In Progress");
+}
+else {
+  No.push("grey");
+  dotTooltipValues.push("Not Yet Started");
+};
       staffforReappointment.push(
         `${formatFirstNameLastName(
           data?.applicant?.name?.firstName,
@@ -60,7 +104,6 @@ const ReappointmentReportDialog = ({
       emailId.push(data?.applicant?.email?.officialEmail);
       const color = "darkgreen";
       DeliveryStatus.push(color);
-      ohipNumber.push(data?.applicant?.ohipNumber || "-");
       privilegeCategory.push(
         data?.basicDetailReferences?.credentialingAndPrivilegingCategory
           ?.name || "-"
@@ -75,15 +118,14 @@ const ReappointmentReportDialog = ({
         `${format(new Date(data?.reAppointmentSentDate), "MM/dd/yyyy")}`
       );
       dueDate.push(
-        data?.expiryDate ? format(new Date(data?.expiryDate), "MM/dd/yyyy") : "-"
+        data?.onGoingApplication.expiryDate ? format(new Date(data?.onGoingApplication.expiryDate), "MM/dd/yyyy") : "-"
       );
     });
     return [
-      { type: "dot", value: No },
+      { type: "dot", value: No ,tooltipValue: dotTooltipValues},
       { type: "text", value: staffforReappointment },
       { type: "text", value: emailId },
       { type: "dot", value: DeliveryStatus },
-      { type: "text", value: ohipNumber },
       { type: "text", value: privilegeCategory },
       { type: "text", value: deptDivision },
       { type: "text", value: dateSent },
