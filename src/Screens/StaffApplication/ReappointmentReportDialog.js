@@ -28,7 +28,6 @@ const ReappointmentReportDialog = ({
     "",
     "Staff for Reappointment",
     "Email ID",
-    "Delivery Status",
     "Privilege Category",
     "Department / Division",
     "Date Sent",
@@ -40,7 +39,6 @@ const ReappointmentReportDialog = ({
     let dotTooltipValues = [];
     let staffforReappointment = [];
     let emailId = [];
-    let DeliveryStatus = [];
     let privilegeCategory = [];
     let deptDivision = [];
     let dateSent = [];
@@ -64,6 +62,7 @@ if (
   No.push("red");
   dotTooltipValues.push("Past Due");
 } else if (
+  data.onGoingApplication.status === "CREATED" &&
   data.onGoingApplication.subStatus === "STARTED" &&
   data.onGoingApplication.completionPercentage === 100
 ) {
@@ -83,13 +82,6 @@ if (
     No.push("red");
     dotTooltipValues.push("Declined");
 } 
-else if (
-  data.onGoingApplication.status === "REVIEW_INPROGRESS" &&
-  data.onGoingApplication.completionPercentage === 100
-) {
-  No.push("purple");
-  dotTooltipValues.push("Review In Progress");
-}
 else {
   No.push("grey");
   dotTooltipValues.push("Not Yet Started");
@@ -103,7 +95,6 @@ else {
 
       emailId.push(data?.applicant?.email?.officialEmail);
       const color = "darkgreen";
-      DeliveryStatus.push(color);
       privilegeCategory.push(
         data?.basicDetailReferences?.credentialingAndPrivilegingCategory
           ?.name || "-"
@@ -125,7 +116,6 @@ else {
       { type: "dot", value: No ,tooltipValue: dotTooltipValues},
       { type: "text", value: staffforReappointment },
       { type: "text", value: emailId },
-      { type: "dot", value: DeliveryStatus },
       { type: "text", value: privilegeCategory },
       { type: "text", value: deptDivision },
       { type: "text", value: dateSent },
@@ -182,7 +172,7 @@ else {
               gridStyle={style.applicantGrid3}
               scrollStyle={style.contractScrollStyle}
               tableSortValues={[]}
-              heading={"There are no record to display"}
+              heading={"There are no records to display"}
               onClickFunction={() => {}}
             />
           </div>

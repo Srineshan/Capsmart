@@ -559,7 +559,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
   return (
     <div>
       <ApplicationHeader
-        title={`Eligible Staff for Reapointment applications (${tableData?.length})`}
+        title={`Eligible Staff for Reappointment applications (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
       />
@@ -855,7 +855,7 @@ const transformedOptions = departmentList?.flatMap((department) => {
                 gridStyle={style.permanentStaffGrid}
                 scrollStyle={style.scrollStyle}
                 tableSortValues={colSortValues}
-                heading={"There are no record to display"}
+                heading={"There are no records to display"}
                 getHandleSort={getHandleSort}
                 sortValue={{ sortBy: sortValue, sortByField: sortField }}
                 getSelectedPage={getSelectedPage}

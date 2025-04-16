@@ -1418,7 +1418,7 @@ const StaffApplicationList = ({
   const getStaffTotalCount = async () => {
     try {
       const response = await GET(
-        `application-management-service/staff?status=ACTIVE&reappointmentStatus=SENT&reappointmentStatus=RE_SENT`
+        `application-management-service/staff?status=ACTIVE&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
       );
       setReappointmentCount(response?.data?.numberOfElements);
       return response?.data?.numberOfElements || 0;
@@ -1440,7 +1440,7 @@ const StaffApplicationList = ({
         typesWithoutFirst.map(async (type) => {
           try {
             const res = await GET(
-              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT`
+              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
             );
             const count = res?.data?.numberOfElements || 0;
 
@@ -1461,7 +1461,7 @@ const StaffApplicationList = ({
   const handleApplicantTypeClick = async (type) => {
     try {
       const res = await GET(
-        `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT`
+        `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
       );
       const applications = res?.data?.staffs || [];
 
@@ -5398,7 +5398,7 @@ const StaffApplicationList = ({
                       actions={actions}
                       scrollStyle={style.contractScrollStyle}
                       tableSortValues={tableSortValues}
-                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Record for you to manage"}
+                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
                       onClickFunction={() => { }}
                       getHandleSort={getHandleSort}
                       sortValue={{ sortBy: sortValue, sortByField: sortField }}

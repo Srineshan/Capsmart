@@ -54,6 +54,7 @@ const ReportsStaffTable = ({ tableData}) => {
     } else if (new Date(data.onGoingApplication.expiryDate) < now) {
       return "Application Submission Past Due"
     } else if (
+      data.onGoingApplication.status === "CREATED" &&
       data.onGoingApplication.subStatus === "STARTED" &&
       data.onGoingApplication.completionPercentage === 100
     ) {
@@ -70,12 +71,6 @@ const ReportsStaffTable = ({ tableData}) => {
       ) {
         return "Application Declined";
     } 
-    else if (
-      data.onGoingApplication.status === "REVIEW_INPROGRESS" &&
-      data.onGoingApplication.completionPercentage === 100
-    ) {
-      return "Application Review In Progress";
-    }
     else {
       return "Application Not Yet Started";
     };
