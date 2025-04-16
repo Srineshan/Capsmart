@@ -4,7 +4,7 @@ import { corsUrl, getValueByPath } from "../../utils/formatting";
 import { GET } from "../../Screens/dataSaver";
 import { useParams } from "react-router-dom";
 
-const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm }) => {
+const ESignature = ({ userName, currentDate, encData, showData, showDatais = true, isInitial, removePadding, basicForm, alternateSignature }) => {
   const [formIndex, setFormIndex] = useState();
   const [applicationId, setApplicationId] = useState(
     sessionStorage.getItem("applicationId")
@@ -69,7 +69,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
                   ? "Click To Electronically Initial"
                   : "Click To Electronically Sign"}
               </span>
-            ) : eSignImg ? (
+            ) : (eSignImg && !alternateSignature) ? (
               <img
                 src={`${corsUrl}/${eSignImg?.fileURL}`}
                 alt="Signature"
@@ -77,7 +77,7 @@ const ESignature = ({ userName, currentDate, encData, showData, showDatais = tru
               />
             ) : (
               <span style={{ fontFamily: eSignTypeContentStyle }} className={style.userName}>
-                {eSignTypeContent || ""}
+                {(alternateSignature && alternateSignature !== 'undefined') ? alternateSignature : eSignTypeContent || ""}
               </span>
             )}
             {/* {!showData ? (

@@ -133,12 +133,12 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
     useEffect(() => {
         let tempData = basicForm?.forms?.[formIndex]?.data ?? {};
         tempData.yesOrNoCMETranscript = yesOrNoCMETranscript;
-        
+
         const fileData = tempData?.cmeTranscripts?.file;
         const creditOrHours = tempData?.cmeTranscripts?.creditOrHours;
         const isSigned = basicForm?.forms?.[formIndex]?.esign;
         const applicantType = basicForm?.basicDetails?.applicant?.applicantType;
-      
+
         if (applicantType === "Midwife") {
             if (!tempData.yesOrNoCMETranscript || fileData == null) {
                 setCheckingCondition(['notYetStarted']);
@@ -151,7 +151,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             } else {
                 setCheckingCondition(['inProgress']);
             }
-        } 
+        }
         else if (applicantType === "Dentist") {
             if (!tempData.yesOrNoCMETranscript || fileData == null) {
                 setCheckingCondition(['notYetStarted']);
@@ -164,7 +164,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             } else {
                 setCheckingCondition(['inProgress']);
             }
-        } 
+        }
         else {
             if (!tempData.yesOrNoCMETranscript || fileData == null) {
                 setCheckingCondition(['notYetStarted']);
@@ -178,7 +178,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                 setCheckingCondition(['inProgress']);
             }
         }
-      
+
         console.log('Checking Condition:', checkingCondition);
     }, [basicForm, formIndex, yesOrNoCMETranscript, isSigned, notes]);
 
@@ -353,37 +353,42 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
         setIsLoading(true);
         setFiles(event);
         console.log(event, 'Test');
+        if (basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName) {
+            handleCMETranscriptDelete()
+        }
         // let table = tempValue.table !== undefined ? tempValue.table : []
 
         const formData = new FormData();
         let fileNameArray = [];
-        event?.forEach(file => {
-            fileNameArray.push({ "fileName": file?.name });
-            formData.append('documents', file); // Append each file individually
-        });
-
-        formData.append('files', new Blob([JSON.stringify(fileNameArray)], {
+        // event?.forEach(file => {
+        //     fileNameArray.push({ "fileName": file?.name });
+        //     formData.append('documents', file); // Append each file individually
+        // });
+        let fileName = { "fileName": event?.[0]?.name }
+        formData.append('documents', event?.[0]);
+        formData.append('files', new Blob([JSON.stringify(fileName)], {
             type: "application/json"
         }));
         console.log(fileNameArray)
         try {
-            const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            // const response = await POST(`application-management-service/application/${applicationId}/files/bulk?isLLMRequired=${true}`, formData);
+            const response = await POST(`application-management-service/application/${applicationId}/files?isLLMRequired=${true}&schemaId=${formSchemaWholeObject?.id}`, formData);
             SuccessToaster('File Uploaded Successfully');
             console.log(response?.data);
-            // setFields(response?.data?.[0]?.fields);
-            // setFile(response?.data?.[0]?.file);
-            // setFileMetadata(response?.data?.[0]?.metaData);
-            // setApplicationDocumentId(response?.data?.[0]?.id)
-            for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
-                try {
-                    if (response?.data[triggerIndex]?.documentType !== null) {
-                        await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data[triggerIndex]?.documentType?.name}&applicationDocumentId=${response?.data[triggerIndex]?.id}`, { documentType: response?.data[triggerIndex]?.documentType !== null ? response?.data[triggerIndex]?.documentType?.name : '', fileSize: `${(event[triggerIndex]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data[triggerIndex]?.file?.fileURL, fileType: response?.data[triggerIndex]?.file?.fileType, fileUploaded: event[triggerIndex]?.name, requirement: response?.data[triggerIndex]?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data[triggerIndex]?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data[triggerIndex]?.valid, verified: response?.data[triggerIndex]?.verified, rowId: response?.data[triggerIndex]?.id });
-                    }
-                    console.log(response);
-                } catch (error) {
-                    console.log(error);
+            setFields(response?.data?.fields);
+            setFile(response?.data?.file);
+            setFileMetadata(response?.data?.metaData);
+            setApplicationDocumentId(response?.data?.id)
+            // for (let triggerIndex = 0; triggerIndex < event.length; triggerIndex++) {
+            try {
+                if (response?.data?.documentType !== null) {
+                    await PUT(`application-management-service/application/${applicationId}/form/updateData?documentType=${response?.data?.documentType?.name}&applicationDocumentId=${response?.data?.id}`, { documentType: response?.data?.documentType !== null ? response?.data?.documentType?.name : '', fileSize: `${(event[0]?.size / (1024 * 1024)).toFixed(2)} Mb`, fileURL: response?.data?.file?.fileURL, fileType: response?.data?.file?.fileType, fileUploaded: event[0]?.name, requirement: response?.data?.documentType !== null ? basicForm?.documentsRequired?.filter(data => data?.document?.name === response?.data?.documentType?.name)?.[0]?.required ? 'Required' : 'Recommended' : '', valid: response?.data?.valid, verified: response?.data?.verified, rowId: response?.data?.id });
                 }
+                console.log(response);
+            } catch (error) {
+                console.log(error);
             }
+            // }
             // handleSubmitApplicationReq(table)
             setIsLoading(false);
             setShowUploadDialog(false);
@@ -420,8 +425,8 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             unFilledFields: checkingCondition,
             acknowledged: true,
             esign: actionType === "skip"
-          ? { esign: '', name: '', signedDate: '' } 
-          : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
+                ? { esign: '', name: '', signedDate: '' }
+                : { esign: isSigned ? encryptedText : '', name: isSigned ? name : '', signedDate: isSigned ? currentDate : '' }
         }
         await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
             .then(response => {
@@ -1054,6 +1059,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 }
                                 changeHandler={changeHandler}
                                 files={files}
+                                maxFiles={1}
                             />
                             <CommonDropZone
                                 title={"Upload A Photo"}
@@ -1063,6 +1069,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 changeHandler={changeHandler}
                                 files={files}
                                 accept="image/*"
+                                maxFiles={1}
                             />
                         </div>
                     </div>

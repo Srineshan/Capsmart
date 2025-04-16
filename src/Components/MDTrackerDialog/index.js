@@ -7,7 +7,7 @@ import jwt from 'jwt-decode';
 import style from "./index.module.scss";
 import TableTwo from "../TableDesignTwo";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
@@ -45,7 +45,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchData, setSearchData] = useState([]);
   const [searchTermForTable, setSearchTermForTable] = useState('');
-  const [searchCount, setSearchount] = useState(0);
+  const [searchCount, setSearchCount] = useState(0);
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const [showWorkModeSelectDialog, setShowWorkModeSelectDialog] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -54,13 +54,17 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
   const [medicalDirectiveSummary, setMedicalDirectiveSummary] = useState([]);
+  const [medicalDirectiveSummaryByApplicant, setMedicalDirectiveSummaryByApplicant] = useState([]);
+  const [applicantSummary, setApplicantSummary] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantTypeName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   const [limit, setLimit] = useState(9999);
   const [currentTab, setCurrentTab] = useState('ByMedicalDirective')
   const [displayInnerList, setDisplayInnerList] = useState(false);
-
+  const [selectedMedicalDirective, setSelectedMedicalDirective] = useState();
+  const [selectedMedicalDirectiveList, setSelectedMedicalDirectiveList] = useState();
+  const [selectedApplicant, setSelectedApplicant] = useState();
 
   const transformedOptions = departmentList?.flatMap((department) => {
     const departmentEntry = {
@@ -93,8 +97,21 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   }
 
   useEffect(() => {
+    if (!displayInnerList) {
+      if (currentTab === "ByApplicants") {
+        getApplicantSummary()
+      } else {
+        getMedicalDirectiveSummary()
+      }
+    } else {
+      setTotalCount(0)
+    }
+  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable, currentTab, displayInnerList]);
+
+  useEffect(() => {
+    getApplicantSummary()
     getMedicalDirectiveSummary()
-  }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable]);
+  }, [])
 
   useEffect(() => {
     setUserDetails();
@@ -113,11 +130,20 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
     const controller = new AbortController();
     const signal = controller.signal;
-
-    getActiveUserDataForSearch(signal);
+    if (!displayInnerList) {
+      if (currentTab === "ByApplicants") {
+        getApplicantSummaryForSearch(signal)
+      } else {
+        getMedicalDirectiveSummaryForSearch(signal)
+      }
+    }
 
     return () => controller.abort();
   }, [searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [currentTab]);
 
   const getDepartmentList = async () => {
     const { data: department } = await GET(
@@ -134,10 +160,68 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   }
 
   const getMedicalDirectiveSummary = async () => {
+    setIsLoadingImage(true);
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
     const { data: medicalDirectiveSummary } = await GET(
-      `medical-directive-service/medicalDirectives/medicalDirectivesSummary?sortBy=${sortValue}&sortByField=${'LAST_MODIFIED_DATE'}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}`
+      `medical-directive-service/medicalDirectives/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
     );
-    setMedicalDirectiveSummary(medicalDirectiveSummary);
+    setMedicalDirectiveSummary(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList);
+    setTotalCount(medicalDirectiveSummary?.numberOfElements);
+    setIsLoadingImage(false);
+  }
+
+  const getMedicalDirectiveSummaryForSearch = async (signal) => {
+    setIsLoadingImage(true);
+    const { data: medicalDirectiveSummary } = await GET(
+      `medical-directive-service/medicalDirectives/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTerm}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}`, { signal }
+    );
+    // setMedicalDirectiveSummary(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList);
+    setSearchData(medicalDirectiveSummary?.medicalDirectivesWithAttestationLogsList?.map(item => ({
+      id: item.id,
+      name: `${item?.medicalDirectives?.mdID}` || " ",
+      desc: `${item?.medicalDirectives?.title}`
+    })));
+    setSearchCount(medicalDirectiveSummary?.numberOfElements);
+    setTotalCount(medicalDirectiveSummary?.numberOfElements);
+    setIsLoadingImage(false);
+  }
+
+  const getMedicalDirectiveSummaryByApplicant = async (data) => {
+    setIsLoadingImage(true);
+    const { data: medicalDirectiveSummary } = await GET(
+      `medical-directive-service/medicalDirectives/application/${data?.id}?isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}&departmentId=${data?.basicDetailReferences?.department?.id}&serviceAreaId=${data?.basicDetailReferences?.specialty?.id ?? ''}`
+    );
+    setMedicalDirectiveSummaryByApplicant([...medicalDirectiveSummary?.pending, ...medicalDirectiveSummary?.completed, ...medicalDirectiveSummary?.reviewInprogress, ...medicalDirectiveSummary?.pastDue]);
+    setTotalCount(medicalDirectiveSummary?.numberOfElements);
+    setIsLoadingImage(false);
+    console.log([...medicalDirectiveSummary?.pending, ...medicalDirectiveSummary?.completed, ...medicalDirectiveSummary?.reviewInprogress, ...medicalDirectiveSummary?.pastDue], 'dataCheck')
+  }
+
+  const getApplicantSummary = async () => {
+    setIsLoadingImage(true);
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const { data: applicantSummary } = await GET(
+      `application-management-service/staff/medicalDirectiveAttestationSummary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`
+    );
+    setApplicantSummary(applicantSummary?.applicants);
+    setTotalCount(applicantSummary?.numberOfElements);
+    setSearchCount(applicantSummary?.numberOfElements);
+    setIsLoadingImage(false);
+  }
+
+  const getApplicantSummaryForSearch = async (signal) => {
+    setIsLoadingImage(true);
+    const { data: applicantSummary } = await GET(
+      `application-management-service/staff/medicalDirectiveAttestationSummary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTerm}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}`, { signal }
+    );
+    setSearchData(applicantSummary?.applicants?.map(item => ({
+      id: item.id,
+      name: `${formatFirstNameLastName(item?.basicDetails?.applicant?.name?.firstName, item?.basicDetails?.applicant?.name?.lastName)}` || " ",
+      desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
+    })));
+    // setApplicantSummary(applicantSummary?.applicants);
+    setTotalCount(applicantSummary?.numberOfElements);
+    setIsLoadingImage(false);
   }
 
 
@@ -162,7 +246,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const headerValuesForByApplicants = [
     "",
     "No.",
-    "Applicant name",
+    "Applicant Name",
     "Applicant ID",
     "Type",
     "Department / Division",
@@ -192,26 +276,83 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
   const headerValues = currentTab === "ByApplicants" ? headerValuesForByApplicants : headerValuesForByMedicalDirective
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
-  const colSortValues = [false, false, false, false, false, false];
-  const actionsData = [
-    {
-      data: "View",
-      requiredValue: "boolean",
-      onClick: () => { setDisplayInnerList(true) },
-    },
-  ];
+  const colSortValuesByMedicalDirective = [false, false, true, true, false, false];
+  const colSortValuesByApplicants = [false, false, true, true, true, false];
+  const colSortValuesByInnerMedicalDirective = [false, false, false, false, false, false];
+  const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
+
+  const handleInnerSelectData = (data) => {
+    navigate(`/medicalDirective/${data?.attestationLog?.application?.id}/${data?.attestationLog?.medicalDirective?.id}`)
+  }
+
+  const handleInnerSelectDataByApplicant = (data) => {
+    navigate(`/medicalDirective/${selectedApplicant?.id}/${data?.medicalDirective?.id}`)
+  }
 
   const innerActionsData = [
     {
       data: "View",
       requiredValue: "boolean",
-      onClick: () => { },
+      onClick: handleInnerSelectData,
+      conditionToShow: `data?.attestationLog`
     },
+    {
+      data: "RTT",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `!data?.attestationLog`
+    }
+  ];
+
+  const innerActionsDataByApplicant = [
+    {
+      data: "View",
+      requiredValue: "boolean",
+      onClick: handleInnerSelectDataByApplicant,
+      conditionToShow: `data?.status === "COMPLETED"`
+    },
+    {
+      data: "RTT",
+      requiredValue: "boolean",
+      onClick: () => { },
+      conditionToShow: `data?.status === "PENDING"`
+    }
   ];
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
   };
+
+  const handleSelectData = (data) => {
+    setSortField('DEFAULT');
+    setDisplayInnerList(true);
+    console.log()
+    setSelectedMedicalDirective(data?.medicalDirectives)
+    setSelectedMedicalDirectiveList([...data?.pendingApplicants, ...data?.completedApplicants])
+  }
+
+  const handleSelectDataByApplicant = (data) => {
+    setSortField('DEFAULT');
+    setDisplayInnerList(true);
+    setSelectedApplicant(data);
+    getMedicalDirectiveSummaryByApplicant(data)
+  }
+
+  const actionsData = [
+    {
+      data: "View",
+      requiredValue: "boolean",
+      onClick: handleSelectData,
+    },
+  ];
+
+  const actionsDataByApplicant = [
+    {
+      data: "View",
+      requiredValue: "boolean",
+      onClick: handleSelectDataByApplicant,
+    },
+  ];
 
 
   const getActiveUserData = async () => {
@@ -224,7 +365,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
 
       setTableData(response?.data?.applications);
       setTotalCount(response?.data?.numberOfElements);
-      setSearchount(response?.data?.numberOfElements);
+      setSearchCount(response?.data?.numberOfElements);
       setIsLoadingImage(false);
       return response?.data?.applications;
     } catch (error) {
@@ -299,16 +440,16 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const notAttested = [];
     const action = [];
 
-    tableData?.map((data, index) => {
-      dot.push("green");
-      dotTooltipValues.push("All Attested")
+    applicantSummary?.map((data, index) => {
+      dot.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'green' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'yellow' : "red");
+      dotTooltipValues.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'All Attested' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'Not All Attested' : 'Attestation Pending')
       No.push(index + 1 + ".")
-      applicantName.push(`MD ${index + 1}`);
-      applicantId.push(`MD ID${index + 1}`);
-      type.push('New')
-      departmentSpecific.push(`MD ${index + 1}`);
-      attestedBy.push(`${index + 1}`);
-      notAttested.push(0)
+      applicantName.push(`${formatFirstNameLastName(data?.basicDetails?.applicant?.name?.firstName, data?.basicDetails?.applicant?.name?.lastName)}`);
+      applicantId.push(data?.displayId ?? '-');
+      type.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
+      departmentSpecific.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `/ ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
+      attestedBy.push(data?.medicalDirectiveAttestation?.attestedCount > 0 ? data?.medicalDirectiveAttestation?.attestedCount : '-');
+      notAttested.push(data?.medicalDirectiveAttestation?.notAttestedCount > 0 ? data?.medicalDirectiveAttestation?.notAttestedCount : '-')
       action.push(true);
     });
 
@@ -336,23 +477,23 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const notAttested = [];
     const action = [];
 
-    tableData?.map((data, index) => {
-      dot.push("green");
-      dotTooltipValues.push("All Attested")
+    medicalDirectiveSummary?.map((data, index) => {
+      dot.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'green' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'yellow' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'grey' : "red");
+      dotTooltipValues.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'All Attested' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'Not All Attested' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'No Attestations' : 'Attestation Pending')
       No.push(index + 1 + ".")
-      mdName.push(`MD ${index + 1}`);
-      mdId.push(`MD ID${index + 1}`);
-      departmentSpecific.push(`MD ${index + 1}`);
-      attestedBy.push(`${index + 1}`);
-      notAttested.push(0)
+      mdName.push(data?.medicalDirectives?.title);
+      mdId.push(data?.medicalDirectives?.mdID);
+      departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
+      attestedBy.push(data?.completedApplicants?.length > 0 ? data?.completedApplicants?.length : '-');
+      notAttested.push(data?.pendingApplicants?.length > 0 ? data?.pendingApplicants?.length : '-')
       action.push(true);
     });
 
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: No },
-      { type: "text", value: mdName },
       { type: "text", value: mdId },
+      { type: "text", value: mdName },
       { type: "text", value: departmentSpecific },
       { type: "text", value: attestedBy },
       { type: "text", value: notAttested },
@@ -369,22 +510,22 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const lastAttested = [];
     const action = [];
 
-    tableData?.map((data, index) => {
-      dot.push("green");
-      dotTooltipValues.push("All Attested")
+    medicalDirectiveSummaryByApplicant?.map((data, index) => {
+      dot.push(data?.status === "COMPLETED" ? "green" : data?.status === "PENDING" ? "red" : 'yellow');
+      dotTooltipValues.push(data?.status === "COMPLETED" ? "Attested" : data?.status === "PENDING" ? "Not Attested" : "Not Attested")
       No.push(index + 1 + ".")
-      mdName.push(`MD ${index + 1}`);
-      mdId.push(`MD ID${index + 1}`);
-      departmentSpecific.push(`MD ${index + 1}`);
-      lastAttested.push(`${index + 1}`);
-      action.push(true);
+      mdName.push(data?.medicalDirective?.title);
+      mdId.push(data?.medicalDirective?.mdID);
+      departmentSpecific.push(data?.medicalDirective?.departmentSpecific ? `${data?.medicalDirective?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
+      lastAttested.push(data?.status === "COMPLETED" ? data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-' : '-');
+      action.push(data?.status === "COMPLETED" ? true : false);
     });
 
     return [
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: No },
-      { type: "text", value: mdName },
       { type: "text", value: mdId },
+      { type: "text", value: mdName },
       { type: "text", value: departmentSpecific },
       { type: "text", value: lastAttested },
       { type: "action", value: action },
@@ -400,13 +541,13 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const attestationDate = [];
     const action = [];
 
-    tableData?.map((data, index) => {
-      dot.push("green");
-      dotTooltipValues.push("All Attested")
+    selectedMedicalDirectiveList?.map((data, index) => {
+      dot.push(data?.attestationLog ? "green" : 'red');
+      dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
-      applicantName.push(`MD ${index + 1}`);
-      type.push('New')
-      attestationDate.push(`${index + 1}`);
+      applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
+      type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
+      attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
       action.push(true);
     });
 
@@ -446,7 +587,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 <div>
                   <div className={`${style.heading}`}>
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                    Medical Directive Attestation Log For Reappointment Staff With Applications Submitted ({194})
+                    Medical Directive Attestation Log For Reappointment Staff With Applications Submitted ({currentTab === 'ByApplicants' ? applicantSummary?.length : medicalDirectiveSummary?.length})
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                 </div>
@@ -481,24 +622,24 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       </Tooltip>
                     </div>
                   )}
-                  {/* <div
-                  className={`${style.alignCenter} ${style.cursorPointer
-                    }`}
-                  style={{
-                    opacity: 1,
-                  }}
-                  onClick={() => setShowFilter(!showFilter)}
-                >
-                  <Tooltip title="Filter" arrow>
-                    <FilterAltOutlinedIcon
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
+                  <div
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      }`}
+                    style={{
+                      opacity: 1,
+                    }}
+                    onClick={() => setShowFilter(!showFilter)}
+                  >
+                    <Tooltip title="Filter" arrow>
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
 
-                    />
-                  </Tooltip>
-                </div> */}
+                      />
+                    </Tooltip>
+                  </div>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -509,38 +650,40 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   />
                 </div>
               </div>
-              {/* {showFilter && (
-              <div className={style.departmentContainer}>
-                <div>
-                  <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={handleChange}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={transformedOptions.map(option => option?.value)}
-                    labelList={transformedOptions.map(option => option?.label)}
-                    disabledList={transformedOptions.map(() => false)}
-                    label={'Dept / Division & Specialty'}
-                    required={false}
-                  />
+              {showFilter && (
+                <div className={style.departmentContainer}>
+                  <div>
+                    <CommonSelectField
+                      value={selectedDepartment}
+                      onChange={handleChange}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={transformedOptions.map(option => option?.value)}
+                      labelList={transformedOptions.map(option => option?.label)}
+                      disabledList={transformedOptions.map(() => false)}
+                      label={'Dept / Division & Specialty'}
+                      required={false}
+                    />
+                  </div>
+                  {currentTab === "ByApplicants" && (
+                    <div>
+                      <CommonSelectField
+                        value={selectedApplicantType}
+                        onChange={(e) => setSelectedApplicantType(e.target.value)}
+                        className={style.fullWidth}
+                        firstOptionLabel={'All'}
+                        firstOptionValue={''}
+                        valueList={applicantType?.map(data => data?.id)}
+                        labelList={applicantType?.map(data => data?.applicantType)}
+                        disabledList={applicantType?.map(data => false)}
+                        label={'Staff Type'}
+                        required={false}
+                      />
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <CommonSelectField
-                    value={selectedApplicantType}
-                    onChange={(e) => setSelectedApplicantType(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={applicantType?.map(data => data?.id)}
-                    labelList={applicantType?.map(data => data?.applicantType)}
-                    disabledList={applicantType?.map(data => false)}
-                    label={'Staff Type'}
-                    required={false}
-                  />
-                </div>
-              </div>
-            )} */}
+              )}
               <div className={`${style.marginTop10}`}>
                 <div>
                   <div className={` ${style.marginTop20}`}>
@@ -550,25 +693,30 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       </div>
                     ) : (
                       <>
-                        <div className={`${style.displayInRow} ${style.marginLeft}`}>
-                          <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
-                            <div>By Medical Directive</div>
-                            <div>194</div>
+                        <div className={style.spaceBetween}>
+                          <div className={`${style.displayInRow} ${style.marginLeft} ${style.marginTopAuto}`}>
+                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
+                              <div>By Medical Directive</div>
+                              <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
+                            </div>
+                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
+                              <div>By Applicants</div>
+                              <div className={style.marginLeft5}>{applicantSummary?.length}</div>
+                            </div>
                           </div>
-                          <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
-                            <div>By Applicants</div>
-                            <div>21</div>
+                          <div className={style.marginLeftAuto}>
+                            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
                           </div>
                         </div>
-                        <div className={`${style.reduceMarginTop} staffApplicationList`}>
+                        <div className={` staffApplicationList`}>
                           <TableTwo
                             tableHeaderValues={headerValues}
                             tableDataValues={tableValues}
-                            tableData={tableData}
+                            tableData={currentTab === "ByApplicants" ? applicantSummary : medicalDirectiveSummary}
                             gridStyle={currentTab === "ByApplicants" ? style.byApplicantGrid : style.byMedicalDirectiveGrid}
-                            actions={actionsData}
+                            actions={currentTab === "ByApplicants" ? actionsDataByApplicant : actionsData}
                             scrollStyle={style.contractScrollStyle}
-                            tableSortValues={colSortValues}
+                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByApplicants : colSortValuesByMedicalDirective}
                             heading={"There are no record to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}
@@ -594,7 +742,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 <div>
                   <div className={`${style.heading}`}>
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For { Applicant Name} {Type} {Department}` : `Attestation Log For {MD - 155} - {Paediatric Emergency Department Asthma Care Pathway}`}
+                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} ${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType} ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}`}
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                 </div>
@@ -630,23 +778,23 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </div>
                   )}
                   {/* <div
-                  className={`${style.alignCenter} ${style.cursorPointer
-                    }`}
-                  style={{
-                    opacity: 1,
-                  }}
-                  onClick={() => setShowFilter(!showFilter)}
-                >
-                  <Tooltip title="Filter" arrow>
-                    <FilterAltOutlinedIcon
-                      sx={{
-                        fontSize: 25,
-                        color: "#06617A",
-                      }}
+                    className={`${style.alignCenter} ${style.cursorPointer
+                      }`}
+                    style={{
+                      opacity: 1,
+                    }}
+                    onClick={() => setShowFilter(!showFilter)}
+                  >
+                    <Tooltip title="Filter" arrow>
+                      <FilterAltOutlinedIcon
+                        sx={{
+                          fontSize: 25,
+                          color: "#06617A",
+                        }}
 
-                    />
-                  </Tooltip>
-                </div> */}
+                      />
+                    </Tooltip>
+                  </div> */}
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -657,38 +805,38 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   />
                 </div>
               </div>
-              {/* {showFilter && (
-              <div className={style.departmentContainer}>
-                <div>
-                  <CommonSelectField
-                    value={selectedDepartment}
-                    onChange={handleChange}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={transformedOptions.map(option => option?.value)}
-                    labelList={transformedOptions.map(option => option?.label)}
-                    disabledList={transformedOptions.map(() => false)}
-                    label={'Dept / Division & Specialty'}
-                    required={false}
-                  />
+              {showFilter && (
+                <div className={style.departmentContainer}>
+                  <div>
+                    <CommonSelectField
+                      value={selectedDepartment}
+                      onChange={handleChange}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={transformedOptions.map(option => option?.value)}
+                      labelList={transformedOptions.map(option => option?.label)}
+                      disabledList={transformedOptions.map(() => false)}
+                      label={'Dept / Division & Specialty'}
+                      required={false}
+                    />
+                  </div>
+                  <div>
+                    <CommonSelectField
+                      value={selectedApplicantType}
+                      onChange={(e) => setSelectedApplicantType(e.target.value)}
+                      className={style.fullWidth}
+                      firstOptionLabel={'All'}
+                      firstOptionValue={''}
+                      valueList={applicantType?.map(data => data?.id)}
+                      labelList={applicantType?.map(data => data?.applicantType)}
+                      disabledList={applicantType?.map(data => false)}
+                      label={'Staff Type'}
+                      required={false}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <CommonSelectField
-                    value={selectedApplicantType}
-                    onChange={(e) => setSelectedApplicantType(e.target.value)}
-                    className={style.fullWidth}
-                    firstOptionLabel={'All'}
-                    firstOptionValue={''}
-                    valueList={applicantType?.map(data => data?.id)}
-                    labelList={applicantType?.map(data => data?.applicantType)}
-                    disabledList={applicantType?.map(data => false)}
-                    label={'Staff Type'}
-                    required={false}
-                  />
-                </div>
-              </div>
-            )} */}
+              )}
               <div className={`${style.marginTop10}`}>
                 <div>
                   <div className={` ${style.marginTop20}`}>
@@ -703,11 +851,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                           <TableTwo
                             tableHeaderValues={innerHeaderValues}
                             tableDataValues={innerTableValues}
-                            tableData={tableData}
+                            tableData={currentTab === "ByApplicants" ? medicalDirectiveSummaryByApplicant : selectedMedicalDirectiveList}
                             gridStyle={currentTab === "ByApplicants" ? style.byInnerApplicantGrid : style.byInnerMedicalDirectiveGrid}
-                            actions={innerActionsData}
+                            actions={currentTab === "ByApplicants" ? innerActionsDataByApplicant : innerActionsData}
                             scrollStyle={style.contractScrollStyle}
-                            tableSortValues={colSortValues}
+                            tableSortValues={currentTab === "ByApplicants" ? colSortValuesByInnerApplicants : colSortValuesByInnerMedicalDirective}
                             heading={"There are no record to display"}
                             getHandleSort={getHandleSort}
                             sortValue={{ sortBy: sortValue, sortByField: sortField }}

@@ -68,6 +68,15 @@
   margin-top: 20px;
 }
 
+.marginTopAuto {
+  margin-top: auto;
+}
+
+.marginLeftAuto {
+  margin-left: auto;
+}
+
+
 .marginRight5 {
   margin-right: 5px;
 }
@@ -119,13 +128,13 @@
 
 .byMedicalDirectiveGrid {
   display: grid;
-  grid-template-columns: 3% 5% 25% 15% 15% 12% 12% 5%;
+  grid-template-columns: 3% 3% 7% 31% 31% 6% 6% 5%;
   grid-gap: 1%;
 }
 
 .byApplicantGrid {
   display: grid;
-  grid-template-columns: 3% 5% 20% 15% 10% 17% 8% 8% 5%;
+  grid-template-columns: 3% 3% 15% 10% 10% 33% 6% 6% 5%;
   grid-gap: 1%;
 }
 
@@ -137,7 +146,7 @@
 
 .byInnerApplicantGrid {
   display: grid;
-  grid-template-columns: 3% 5% 10% 35% 25% 10% 5%;
+  grid-template-columns: 3% 3% 8% 35% 29% 10% 5%;
   grid-gap: 1%;
 }
 

@@ -150,6 +150,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
       clarificationTitle: clarificationSubject,
       clarificationDescription: userNotes,
       clarificationRequiredFrom: type,
+      clarificationRequestType: data?.schemaCategory === "UploadYourDoc" ? 'REQUEST_ADDITIONAL_DOCUMENTS' : 'NA',
       clarificationRequestedBy: {
         id: user?.id,
         name: {
@@ -175,6 +176,8 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
         console.log(error)
       })
   }
+
+  console.log(data, 'console')
 
   return (
     <>
@@ -289,18 +292,22 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                 />
               </div>
               <div className={`${style.marginTop10} ${style.spaceBetween} ${style.cursorPointer}`}>
-                <div
-                  style={{
-                    // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
-                    opacity: isApproveEnabled ? 1 : 0.5,
-                    cursor: isApproveEnabled ? 'pointer' : 'default'
-                  }}
-                  onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
-                // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
-                // onClick={() => getIsOpen(false)}
-                >
-                  <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
-                </div>
+                {data?.schemaCategory !== "UploadYourDoc" ? (
+                  <div
+                    style={{
+                      // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
+                      opacity: isApproveEnabled ? 1 : 0.5,
+                      cursor: isApproveEnabled ? 'pointer' : 'default'
+                    }}
+                    onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
+                  // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
+                  // onClick={() => getIsOpen(false)}
+                  >
+                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
                 <div className={style.flex}>
                   {/* <div
                     className={`${style.reviewButtonStyle}`}
