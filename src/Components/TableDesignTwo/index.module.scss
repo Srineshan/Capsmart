@@ -525,3 +525,11 @@
 .bold {
     font-weight: bolder;
 }
+
+.textHoverColor {
+    color: $textgrey;
+}
+
+.textHoverColor :hover {
+    color: $primarycolor !important;
+}
