@@ -235,9 +235,9 @@ const ReappointmentApplicationFormRequirement = () => {
                             </WelcomeCard>
                         </div> */}
                                     <div className={style.threeColForButton}>
-                                    <Tooltip title={"Click to Do it Later"} arrow>
+                                    <Tooltip title={"Click to Save and Do it Later"} arrow>
                                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div></Tooltip>
-                                        <Tooltip title={"Click to Get Started Now"} arrow>
+                                        <Tooltip title={"Click to Begin Now"} arrow>
                                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div></Tooltip>
                                     </div>
                                 </div>
@@ -265,13 +265,13 @@ const ReappointmentApplicationFormRequirement = () => {
                                         </div>
                                     </div>
                                     <div className={`${style.stickyContainer} ${isDoItLaterOpen ? style.hiddenStickyContainer : ""}`}>
-                                    <Tooltip title={"Click to Interactive Training Guide"} arrow>
+                                    <Tooltip title={"Click to Open the Interactive Training Guide"} arrow>
                                         <div className={`${style.userGuideButton} ${style.marginTop}`} onClick={() => window.open('https://xd.adobe.com/view/df41ec43-33b6-4fa1-9418-33d1cf1690f7-8a12/?fullscreen')}>Interactive Step-by-Step Training Guide</div></Tooltip>
-                                        <Tooltip title={"Click to Pdf Training Guide"} arrow>
+                                        <Tooltip title={"Click to Download the PDF Training Guidee"} arrow>
                                         <div className={`${style.userGuideButton} ${style.marginTop10}`} onClick={() => window.open('https://capm-prod-entity-mgmt-service.s3.ca-central-1.amazonaws.com/Step-by-Step+User+Guide.pdf')}>PDF Step-by-Step Training Guide</div></Tooltip>
-                                        <Tooltip title={"Click to Do It Later"} arrow>
+                                        <Tooltip title={"Click to Save and Do It Later"} arrow>
                                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => setIsDoItLaterOpen(true)}>DO IT LATER</div></Tooltip>
-                                        <Tooltip title={"Click to Get Started Now"} arrow>
+                                        <Tooltip title={"Click to Start the Application Now"} arrow>
                                         <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleSubmitApplicationReq()}>GET STARTED NOW</div></Tooltip>
                                     </div>
                                 </div>

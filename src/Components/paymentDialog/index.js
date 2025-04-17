@@ -67,7 +67,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Payment Required</div>
                             <div className={style.displayInRow}>
-                            <Tooltip title={"Click to Save in Progress"} arrow>
+                            <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
@@ -91,7 +91,7 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                         <Tooltip title={"Click to Cancel"} arrow>
                             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed to Payment"} arrow>
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
                                 getIsOpen(true); setShowThirdPartyDialog(true)
                                 // handleClick()

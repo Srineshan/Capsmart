@@ -46,7 +46,7 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             {!hideCross && (
-                                <Tooltip title={"Click to Cancel"} arrow>
+                                <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
@@ -81,9 +81,9 @@ const ESignConfirmationDialog = ({ getIsOpen, tempValue, baseKey, applicationId,
                         </div>
                     </div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Update"} arrow>
+                    <Tooltip title={"Click to Update Your E-sign"} arrow>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); updateFunc() }}>UPDATE</div></Tooltip>
-                        <Tooltip title={"Click to Keep as Is"} arrow>
+                        <Tooltip title={"Click to Keep Your E-sign as Is"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); confirmFunc() }}>KEEP AS IS</div></Tooltip>
                     </div>
                 </div>

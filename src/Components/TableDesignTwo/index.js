@@ -867,7 +867,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </div>
                                                             )
                                                             : (
-                                                                <Tooltip title={'Click to take action'} arrow>
+                                                                <Tooltip title={'Click to Take Action'} arrow>
                                                                     <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                                 </Tooltip>
                                                             )
@@ -883,7 +883,7 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                 </span>
                                                             </Tooltip>
                                                         ) : (
-                                                            <Tooltip title={'Click to take action'} arrow>
+                                                            <Tooltip title={'Click to Take Action'} arrow>
                                                                 <MoreHorizIcon className={style.cursorPointer} onClick={(e) => handleClick(e)} aria-describedby={id} />
                                                             </Tooltip>
                                                         )

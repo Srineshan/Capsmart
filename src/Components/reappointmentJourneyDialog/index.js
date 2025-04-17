@@ -260,9 +260,9 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                             <div className={style.completedItemsText}>NEXT</div>
                                             <div className={style.nextItemText}>{basicForm?.forms[formIndex + 1]?.title}</div>
                                             <div className={` ${style.displayInRow} ${style.marginTop}`}>
-                                                <Tooltip title={"Click to Save in Progress"} arrow>
+                                                <Tooltip title={"Click to Save your progress and Continue later"} arrow>
                                                     <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>SAVE IN PROGRESS</div></Tooltip>
-                                                <Tooltip title={"Click to Continue"} arrow>
+                                                <Tooltip title={"Click to Continue to the Next Step"} arrow>
                                                     <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClick() }}>CONTINUE</div></Tooltip>
                                             </div>
                                         </>
@@ -275,7 +275,8 @@ const ReappointmentJourneyDialog = ({ getIsOpen, title, basicForm, formIndex, im
                                                 arrow
                                                 {...(!isSubmissionBlocked && { open: false })}
                                             >
-                                                <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div>
+                                                <Tooltip title={"Click to Submit Reappointment Application"} arrow >
+                                                <div className={`${style.continue} ${style.marginLeft} ${isSubmissionBlocked ? style.disabledButton : ''}`} onClick={isSubmissionBlocked ? () => { } : () => { continueClick(); handleSubmitApplication() }}>SUBMIT</div></Tooltip>
                                             </Tooltip>
                                         </div>
                                     )}

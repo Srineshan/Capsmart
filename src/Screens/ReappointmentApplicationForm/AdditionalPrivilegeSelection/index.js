@@ -777,7 +777,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         <div
                             className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
-                            <Tooltip title={"Click to Yes"} arrow>
+                            <Tooltip title={"Click to Confirm Yes"} arrow>
                             <div
                                 className={`${style.reappointmentButtonOutlined}`}
                                 onClick={() => setIsAdditionalPrivilegeCategoryChanging(true)}
@@ -785,7 +785,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                 Yes
                             </div>
                             </Tooltip>
-                            <Tooltip title={"Click to No"} arrow>
+                            <Tooltip title={"Click to Confirm No"} arrow>
                             <div
                                 className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                 onClick={() => setIsEdit(false)}
@@ -809,7 +809,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
-                                        <Tooltip title={"Click to Edit"} arrow>
+                                        <Tooltip title={"Click to Edit Details"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setIsEdit(true)}
@@ -832,7 +832,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                     >
-                                        <Tooltip title={"Click to Edit"} arrow>
+                                        <Tooltip title={"Click to Edit Details"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setIsEdit(true)}
@@ -888,7 +888,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                     <div
                         className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                     >
-                        <Tooltip title={"Click to Update"} arrow>
+                        <Tooltip title={"Click to Update Changes"} arrow>
                         <div
                             className={`${style.reappointmentButton} ${style.marginLeft}`}
                             onClick={() => { setIsAdditionalPrivilegeCategoryChanging(false); handleSubmit() }}
@@ -896,7 +896,7 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                             UPDATE
                         </div>
                         </Tooltip>
-                        <Tooltip title={"Click to Cancel"} arrow>
+                        <Tooltip title={"Click to Cancel Changes"} arrow>
                         <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => setIsAdditionalPrivilegeCategoryChanging(false)}
@@ -930,19 +930,21 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Privilege Set To Request</div>
                             <div className={style.displayInRow}>
+                            <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { setShowPrivileges(false) }}
                                 />
+                                </Tooltip>
                             </div>
                         </div>
                         <div>{getFields()}</div>
                         <div
                             className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed"} arrow>
                             <div
                                 className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null && selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined)
                                     || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 || selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0
@@ -1001,12 +1003,14 @@ const AdditionalPrivilegeSelection = ({ basicForm, setBasicForm, getPreApplicati
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Selected Privilege Set</div>
                             <div className={style.displayInRow}>
+                            <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { setShowCurrentPrivileges(false) }}
                                 />
+                                </Tooltip>
                             </div>
                         </div>
                         <div>{getFields()}</div>

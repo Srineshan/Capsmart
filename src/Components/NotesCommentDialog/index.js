@@ -457,7 +457,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   Staff Reappointment for Review & Approval
                 </div>
                 <div className={style.displayInRow}>
-                  <Tooltip title={"Click to Cancel"} arrow>
+                  <Tooltip title={"Click to Close"} arrow>
                     <img
                       src={CrossPink}
                       alt="cross"
@@ -571,7 +571,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   </>
                 }
                 <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
-                  {workModeType === "Department Head" ? <Tooltip title={"Click to Start Review"} arrow><div className={style.reviewButton}>START REVIEW</div></Tooltip> : <Tooltip title={"Click to Continue"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
+                  {workModeType === "Department Head" ? <Tooltip title={"Click to Start the Review Process"} arrow><div className={style.reviewButton}>START REVIEW</div></Tooltip> : <Tooltip title={"Click to Continue to the Next Step"} arrow> <div className={style.reviewButton}>CONTINUE</div></Tooltip>}
                 </div>
               </div>
             </div>

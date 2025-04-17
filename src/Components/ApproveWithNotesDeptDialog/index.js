@@ -20,6 +20,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
 const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, dateFormat, selectedTab }) => {
   let cookie = new Cookie();
@@ -800,6 +801,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                   {isUser ? "SEND TO CHIEF / DEP COS FOR REVIEW" : "SEND TO DEPARTMENT HEAD FOR REVIEW"}
                 </div>
                 <div className={style.displayInRow}>
+                <Tooltip title="Click to Close" arrow>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -808,6 +810,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -1102,7 +1105,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
 
                 <div className={`${style.marginTop}  ${style.reviewButtonContainer}`}>
                   <div className={` ${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
-                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
+                  <Tooltip title="Click to Close" arrow>
+                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
                   </div>
                   <div
                     className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
@@ -1112,7 +1116,9 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
+                    <Tooltip title="Click to Send Application for Review" arrow>
                     <div className={style.reviewButton}>SEND FOR REVIEW</div>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

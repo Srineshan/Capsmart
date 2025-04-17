@@ -571,7 +571,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Verification of Data & Documents</div>
                             <div className={style.displayInRow}>
-                                <Tooltip title="Download" arrow >
+                                <Tooltip title="Click to Download Document" arrow >
                                     <Download
                                         sx={{
                                             fontSize: 25,
@@ -583,7 +583,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 </Tooltip>
                                 <div
                                     className={`${isPrintClicked && style.addStyle} ${style.alignCenter} ${style.cursorPointer} ${style.marginRight}`}
-                                ><Tooltip title="Print" arrow >
+                                ><Tooltip title="Click to Print Document" arrow >
                                         <PrintOutlinedIcon
                                             sx={{
                                                 fontSize: isPrintClicked ? 20 : 25,
@@ -593,12 +593,14 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         />
                                     </Tooltip>
                                 </div>
+                                <Tooltip title="Click to Close" arrow >
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer}`}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             </div>
                         </div>
                         <div className={`${style.textStyle}`}>You are required to verify the {fileArray?.length} associated Documents that are part of this application </div>
@@ -623,7 +625,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 )} */}
                                 <div className={` ${selectedFileIndex === 0 ? style.cursorNotAllowed : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowLeftOnHover(true)} onBlur={() => setArrowLeftOnHover(false)}>
-                                        <Tooltip title={"Click to Previous"} arrow>
+                                        <Tooltip title={"Go to Previous"} arrow>
                                             {/* <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
                                             <img src={arrowLeftOnHover ? ArrowHoverLeft : selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={style.icon} />
                                         </Tooltip>
@@ -638,7 +640,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 >
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowRightOnHover(true)} onBlur={() => setArrowRightOnHover(false)}>
                                         {/* <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
-                                        <Tooltip title={"Click to Next"} arrow>
+                                        <Tooltip title={"Go to Next"} arrow>
                                             <img src={arrowRightOnHover ? ArrowHoverRight : selectedFileIndex === fileArray?.length - 1 ? ArrowDisabledRight : ArrowHoverRight} className={style.icon} />
                                         </Tooltip>
                                     </div>
@@ -716,7 +718,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 <div className={style.extractedFields}>
                                     <div className={style.spaceBetween}>
                                         <div className={`${style.heading} ${style.marginBottom}`}>Current Document</div>
-                                        <Tooltip title="Click to Modify" arrow>
+                                        <Tooltip title="Click to Modify Details" arrow>
                                             <ModeEditOutlinedIcon sx={{ color: "#06617A" }} className={style.cursorPointer} onClick={() => setShowFileWithFields(true)} />
                                         </Tooltip>
                                     </div>
@@ -765,7 +767,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                         </div>
                                     </div> */}
                                             {!file?.isVerified && (
-                                                <Tooltip arrow title="Click To Reject & Replace Document">
+                                                <Tooltip arrow title="Reject and Replace Document">
                                                     <div
                                                         className={`${style.purpleButtonVerify}`}
                                                         onClick={() => {
@@ -780,7 +782,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             )}
                                             {
                                                 !file?.isVerified && (
-                                                    <Tooltip arrow title="Click To Reject Document">
+                                                    <Tooltip arrow title="Reject Document">
                                                         <div
                                                             className={`${style.purpleButtonVerify}`}
                                                             onClick={() => {
@@ -796,7 +798,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             }
 
                                             {file?.isVerified ? (
-                                                <Tooltip arrow title="Click To Revert Verification">
+                                                <Tooltip arrow title="Revert Verification">
                                                     <div
                                                         className={`${style.greenButtonVerify}`}
                                                         onClick={handleDocVerify}
@@ -806,7 +808,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         </div>
                                                     </div>
                                                 </Tooltip>) : (
-                                                <Tooltip arrow title={"Click To Accept Document"}>
+                                                <Tooltip arrow title={"Accept Document"}>
                                                     <div
                                                         className={`${style.purpleButtonVerify}`}
                                                         onClick={() => {
@@ -901,7 +903,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                     />
                                                 </div>
                                             </div>
-                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Enter Clarification Details" : "Click To Save & Continue"}>
+                                            <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Please fill all clarification details to continue" : "Save & Proceed to Next Document"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={() => {
@@ -979,7 +981,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                     </div>
                                                 )}
                                             </div>
-                                            <Tooltip arrow title={replaceRowId === "" ? "Document Replacement Pending" : "Click To Verify"}>
+                                            <Tooltip arrow title={replaceRowId === "" ? "Document replacement is pending. Please verify" : "Click to Verify document and continue"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}
                                                     onClick={() => {

@@ -15,6 +15,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import Dropzone from "react-dropzone";
 import { fileLoadingURL } from "../../utils/formatting";
+import { Tooltip } from "@mui/material";
 
 const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -235,6 +236,7 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
                   Document Clarification Required for {data?.clarificationRequest?.clarificationRequiredFor} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
                 </div>
                 <div className={style.displayInRow}>
+                  <Tooltip arrow title={"Click to Close"}>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -243,6 +245,7 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               {/* <div className={`${style.marginTop10} ${style.detailsTextStyle}`}>License / Certification Details</div>
@@ -463,7 +466,9 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
 
               <div className={`${style.marginTop10} ${style.spaceBetween}`}>
                 <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
+                <Tooltip title="Click to Save Your Progress" arrow>
                   <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>SAVE IN PROGRESS</div>
+                  </Tooltip>
                 </div>
                 <div
                   className={`${style.reviewButtonStyle} ${isApproveEnabled ? undefined : style.cursorPointer}`}
@@ -473,7 +478,9 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
                     opacity: isApproveEnabled ? 1 : 0.5
                   }}
                 >
+                  <Tooltip title="Click to Save" arrow>
                   <div className={style.reviewButton}>SAVE</div>
+                  </Tooltip>
                 </div>
               </div>
             </div>

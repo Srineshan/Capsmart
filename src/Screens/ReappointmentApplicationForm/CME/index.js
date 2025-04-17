@@ -493,7 +493,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
-                                    <Tooltip title={"Click to Yes"} arrow>
+                                    <Tooltip title={"Click to mark as Yes"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonOutlined}`}
                                         onClick={() => { setSelectedUpload('transcript'); setYesOrNoCMETranscript('Yes'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")); setShowUploadDialog(true) }}
@@ -501,7 +501,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                         YES
                                     </div>
                                     </Tooltip>
-                                    <Tooltip title={"Click to No"} arrow>
+                                    <Tooltip title={"Click to mark as No"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setYesOrNoCMETranscript('No'); setUpdatedDateCMETranscript(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -516,7 +516,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div
                                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                     >
-                                        <Tooltip title={"Click to View to Modify"} arrow>
+                                        <Tooltip title={"Click to View & Modify"} arrow>
                                         <div
                                             className={`${style.reappointmentButtonEdit}`}
                                             onClick={() => setYesOrNoCMETranscript('')}
@@ -534,7 +534,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                     <div className={`${style.fileDisplayGrid} ${style.fileDisplay} ${style.marginTop} ${style.verticalAlignCenter}`}>
                                         <div><strong>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.classification}</strong></div>
                                         <div className={style.leftAlign}>{basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
-                                        <Tooltip title={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? "Valid File" : "Not Valid"} arrow>
+                                        <Tooltip title={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? "Valid Transcript" : "Not Valid"} arrow>
                                             <img
                                                 src={basicForm?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.valid ? VerifiedImage : NotVerifiedImage}
                                                 alt=""
@@ -545,7 +545,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                                                 }
                                             />
                                         </Tooltip>
-                                        <Tooltip title={"Click to Delete"} arrow>
+                                        <Tooltip title={"Click to Delete Transcript"} arrow>
                                         <img src={DeleteIcon} alt="" className={`${style.imgIcon} ${style.cursorPointer}`} onClick={() => { handleCMETranscriptDelete() }} />
                                         </Tooltip>
                                     </div>
@@ -969,13 +969,13 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         )}
                     </div> */}
                     <div className={style.threeColForButton}>
-                    <Tooltip title={"Click to Skip for Now"} arrow>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue("skip")}>SKIP FOR NOW</div></Tooltip>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
-                        <Tooltip title={"Click to Back"} arrow>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                        <Tooltip title={"Click to Continue"} arrow>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
@@ -1003,14 +1003,14 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog ? style.hiddenStickyContainer : ""}`}>
-                    <Tooltip title={"Click to Skip for Now"} arrow>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                        <Tooltip title={"Click to Back"} arrow>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>

@@ -464,7 +464,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                 </div> */}
                                 {/* )} */}
                                 {allMedicalDirectives?.pending?.length !== 0 && (
-                                    <Tooltip title="Click to attest" arrow>
+                                    <Tooltip title="Click to View and Attest Pending Medical Directives" arrow>
                                         <div className={`${style.pendingCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('pending'); setSelectedMedicalDirectiveList(allMedicalDirectives?.pending) }}>
                                             <div className={`${style.iconBackgroundPending} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
                                             <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.pending?.length} Pending</div>
@@ -472,7 +472,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                                     </Tooltip>
                                 )}
                                 {allMedicalDirectives?.reviewInprogress?.length !== 0 && (
-                                    <Tooltip title="Click to attest" arrow>
+                                    <Tooltip title="Click to View and Attest Review In Progress Medical Directives" arrow>
                                         <div className={`${style.reviewInProgressCard} ${style.marginTop} ${style.displayInRow} ${style.cursorPointer}`} onClick={() => { setShowMedicalDirectives(true); setMedicalDirectivesStatus('inprogress'); setSelectedMedicalDirectiveList(allMedicalDirectives?.reviewInprogress) }}>
                                             <div className={`${style.iconBackgroundReviewInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`}><WarningAmberIcon sx={{ fontSize: 18, color: '#FFFFFF' }} /></div>
                                             <div className={`${style.marginLeft} ${style.textTransform}`}>{allMedicalDirectives?.reviewInprogress?.length} Review In- Progress</div>
@@ -593,13 +593,13 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <Tooltip title={"Click to Skip for Now"} arrow>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
-                        <Tooltip title={"Click to Back"} arrow>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                        <Tooltip title={"Click to Continue"} arrow>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
@@ -627,14 +627,14 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen ? style.hiddenStickyContainer : ""}`}>
-                        <Tooltip title={"Click to Skip for Now"} arrow>
+                        <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleContinue()}>SKIP FOR NOW</div></Tooltip>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <Tooltip title={"Click to Back"} arrow>
+                            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                                 <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                                 <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>

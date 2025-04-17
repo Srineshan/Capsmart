@@ -113,8 +113,10 @@ const PriorDataDialog = ({ getIsOpen, fieldKey, baseKey, handleSave, currentValu
             </div>
 
             <div className={`${style.twoCol} ${style.marginTop}`}>
-              <div className={`${style.saveInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleIssueResolvedClick}>ISSUE RESOLVED, NO LONGER APPLICABLE</div>
-              <div className={`${style.continue} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => handleCopy()}>COPY FOR THIS REAPPOINTMENT</div>
+            <Tooltip title="Click to mark issue as resolved" arrow>
+              <div className={`${style.saveInProgress} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleIssueResolvedClick}>ISSUE RESOLVED, NO LONGER APPLICABLE</div></Tooltip>
+              <Tooltip title="Click to copy for this reappointment" arrow>
+              <div className={`${style.continue} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={() => handleCopy()}>COPY FOR THIS REAPPOINTMENT</div></Tooltip>
             </div>
 
           </>

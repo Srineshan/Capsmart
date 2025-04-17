@@ -180,7 +180,7 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                             >
-                                <Tooltip title={"Click to Yes"} arrow>
+                                <Tooltip title={"Click to mark as Yes"} arrow>
                                 <div
                                     className={`${style.reappointmentButtonOutlined}`}
                                     onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
@@ -188,7 +188,7 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                                     Yes
                                 </div>
                                 </Tooltip>
-                                <Tooltip title={"Click to No"} arrow>
+                                <Tooltip title={"Click to mark as No"} arrow>
                                 <div
                                     className={`${style.reappointmentButton} ${style.marginLeft}`}
                                     onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
@@ -219,13 +219,13 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                    <Tooltip title={"Click to Save In Progress"} arrow>
+                    <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                        <Tooltip title={"Click to Back"} arrow>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>

@@ -285,14 +285,14 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                         <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                    <Tooltip title={"Click to Skip for Now"} arrow>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => handleSubmitApplicationReq("skipped")}>SKIP FOR NOW</div></Tooltip>
-                        <Tooltip title={"Click to Save In Progress"} arrow>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                        <Tooltip title={"Click to Back"} arrow>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Continue"} arrow>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div></Tooltip>
                         </div>
                     </div>
