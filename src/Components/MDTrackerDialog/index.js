@@ -12,12 +12,12 @@ import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
 import { useNavigate } from "react-router-dom";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import { Tooltip } from "@mui/material";
 
 const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   let cookie = new Cookie();
@@ -595,7 +595,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                      <Tooltip title="Remove" arrow>
+                      <Tooltip title="Remove Filter" arrow>
                         <CancelOutlinedIcon
                           sx={{
                             fontSize: 15,
@@ -610,7 +610,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   {selectedApplicantType && (
                     <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
-                      <Tooltip title="Remove" arrow>
+                      <Tooltip title="Remove Filter" arrow>
                         <CancelOutlinedIcon
                           sx={{
                             fontSize: 15,
@@ -640,6 +640,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div>
+                  <Tooltip arrow title={"Close"}>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -648,6 +649,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               {showFilter && (
@@ -750,7 +752,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   {selectedDepartment && (
                     <div className={`${style.filterBackground} ${style.displayInRow}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                      <Tooltip title="Remove" arrow>
+                      <Tooltip title="Remove Filter" arrow>
                         <CancelOutlinedIcon
                           sx={{
                             fontSize: 15,
@@ -765,7 +767,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                   {selectedApplicantType && (
                     <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                       <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedApplicantTypeName}</div>
-                      <Tooltip title="Remove" arrow>
+                      <Tooltip title="Remove Filter" arrow>
                         <CancelOutlinedIcon
                           sx={{
                             fontSize: 15,
@@ -795,6 +797,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       />
                     </Tooltip>
                   </div> */}
+                  <Tooltip arrow title={"Close"}>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -803,6 +806,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               {showFilter && (

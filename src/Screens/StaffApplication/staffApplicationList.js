@@ -4807,7 +4807,7 @@ const StaffApplicationList = ({
                   </div>
                 )}
                 {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "Click to Staff for Reappointment" : "Create New Application"} arrow>
+                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "View Eligible Staff for Reappointment" : "Create New Application"} arrow>
                     <div
                       className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                     >
@@ -4911,6 +4911,7 @@ const StaffApplicationList = ({
                           className={`${style.displayInCol} ${style.marginTop}`}
                         >
                           {applicantTypes.map((type) => (
+                            <Tooltip title={`View ${type?.applicantType} Reappointment Applications`} arrow>
                             <div
                               key={type.id}
                               className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginBottom5} ${style.cursorPointer}`}
@@ -4929,6 +4930,7 @@ const StaffApplicationList = ({
                                 </div>
                               </div>
                             </div>
+                            </Tooltip>
                           ))}
                         </div>
                       </div>
@@ -5005,7 +5007,8 @@ const StaffApplicationList = ({
                         scrollbarColor: "gray transparent",
                       }}
                     >
-                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div>
+                      <Tooltip title={"Click to View Current Attestation Log"} arrow>
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div></Tooltip>
                     </div>
                   </div>
                 ) : null}
@@ -5196,7 +5199,7 @@ const StaffApplicationList = ({
                     {showAssignee && (
                       <div className={`${style.filterBackground} ${style.displayInRow}`}>
                         <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
-                        <Tooltip title="Remove" arrow>
+                        <Tooltip title="Remove Filter" arrow>
                           <CancelOutlinedIcon
                             sx={{
                               fontSize: 15,
@@ -5213,7 +5216,7 @@ const StaffApplicationList = ({
                 {selectedDepartment && (
                   <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                    <Tooltip title="Remove" arrow>
+                    <Tooltip title="Remove Filter" arrow>
                       <CancelOutlinedIcon
                         sx={{
                           fontSize: 15,

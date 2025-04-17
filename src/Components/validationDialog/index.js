@@ -51,9 +51,9 @@ const ValidationDialog = ({ getIsOpen, labelList, getSkipClicked }) => {
           ))}
           <p className={`${style.description} ${style.marginTop}`}>Do you want to skip or continue your data entry?</p>
           <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-          <Tooltip title={"Click to Continue"} arrow>
+          <Tooltip title={"Click to Continue and Proceed"} arrow>
             <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CONTINUE</div> </Tooltip>
-            <Tooltip title={"Click to Skip"} arrow>
+            <Tooltip title={"Click to Skip and Move Forward"} arrow>
             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); getSkipClicked(true); }}>SKIP</div></Tooltip>
           </div>
         </div>

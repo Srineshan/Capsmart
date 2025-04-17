@@ -187,7 +187,7 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                             {/* <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>Mm/Dd/Yyyy</p>
                             <p className={`${style.dateAndTimeTextStyle} ${style.marginLeft}`}>00:00</p> */}
                             {!hideCross && (
-                                <Tooltip title={"Click to Cancel"} arrow>
+                                <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
@@ -295,9 +295,9 @@ const ESignDialog = ({ children, getIsOpen, tempValue, baseKey, applicationId, b
                     )}
                     <div className={style.marginTop}>{children}</div>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Cancel"} arrow>
+                    <Tooltip title={"Click to Cancel Changes"} arrow>
                         <div className={`${style.saveInProgress}`} onClick={() => { setIsContinue(true); getIsOpen(false) }}>CANCEL</div></Tooltip>
-                        <Tooltip title={"Click to Adopt for Esign"} arrow>
+                        <Tooltip title={"Click to Adopt for E-signature"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { setIsContinue(true); saveSignature() }}>ADOPT FOR e-SIGN</div></Tooltip>
                     </div>
                 </div>

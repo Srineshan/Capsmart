@@ -479,7 +479,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
               : ""
               }`}
           >
-                                    <Tooltip title={"Click to Save In Progress"} arrow>
+                                    <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
             <div
               className={`${style.saveInProgress} ${style.marginTop}`}
               onClick={() => getIsSaveInProgressOpen(true)}
@@ -488,7 +488,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
             </div>
             </Tooltip>
             <div className={style.twoColForButton}>
-            <Tooltip title={"Click to Back"} arrow>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
                 onClick={() => navigate(-1)}
@@ -497,7 +497,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
               </div>
               </Tooltip>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-              <Tooltip title={"Click to Continue"} arrow>
+              <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop10}`}
                 onClick={() => getMissingFields()}

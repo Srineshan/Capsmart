@@ -3343,7 +3343,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
-                  <Tooltip title={"Click to Yes"} arrow>
+                  <Tooltip title={"Click to mark as Yes"} arrow>
                     <div
                       className={`${style.reappointmentButtonOutlined}`}
                       onClick={() => { setPrivilegeChangeYesOrNo('Yes'); handleSubmitPrivilegeCategory() }}
@@ -3351,7 +3351,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       YES
                     </div>
                   </Tooltip>
-                  <Tooltip title={"Click to No"} arrow>
+                  <Tooltip title={"Click to mark as No"} arrow>
                     <div
                       className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                       onClick={() => { setIsPrivilegeCategoryChanging(true); setPrivilegeChangeYesOrNo('No') }}
@@ -3374,7 +3374,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                       >
-                        <Tooltip title={"Click to View To Modify"} arrow>
+                        <Tooltip title={"Click to View & Modify"} arrow>
                           <div
                             className={`${style.reappointmentButtonEdit}`}
                             onClick={() => { setPrivilegeChangeYesOrNo('') }}
@@ -3615,7 +3615,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                     <div
                       className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                     >
-                      <Tooltip title={"Click to View to Modify"} arrow>
+                      <Tooltip title={"Click to View & Modify"} arrow>
                         <div
                           className={`${style.reappointmentButtonEdit}`}
                           onClick={() => setDepartmentChangeYesOrNo('')}
@@ -3796,7 +3796,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                       >
-                        <Tooltip title={"Click to Yes"} arrow>
+                        <Tooltip title={"Click to mark as Yes"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => handleSubmitPrivilegeSet()}
@@ -3804,7 +3804,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             YES
                           </div>
                         </Tooltip>
-                        <Tooltip title={"Click to No"} arrow>
+                        <Tooltip title={"Click to mark as No"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                             onClick={() => handleKeepYourPrivilegeNo()}
@@ -3828,7 +3828,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <div
                               className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                             >
-                              <Tooltip title={"Click to View to Modify"} arrow>
+                              <Tooltip title={"Click to View & Modify"} arrow>
                                 <div
                                   className={`${style.reappointmentButtonEdit}`}
                                   onClick={() => { setIsEditPrivilege(true); setPrivilegeSetChangeYesOrNo('') }}
@@ -4017,7 +4017,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   <div
                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                   >
-                    <Tooltip title={"Click to Yes"} arrow>
+                    <Tooltip title={"Click to mark as Yes"} arrow>
                       <div
                         className={`${style.reappointmentButtonOutlined}`}
                         onClick={() => { setIsAdditionalPrivilegeCategoryChanging(true); setAdditionalPrivilegeChangeYesOrNo('Yes') }}
@@ -4025,7 +4025,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         YES
                       </div>
                     </Tooltip>
-                    <Tooltip title={"Click to No"} arrow>
+                    <Tooltip title={"Click to mark as No"} arrow>
                       <div
                         className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                         onClick={() => { handleSubmitAdditionalPrivilegeSet() }}
@@ -4049,7 +4049,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         <div
                           className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                         >
-                          <Tooltip title={"Click to View to Modify"} arrow>
+                          <Tooltip title={"Click to View & Modify"} arrow>
                             <div
                               className={`${style.reappointmentButtonEdit}`}
                               onClick={() => { setIsEditAdditionalPrivileges(true); setAdditionalPrivilegeChangeYesOrNo('') }}
@@ -4216,7 +4216,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                       <div
                         className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                       >
-                        <Tooltip title={"Click to Yes"} arrow>
+                        <Tooltip title={"Click to mark as Yes"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined}`}
                             onClick={() => { setPrivilegesMaintainedInOtherHositals(true); setPrivilegeAtOtherHospitalYesOrNo('Yes') }}
@@ -4224,7 +4224,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             YES
                           </div>
                         </Tooltip>
-                        <Tooltip title={"Click to No"} arrow>
+                        <Tooltip title={"Click to mark as No"} arrow>
                           <div
                             className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                             onClick={() => { setIsEditPrivilegeAtOtherHospitals(false); setPrivilegeAtOtherHospitalYesOrNo('No'); handleSubmitPrivilegesAtOtherHospital() }}
@@ -4248,7 +4248,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                             <div
                               className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                             >
-                              <Tooltip title={"Click to View to Modify"} arrow>
+                              <Tooltip title={"Click to View & Modify"} arrow>
                                 <div
                                   className={`${style.reappointmentButtonEdit}`}
                                   onClick={() => { setIsEditPrivilegeAtOtherHospitals(true); setPrivilegesMaintainedInOtherHositals(false); setPrivilegeAtOtherHospitalYesOrNo('') }}
@@ -4348,7 +4348,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                   <div
                     className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop}`}
                   >
-                    <Tooltip title={"Click to Save & Close"} arrow>
+                    <Tooltip title={"Click to Save and Close"} arrow>
                       <button
                         className={`${style.reappointmentButton} ${style.marginLeft
                           } ${(hospitalName === "" || hospitalPrivilege === "")
@@ -4371,7 +4371,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
                         SAVE & CLOSE
                       </button>
                     </Tooltip>
-                    <Tooltip title={"Click to Save & Addmore"} arrow>
+                    <Tooltip title={"Click to Save and Addmore"} arrow>
                       <button
                         className={`${style.reappointmentButton} ${style.marginLeft
                           } ${(hospitalName === "" || hospitalPrivilege === "")
@@ -4407,9 +4407,9 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
             )}
           </div>
           <div className={style.threeColForButton}>
-            <Tooltip title={"Click to Save In Progress"} arrow>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
               <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
-            <Tooltip title={"Click to Continue"} arrow>
+            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
           </div>
         </div>
@@ -4450,7 +4450,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
 
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog
             ? style.hiddenStickyContainer : ""}`}>
-            <Tooltip title={"Click to Save In Progress"} arrow>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
               <div
                 className={`${style.saveInProgress} ${style.marginTop}`}
                 onClick={() => getIsSaveInProgressOpen(true)}
@@ -4465,7 +4465,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
               >
                 BACK
               </div> */}
-            <Tooltip title={"Click to Continue"} arrow>
+            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop10} ${!isContinueEnabled ? style.disabledButton : ''}`}
                 onClick={isContinueEnabled ? () => {

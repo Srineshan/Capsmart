@@ -66,7 +66,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                     </Link>
                     <div>
                         <Link to={'/profile'} className={style.noFontStyle}>
-                        <Tooltip title={"Click to Go to Profile"} arrow>
+                        <Tooltip title={"Go to Your Profile Page"} arrow>
                             <div className={style.marginLeft20}>
                                 {/* <div className={style.userNameStyle}>
                            Hi, {updateProfileData

@@ -11,6 +11,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import DocumentClarificationDialog from "../DocumentClarificationDialog"
+import { Tooltip } from "@mui/material";
 
 const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDialog, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -201,6 +202,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   Clarification Required for {data?.title} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
                 </div>
                 <div className={style.displayInRow}>
+                <Tooltip title="Click to Save" arrow>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -209,6 +211,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               {/* <div className={`${style.marginTop10} ${style.detailsTextStyle}`}>License / Certification Details</div> */}
@@ -303,7 +306,8 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
                   // onClick={() => getIsOpen(false)}
                   >
-                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
+                    <Tooltip title="Click to Request Document Clarification Now" arrow>
+                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div></Tooltip>
                   </div>
                 ) : (
                   <div></div>
@@ -328,7 +332,9 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                       cursor: isApproveEnabled ? 'pointer' : 'default'
                     }}
                   >
+                    <Tooltip title="Click to Save and Send by Email" arrow>
                     <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

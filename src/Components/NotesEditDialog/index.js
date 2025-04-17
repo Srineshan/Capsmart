@@ -496,7 +496,7 @@ const EditNotesDialog = ({ getIsOpen, showEditNotesID, showEditNotes, showEditNo
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
               >
-                <Tooltip arrow title={"Click to Submit"}>
+                <Tooltip arrow title={"Click to Submit Notes and Comments"}>
                   <div className={style.reviewButton}>SUBMIT</div></Tooltip>
               </div>
             </div>

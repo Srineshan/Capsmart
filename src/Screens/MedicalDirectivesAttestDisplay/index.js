@@ -177,7 +177,8 @@ const MedicalDirectivesAttestDisplay = () => {
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
                 <span className={style.verticalAlignCenter}>
-                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                <Tooltip title="Click to Close and Return to Applications" arrow>
+                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} /> </Tooltip>
                 </span>
             </div>
             <div className={style.screenPadding}>

@@ -369,7 +369,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 </div>
                 <div className={style.displayInRow}>
                   <div>
-                    <Tooltip title={"Click to User Guides & Tutorials"} arrow>
+                    <Tooltip title={"Click to access User Guides & Tutorials"} arrow>
                       <div
                         className={`${style.userGuideButton} ${style.marginTop}`}
                         onClick={() => {
@@ -381,7 +381,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                     </Tooltip>
                   </div>
                   <div>
-                    <Tooltip title={"Click to Continue"} arrow>
+                    <Tooltip title={"Click to Begin Reappointment Application"} arrow>
                       <div
                         className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
                         onClick={processReappointment !== '' ? () => {
@@ -425,7 +425,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
             {`If we do not receive a completed reappointment application by Jun 30, 2025 your staff position as a ${basicForm?.basicDetails?.applicant?.applicantType}, ${basicForm?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory}, will be terminated.`}
           </div>
           <div className={style.spaceBetween}>
-            <Tooltip title={"Click to Cancel"} arrow>
+            <Tooltip title={"Click to Cancel and Close"} arrow>
               <div
                 className={`${style.saveInProgress} ${style.marginTop}`}
                 onClick={() => setShowAlert(false)}
@@ -433,7 +433,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                 CANCEL
               </div>
             </Tooltip>
-            <Tooltip title={"Click to Okay"} arrow>
+            <Tooltip title={"Click to Confirm and Exit"} arrow>
               <div
                 className={`${style.continue} ${style.marginTop}`}
                 onClick={() => { setShowAlert(false); setShowLogoutAlert(true); handleTerminate() }}

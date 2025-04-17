@@ -247,7 +247,9 @@ const MedicalDirectivesAttest = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    <Tooltip arrow title={"Click to Submit"}>
                                     <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                    </Tooltip>
                                 </>
                             )}
                         </div>

@@ -18,6 +18,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
+import { Tooltip } from "@mui/material";
 
 const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -664,6 +665,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                   Staff Recommended with Comments for Reappointment
                 </div>
                 <div className={style.displayInRow}>
+                  <Tooltip arrow title={"Click to Close"}>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -672,6 +674,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -942,7 +945,8 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                     onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                     style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
                   >
-                    <div className={style.reviewButton}>RECOMMEND STAFF WITH COMMENTS</div>
+                    <Tooltip title="Click to Submit Staff Recommendation with Comments" arrow>
+                    <div className={style.reviewButton}>RECOMMEND STAFF WITH COMMENTS</div></Tooltip>
                   </div>
                   {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}

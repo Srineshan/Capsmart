@@ -14,6 +14,7 @@ import CommonInputField from "../CommonFields/CommonInputField";
 import CommonDateField from "../CommonFields/CommonDateField";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
 const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, selectedTab }) => {
   const [isLoadingImage, setIsLoadingImage] = useState(false);
@@ -418,7 +419,8 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                     ? "Staff Reappointments Approved by the MAC."
                     : "Staff Reappointments Approved by the BOD."}
               </div>
-              <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} />
+              <Tooltip title="Click to Close" arrow>
+              <img src={CrossPink} alt="close" className={`${style.crossStyle} ${style.cursorPointer}`} onClick={onClose} /></Tooltip>
             </div>
             {renderApplicationDetails()}
             {/* {selectedTab === "level-4" && (
@@ -580,7 +582,8 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
                 onClick={onClickApproveMoveFunction}>
-                <div className={style.reviewButton}>Save</div>
+                  <Tooltip title="Click to Save" arrow>
+                <div className={style.reviewButton}>Save</div></Tooltip>
               </div>
             </div>
           </div>

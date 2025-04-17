@@ -511,7 +511,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
-                <Tooltip title={"Click to Yes"} arrow>
+                <Tooltip title={"Click to mark as Yes"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
                   onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -519,7 +519,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                   YES
                 </div>
                 </Tooltip>
-                <Tooltip title={"Click to No"} arrow>
+                <Tooltip title={"Click to mark as No"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                   onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -534,7 +534,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
-                                          <Tooltip title={"Click to View to Modify"} arrow>
+                                          <Tooltip title={"Click to View & Modify"} arrow>
                   <div
                     className={`${style.reappointmentButtonEdit}`}
                     onClick={() => setYesOrNoLMS('')}
@@ -554,7 +554,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div
                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
               >
-                <Tooltip title={"Click to Yes"} arrow>
+                <Tooltip title={"Click to mark as Yes"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined}`}
                   onClick={() => { setYesOrNoSuboxone('Yes'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -562,7 +562,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                   YES
                 </div>
                 </Tooltip>
-                <Tooltip title={"Click to No"} arrow>
+                <Tooltip title={"Click to mark as No"} arrow>
                 <div
                   className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                   onClick={() => { setYesOrNoSuboxone('No'); setUpdatedDateSuboxone(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -577,7 +577,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
-                  <Tooltip title={"Click to View to Modify"} arrow>
+                  <Tooltip title={"Click to View & Modify"} arrow>
                   <div
                     className={`${style.reappointmentButtonEdit}`}
                     onClick={() => setYesOrNoSuboxone('')}
@@ -598,7 +598,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                 <div
                   className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                 >
-                  <Tooltip title={"Click to Yes"} arrow>
+                  <Tooltip title={"Click to mark as Yes"} arrow>
                   <div
                     className={`${style.reappointmentButtonOutlined}`}
                     onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -606,7 +606,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                     YES
                   </div>
                   </Tooltip>
-                  <Tooltip title={"Click to No"} arrow>
+                  <Tooltip title={"Click to mark as No"} arrow>
                   <div
                     className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
                     onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
@@ -621,7 +621,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
                   <div
                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                   >
-                    <Tooltip title={"Click to View to Modify"} arrow>
+                    <Tooltip title={"Click to View & Modify"} arrow>
                     <div
                       className={`${style.reappointmentButtonEdit}`}
                       onClick={() => setYesOrNoMRP('')}
@@ -1106,13 +1106,13 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
           </div>
           <div className={style.threeColForButton}>
-          <Tooltip title={"Click to Skip for Now"} arrow>
+          <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
-            <Tooltip title={"Click to Save In Progress"} arrow>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
-            <Tooltip title={"Click to Back"} arrow>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
             <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-            <Tooltip title={"Click to Continue"} arrow>
+            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
             <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
               && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
               : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
@@ -1144,16 +1144,16 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             </div>
           </div>
           <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-          <Tooltip title={"Click to Skip for Now"} arrow>
+          <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
-            <Tooltip title={"Click to Save In Progress"} arrow>
+            <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
             <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
             <div className={style.twoColForButton}>
-            <Tooltip title={"Click to Back"} arrow>
+            <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
 
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-              <Tooltip title={"Click to Continue"} arrow>
+              <Tooltip title={"Click to Proceed to the Next Step"} arrow>
               <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'

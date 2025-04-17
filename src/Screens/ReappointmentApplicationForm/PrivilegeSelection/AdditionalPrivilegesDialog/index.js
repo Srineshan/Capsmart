@@ -414,7 +414,7 @@ const AdditionalPrivileges = ({ getIsOpen, primaryPrivilege, getSelectedPrivileg
                     )}
 
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Add"} arrow>
+                    <Tooltip title={"Click to Add Selected Privileges"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={selectedPrivilegeForDisplay?.length !== 0 ? () => { getSelectedPrivilegeList(selectedPrivilegeForDisplay); getIsOpen(false); } : () => { getIsOpen(false); }}>ADD</div></Tooltip>
                     </div>
                 </div>

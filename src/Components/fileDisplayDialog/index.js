@@ -169,7 +169,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                   className={`${isPrintClicked && style.addStyle} ${style.alignCenter
                     } ${style.cursorPointer} ${style.marginRight}`}
                 >
-                  <Tooltip title="Print" arrow >
+                  <Tooltip title="Click to Print Document" arrow >
                     <PrintOutlinedIcon
                       sx={{
                         fontSize: isPrintClicked ? 20 : 25,
@@ -179,7 +179,7 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                     />
                   </Tooltip>
                 </div>
-                <Tooltip title="Download" arrow >
+                <Tooltip title="Click to Download Document" arrow >
                   <Download
                     sx={{
                       fontSize: 25,
@@ -190,12 +190,12 @@ const FileDisplayDialog = ({ getIsOpen, file }) => {
                   />
                 </Tooltip>
                 {!isExpanded ? (
-                  <Tooltip title="Maximize" arrow >
+                  <Tooltip title="Click to Maximize View" arrow >
                     <FullscreenSharpIcon
                       className={`${style.iconStyle} ${style.cursorPointer} `}
                       onClick={toggleExpand}
                       sx={{ color: '#06617A' }}
-                    /></Tooltip>) : (<Tooltip title="Minimize" arrow >
+                    /></Tooltip>) : (<Tooltip title="Click to Minimize View" arrow >
                       <FullscreenExitIcon
                         className={`${style.iconStyle} ${style.cursorPointer} `}
                         onClick={toggleExpand}

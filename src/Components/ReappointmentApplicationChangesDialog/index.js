@@ -243,7 +243,7 @@ const ReappointmentChangesDialog = ({ getIsOpen, getActiveApplicationView, selec
                 {/* <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
               Upcoming Credentials Committee Meeting Date: DD - MM - YYYY
             </div> */}
-                <Tooltip title={"Click to Start Verification"} arrow>
+                <Tooltip title={"Click to Begin Verification Process"} arrow>
                   <div className={`${style.marginTop} ${style.reviewButtonContainer}`} onClick={() => getIsOpen(false)}>
                     <div className={style.reviewButton}>START VERIFICATION</div>
                   </div>

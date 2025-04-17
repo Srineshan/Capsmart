@@ -18,6 +18,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
 const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab, dateStorage }) => {
   let cookie = new Cookie();
@@ -601,6 +602,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                   Staff Recommended for Reappointment
                 </div>
                 <div className={style.displayInRow}>
+                <Tooltip title="Click to Close" arrow>
                   <img
                     src={CrossPink}
                     alt="cross"
@@ -609,6 +611,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                       getIsOpen(false);
                     }}
                   />
+                  </Tooltip>
                 </div>
               </div>
               <div ref={componentRef} className={`${style.pagebreak}`}>
@@ -881,7 +884,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
+                    <Tooltip title="Click to Recommend Staff for Approval" arrow>
                     <div className={style.reviewButton}>RECOMMEND STAFF</div>
+                    </Tooltip>
                   </div>
                   {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}

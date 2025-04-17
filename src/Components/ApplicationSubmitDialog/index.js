@@ -7,6 +7,7 @@ import { PUT } from '../../Screens/dataSaver';
 import { ErrorToaster } from '../../utils/toaster';
 import { useDescope } from '@descope/react-sdk';
 import { useNavigate } from 'react-router-dom';
+import { Tooltip } from '@mui/material';
 // import { Logout } from '../../utils/auth';
 
 const ApplicationSubmitDialog = ({ getIsOpen, title, description }) => {
@@ -38,7 +39,8 @@ const ApplicationSubmitDialog = ({ getIsOpen, title, description }) => {
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>{description}</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>OKAY</div>
+                    <Tooltip title={"Go to Login Page"} arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleLogout(); }}>OKAY</div></Tooltip>
                     </div>
                 </div>
 

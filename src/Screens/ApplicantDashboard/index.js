@@ -597,7 +597,7 @@ const ApplicantDashboard = () => {
                                     </div>
                                   </div>
                                   <div>
-                                    <Tooltip title={'Click to view Receipt'} arrow>
+                                    <Tooltip title={'Click to View Receipt'} arrow>
                                       <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowFileDialog(task?.payment?.invoice)}>
                                         View Reciept
                                       </div>
@@ -620,7 +620,7 @@ const ApplicantDashboard = () => {
                                     ))}
                                   </div>
                                   <div>
-                                    <Tooltip title={'Click to view Privileges'} arrow>
+                                    <Tooltip title={'Click to View Privilege Details'} arrow>
                                       <div className={`${style.trackApplication} ${style.cursorPointer}`} onClick={() => handleShowPrivilegeDialog(task?.privileges?.obligatedPrivileges)}>
                                         View
                                       </div>
