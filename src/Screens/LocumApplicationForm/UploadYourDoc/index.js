@@ -48,6 +48,7 @@ import ApplicationReferenceDocuments from '../../../Components/ApplicationRefere
 import { Tooltip } from '@mui/material';
 import FileWithFields from '../../../Components/FileWithFields';
 import DeleteConfirmation from '../../../Components/DeleteConfirmation';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const stripePromise = loadStripe("your-publishable-key");
 
@@ -672,7 +673,7 @@ const UploadYourDoc = ({ basicForm, setBasicForm, applicationId, getPreApplicati
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <ReappointmentProgressCard
+                    <LocumProgressCard
                         step={""}
                         dataType={formSchema?.description}
                         title={formSchema?.title}

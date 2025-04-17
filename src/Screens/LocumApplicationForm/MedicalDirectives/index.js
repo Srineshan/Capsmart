@@ -29,6 +29,7 @@ import { Tooltip } from '@mui/material';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import FileDisplayDialog from '../../../Components/fileDisplayDialog';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -447,7 +448,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <LocumProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
                         <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
                             description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />

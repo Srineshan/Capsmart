@@ -33,6 +33,7 @@ import Close from './../../../images/close.png';
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFormat, name }) => {
     const [formSchema, setFormSchema] = useState();
@@ -473,7 +474,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <ReappointmentProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <LocumProgressCard step={'STEP 4'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={8} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
                     <div className={style.marginTop}>
                         <WelcomeCard title={<strong>For Professional Staff, the CME requirement by CMH is to have the required qualified hours of their respective college approved education hours or credits.</strong>}
                             description={'You can submit a print out of your current continuing education credit summary or other valid college documents from the past 12 months, including any peer review / evaluations you have had.'} />

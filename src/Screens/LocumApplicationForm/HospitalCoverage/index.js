@@ -18,6 +18,7 @@ import CommonTextField from "../../../Components/CommonFields/CommonTextField";
 import { TextArea } from "@blueprintjs/core";
 import ReappointmentJourneyDialog from "../../../Components/reappointmentJourneyDialog";
 import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
+import LocumProgressCard from "../../../Components/LocumProgressCard";
 
 const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -293,7 +294,7 @@ const HospitalCoverage = ({ basicForm, setBasicForm, getPreApplication }) => {
   return (
     <div>
       <div className={style.applicationScreenGrid}>
-        <ReappointmentProgressCard
+        <LocumProgressCard
           step={"STEP 11"}
           dataType={formSchema?.description}
           title={formSchema?.title}

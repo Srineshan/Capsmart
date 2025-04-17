@@ -23,6 +23,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import DatalistInput from 'react-datalist-input';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) => {
   const [formSchema, setFormSchema] = useState();
@@ -335,35 +336,35 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
   const getMissingFields = (data) => {
     let missingKeys = [];
     let hasMandatoryMissingFields = [];
-    if (yesOrNoLMS === '') {
-      missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
+    // if (yesOrNoLMS === '') {
+    //   missingKeys.push({ label: { label: 'Have you completed all of the CMH assigned LMS Modules for your reappointment?', mandatory: true } });
 
-    }
+    // }
     if (yesOrNoSuboxone === '') {
       missingKeys.push({ label: { label: 'Do you prescribe Suboxone?', mandatory: true } });
     }
-    if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
-      missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?', mandatory: true } });
-    }
-    if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
-      basicForm?.basicDetails?.departmentSpecialty?.department !==
-      "Women & Children" &&
-      basicForm?.basicDetails?.departmentSpecialty?.specialty !==
-      "Obstetrics & Gynecology") {
-      missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory: true } });
-    }
-    if (
-      (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" && obstetricsProviderType !== "Department / Specialty Group"
-      &&
-      basicForm?.basicDetails?.departmentSpecialty?.department ===
-      "Women & Children" &&
-      basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-      "Obstetrics & Gynecology"
-    ) {
-      missingKeys.push({
-        label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory: true }
-      });
-    }
+    // if (yesOrNoMRP === '' && (basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics')) {
+    //   missingKeys.push({ label: { label: 'Do you wish to be MRP for your patients in the Nursery?', mandatory: true } });
+    // }
+    // if ((covererName === "" && covererNameList?.length === 0) && providerType !== "Not Applicable" && providerType !== "Department / Specialty Group" &&
+    //   basicForm?.basicDetails?.departmentSpecialty?.department !==
+    //   "Women & Children" &&
+    //   basicForm?.basicDetails?.departmentSpecialty?.specialty !==
+    //   "Obstetrics & Gynecology") {
+    //   missingKeys.push({ label: { label: "Who covers your hospital patients when you are not available?", mandatory: true } });
+    // }
+    // if (
+    //   (obstetricsCovererName === "" && obstetricsCovererNameList?.length === 0) && obstetricsProviderType !== "Not Applicable" && obstetricsProviderType !== "Department / Specialty Group"
+    //   &&
+    //   basicForm?.basicDetails?.departmentSpecialty?.department ===
+    //   "Women & Children" &&
+    //   basicForm?.basicDetails?.departmentSpecialty?.specialty ===
+    //   "Obstetrics & Gynecology"
+    // ) {
+    //   missingKeys.push({
+    //     label: { label: "If You Are Practicing Obstetrics, Who Covers Your Patients When You Are Not Available?", mandatory: true }
+    //   });
+    // }
     setWarningFields(missingKeys)
     allMissingFields = missingKeys;
     hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
@@ -501,44 +502,8 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
       <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
         <div>
-          <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
-          <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-            <div className={style.cardTitle}>
-              {formSchema?.properties?.isModulesForReAppointmentCompleted?.properties?.response?.label}
-            </div>
-            {yesOrNoLMS === '' ? (
-              <div
-                className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-              >
-                <div
-                  className={`${style.reappointmentButtonOutlined}`}
-                  onClick={() => { setYesOrNoLMS('Yes'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
-                >
-                  YES
-                </div>
-                <div
-                  className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                  onClick={() => { setYesOrNoLMS('No'); setUpdatedDateLMS(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
-                >
-                  NO
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoLMS === 'Yes' ? style.yesText : style.noText}>{yesOrNoLMS}</span></strong> on {format(new Date(updatedDateLMS), "MMM dd, yyyy")}</div>
-                <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                >
-                  <div
-                    className={`${style.reappointmentButtonEdit}`}
-                    onClick={() => setYesOrNoLMS('')}
-                  >
-                    VIEW TO MODIFY
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+          <LocumProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+
           <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
             <div className={style.cardTitle}>
               {formSchema?.properties?.doYouPrescribeSuboxone?.properties?.response?.label}
@@ -576,525 +541,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               </>
             )}
           </div>
-          {(basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children' && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') && (
-            <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
-              <div className={style.cardTitle}>
-                {formSchema?.properties?.wishToBeMRP?.properties?.response?.label}
-              </div>
-              {yesOrNoMRP === '' ? (
-                <div
-                  className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                >
-                  <div
-                    className={`${style.reappointmentButtonOutlined}`}
-                    onClick={() => { setYesOrNoMRP('Yes'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
-                  >
-                    YES
-                  </div>
-                  <div
-                    className={`${style.reappointmentButtonOutlined} ${style.marginLeft}`}
-                    onClick={() => { setYesOrNoMRP('No'); setUpdatedDateMRP(format(new Date(), "yyyy-MM-dd'T'00:00")) }}
-                  >
-                    NO
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <div className={`${style.markedAsText} ${style.marginTop10}`}><strong>Marked as <span className={yesOrNoMRP === 'Yes' ? style.yesText : style.noText}>{yesOrNoMRP}</span></strong> on {format(new Date(updatedDateMRP), "MMM dd, yyyy")}</div>
-                  <div
-                    className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
-                  >
-                    <div
-                      className={`${style.reappointmentButtonEdit}`}
-                      onClick={() => setYesOrNoMRP('')}
-                    >
-                      VIEW TO MODIFY
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          <div className={` ${style.marginTop}`}>
-            <div className={`${style.applicationCardStyle}`}>
-              <div className={style.cardTitle}>
-                Hospital Coverage
-              </div>
-              <div className={`${style.warningCard} ${style.marginTop10}`}>
-                <div className={style.warningText}>
-                  24 hours coverage of hospital patients, including those in the
-                  ER, is a requirement of Professional Staff responsibilities. The
-                  physician must provide an acceptable method to respond to
-                  hospital calls.
-                </div>
-              </div>
-              {(basicForm?.basicDetails?.departmentSpecialty?.department ===
-                "Women & Children" &&
-                basicForm?.basicDetails?.departmentSpecialty?.specialty ===
-                "Obstetrics & Gynecology") ? (
-                <div className={style.marginTop}>
-                  <div className={`${style.lableStyle}`}>
-                    {`If you are practicing obstetrics, who covers your patients when you are not available?*`}
-                  </div>
-                  <div className={style.rowContainer}>
-                    <div className={style.fieldWrapper}>
-                      <CommonSelectField
-                        value={obstetricsProviderType}
-                        onChange={(e) => { setObstetricsProviderType(e.target.value); setObstetricsCovererName(""); setObstetricsCovererNameList("") }}
-                        className={style.fullWidth}
-                        firstOptionLabel={providerLabels}
-                        firstOptionValue=""
-                        valueList={providerOptions}
-                        labelList={providerOptions}
-                        disabledList={[]}
-                        label={providerLabels}
-                        disabledSelect={false}
-                        required={true}
-                        error={false}
-                        warning={false}
-                      />
-                    </div>
-                    {obstetricsProviderType !== "Not Applicable" && (
-                      <>
-                        {obstetricsProviderType === "Individual" && (
-                          <div className={style.fieldWrapper}>
-                            <div className={`${style.lableStyle}`}>
-                              {'Select Who covers in Specific Provider*'}
-                            </div>
-                            {/* <CommonSelectField
-                              value={obstetricsCovererName}
-                              onChange={(e) => setObstetricsCovererName(e.target.value)}
-                              firstOptionLabel="Select who covers in Specific Provider"
-                              firstOptionValue=""
-                              className={style.fullWidth}
-                              valueList={obstetricsapplicantOptions.map((option) => option.value)}
-                              labelList={obstetricsapplicantOptions.map((option) => option.label)}
-                              disabledList={[]}
-                              disabledSelect={false}
-                              error={!obstetricsCovererName}
-                              label={"Select Who covers in Specific Provider"}
-                              required={true}
-                              warning={!obstetricsCovererName}
-                            /> */}
-                            <DatalistInput
-                              items={getItemsSingle(obstetricsapplicantOptions) || []}
-                              onSelect={(item) => {
-                                console.log('Selected Item:', item); // Debugging selection
-                                setObstetricsCovererName(item.label);
-                                setObstetricsCovererId(item.id);
-                                setObstetricsCovererNameList((prevCheckedIds) => {
-                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                                  return [...filteredIds, item.id];
-                                });
-                              }}
-                              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                              maxLength={50}
-                              placeholder={'Select who covers in Specific Provider'}
-                              value={obstetricsCovererName}
-                              required={true}
-                              error={!obstetricsCovererName}
-                              warning={warningFields
-                                ?.map((data) => data?.label)
-                                ?.includes(
-                                  `Who covers your hospital patients when you are not available?`
-                                )}
-                            />
-                          </div>
-                        )}
-
-                        {obstetricsProviderType === "Group" && (
-                          // <TextArea
-                          //   value={obstetricsCovererName}
-                          //   className={`${style.fullWidth} ${style.marginTop10}`}
-                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
-                          //   placeholder={"Enter Here"}
-                          //   rows={4}
-                          // />
-                          <div className={style.fieldWrapper}>
-                            {/* <div className={`${style.lableStyle}`}>
-                              {'Name the Provider Groups to cover you*'}
-                            </div>
-                            <div className={`${style.displayInRow}`}>
-                              <DatalistInput
-                                items={getItems(groupOptions) || []}
-                                onSelect={(item) => {
-                                  setObstetricsCovererName('');
-                                  setObstetricsCovererId(item.id);
-                                  setObstetricsCovererNameList((prevCheckedIds) => {
-                                    const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                                    return [...filteredIds, item.id];
-                                  });
-                                }}
-                                onInput={(e) => {
-                                  const value = e.target.value.trim();
-                                  setObstetricsCovererName(value);
-                                  const filteredItems = (getItems(groupOptions))
-                                    .filter(
-                                      (item) => item?.value?.toLowerCase().includes(value.toLowerCase())
-                                    );
-                                  setShowAddButton(filteredItems.length === 0 && value !== '');
-                                }}
-                                className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                                maxLength={50}
-                                // onChange={(e) => {
-                                //   setObstetricsCovererName(e.target.value);
-                                // }}
-                                placeholder={'Enter the Provider Group to cover you'}
-                                value={obstetricsCovererName}
-                                required={true}
-                                error={!obstetricsCovererName}
-                                warning={warningFields
-                                  ?.map((data) => data?.label)
-                                  ?.includes(
-                                    `Who covers your hospital patients when you are not available?`
-                                  )}
-                              />
-                              {showAddButton && (
-                                <button
-                                  type="button"
-                                  className={`${style.continue} ${style.addButton}`}
-                                  onClick={() => {
-                                    getaddCoverageGroupsobstetrics();
-                                  }}
-                                >
-                                  Add
-                                </button>
-                              )}
-                            </div> */}
-                            <CommonSelectField
-                              // value={covererName}
-                              onChange={(e) => setObstetricsCovererNameList(prevCheckedIds => {
-                                return (prevCheckedIds || [])?.map(data => data?.departmentSpecialtyName)?.includes(e.target.value?.departmentSpecialtyName) ? prevCheckedIds?.filter(data => data?.departmentSpecialtyName !== e.target.value.departmentSpecialtyName) : [...prevCheckedIds, e.target.value];
-                              })}
-                              className={style.fullWidth}
-                              valueList={getDeptItems(departmentList)?.map(data => data)}
-                              labelList={getDeptItems(departmentList)?.map(data => data?.departmentSpecialtyName)}
-                              disabledList={getDeptItems(departmentList)?.map(data => false)}
-                              disabledSelect={false}
-                              error={!obstetricsCovererNameList}
-                              label={"Name the Provider Groups to cover you"}
-                              required={true}
-                              warning={warningFields
-                                ?.map((data) => data?.label)
-                                ?.includes(
-                                  `Who covers your hospital patients when you are not available?`
-                                )}
-                            />
-                          </div>
-                        )}
-                        {/* {obstetricsProviderType === "Department / Specialty Group" && (
-                          <div className={style.fieldWrapper}>
-                            <CommonTextField
-                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
-                              onChange={() => { }}
-                              readOnly={true}
-                              className={style.fullWidth}
-                              label={"Name the Provider Groups to cover you"}
-                              required={true}
-                            />
-                          </div>
-                        )} */}
-                      </>
-                    )}
-                  </div>
-                  {(obstetricsProviderType === "Department / Specialty Group") && (
-                    <div className={`${style.cardTitle} ${style.marginTop}`}>{`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</div>
-                  )}
-                  <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                    {/* {obstetricsCovererNameList?.map ? (
-                    obstetricsCovererNameList?.map(data => {
-                      return (
-                        <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                          <div>{groupOptions?.filter(optionData => optionData?.id === data)?.[0]?.name}</div> <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                            onClick={() => obstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => innerData !== data))}
-                          ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
-                      )
-                    })
-                  ) : null } */}
-                    {obstetricsProviderType === "Group" && (
-                      <div className={`${style.chipsContainer}`}>
-                        {obstetricsCovererNameList?.map ? (
-                          obstetricsCovererNameList?.map(data => {
-                            console.log("grouplevel", obstetricsCovererNameList)
-                            return (
-                              <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                                <div>{data?.departmentSpecialtyName}</div>
-                                <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                  onClick={() => setObstetricsCovererNameList(obstetricsCovererNameList?.filter(innerData => data?.departmentSpecialtyName !== innerData?.departmentSpecialtyName))}
-                                ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
-                            )
-                          })
-                        ) : null}
-                      </div>
-                    )}
-                    {obstetricsProviderType === "Individual" && (
-                      <div className={`${style.chipsContainer}`}>
-                        {obstetricsCovererNameList?.map ? (
-                          obstetricsCovererNameList.map((data, index) => (
-                            <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                              {/* <div>{name}</div>   */}
-                              <div>
-                                {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
-                                {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
-                                {selectApplicantObstetrics?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
-                              </div>
-                              <div
-                                className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                onClick={() => handleRemoveChipObstetrics(index)} // Optional: Add a remove handler
-                              >
-                                <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
-                              </div>
-                            </div>
-                          ))
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className={style.marginTop}>
-                  <div className={`${style.lableStyle}`}>
-                    {`Who covers your hospital patients when you are not available?`}
-                  </div>
-                  <div className={style.rowContainer}>
-                    <div className={style.fieldWrapper}>
-                      <CommonSelectField
-                        value={providerType}
-                        onChange={(e) => { setProviderType(e.target.value); setCovererName(""); setCovererNameList(""); }}
-                        className={style.fullWidth}
-                        firstOptionLabel={providerLabels}
-                        firstOptionValue=""
-                        valueList={providerOptions}
-                        labelList={providerOptions}
-                        disabledList={providerOptions?.map(data => false)}
-                        label={providerLabels}
-                        disabledSelect={false}
-                        required={true}
-                        error={false}
-                        warning={false}
-                      />
-                    </div>
-                    {providerType !== "Not Applicable" && (
-                      <>
-                        {providerType === "Individual" && (
-                          <div className={`${style.fieldWrapper}`}>
-                            <div className={`${style.lableStyle}`}>
-                              {'Select Provider(s) From Your Department / Specialty'}
-                            </div>
-                            {/* <CommonSelectField
-                              value={covererName}
-                              onChange={(e) => setCovererName(e.target.value)}
-                              className={style.fullWidth}
-                              valueList={applicantOptions?.map((option) => option?.value)}
-                              labelList={applicantOptions?.map((option) => option?.label)}
-                              disabledList={[]}
-                              disabledSelect={false}
-                              error={!covererName}
-                              label={"Select Named Covering Providers"}
-                              required={true}
-                              warning={warningFields
-                                ?.map((data) => data?.label)
-                                ?.includes(
-                                  `Who covers your hospital patients when you are not available?`
-                                )}
-                            /> */}
-                            <DatalistInput
-                              items={getItemsSingle(applicantOptions) || []}
-                              onSelect={(item) => {
-                                setCovererName(item.label);
-                                setCovererId(item.id);
-                                setCovererNameList(prevCheckedIds => {
-                                  // return prevCheckedIds?.includes(item.id)
-                                  //   ? prevCheckedIds.filter(checkedId => checkedId !== item.id)
-                                  //   : [...prevCheckedIds, item.id];
-                                  const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                                  return [...filteredIds, item.id];
-                                });
-                              }}
-                              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                              maxLength={50}
-                              placeholder={'Enter the Provider to select'}
-                              value={covererName}
-                              required={true}
-                              error={!covererName}
-                              warning={warningFields
-                                ?.map((data) => data?.label)
-                                ?.includes(
-                                  `Who covers your hospital patients when you are not available?`
-                                )}
-                            />
-                          </div>
-                        )}
-
-                        {providerType === "Group" && (
-                          <div className={style.fieldWrapper}>
-                            {/* <CommonSelectField
-                            value={covererName}
-                            onChange={(e) => setCovererName(e.target.value)}
-                            className={style.fullWidth}
-                            valueList={groupOptions?.map(data => data?.id)}
-                            labelList={groupOptions?.map(data => data?.name)}
-                            disabledList={groupOptions?.map(data => false)}
-                            disabledSelect={false}
-                            error={!covererName}
-                            label={"Name the Provider Group to cover you"}
-                            required={true}
-                            warning={warningFields
-                              ?.map((data) => data?.label)
-                              ?.includes(
-                                `Who covers your hospital patients when you are not available?`
-                              )}
-                          /> */}
-                            <div>
-                              {/* <div className={`${style.lableStyle}`}>
-                                {'Name the Provider Groups to cover you*'}
-                              </div> */}
-                              {/* <div className={`${style.displayInRow}`}>
-                                <DatalistInput
-                                  items={getItems(groupOptions) || []}
-                                  onSelect={(item) => {
-                                    setCovererName('');
-                                    setCovererId(item.id);
-                                    setCovererNameList(prevCheckedIds => {
-                                      const filteredIds = (Array.isArray(prevCheckedIds) ? prevCheckedIds : []).filter((id) => id !== item.id);
-                                      return [...filteredIds, item.id];
-                                    });
-                                  }}
-                                  onInput={(e) => {
-                                    const value = e.target.value.trim();
-                                    setCovererName(value);
-                                    const filteredItems = (getItems(groupOptions))
-                                      .filter(
-                                        (item) => item?.value?.toLowerCase().includes(value.toLowerCase())
-                                      );
-                                    setShowAddButton(filteredItems.length === 0 && value !== '');
-                                  }}
-                                  className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
-                                  maxLength={50}
-                                  placeholder={'Enter the Provider Group to select'}
-                                  value={covererName}
-                                  required={true}
-                                  error={!covererName}
-                                  warning={warningFields
-                                    ?.map((data) => data?.label)
-                                    ?.includes(
-                                      `Who covers your hospital patients when you are not available?`
-                                    )}
-                                />
-                                {showAddButton && (
-                                  <button
-                                    type="button"
-                                    className={`${style.continue} ${style.addButton}`}
-                                    onClick={() => {
-                                      getaddCoverageGroups();
-                                    }}
-                                  >
-                                    Add
-                                  </button>
-                                )}
-                              </div> */}
-                              <CommonSelectField
-                                // value={covererName}
-                                onChange={(e) => setCovererNameList(prevCheckedIds => {
-                                  return (prevCheckedIds || [])?.map(data => data?.departmentSpecialtyName)?.includes(e.target.value?.departmentSpecialtyName) ? prevCheckedIds?.filter(data => data?.departmentSpecialtyName !== e.target.value.departmentSpecialtyName) : [...prevCheckedIds, e.target.value];
-                                })}
-                                className={style.fullWidth}
-                                valueList={getDeptItems(departmentList)?.map(data => data)}
-                                labelList={getDeptItems(departmentList)?.map(data => data?.departmentSpecialtyName)}
-                                disabledList={getDeptItems(departmentList)?.map(data => false)}
-                                disabledSelect={false}
-                                error={!covererNameList}
-                                label={"Name the Provider Groups to cover you"}
-                                required={true}
-                                warning={warningFields
-                                  ?.map((data) => data?.label)
-                                  ?.includes(
-                                    `Who covers your hospital patients when you are not available?`
-                                  )}
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* {providerType === "Department / Specialty Group" && (
-                          // <TextArea
-                          //   value={obstetricsCovererName}
-                          //   className={`${style.fullWidth} ${style.marginTop10}`}
-                          //   onChange={(e) => setObstetricsCovererName(e.target.value)}
-                          //   placeholder={"Enter Here"}
-                          //   rows={4}
-                          // />
-                          <div className={style.fieldWrapper}>
-                            <CommonTextField
-                              value={`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}
-                              onChange={() => { }}
-                              readOnly={true}
-                              className={style.fullWidth}
-                              label={"Name the Provider Groups to cover you"}
-                              required={true}
-                            />
-                          </div>
-                        )} */}
-                      </>
-                    )}
-                  </div>
-                  {(providerType === "Department / Specialty Group") && (
-                    <div className={`${style.cardTitle} ${style.marginTop}`}>{`${basicForm?.basicDetails?.departmentSpecialty?.department} ${(basicForm?.basicDetails?.departmentSpecialty?.specialty !== null && basicForm?.basicDetails?.departmentSpecialty?.specialty !== undefined) ? `- ${basicForm?.basicDetails?.departmentSpecialty?.specialty}` : ''}`}</div>
-                  )}
-
-                  {providerType === "Group" && (
-                    <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                      {covererNameList?.map ? (
-                        covererNameList?.map(data => {
-                          console.log("grouplevel", covererNameList)
-                          return (
-                            <div className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                              <div>{data?.departmentSpecialtyName}</div>
-                              <div className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                                onClick={() => setCovererNameList(covererNameList?.filter(innerData => data?.departmentSpecialtyName !== innerData?.departmentSpecialtyName))}
-                              ><CancelIcon sx={{ color: '#06617A', fontSize: 20 }} /></div></div>
-                          )
-                        })
-                      ) : null}
-                    </div>
-                  )}
-                  {providerType === "Individual" && (
-                    <div className={`${style.chipsContainer} ${style.marginTop10}`}>
-                      {covererNameList?.map ? (
-                        covererNameList.map((data, index) => (
-                          <div key={index} className={`${style.privilegeCategoryChips} ${style.displayInRow}`}>
-                            {/* <div>{name}</div> */}
-                            {/* <div>{selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}</div>   */}
-                            <div>
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.firstName}{" "}
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.middleName}{" "}
-                              {selectApplicant?.filter(optionData => optionData?.id === data)?.[0]?.applicant?.name?.lastName}
-                            </div>
-
-                            <div
-                              className={`${style.verticalAlignCenter} ${style.marginLeft} ${style.cursorPointer}`}
-                              onClick={() => handleRemoveChip(index)} // Optional: Add a remove handler
-                            >
-                              <CancelIcon sx={{ color: '#06617A', fontSize: 20 }} />
-                            </div>
-                          </div>
-                        ))
-                      ) : null}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
           <div className={style.threeColForButton}>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
             <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
             <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-            <div className={`${style.continue} ${style.marginTop} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-              && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
-              : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+            <div className={`${style.continue} ${style.marginTop} ${yesOrNoSuboxone !== '' ? '' : style.disabledButton}`} onClick={yesOrNoSuboxone !== '' ? () => getMissingFields() : () => { }}>CONTINUE</div>
           </div>
         </div>
         <div>
@@ -1126,11 +577,7 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
             <div className={style.twoColForButton}>
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-              <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
-                : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
-                  && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '') :
-                  (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? () => getMissingFields() : () => { }}>CONTINUE</div>
+              <div className={`${style.continue} ${style.marginTop10} ${yesOrNoSuboxone !== '' ? '' : style.disabledButton}`} onClick={yesOrNoSuboxone !== '' ? () => getMissingFields() : () => { }}>CONTINUE</div>
 
             </div>
           </div>

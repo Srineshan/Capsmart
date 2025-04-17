@@ -19,6 +19,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -758,7 +759,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
             {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
             <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <ReappointmentProgressCard
+                    <LocumProgressCard
                         step={""}
                         dataType={formSchema?.description}
                         title={formSchema?.title}

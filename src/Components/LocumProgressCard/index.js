@@ -3,7 +3,7 @@ import style from './index.module.scss'
 import { Tooltip } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, basicForm }) => {
+const LocumProgressCard = ({ dataType, title, timeNumber, timeText, progressStyle, basicForm }) => {
     const [startTime, setStartTime] = useState(0);
     const [totalTime, setTotalTime] = useState(() => {
         // Retrieve stored time from localStorage or initialize it to 0
@@ -12,6 +12,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
     });
     const [formIndex, setFormIndex] = useState(0)
     const { applicationId, section, step } = useParams();
+    let formsLength = basicForm?.forms?.filter(data => data?.schemaCategory !== 'PrivilegeSelection')?.length;
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -74,7 +75,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
 
     useEffect(() => {
         if (basicForm !== undefined) {
-            setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)));
+            setFormIndex(basicForm?.forms?.findIndex(data => data?.schemaCategory === atob(step)) - 1);
         }
     }, [step, basicForm])
 
@@ -106,7 +107,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
     }
 
 
-    console.log(Math.floor(totalTime / 60000), totalTime, (formIndex / (basicForm?.forms?.length - 1)) * 100, 'progress', formIndex, basicForm?.forms?.length - 1, basicForm?.forms?.reduce(
+    console.log(Math.floor(totalTime / 60000), totalTime, (formIndex / (formsLength - 1)) * 100, 'progress', formIndex, formsLength - 1, basicForm?.forms?.reduce(
         (maxIndex, step, index) => (step?.acknowledged ? index : maxIndex),
         -1
     ))
@@ -114,7 +115,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
         <div className={style.progressCard}>
             <div className={style.spaceBetween}>
                 <div className={style.displayInRow}>
-                    <div className={style.stepTextStyle}>{`${formIndex + 1}/${basicForm?.forms?.length}`}</div>
+                    <div className={style.stepTextStyle}>{`${formIndex + 1}/${basicForm?.forms?.filter(data => data?.schemaCategory !== 'PrivilegeSelection')?.length}`}</div>
                     <div className={`${style.titleTextStyle} ${style.marginLeft}`}>{title}</div>
                     {/* <div className={`${style.dataTypeCollectionsTextStyle}  ${step !== '' ? style.marginLeft : ''}`}>{dataType}</div> */}
                 </div>
@@ -125,10 +126,10 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
             </div> */}
             <div>
                 <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
-                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
+                    style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (formsLength - 1)) * 100}%, #E9E9F0 ${((formIndex / (formsLength)) * 100) + (100 / formsLength)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
                 >
 
-                    {(basicForm?.forms ?? []).map((data, index) => {
+                    {((basicForm?.forms?.filter(data => data?.schemaCategory !== 'PrivilegeSelection')) ?? []).map((data, index) => {
                         let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
 
                         if (data?.acknowledged) {
@@ -232,7 +233,7 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
 
                         const handleClick = () => {
                             if (data?.acknowledged) {
-                                navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
+                                navigate(`/locumApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
                             }
                         };
 
@@ -258,4 +259,4 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
     )
 }
 
-export default ReappointmentProgressCard;
+export default LocumProgressCard;
