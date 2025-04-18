@@ -474,7 +474,7 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                 opacity: isApproveEnabled ? 1 : 0.5
               }}
             >
-              <Tooltip title={"Click to Submit Notes and Comments"} arrow>
+              <Tooltip title={isApproveEnabled ? "Click to Submit Notes and Comments" : ""} arrow>
                 <div className={style.reviewButton}>SUBMIT</div></Tooltip>
             </div>
           </div>

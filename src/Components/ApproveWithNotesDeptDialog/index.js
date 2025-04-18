@@ -1116,7 +1116,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
-                    <Tooltip title="Click to Send Application for Review" arrow>
+                    <Tooltip title={isApproveEnabled ? "Click to Send Application for Review" : ""}arrow>
                     <div className={style.reviewButton}>SEND FOR REVIEW</div>
                     </Tooltip>
                   </div>

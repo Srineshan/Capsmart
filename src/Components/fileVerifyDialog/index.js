@@ -522,7 +522,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${documentStatus !== "REJECT_DOCUMENT" ? verificationStatus : "UNVERIFIED"}&documentStatus=${documentStatus}`, temp)
             .then((response) => {
                 console.log("success");
-                SuccessToaster2(documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? 'Document Rejected & Replaced Successfully' : documentStatus === "REJECT_DOCUMENT" ? 'Document Rejected Successfully' : 'Document Accepted Successfully')
+                SuccessToaster2(documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? `${file?.documentType} Document Rejected & Replaced Successfully` : documentStatus === "REJECT_DOCUMENT" ? `${file?.documentType} Document Rejected Successfully` : `${file?.documentType} Document Accepted Successfully`)
 
                 // Update the fileArray with the correct verified status
                 const updatedFileArray = fileArray.map((record, index) => {
@@ -625,7 +625,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 )} */}
                                 <div className={` ${selectedFileIndex === 0 ? style.cursorNotAllowed : style.cursorPointer} ${selectedFileIndex === 0 ? 'not-allowed' : ''}`} onClick={handlePrevious}>
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowLeftOnHover(true)} onBlur={() => setArrowLeftOnHover(false)}>
-                                        <Tooltip title={"Go to Previous"} arrow>
+                                        <Tooltip title={"Go to Previous Document"} arrow>
                                             {/* <NavigateBeforeIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
                                             <img src={arrowLeftOnHover ? ArrowHoverLeft : selectedFileIndex === 0 ? ArrowDisabledLeft : ArrowHoverLeft} className={style.icon} />
                                         </Tooltip>
@@ -640,7 +640,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                 >
                                     <div className={`${style.alignCenter}`} onFocus={() => setArrowRightOnHover(true)} onBlur={() => setArrowRightOnHover(false)}>
                                         {/* <NavigateNextIcon sx={{ font: '16px' }} className={`${style.marginTopBottom} `} /> */}
-                                        <Tooltip title={"Go to Next"} arrow>
+                                        <Tooltip title={"Go to Next Document"} arrow>
                                             <img src={arrowRightOnHover ? ArrowHoverRight : selectedFileIndex === fileArray?.length - 1 ? ArrowDisabledRight : ArrowHoverRight} className={style.icon} />
                                         </Tooltip>
                                     </div>

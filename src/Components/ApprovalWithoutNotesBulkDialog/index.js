@@ -582,7 +582,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
                   opacity: isApproveEnabled ? 1 : 0.5
                 }}
                 onClick={onClickApproveMoveFunction}>
-                  <Tooltip title="Click to Save" arrow>
+                  <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
                 <div className={style.reviewButton}>Save</div></Tooltip>
               </div>
             </div>

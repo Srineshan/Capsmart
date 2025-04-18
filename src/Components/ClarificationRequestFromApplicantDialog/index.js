@@ -306,7 +306,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
                   // onClick={() => getIsOpen(false)}
                   >
-                    <Tooltip title="Click to Request Document Clarification Now" arrow>
+                    <Tooltip title={isApproveEnabled ? "Click to Request Document Clarification Now" : ""} arrow>
                     <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div></Tooltip>
                   </div>
                 ) : (
@@ -332,7 +332,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                       cursor: isApproveEnabled ? 'pointer' : 'default'
                     }}
                   >
-                    <Tooltip title="Click to Save and Send by Email" arrow>
+                    <Tooltip title={isApproveEnabled ? "Click to Save and Send by Email" : ""} arrow>
                     <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
                     </Tooltip>
                   </div>

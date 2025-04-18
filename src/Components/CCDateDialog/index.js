@@ -120,7 +120,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
               onClick={isButtonDisabled ? undefined : () => getApplicationDateForCC()}
             >
-              <Tooltip title="Click to Save" arrow>
+              <Tooltip title={isButtonDisabled ? "" : "Click to Save"} arrow>
               <div className={style.reviewButton}>Save</div>
               </Tooltip>
             </div>

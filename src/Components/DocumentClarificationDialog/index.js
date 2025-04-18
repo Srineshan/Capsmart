@@ -478,7 +478,7 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
                     opacity: isApproveEnabled ? 1 : 0.5
                   }}
                 >
-                  <Tooltip title="Click to Save" arrow>
+                  <Tooltip title={isApproveEnabled ? "Click to Save" : ""} arrow>
                   <div className={style.reviewButton}>SAVE</div>
                   </Tooltip>
                 </div>

@@ -3530,7 +3530,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
-                          <Tooltip title={"Click to Update"} arrow>
+                        <Tooltip title={isEdited ? "Click to Update" : ""} arrow>
                           <button
                             className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
                               }`}

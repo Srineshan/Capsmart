@@ -945,7 +945,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
                     onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                     style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
                   >
-                    <Tooltip title="Click to Submit Staff Recommendation with Comments" arrow>
+                    <Tooltip title={isApproveEnabled ? "Click to Submit Staff Recommendation with Comments" : ""} arrow>
                     <div className={style.reviewButton}>RECOMMEND STAFF WITH COMMENTS</div></Tooltip>
                   </div>
                   {/* <div

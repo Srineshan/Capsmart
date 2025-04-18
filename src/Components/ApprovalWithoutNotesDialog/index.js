@@ -884,7 +884,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                       opacity: isApproveEnabled ? 1 : 0.5
                     }}
                   >
-                    <Tooltip title="Click to Recommend Staff for Approval" arrow>
+                    <Tooltip title={isApproveEnabled ? "Click to Recommend Staff for Approval" : ""} arrow>
                     <div className={style.reviewButton}>RECOMMEND STAFF</div>
                     </Tooltip>
                   </div>

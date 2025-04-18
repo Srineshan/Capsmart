@@ -17,7 +17,7 @@ const DeleteConfirmation = ({getShowDeleteConfirmation, getDeleteConfirmation, c
                 {confirmationText}
                 </p>
                 <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                <Tooltip title={"Click to select No"} arrow>
+                <Tooltip title={"Click to Select No"} arrow>
                     <button className={`${style.cloneOutlinedButton} ${style.cursorPointer}`} onClick={()=>getShowDeleteConfirmation(false)}>NO</button></Tooltip>
                     <Tooltip title={"Click to Select Yes"} arrow>
                     <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {getDeleteConfirmation(true);getShowDeleteConfirmation(false)}}>YES</button></Tooltip>

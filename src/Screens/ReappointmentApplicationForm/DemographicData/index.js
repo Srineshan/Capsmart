@@ -874,7 +874,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${style.displayInRowRev} ${style.marginTop}`}
                                     >
                                         <div className={style.marginLeft}>
-                                        <Tooltip title={"Click to Update Contact Address"} arrow>
+                                        <Tooltip title={isContactInfoEdited ? "Click to Update Contact Address" : ""} arrow>
                                             <button
                                                 className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
                                                 onClick={isContactInfoEdited ? () => {

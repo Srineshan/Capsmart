@@ -381,7 +381,7 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
                     </Tooltip>
                   </div>
                   <div>
-                    <Tooltip title={"Click to Begin Reappointment Application"} arrow>
+                    <Tooltip title={processReappointment !== '' ? "Click to Begin Reappointment Application" : ""} arrow>
                       <div
                         className={`${style.continue} ${style.marginTop} ${style.marginLeft} ${processReappointment !== '' ? '' : style.disable}`}
                         onClick={processReappointment !== '' ? () => {
