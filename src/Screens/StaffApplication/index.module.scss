@@ -295,6 +295,19 @@ body::-webkit-scrollbar {
   gap: 10px;
 }
 
+
+.applicantGrid2 {
+  display: grid;
+  grid-template-columns: 2% 15% 15% 15% 20% 5% 15% 5%;
+  grid-gap: 1%;
+}
+
+.applicantGrid3 {
+  display: grid;
+  grid-template-columns: 2% 15% 20% 15% 15% 15% 15%;
+  grid-gap: 1%;
+}
+
 .applicationCardStyle {
   background: #FFFFFF 0% 0% no-repeat padding-box;
   box-shadow: 0px 5px 20px #52575D4D;
@@ -813,6 +826,14 @@ body::-webkit-scrollbar {
   display: flex;
   flex-direction: row;
 }
+
+.displayInRow1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
 
 
 .displayInRowDecline {
@@ -1558,6 +1579,11 @@ body::-webkit-scrollbar {
   cursor: pointer;
 }
 
+.crossStyle1 {
+  height: 24px;
+  width: 24px;
+}
+
 .crossStyleImg {
   height: 20px;
   width: 20px;
@@ -1722,7 +1748,13 @@ select {
 
 .dialogStyle {
   height: 80%;
-  width: 75% !important;
+  width: 85% !important;
+  border-radius: 20px;
+}
+
+.dialogStyle2 {
+  height: 80%;
+  width: 92% !important;
   border-radius: 20px;
 }
 
@@ -1950,6 +1982,10 @@ select {
 
 .marginBottom {
   margin-bottom: 10px;
+}
+
+.marginBottom5 {
+  margin-bottom: 5px;
 }
 
 .flexWrap {

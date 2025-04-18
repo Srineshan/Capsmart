@@ -7,7 +7,7 @@ import { format, parse } from "date-fns";
 import CommonSelectField from "../../../Components/CommonFields/CommonSelectField";
 import { GET, PUT, POST, TenantID } from "../../dataSaver";
 import CommonTextField from "../../../Components/CommonFields/CommonTextField";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Tooltip } from "@mui/material";
 import CommonDropZone from "../../../Components/CommonFields/CommonDropZone";
 import axios from "axios";
 import CommonRadio from "../../../Components/CommonFields/CommonRadio";
@@ -2919,18 +2919,22 @@ return Object.keys(newErrors).length === 0;
       </div>
       <div className={`${style.padding20} ${style.marginRight40} ${style.marginBottom20}`}>
         <div className={`${style.floatRight} ${style.marginTop20} ${style.marginBottom20}`}>
+          <Tooltip title={"Click to Save"} arrow>
           <button
             className={style.buttonStyle}
             onClick={() => SaveSubmitHandler()}
           >
             SAVE
           </button>
+          </Tooltip>
+          <Tooltip title={"Click to Cancel"} arrow>
           <button
             className={`${style.outlinedButton} ${style.marginLeft20}`}
             onClick={() => handleCancelClick()}
           >
             CANCEL
           </button>
+          </Tooltip>
         </div>
       </div>
       {showValidationDialog && (

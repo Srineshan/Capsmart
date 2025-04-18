@@ -281,13 +281,13 @@ const NewCredCommApplication = ({
         <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
           <div className={`${style.documentGrid}`}>
             <a href={fileFields?.[i]?.fileURL} target="_blank">
-              <Tooltip title={'Preview'} arrow>
+              <Tooltip title={'Preview File'} arrow>
                 <ArticleOutlinedIcon sx={{ color: '#b0a9ef', fontSize: 35 }} onClick={() => { setSelectedFileURL(fileFields?.[i]?.fileURL) }} />
               </Tooltip>
             </a>
             <div className={style.marginTop}>
               <a href={fileFields?.[i]?.fileURL} target="_blank">
-                <Tooltip title={'Preview'} arrow>
+                <Tooltip title={'Preview File'} arrow>
                   <p className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`} onClick={() => { setSelectedFileURL(fileFields?.[i]?.fileURL) }}><strong>{fileFields?.[i]?.documentType}</strong></p>
                 </Tooltip>
               </a>

@@ -50,8 +50,9 @@ import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode, formatFirstNameLas
 import CommonSearchField from "../../Components/CommonFields/CommonSearchField";
 import CommonSwitch from "../../Components/CommonFields/CommonSwitch";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import { Tooltip } from "@mui/material";
+import ReappointmentReportDialog from "./ReappointmentReportDialog";
 
 const StaffApplicationList = ({
   isLoading,
@@ -85,6 +86,11 @@ const StaffApplicationList = ({
   const [showCardDetails, setShowCardDetails] = useState(false);
   const [showCardAppointment, setShowCardAppointment] = useState(false);
   const [showCardCompletion, setShowCardCompletion] = useState(false);
+  const [reappointmentCount, setReappointmentCount] = useState(0);
+  const [applicantTypes, setApplicantTypes] = useState([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedApplicantType, setSelectedApplicantType] = useState(null);
+  const [staffApplications, setStaffApplications] = useState([]);
   const [showDepartmentCardStatus, setShowDepartmentCardStatus] = useState(false);
   const [applicationRejected, setApplicationRejected] = useState({
     totalRejections: 0,
@@ -1281,6 +1287,11 @@ const StaffApplicationList = ({
   }, []);
 
   useEffect(() => {
+    getStaffTotalCount();
+    getApplicantTypesWithStaffCount();
+  }, []);
+
+  useEffect(() => {
     getDeclineData();
   }, [showApplicationApprovedDeclineDialog]);
 
@@ -1453,7 +1464,7 @@ const StaffApplicationList = ({
     }
     try {
       const response = await GET(
-        `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}&role=${workModeType}`
+        `application-management-service/application?tenantId=${TenantID}&applicationStatus=REJECTED&applicationCreationType=${applicationType}`
       );
       console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
@@ -1464,6 +1475,69 @@ const StaffApplicationList = ({
     }
   };
 
+
+  const getStaffTotalCount = async () => {
+    try {
+      const response = await GET(
+        `application-management-service/staff?status=ACTIVE&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
+      );
+      setReappointmentCount(response?.data?.numberOfElements);
+      return response?.data?.numberOfElements || 0;
+    } catch (error) {
+      console.error("Error fetching NumberofElements:", error);
+      return [];
+    }
+  };
+
+  const getApplicantTypesWithStaffCount = async () => {
+    try {
+      const response = await GET("entity-service/applicantType");
+      const types = response?.data || [];
+
+      const typesWithoutFirst = types.slice(1);
+
+      // Fetch staff count for each applicantTypeId
+      const typesWithCount = await Promise.all(
+        typesWithoutFirst.map(async (type) => {
+          try {
+            const res = await GET(
+              `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
+            );
+            const count = res?.data?.numberOfElements || 0;
+
+            return { ...type, staffCount: count };
+          } catch (error) {
+            console.error("Error fetching staff count for:", type.id, error);
+            return { ...type, staffCount: 0 };
+          }
+        })
+      );
+
+      setApplicantTypes(typesWithCount);
+    } catch (error) {
+      console.error("Error fetching applicant types:", error);
+    }
+  };
+
+  const handleApplicantTypeClick = async (type) => {
+    try {
+      const res = await GET(
+        `application-management-service/staff?status=ACTIVE&applicantTypeId=${type.id}&reappointmentStatus=SENT&reappointmentStatus=RE_SENT&applicationStatus=CREATED&applicationStatus=COMPLETED&applicationStatus=DECLINED`
+      );
+      const applications = res?.data?.staffs || [];
+
+      // Set selected data
+      setSelectedApplicantType(type);
+      setStaffApplications(applications);
+
+      // Open dialog
+      setDialogOpen(true);
+    } catch (error) {
+      console.error("Failed to fetch staff applications", error);
+    }
+  };
+
+
   const getDeclineData = async () => {
     if (applicationType === "LOCUM") {
       return;
@@ -1473,7 +1547,7 @@ const StaffApplicationList = ({
         `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType}`
         // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
-      console.log("Rejection data", response?.data?.applications);
+      console.log("Declined data", response?.data?.applications);
       setDeclineListData(response?.data?.applications);
       return response?.data?.applications || [];
     } catch (error) {
@@ -1483,7 +1557,6 @@ const StaffApplicationList = ({
   };
 
   const handleClick = async () => {
-    // await getDeclineData();
     setShowApplicationRejectionDialog(true);
   };
 
@@ -1566,6 +1639,7 @@ const StaffApplicationList = ({
     await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
       .then((response) => {
         setApplicationRejected(response?.data);
+        console.log("Datas", response?.data);
         setShowCardDetails(
           response?.data?.applicationsRejected > 0 ||
             response?.data?.applicationsApprovedButDenied > 0
@@ -4926,38 +5000,42 @@ const StaffApplicationList = ({
                     <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
                   </div>
                 )}
-                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) && applicationType !== "LOCUM") ? (
-                  <div
-                    className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
-                  >
-                    <div className={`${style.displayInRow} ${style.alignCenter}`}>
-                      {applicationType === "NEW" && (
-                        <AddCircleOutlineIcon
-                          sx={{ fontSize: 20, color: "white" }}
+                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "View Eligible Staff for Reappointment" : "Create New Application"} arrow>
+                    <div
+                      className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
+                    >
+                      <div className={`${style.displayInRow} ${style.alignCenter}`}>
+                        {applicationType === "NEW" && (
+                          <AddCircleOutlineIcon
+                            sx={{ fontSize: 20, color: "white" }}
+                            onClick={() =>
+                              applicationType === "NEW"
+                                ? navigate("/createStaffMemberApplication")
+                                : navigate("/createStaffReapplication")
+                            }
+                          />
+                        )}
+
+                        <div
+                          className={`${style.alignCenter} ${style.marginLeft10}`}
                           onClick={() =>
                             applicationType === "NEW"
                               ? navigate("/createStaffMemberApplication")
                               : navigate("/createStaffReapplication")
+                            // : navigate("/ApplicantPortalRFC")
+
+
                           }
-                        />
-                      )}
-                      <div
-                        className={`${style.alignCenter} ${style.marginLeft10}`}
-                        onClick={() =>
-                          applicationType === "NEW"
-                            ? navigate("/createStaffMemberApplication")
-                            : navigate("/createStaffReapplication")
-                          // : navigate("/ApplicantPortalRFC")
+                        >
+                          {applicationType === "REAPPOINTMENT"
+                            ? `Staff for Reappointment (${reappointCount})`
+                            : "Create New Application"}
+                        </div>
 
-
-                        }
-                      >
-                        {applicationType === "REAPPOINTMENT"
-                          ? `Staff for Reappointment (${reappointCount})`
-                          : "Create New Application"}
                       </div>
                     </div>
-                  </div>
+                  </Tooltip>
                 ) : null}
 
                 {/* {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
@@ -4994,7 +5072,71 @@ const StaffApplicationList = ({
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        {applicationType === "LOCUM" ? "Locum Renewal Status Tracker" : "Reappointments Status Tracker"}
+                        Reappointments Sent ({reappointmentCount})
+                      </div>
+                      <div className={`${style.marginLeft10} `}>
+                        {!showCardAppointment ? (
+                          <Tooltip title={"Click to Expand"} arrow>
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardAppointment(!showCardAppointment)}
+                            />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title={"Click to Minimize"} arrow>
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardAppointment(!showCardAppointment)}
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+                    </div>
+                    {showCardAppointment && (
+                      <div
+                        style={{
+                          maxHeight: "200px",
+                          overflowY: "auto",
+                          scrollbarWidth: "thin",
+                          scrollbarColor: "gray transparent",
+                        }}
+                      >
+                        <div
+                          className={`${style.displayInCol} ${style.marginTop}`}
+                        >
+                          {applicantTypes.map((type) => (
+                            <Tooltip title={`View ${type?.applicantType} Reappointment Applications`} arrow>
+                            <div
+                              key={type.id}
+                              className={`${style.warningTextAlign} ${style.staffTextStyle} ${style.marginBottom5} ${style.cursorPointer}`}
+                              onClick={() => handleApplicantTypeClick(type)}
+                            >
+                              <div className={style.progressbarStyle}>
+                                <div className={style.spaceBetween}>
+                                  <div
+                                    className={style.DepartmentHeadingTextStyle}
+                                  >
+                                    {type?.applicantType} ({type.staffCount})
+                                  </div>
+                                  <KeyboardArrowRightIcon
+                                    sx={{ fontSize: 20, color: "#06617A" }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            </Tooltip>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+
+                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                  <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
+                    <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
+                      <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
+                        Reappointments Status Tracker
                         {/* (
                           {totalCountDept || 0}) */}
                         {/* <span
@@ -5037,7 +5179,8 @@ const StaffApplicationList = ({
                           </div>
                         </div>
                       </div>
-                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div>
+                      <Tooltip title={'Click to View Current Status'} arrow >
+                        <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickDepttrackerDialog()}>VIEW CURRENT STATUS</div></Tooltip>
                     </div>
                   </div>
                 ) : null}
@@ -5058,7 +5201,8 @@ const StaffApplicationList = ({
                         scrollbarColor: "gray transparent",
                       }}
                     >
-                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div>
+                      <Tooltip title={"Click to View Current Attestation Log"} arrow>
+                      <div className={`${style.viewCurrentStatusText} ${style.marginTop10} ${style.cursorPointer}`} onClick={() => onClickMdTrackerDialog()}> CURRENT ATTESTATION LOG</div></Tooltip>
                     </div>
                   </div>
                 ) : null}
@@ -5081,15 +5225,19 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardCompletion ? (
-                          <AddIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardCompletion(!showCardCompletion)}
-                          />
+                          <Tooltip title={"Click to Expand"} arrow>
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardCompletion(!showCardCompletion)}
+                            />
+                          </Tooltip>
                         ) : (
-                          <RemoveIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardCompletion(!showCardCompletion)}
-                          />
+                          <Tooltip title={"Click to Minimize"} arrow>
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardCompletion(!showCardCompletion)}
+                            />
+                          </Tooltip>
                         )}
                       </div>
                     </div>
@@ -5175,39 +5323,47 @@ const StaffApplicationList = ({
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardDetails ? (
-                          <AddIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardDetails(!showCardDetails)}
-                          />
+                          <Tooltip title={"Click to Expand"} arrow>
+                            <AddIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardDetails(!showCardDetails)}
+                            />
+                          </Tooltip>
                         ) : (
-                          <RemoveIcon
-                            sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
-                            onClick={() => setShowCardDetails(!showCardDetails)}
-                          />
+                          <Tooltip title={"Click to Minimize"} arrow>
+                            <RemoveIcon
+                              sx={{ fontSize: 20, color: "#06617A", cursor: "pointer" }}
+                              onClick={() => setShowCardDetails(!showCardDetails)}
+                            />
+                          </Tooltip>
                         )}
                       </div>
                     </div>
                     {
                       showCardDetails && (
                         <>
-                          <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                            onClick={() => {
-                              handleClick();
-                            }}
-                          >
-                            {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                            Approved But Declined ({applicationRejected?.applicationsRejected})
-                          </div>
-                          <div
-                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
-                            onClick={() => {
-                              setShowApplicationApprovedDeclineDialog(true);
-                            }}
-                          >
-                            Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
-                            {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
-                          </div>
+                          <Tooltip arrow title={"Click to View Declined Applications"}>
+                            <div
+                              className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                handleClick();
+                              }}
+                            >
+                              {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                              Approved But Declined ({applicationRejected?.applicationsRejected})
+                            </div>
+                          </Tooltip>
+                          <Tooltip arrow title={"Click to View Rejected Applications"}>
+                            <div
+                              className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
+                              onClick={() => {
+                                setShowApplicationApprovedDeclineDialog(true);
+                              }}
+                            >
+                              Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                              {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                            </div>
+                          </Tooltip>
                         </>
                       )
                     }
@@ -5237,7 +5393,7 @@ const StaffApplicationList = ({
                     {showAssignee && (
                       <div className={`${style.filterBackground} ${style.displayInRow}`}>
                         <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Assigned to Me</div>
-                        <Tooltip title="Remove" arrow>
+                        <Tooltip title="Remove Filter" arrow>
                           <CancelOutlinedIcon
                             sx={{
                               fontSize: 15,
@@ -5254,7 +5410,7 @@ const StaffApplicationList = ({
                 {selectedDepartment && (
                   <div className={`${style.filterBackground} ${style.displayInRow} ${style.marginLeft5}`}>
                     <div className={`${style.filtertextStyle} ${style.marginRight5}`}>Filter by {selectedDepartmentName}</div>
-                    <Tooltip title="Remove" arrow>
+                    <Tooltip title="Remove Filter" arrow>
                       <CancelOutlinedIcon
                         sx={{
                           fontSize: 15,
@@ -5440,7 +5596,7 @@ const StaffApplicationList = ({
                       actions={actions}
                       scrollStyle={style.contractScrollStyle}
                       tableSortValues={tableSortValues}
-                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Record for you to manage"}
+                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Records for you to manage"}
                       onClickFunction={() => { }}
                       getHandleSort={getHandleSort}
                       sortValue={{ sortBy: sortValue, sortByField: sortField }}
@@ -5484,6 +5640,7 @@ const StaffApplicationList = ({
               rejectionListData={rejectionListData}
               // rejectedCount={applicationRejected?.appointmentRequestsDenied}
               declineCount={applicationRejected?.applicationsRejected}
+              onClickView={onClickViewAndVerifyFunction}
             />
           )
         }
@@ -5494,6 +5651,7 @@ const StaffApplicationList = ({
               declineListData={declineListData}
               // declineCount={applicationRejected?.applicationsRejected}
               rejectedCount={applicationRejected?.appointmentRequestsDenied}
+              onClickView={onClickViewAndVerifyFunction}
             />
           )
         }
@@ -5522,6 +5680,18 @@ const StaffApplicationList = ({
             <CheckListDialog getCheckListDialog={getCheckListDialog} />
           )
         }
+
+{dialogOpen && (
+          <ReappointmentReportDialog
+            open={dialogOpen}
+            onClose={() => {
+              setDialogOpen(false);
+              setSelectedApplicantType(null);
+            }}
+            tableData={staffApplications}
+            applicantType={selectedApplicantType?.applicantType}
+          />
+        )}
       </div >
 
       {/* )} */}

@@ -1,7 +1,7 @@
 import React from 'react';
 import HapiCare from "./../../images/hapicare.png";
 import style from './index.module.scss';
-import { Avatar, IconButton, Button } from "@mui/material";
+import { Avatar, IconButton, Button, Tooltip } from "@mui/material";
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import HelpOutlineOutlinedIcon from '@mui/icons-material/HelpOutlineOutlined';
@@ -33,7 +33,7 @@ const ApplicantHeader = () => {
                     <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`}>
                         {/* <Avatar alt="User" src="" className={style.avatar} /> */}
                     </div>
-                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleLogout}><LogoutOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></div>
+                    <div className={`${style.backgroundLogo} ${style.cursorPointer} ${style.verticalAlignCenter} ${style.justifyCenter}`} onClick={handleLogout}><Tooltip title={"Click to Logout"} arrow><LogoutOutlinedIcon sx={{ fontSize: 20, color: "#52575D" }} /></Tooltip></div>
                 </div>
             </div>
         </div>

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { siteTimeZone, timeZoneAbbreviation, formatFirstNameLastName } from '../../utils/formatting';
 
 import style from './index.module.scss';
+import { Tooltip } from '@mui/material';
 
 const UserCard = ({ getIsExpanded, updateProfileData }) => {
     let cookie = new Cookie();
@@ -65,6 +66,7 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                     </Link>
                     <div>
                         <Link to={'/profile'} className={style.noFontStyle}>
+                        <Tooltip title={"Go to Your Profile Page"} arrow>
                             <div className={style.marginLeft20}>
                                 {/* <div className={style.userNameStyle}>
                            Hi, {updateProfileData
@@ -86,10 +88,14 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                                     Last Login {currentUserDetails && formatInTimeZone(new Date(currentUserDetails?.lastLogin) || new Date(), siteTimeZone(), 'MMM d, yy H:mm')} {timeZoneAbbreviation()}
                                 </div>
                             </div>
+                            </Tooltip>
                         </Link>
+                        
                     </div>
                 </div>
+                <Tooltip title={"Click to Minimize"} arrow>
                 <img src={ChevronRight} className={`${style.chevronRightStyle} ${style.cursorPointer}`} onClick={() => getIsExpanded(false)} />
+                </Tooltip>
             </div>
             <div className={`${style.roleSwitchBackgroundStyle} ${currentUserDetails?.roles?.length > 1 ? style.spaceBetween : style.placeCenter
                 } ${style.alignCenterText} ${style.marginTop}`}>
@@ -98,12 +104,14 @@ const UserCard = ({ getIsExpanded, updateProfileData }) => {
                     <div>Workspace</div>
                 </div>
                 {currentUserDetails?.roles?.length > 1 && (
+                    <Tooltip title={"Click to Switch Workspace"} arrow>
                     <div
                         className={`${style.workSpaceSwitchTextStyle} ${style.marginLeft20} ${style.cursorPointer}`}
                         onClick={handleWorkModeSelection}
                     >
                         Switch Workspace
                     </div>
+                    </Tooltip>
                 )}
             </div>
         </div>

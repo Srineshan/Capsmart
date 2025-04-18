@@ -10,6 +10,7 @@ import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import style from "./index.module.scss";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextField from "@mui/material/TextField";
+import { Tooltip } from "@mui/material";
 
 const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab }) => {
   const id = sessionStorage.getItem("applicationId");
@@ -71,6 +72,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
                 : selectedTab === "level-4"
                   ? "Staff Application Approval Date by MAC" : "Staff Application Approval Date by BOD"}
             </div>
+            <Tooltip title="Click to Close" arrow>
             <img
               src={CrossPink}
               alt="cross"
@@ -79,6 +81,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
                 onClose();
               }}
             />
+            </Tooltip>
           </div>
           <div>
             <CommonDateField
@@ -117,7 +120,9 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
               onClick={isButtonDisabled ? undefined : () => getApplicationDateForCC()}
             >
+              <Tooltip title={isButtonDisabled ? "" : "Click to Save"} arrow>
               <div className={style.reviewButton}>Save</div>
+              </Tooltip>
             </div>
 
           </div>

@@ -76,7 +76,7 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
                 key={index}
               >
                 <div className={style.fullWidth}>
-                  <Tooltip title="Click to Open" arrow>
+                  <Tooltip title="Click to Open File" arrow>
                     <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(document)}>
                       <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                         {docIcon && (
@@ -109,7 +109,7 @@ const ApplicationReferenceDocuments = ({ refetchRefDoc, getResetRefetch }) => {
             >
 
               <div className={style.fullWidth}>
-                <Tooltip title="Click to Open" arrow>
+                <Tooltip title="Click to Open File" arrow>
                   <div className={`${style.documentsGrid} ${style.verticalAlignCenter} ${style.cursorPointer}`} onClick={() => openDialog(basicForm?.payment?.invoice)}>
                     <div className={`${style.displayInRow} ${style.verticalAlignCenter}`}>
                       <img

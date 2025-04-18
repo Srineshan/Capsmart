@@ -7,6 +7,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import style from './index.module.scss';
 import { useParams } from 'react-router-dom';
 import { GET } from '../../Screens/dataSaver';
+import { Tooltip } from '@mui/material';
 
 const stripePromise = loadStripe('pk_test_51OPIp6SJfzua1uDJrMdrq3o5Sfq9wWdv7y3Ev62RkNJEHGrHdMRcrLrxzNMMXiQTCvi9eR3QuvzxqY1OTMPv9mnp003pgscIaj');
 
@@ -66,12 +67,14 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                         <div className={style.spaceBetween}>
                             <div className={style.heading}>Payment Required</div>
                             <div className={style.displayInRow}>
+                            <Tooltip title={"Click to Close"} arrow>
                                 <img
                                     src={CrossPink}
                                     alt="cross"
                                     className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
                                     onClick={() => { getIsOpen(false) }}
                                 />
+                                </Tooltip>
                             </div>
                         </div>
                         <p className={`${style.description} ${style.marginTop}`}>{`For your reappointment application there is a processing fee of ${paymentListData?.currencyType}${paymentListData?.fee} that is applicable.`}</p>
@@ -85,12 +88,14 @@ const PaymentDialog = ({ getIsOpen, continueClickFunc, paymentListData, applican
                             <div className={`${style.description} ${style.marginTop10}`}><strong>{`${paymentListData?.currencyType}${paymentListData?.fee}`}</strong></div>
                         </div>
                         <div className={`${style.spaceBetween} ${style.marginTop}`}>
-                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
+                        <Tooltip title={"Click to Cancel"} arrow>
+                            <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false); continueClickFunc(); }}>CONTINUE</div> */}
+                            <Tooltip title={"Click to Proceed to Payment"} arrow>
                             <div className={`${style.continue} ${style.marginLeft}`} onClick={() => {
                                 getIsOpen(true); setShowThirdPartyDialog(true)
                                 // handleClick()
-                            }}>CONTINUE</div>
+                            }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
 
