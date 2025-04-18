@@ -22,7 +22,7 @@ import { format, subDays } from "date-fns";
 import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import Cookies from "universal-cookie";
 
-const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
+const LocumLandingDialog = ({ getIsOpen, days }) => {
   // const { login, register, sendOTP, verifyOTP } = useDescope();
   let cookie = new Cookies();
   const descopeSdk = useDescope();
@@ -145,8 +145,8 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
 
   const handleContinue = () => {
     if (processReappointment === 'Yes') {
-      setIsContinue(true);
       getIsOpen(false);
+      setIsContinue(true);
     }
     if (processReappointment === 'No') {
       setShowAlert(true);
@@ -495,4 +495,4 @@ const ReappointmentLandingDialog = ({ getIsOpen, days }) => {
   ) : ('')
 };
 
-export default ReappointmentLandingDialog;
+export default LocumLandingDialog;

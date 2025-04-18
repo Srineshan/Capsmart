@@ -267,11 +267,11 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
       const providerField = form?.schema?.properties?.coverageDetails?.properties?.providerType;
       console.log(providerField);
 
-      const providerLabel = providerField.label;
+      const providerLabel = providerField?.label;
       setProviderLabels(providerLabel);
 
       if (providerField?.enum) {
-        const enumValues = providerField.enum
+        const enumValues = providerField?.enum
         console.log(enumValues);
 
         setProviderOptions(enumValues);

@@ -23,6 +23,7 @@ import { dataLoadingGIF } from '../../../utils/formatting';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
 import LocumProgressCard from '../../../Components/LocumProgressCard';
+import LocumJourneyDialog from '../../../Components/LocumJourneyDialog';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -315,7 +316,7 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
 
                 </div>
                 {showJourneyDialog && (
-                    <ReappointmentJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
+                    <LocumJourneyDialog getIsOpen={getIsShowReappointmentJourneyDialog} title={`Mission Accomplished! You're A Champion`} img={JourneyStep10} formIndex={formIndex} basicForm={basicForm} continueClick={() => { }} />
                 )}
                 {isSaveInProgressOpen && (
                     <SaveInProgressDialog getIsOpen={getIsSaveInProgressOpen} />
