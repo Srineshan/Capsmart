@@ -216,7 +216,7 @@ const ApplicantPortalRFC = () => {
         setClarificationDescription(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationDescription)
         setClarificationType(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationRequest?.clarificationRequestType)
         if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse !== null) {
-            if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationResponseType === "REPLACE_ORIGINAL_DOCUMENT") {
+            if (basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationResponseType === "REPLACE_ORIGINAL_DOCUMENT" || basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.clarificationResponseType === "ADD_ADDITIONAL_DOCUMENTS") {
                 setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.documents)
             } else {
                 setUploadFileData(basicForm?.forms?.filter(data => data?.id === formIdFromParam)?.[0]?.clarifications?.filter(clarificationData => clarificationData?.id === clarificationId)?.[0]?.clarificationResponse?.attachedDocuments)
@@ -404,14 +404,17 @@ const ApplicantPortalRFC = () => {
 
         try {
             setIsLoadingImageDocs(true);
-            const response = await POST(`application-management-service/application/${taskById?.details?.application?.application?.id}/files/bulk?isLLMRequired=${true}`, formData);
+            const response = await POST(`application-management-service/application/${taskById?.details?.application?.application?.id}/files/bulk?isLLMRequired=${clarificationType === "REQUEST_ADDITIONAL_DOCUMENTS" ? false : true}`, formData);
             console.log("API Response:", response);
             SuccessToaster('File Uploaded Successfully');
             console.log("Response data:", response?.data);
             setUploadFileData(prevData => {
                 // Merge previous data with new data
-                // return [...(prevData || []), ...(response?.data || [])];
-                return response?.data || []
+                if (clarificationType === "REQUEST_ADDITIONAL_DOCUMENTS") {
+                    return [...(prevData || []), ...(response?.data || [])];
+                } else {
+                    return response?.data || []
+                }
             });
             setIsLoadingImageDocs(false);
             console.log("Responseupload:", uploadFileData);
@@ -438,37 +441,42 @@ const ApplicantPortalRFC = () => {
         temp.push({
             "type": "icon", "icon": array?.map(innerData => {
                 const rowId = innerData?.id; return innerData?.file?.fileType === 'application/pdf' ?
-                    (<Tooltip title="Click to Open" arrow>
+                    (<Tooltip title="Click to View Document" arrow>
                         <img src={PDFDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>
                     ) : innerData?.file?.fileType?.startsWith("image/") ?
-                        (<Tooltip title="Click to Open" arrow>
+                        (<Tooltip title="Click to View Document" arrow>
                             <img src={imgDocs} alt="" className={style.docTypeImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId) }} /> </Tooltip>) : (<TextSnippetOutlinedIcon style={{ fontSize: 20 }} onClick={() => { window.open(innerData?.file?.fileURL, '_blank'); }} />)
             }), 'isShowHoverText': false
         });
         temp.push({
             "type": "text", "value": array?.map(innerData => innerData?.file?.fileName)
         })
-        temp.push({
-            "type": "text", "value": array?.map(innerData => innerData?.documentType?.shortName)
-        })
-        temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['verified'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
-        temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['valid'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+        if (clarificationType !== "REQUEST_ADDITIONAL_DOCUMENTS") {
+            temp.push({
+                "type": "text", "value": array?.map(innerData => innerData?.documentType?.shortName)
+            })
+            temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['verified'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+            temp.push({ "type": "icon", "icon": array?.map(innerData => innerData?.documentType?.shortName === 'Profile Picture' ? <RemoveIcon style={{ fontSize: 20, marginLeft: 13 }} /> : innerData['valid'] ? <CheckCircleRoundedIcon style={{ fontSize: 20, color: `#25BF6A`, marginLeft: 13 }} /> : <WarningAmberRoundedIcon style={{ fontSize: 20, color: `#FF6562`, marginLeft: 13 }} />), 'isShowHoverText': false });
+        }
         temp.push({
             "type": "icon", "icon": array?.map(innerData =>
-                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} />
+                <Tooltip title="Click to Delete File" arrow>
+                <img src={DeleteIcon} alt="" className={style.docTypeImgStyle} onClick={() => { setDeleteData(innerData); setShowDeleteConfirmation(true) }} /></Tooltip>
             ), 'isShowHoverText': false
         });
-        temp.push({
-            type: "icon", icon: array?.map(innerData => {
-                const rowId = innerData?.id;
-                return (
-                    <Tooltip title="Click to Edit" arrow>
-                        <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
-                    </Tooltip>
-                );
-            }),
-            isShowHoverText: false
-        });
+        if (clarificationType !== "REQUEST_ADDITIONAL_DOCUMENTS") {
+            temp.push({
+                type: "icon", icon: array?.map(innerData => {
+                    const rowId = innerData?.id;
+                    return (
+                        <Tooltip title="Click to Edit" arrow>
+                            <ModeEditOutlinedIcon alt="" className={style.docTypeEditImgStyle} onClick={() => { setIsLoadingDocs(true); setShowFileWithFields(true); getDocument(rowId); }} />
+                        </Tooltip>
+                    );
+                }),
+                isShowHoverText: false
+            });
+        }
         console.log(temp, array, form?.documentsRequired?.map(data => data?.document?.shortName))
         return temp;
     }
@@ -499,8 +507,12 @@ const ApplicantPortalRFC = () => {
             clarificationDescription: userNotes,
             attachedDocuments: files,
         };
-        if (clarificationType !== undefined && clarificationType !== "" && clarificationType !== null) {
-            temp["clarificationResponseType"] = "REPLACE_ORIGINAL_DOCUMENT";
+        if (clarificationType !== undefined && clarificationType !== "" && clarificationType !== null && clarificationType !== 'NA') {
+            if (clarificationType === "REQUEST_ADDITIONAL_DOCUMENTS") {
+                temp["clarificationResponseType"] = "ADD_ADDITIONAL_DOCUMENTS";
+            } else {
+                temp["clarificationResponseType"] = "REPLACE_ORIGINAL_DOCUMENT";
+            }
             temp["documents"] = uploadFileData;
         }
 
@@ -711,6 +723,7 @@ const ApplicantPortalRFC = () => {
                                 <div className={`${style.fileDisplayGrid} ${style.fileDisplayCME} ${style.marginTop20} ${style.verticalAlignCenter}`}>
                                     <div><strong>CME / CEU Transcript</strong></div>
                                     <div className={style.leftAlign}>{form?.forms?.[formIndex]?.data?.cmeTranscripts?.file?.fileName}</div>
+                                    <Tooltip title="Click to view uploaded file" arrow>
                                     <img
                                         src={VerifiedImage}
                                         alt=""
@@ -720,6 +733,7 @@ const ApplicantPortalRFC = () => {
                                         }
                                         }
                                     />
+                                    </Tooltip>
                                 </div>
                             )}
                             <div className={`${style.cmeCreditsGrid} ${style.marginTop20}`}>
@@ -1760,30 +1774,35 @@ const ApplicantPortalRFC = () => {
                 closeClick={handleCloseClick}
             />
             <div className={` ${style.screenPadding}`}>
-                {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+                {showInfo && <Tooltip title="Click to close" arrow><div className={style.bgdrop} onClick={() => setShowInfo(false)}></div></Tooltip>}
                 <div className={` ${style.applicationScreenGrid}  ${showInfo ? "blurredBackground" : ""}`}>
                     <div>
                         <div className={`${style.applicationCardStyle} ${style.headingTextStyle}`}>
                             {clarificationSubject}
                         </div>
-                        <div className={`${style.applicationCardStyle} ${style.marginTop20}`}>
-                            <div className={style.spaceBetween}>
-                                <div className={style.headingTextStyle}>
-                                    Prior Reference
+                        {clarificationType !== "REQUEST_ADDITIONAL_DOCUMENTS" && (
+                            <div className={`${style.applicationCardStyle} ${style.marginTop20}`}>
+                                <div className={style.spaceBetween}>
+                                    <div className={style.headingTextStyle}>
+                                        Prior Reference
+                                    </div>
+                                    {collapseOpen ? (
+                                         <Tooltip title="Click to Collapse" arrow>
+                                        <div onClick={() => setCollapseOpen(false)} className={style.cursorPointer}>
+                                            <RemoveIcon sx={{ fontSize: '25px' }} />
+                                        </div>
+                                        </Tooltip>
+                                    ) : (
+                                        <Tooltip title="Click to Expand" arrow>
+                                        <div onClick={() => setCollapseOpen(true)} className={style.cursorPointer}>
+                                            <AddIcon sx={{ fontSize: '25px' }} />
+                                        </div>
+                                        </Tooltip>
+                                    )}
                                 </div>
-                                {collapseOpen ? (
-                                    <div onClick={() => setCollapseOpen(false)} className={style.cursorPointer}>
-                                        <RemoveIcon sx={{ fontSize: '25px' }} />
-                                    </div>
-                                ) : (
-                                    <div onClick={() => setCollapseOpen(true)} className={style.cursorPointer}>
-                                        <AddIcon sx={{ fontSize: '25px' }} />
-                                    </div>
-                                )}
-                            </div>
-                            {collapseOpen && (
-                                <div className={style.marginTop20}>
-                                    {/* <div className={style.marginTop20}>
+                                {collapseOpen && (
+                                    <div className={style.marginTop20}>
+                                        {/* <div className={style.marginTop20}>
                                         {fileReference?.fileType === 'application/pdf' ? (
                                             <iframe src={`${fileReference?.fileURL}#toolbar=0`} width="100%" height="600px"></iframe>
                                         ) : file?.fileType?.startsWith("image/") ? (
@@ -1801,10 +1820,11 @@ const ApplicantPortalRFC = () => {
                                             </div>
                                         ))}
                                     </div> */}
-                                    {renderFieldsBasedOnStepReappointment(form?.formSchemas?.[renderSchemaIndex])}
-                                </div>
-                            )}
-                        </div>
+                                        {renderFieldsBasedOnStepReappointment(form?.formSchemas?.[renderSchemaIndex])}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className={`${style.applicationCardStyle} ${style.marginTop20}`}>
                             <div className={style.headingTextStyle}>Request For Clarification</div>
                             <CommonDivider />
@@ -1869,7 +1889,7 @@ const ApplicantPortalRFC = () => {
                                     }
                                     changeHandler={changeHandler}
                                     files={files}
-                                    maxFiles={1}
+                                    maxFiles={clarificationType === "REQUEST_ADDITIONAL_DOCUMENTS" ? 10 : 1}
                                 />
                                 {/* <CommonDropZone
                                     title={"Upload A Photo"}
@@ -1881,7 +1901,7 @@ const ApplicantPortalRFC = () => {
                                     accept="image/*"
                                 /> */}
                             </div>
-                            {!(clarificationType !== undefined && clarificationType !== "" && clarificationType !== null) ? (
+                            {!(clarificationType !== undefined && clarificationType !== "" && clarificationType !== null && clarificationType !== 'NA') ? (
                                 <>
                                     {uploadFileData?.length > 0 && (
                                         <div>
@@ -1926,25 +1946,49 @@ const ApplicantPortalRFC = () => {
                                 </>
                             ) : (
                                 <div className={style.tableContainer}>
-                                    {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
-                                        <TableTwo
-                                            tableHeaderValues={[
-                                                "",
-                                                "File Uploaded",
-                                                "Document Type",
-                                                "Verified",
-                                                "Valid",
-                                                "",
-                                            ]}
-                                            tableDataValues={getApplicantValues(uploadFileData)}
-                                            tableData={uploadFileData || []}
-                                            gridStyle={style.gridStyle}
-                                            // actions={actions}
-                                            // scrollStyle={style.contractScrollStyle}
-                                            tableSortValues={[]}
-                                            heading={"You have not yet uploaded any documents."}
-                                            onClickFunction={() => { }}
-                                        />
+                                    {clarificationType === "REQUEST_ADDITIONAL_DOCUMENTS" ? (
+                                        <>
+                                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
+                                                <TableTwo
+                                                    tableHeaderValues={[
+                                                        "",
+                                                        "File Uploaded",
+                                                        "",
+                                                    ]}
+                                                    tableDataValues={getApplicantValues(uploadFileData)}
+                                                    tableData={uploadFileData || []}
+                                                    gridStyle={style.gridStyleAddDocument}
+                                                    // actions={actions}
+                                                    // scrollStyle={style.contractScrollStyle}
+                                                    tableSortValues={[]}
+                                                    heading={"You have not yet uploaded any documents."}
+                                                    onClickFunction={() => { }}
+                                                />
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {tempValue?.table?.length !== 0 && tempValue?.table !== undefined && (
+                                                <TableTwo
+                                                    tableHeaderValues={[
+                                                        "",
+                                                        "File Uploaded",
+                                                        "Document Type",
+                                                        "Verified",
+                                                        "Valid",
+                                                        "",
+                                                    ]}
+                                                    tableDataValues={getApplicantValues(uploadFileData)}
+                                                    tableData={uploadFileData || []}
+                                                    gridStyle={style.gridStyle}
+                                                    // actions={actions}
+                                                    // scrollStyle={style.contractScrollStyle}
+                                                    tableSortValues={[]}
+                                                    heading={"You have not yet uploaded any documents."}
+                                                    onClickFunction={() => { }}
+                                                />
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             )}
@@ -1976,9 +2020,11 @@ const ApplicantPortalRFC = () => {
                     <div>
                         {!showInfo && (
                             <div>
+                                 <Tooltip title="Click to Show" arrow>
                                 <div className={`${style.toggleButton}`} onClick={() => setShowInfo(!showInfo)}>
                                     <MenuIcon className={style.toggleIcon} />
                                 </div>
+                                </Tooltip>
                                 <div className={`${style.headerData}`}>
                                     <span style={{ marginLeft: '20px' }}>Required Clarification for the Documents</span>
                                 </div>
@@ -1986,7 +2032,8 @@ const ApplicantPortalRFC = () => {
                         )}
                         <div>
                             <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                                <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <Tooltip title="Click to Close Info Panel" arrow>
+                                <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} /></Tooltip>
                                 {/* <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} /> */}
                                 <div >
                                     <ApplicationAssistanceCard
@@ -1999,14 +2046,18 @@ const ApplicantPortalRFC = () => {
                             </div>
                         </div>
                         <div className={`${style.stickyContainer}`}>
+                        <Tooltip title="Click to Save Progress" arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop20}`}
                                 onClick={() => getClarificationResponse(true)}
                             >
                                 SAVE IN PROGRESS
                             </div>
+                            </Tooltip>
+                            <Tooltip title="Click to proceed with the next step" arrow>
                             <div className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => getClarificationResponse()}
                             >CONTINUE</div>
+                            </Tooltip>
                         </div>
                     </div>
                 </div>
@@ -2024,9 +2075,11 @@ const ApplicantPortalRFC = () => {
                 </div>
 
             </div>
-            {showFileWithFields && (
-                <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={form?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
-            )}
+            {
+                showFileWithFields && (
+                    <FileWithFields getIsOpen={getIsOpenFileWithFields} fields={fields} metadata={fileMetadata} file={file} schemaId={form?.forms?.[formIndex]?.schemaId} applicationDocumentId={applicationDocumentId} getPreApplication={getPreApplication} />
+                )
+            }
             {
                 showDeleteConfirmation && (
                     <DeleteConfirmation getShowDeleteConfirmation={getShowDeleteConfirmation}
@@ -2042,7 +2095,7 @@ const ApplicantPortalRFC = () => {
                     />
                 )
             }
-        </div>
+        </div >
     )
 }
 

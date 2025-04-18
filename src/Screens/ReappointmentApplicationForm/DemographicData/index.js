@@ -19,6 +19,7 @@ import ReappointmentJourneyDialog from '../../../Components/reappointmentJourney
 import ApplicationReferenceDocuments from '../../../Components/ApplicationReferenceDocuments';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -873,6 +874,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${style.displayInRowRev} ${style.marginTop}`}
                                     >
                                         <div className={style.marginLeft}>
+                                        <Tooltip title={isContactInfoEdited ? "Click to Update Contact Address" : ""} arrow>
                                             <button
                                                 className={`${style.reappointmentButton} ${isContactInfoEdited ? '' : style.disabledButtonLook}`}
                                                 onClick={isContactInfoEdited ? () => {
@@ -884,6 +886,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             >
                                                 UPDATE
                                             </button>
+                                            </Tooltip>
                                         </div>
                                         {/* <div>
                                             <div
@@ -901,6 +904,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                         className={`${style.displayInRowRev} ${style.marginTop}`}
                                     >
                                         <div>
+                                        <Tooltip title={"Click to Close"} arrow>
                                             <div
                                                 className={`${style.reappointmentButton}`}
                                                 onClick={() => {
@@ -909,6 +913,7 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                             >
                                                 CLOSE
                                             </div>
+                                            </Tooltip>
                                         </div>
                                     </div>
                                 )}
@@ -919,27 +924,35 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}
                                 >
+                                     <Tooltip title={"Click to mark as Yes"} arrow>
                                     <div
                                         className={`${yesOrNoAddress === 'Yes' ? style.reappointmentButton : style.reappointmentButtonOutlined}`}
                                         onClick={() => { setShowContactInfo(true); setYesOrNoAddress('Yes') }}
                                     >
                                         YES
                                     </div>
+                                    </Tooltip>
+                                    <Tooltip title={"Click to mark as No"} arrow>
                                     <div
                                         className={`${yesOrNoAddress === 'No' ? style.reappointmentButton : style.reappointmentButtonOutlined} ${style.marginLeft}`}
                                         onClick={() => { setShowContactInfo(false); setYesOrNoAddress('No') }}
                                     >
                                         NO
                                     </div>
+                                    </Tooltip>
                                 </div>
                             </>
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                        <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getAllMissingFields()}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
 
@@ -981,27 +994,33 @@ const DemographicData = ({ basicForm, setBasicForm, getPreApplication }) => {
                             SKIP FOR NOW
                         </div> */}
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                    <Tooltip title={"Click to Skip This Step and Continue Later"} arrow> <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div></Tooltip>
+                    <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
                         <div
                             className={`${style.saveInProgress} ${style.marginTop10}`}
                             onClick={() => getIsSaveInProgressOpen(true)}
                         >
                             SAVE IN PROGRESS
                         </div>
+                        </Tooltip>
+                        
                         <div className={style.twoColForButton}>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div
                                 className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => handleBackClick()}
                             >
                                 BACK
                             </div>
+                            </Tooltip>
                             {/* <div
                             className={`${style.continue} ${style.marginTop10}`}
                             onClick={() => setShowJourneyDialog(true)}
                         >
                             CONTINUE
                         </div> */}
-                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && getAllMissingFields()}>CONTINUE</div>
+                                                <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={` ${style.continue} ${style.marginTop10} ${(yesOrNoAddress === '' || yesOrNoDemographic === '') ? style.disabledButtonLook : ''}`} onClick={() => (yesOrNoAddress !== '' && yesOrNoDemographic !== '') && getAllMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
 
                     </div>

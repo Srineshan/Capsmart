@@ -4,6 +4,7 @@ import CrossPink from "../../images/crossPink.png";
 
 import style from './index.module.scss'
 import { useDescope } from '@descope/react-sdk';
+import { Tooltip } from '@mui/material';
 
 const DoItLaterDialog = ({ getIsOpen }) => {
     const [isContinue, setIsContinue] = useState(false);
@@ -25,8 +26,10 @@ const DoItLaterDialog = ({ getIsOpen }) => {
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>No problem! You can start your application anytime you're ready by clicking the link in the original email you received.</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div>
-                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { logout(); }}>CONFIRM</div>
+                        <Tooltip arrow title={"Click to Close"}>
+                        <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false); }}>CANCEL</div></Tooltip>
+                        <Tooltip title="Click to Confirm and Logout" arrow>
+                        <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { logout(); }}>CONFIRM</div></Tooltip>
                     </div>
                 </div>
 

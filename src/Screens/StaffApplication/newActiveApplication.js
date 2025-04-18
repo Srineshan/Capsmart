@@ -646,7 +646,7 @@ const NewActiveApplication = ({
         <div className={`${style.documentCard} ${style.marginTop10}`} key={i}>
           <div className={`${style.documentGrid}`}>
             <a href={fileFields?.[i]?.fileURL} target="_blank">
-              <Tooltip title={"Preview"} arrow>
+              <Tooltip title={"Preview File"} arrow>
                 <ArticleOutlinedIcon
                   sx={{ color: "#06617A", fontSize: 35 }}
                   onClick={() => {
@@ -657,7 +657,7 @@ const NewActiveApplication = ({
             </a>
             <div className={style.marginTop}>
               <a href={fileFields?.[i]?.fileURL} target="_blank">
-                <Tooltip title={"Preview"} arrow>
+                <Tooltip title={"Preview File"} arrow>
                   <p
                     className={`${style.documentText} ${style.leftAlign} ${style.removeUnderline}`}
                     onClick={() => {
@@ -10063,7 +10063,7 @@ const NewActiveApplication = ({
                               <div
                                 className={`${style.marginTop5} ${style.marginLeft10} ${style.tableDataFontStyle1}`}
                               >
-                                <Tooltip title="Create a note" arrow>
+                                <Tooltip title="Create a Note" arrow>
                                   <CreateOutlinedIcon
                                     className={`${style.notesIcon} ${style.cursorPointer}`}
                                     onClick={onClickNotesFunction}

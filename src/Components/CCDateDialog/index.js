@@ -10,6 +10,7 @@ import { ErrorToaster, SuccessToaster } from "../../utils/toaster";
 import style from "./index.module.scss";
 import CommonDateField from "../CommonFields/CommonDateField";
 import TextField from "@mui/material/TextField";
+import { Tooltip } from "@mui/material";
 
 const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab }) => {
   const id = sessionStorage.getItem("applicationId");
@@ -20,14 +21,14 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
   const getApplicationDateForCC = async () => {
     let role;
     let meetingDate = format(new Date(SelectedDate), 'yyyy-MM-dd');
-    
-     if (selectedTab === 'level-2') {
-          role = "Department Head";
-     } else if (selectedTab === 'level-3'){
-        role = "Credentialing Committee";
-      } else if (selectedTab === 'level-4') {
+
+    if (selectedTab === 'level-2') {
+      role = "Department Head";
+    } else if (selectedTab === 'level-3') {
+      role = "Credentialing Committee";
+    } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
-     } else if (selectedTab === 'level-5') {
+    } else if (selectedTab === 'level-5') {
       role = "Board";
     } else if (selectedTab === 'level-1') {
       role = "Staff Manager";
@@ -69,8 +70,9 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               {selectedTab === "level-3"
                 ? "Staff Application for Presenting to CC"
                 : selectedTab === "level-4"
-                ? "Staff Application Approval Date by MAC" : "Staff Application Approval Date by BOD"}
+                  ? "Staff Application Approval Date by MAC" : "Staff Application Approval Date by BOD"}
             </div>
+            <Tooltip title="Click to Close" arrow>
             <img
               src={CrossPink}
               alt="cross"
@@ -79,6 +81,7 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
                 onClose();
               }}
             />
+            </Tooltip>
           </div>
           <div>
             <CommonDateField
@@ -87,8 +90,8 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               open={calendarStart}
               onOpen={() => setCalendarStart(true)}
               onClose={() => setCalendarStart(false)}
-              minDate={add(new Date(), { days: 1 })}
-              maxDate={add(new Date(), { years: 3 })}
+              // minDate={add(new Date(), { days: 1 })}
+              // maxDate={add(new Date(), { years: 3 })}
               value={SelectedDate}
               label={selectedTab === "level-3" ? "CC Meeting Date*" : selectedTab === "level-4" ? "MAC Approval Date*" : "BOD Approval Date*"}
               InputProps={{
@@ -117,7 +120,9 @@ const CCDateDialog = ({ checkedIds, getCCDateDialogOpen, onClose, selectedTab })
               style={{ opacity: isButtonDisabled ? 0.5 : 1 }}
               onClick={isButtonDisabled ? undefined : () => getApplicationDateForCC()}
             >
+              <Tooltip title={isButtonDisabled ? "" : "Click to Save"} arrow>
               <div className={style.reviewButton}>Save</div>
+              </Tooltip>
             </div>
 
           </div>

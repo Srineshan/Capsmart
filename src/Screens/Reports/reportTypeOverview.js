@@ -38,10 +38,12 @@ import { siteTimeZone } from '../../utils/formatting';
 import {formatFirstNameLastName } from "../../utils/formatting";
 import TrackTable from '../../Components/TrackTable';
 import TableTwo from "../../Components/TableDesignTwo"
+import ReportsStaffTable from '../../Components/ReportStaffbyType';
 
 const ReportTypeOverview = () => {
     const location = useLocation();
     const tableData = location.state?.tableData || [];
+    console.log("tables:",tableData);
     const { reportType } = useParams();
     const isMyReport = window.location.pathname.includes("/myReport");
     const myReportId = sessionStorage.getItem('myReportId')
@@ -239,7 +241,7 @@ const ReportTypeOverview = () => {
         if (reportType === 'staffReappointmentTracker') {
             getSubmittedTimesheetsPaymentStatus('withParameter');
         }
-        if (reportType === 'activityStatusTracker') {
+        if (reportType === 'staffbyTypes') {
             getContractTrackValues()
         }
         if (reportType === 'paymentProcessingStatusTracker') {
@@ -316,7 +318,13 @@ const ReportTypeOverview = () => {
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
-        activityStatusTracker: `Status Of Activities/ Services By Service Provider For ${format(new Date(), 'MMMM yyyy')}`,
+        staffbyTypes: (
+            <>
+            <span>Staff Reappointments Application Status Of {tableData[0]?.basicDetailReferences?.applicantType?.serviceProviderType}</span>
+            <br />
+            <span className={style.reportRunByParamStyle1}>Reporting Period: Dec 2024</span>
+          </>
+          ),
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
@@ -1824,7 +1832,7 @@ const ReportTypeOverview = () => {
                                             {(reportType === "staffReappointmentsNotes" || reportType === "staffReappointments" ||
                                                 reportType === "contractDocumentsOnFile" || reportType === "multiProviderContractsList" ||
                                                 reportType === "contractsWithABusinessEntity" || reportType === "currentRemitToAddressForActiveContracts" ||
-                                                reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
+                                                reportType === "staffbyTypes" || reportType === "paymentProcessingStatusTracker" || reportType === "staffReappointmentTracker") ? (
                                                 <div className={`${style.grid4} ${style.marginTop20} `}>
                                                     {/* {reportType === "staffReappointmentsNotes" && (
                                                         <div>
@@ -1859,7 +1867,7 @@ const ReportTypeOverview = () => {
                                                                 <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{getContractStatusValue[dataToUseInReport?.contractStatus]}</div>
                                                             </div>
                                                         )}
-                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "activityStatusTracker" || reportType === "paymentProcessingStatusTracker") && (
+                                                    {(reportType === "contractDocumentsOnFile" || reportType === "currentRemitToAddressForActiveContracts" || reportType === "paymentProcessingStatusTracker") && (
                                                         <div>
                                                             <div className={`${style.reportRunByTextStyle} ${style.marginTop5} `}>Contracted Service Provider </div>
                                                             <div className={`${style.reportTypeValueTextStyle} ${style.textAlignLeft} ${style.marginTop5} `}>{dataToUseInReport?.selectedContractedServiceProviderToSend?.map(data => `${data?.name?.firstName} ${data?.name?.lastName}`).join(', ') || 'All Contracted Service Providers'}</div>
@@ -2620,38 +2628,15 @@ const ReportTypeOverview = () => {
                                                                             ) : (
                                                                                 <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
                                                                                     subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                                            ) : reportType === "activityStatusTracker" ? (
-                                                                                <>
-                                                                                    {activityTrackServices?.length !== 0 ? activityTrackServices?.map((data, index) => data?.activityStatsByContract?.map((innerData, innerIndex) => (
-                                                                                        <div key={innerIndex}>
-                                                                                            <TrackTable
-                                                                                                heading={`${innerData?.contract?.contractName?.contractName} - ${innerData?.contract?.contractId?.id}`}
-                                                                                                columnHeading={[
-                                                                                                    `Compensation Policy: ${compensationPolicy[innerData?.contract?.compensationPolicy]}`,
-                                                                                                    `Contract Period:  ${format(new Date(`${innerData?.contract?.contractTerm?.startDate}T00:00`), 'MMM d, yyyy')} - ${format(new Date(`${innerData?.contract?.contractTerm?.endDate}T00:00`), 'MMM d, yyyy')}`,
-                                                                                                    entityName
-                                                                                                ]}
-                                                                                                tableHead={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', ''] : ['CONTRACTED ACTIVITY / SERVICES', 'EXPECTED', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                                // tableHead={['CONTRACTED ACTIVITY / SERVICES', 'COMPLETED', 'TO BE PROCESSED', 'BALANCE', '']}
-                                                                                                tableHeadTop={['', (innerData?.activityStatsMeta && innerData?.activityStatsMeta?.contractYearInterval !== null) ? `Contract Year:  ${format(new Date(`${innerData?.activityStatsMeta?.contractYearInterval?.startDate}T00:00`), 'MMM d, yyyy')} - ${format(new Date(`${innerData?.activityStatsMeta?.contractYearInterval?.endDate}T00:00`), 'MMM d, yyyy')}` : '-']}
-                                                                                                tableHeadBottom={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? ['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', ''] : ['', 'UNITS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                                // tableHeadBottom={['', 'UNITS', 'HOURS', 'UNITS', 'HOURS', 'UNITS', 'HOURS', '']}
-                                                                                                tableData={getTrackTableValue(data, innerData)}
-                                                                                                headerGrid={style.trackTableHeaderGrid}
-                                                                                                dataGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableDataGridForActivityBased : style.trackTableDataGrid}
-                                                                                                tableHeadGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderMiddleGridForActivityBased : style.trackTableHeaderMiddleGrid}
-                                                                                                tableHeadTopGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderTopGridForActivityBased : style.trackTableHeaderTopGrid}
-                                                                                                tableHeadBottomGrid={innerData?.contract?.compensationPolicy === 'ACTIVITY_BASED' ? style.trackTableHeaderBottomGridForActivityBased : style.trackTableHeaderBottomGrid}
-                                                                                                header={true}
-                                                                                                directionRow={false}
+                                                                            ):(reportType === "staffbyTypes") ? (
+                                                                                (tableData?.length !== 0) ? (
+                                                                                            <ReportsStaffTable
+                                                                                                tableData = {tableData}
                                                                                             />
-                                                                                        </div>
-                                                                                    ))) : (
-                                                                                        <ReportNoDataBox heading={'Based on the parameters selected and applied, there were NO RECORDS found to include in the report.'}
-                                                                                            subHeading={'Try again by changing some of the parameters on the left. If there are any qualifying records, the report will get displayed.'} />
-                                                                                    )}
-                                                                                </>
-                                                                            ) : reportType === "paymentProcessingStatusTracker" ? (
+                                                                                ) : (
+                                                                                    <ReportNoDataBox heading={'You do not have any One Time Contracts that will terminate on expiration'}
+                                                                                        subHeading={''} />
+                                                                                )): reportType === "paymentProcessingStatusTracker" ? (
                                                                                 <>
                                                                                     <div className={`${style.paymentTabGrid} ${style.marginTop20}`}>
                                                                                         <div className={`${style.paymentTabStyle} ${selectedPaymentTab === 'Payment Processed' ? style.selectedPaymentTabStyle : ''} ${style.verticalAlignCenter} ${style.alignCenterJustify}`} onClick={() => setSelectedPaymentTab('Payment Processed')}>Payment Processed</div>

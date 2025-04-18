@@ -15,6 +15,7 @@ import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 import style from './index.module.scss';
+import { Tooltip } from '@mui/material';
 
 const dropzoneStyle = {
     width: "100%",
@@ -329,7 +330,7 @@ const Profile = () => {
                                                     aria-label="toggle password visibility"
                                                     onClick={handleClickShowPassword}
                                                 >
-                                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                    {showPassword ?<Tooltip title={"Click to Hide Password"} arrow> <Visibility /> </Tooltip> : <Tooltip title={"Click to Show Password"} arrow><VisibilityOff /></Tooltip>}
                                                 </IconButton>
                                             </InputAdornment>
                                         )
@@ -354,7 +355,7 @@ const Profile = () => {
                                                     aria-label="toggle password visibility"
                                                     onClick={handleClickShowNewPassword}
                                                 >
-                                                    {showNewPassword ? <Visibility /> : <VisibilityOff />}
+                                                    {showNewPassword ? <Tooltip title={"Click to Hide Password"} arrow><Visibility /></Tooltip> : <Tooltip title={"Click to Show Password"} arrow><VisibilityOff /></Tooltip>}
                                                 </IconButton>
                                             </InputAdornment>
                                         )
@@ -376,17 +377,19 @@ const Profile = () => {
                                                     aria-label="toggle password visibility"
                                                     onClick={handleClickShowConfirmPassword}
                                                 >
-                                                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                                    {showConfirmPassword ? <Tooltip title={"Click to Hide Password"} arrow><Visibility /></Tooltip> : <Tooltip title={"Click to Show Password"} arrow><VisibilityOff /></Tooltip>}
                                                 </IconButton>
                                             </InputAdornment>
                                         )
                                     }} />
                             </div>
                             <div className={`${style.displayInColRev}`}>
-                                <button onClick={() => { changePassword() }} className={`${style.outlinedButton} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter}`} >Reset Password</button>
+                            <Tooltip title={"Click to Reset Password"} arrow>
+                                <button onClick={() => { changePassword() }} className={`${style.outlinedButton} ${style.marginLeft20} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter}`} >Reset Password</button></Tooltip>
                             </div>
                         </div>
-                        <button onClick={() => { updateProfileData() }} className={`${style.normalButton} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`} >Save</button>
+                        <Tooltip title={"Click to Save"} arrow>
+                        <button onClick={() => { updateProfileData() }} className={`${style.normalButton} ${style.floatRight} ${style.cursorPointer} ${style.alignCenter} ${style.marginTop20} ${style.marginBottom20}`} >Save</button></Tooltip>
                     </div>
                 </div>
             </div>

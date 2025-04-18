@@ -12,10 +12,10 @@ import { formatFirstNameLastName } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import WorkModeSelect from "../SwitchWorkSpaceDialog";
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
-import { Tooltip } from "@material-ui/core";
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import CommonSelectField from '../CommonFields/CommonSelectField';
 import CommonSearchField from "../CommonFields/CommonSearchField";
+import { Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
 
@@ -292,7 +292,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   const handleNavigateStatus = () => {
     navigate("/reportTypeOverview/staffReappointmentTracker", { state: { tableData } });
   };
-  
+
   const getTableValues = () => {
     const No = [];
     const staff = [];
@@ -544,23 +544,25 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                     } ${style.cursorPointer} ${style.marginLeft10}`}
                 >
                   <Tooltip title='Print Data' arrow >
-                  <PrintOutlinedIcon
-                    sx={{
-                      fontSize: 25,
-                      color: "#06617A",
-                    }}
-                    onClick={handleNavigateStatus}
-                  />
+                    <PrintOutlinedIcon
+                      sx={{
+                        fontSize: 25,
+                        color: "#06617A",
+                      }}
+                      onClick={handleNavigateStatus}
+                    />
                   </Tooltip>
                 </div>
-                <img
-                  src={CrossPink}
-                  alt="cross"
-                  className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
-                  onClick={() => {
-                    getIsOpen(false);
-                  }}
-                />
+                <Tooltip title="Close" arrow>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft10}`}
+                    onClick={() => {
+                      getIsOpen(false);
+                    }}
+                  />
+                </Tooltip>
               </div>
             </div>
             {/* Expandable Department List */}

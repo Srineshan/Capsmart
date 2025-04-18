@@ -11,6 +11,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import DocumentClarificationDialog from "../DocumentClarificationDialog"
+import { Tooltip } from "@mui/material";
 
 const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDialog, dateFormat, getActiveApplicationView, selectedTab }) => {
   let cookie = new Cookie();
@@ -150,6 +151,7 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
       clarificationTitle: clarificationSubject,
       clarificationDescription: userNotes,
       clarificationRequiredFrom: type,
+      clarificationRequestType: data?.schemaCategory === "UploadYourDoc" ? 'REQUEST_ADDITIONAL_DOCUMENTS' : 'NA',
       clarificationRequestedBy: {
         id: user?.id,
         name: {
@@ -176,6 +178,8 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
       })
   }
 
+  console.log(data, 'console')
+
   return (
     <>
       {isLoadingImage && (
@@ -198,14 +202,16 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   Clarification Required for {data?.title} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
                 </div>
                 <div className={style.displayInRow}>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                  <Tooltip title="Click to Save" arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
+                  </Tooltip>
                 </div>
               </div>
               {/* <div className={`${style.marginTop10} ${style.detailsTextStyle}`}>License / Certification Details</div> */}
@@ -289,18 +295,23 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                 />
               </div>
               <div className={`${style.marginTop10} ${style.spaceBetween} ${style.cursorPointer}`}>
-                <div
-                  style={{
-                    // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
-                    opacity: isApproveEnabled ? 1 : 0.5,
-                    cursor: isApproveEnabled ? 'pointer' : 'default'
-                  }}
-                  onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
-                // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
-                // onClick={() => getIsOpen(false)}
-                >
-                  <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div>
-                </div>
+                {data?.schemaCategory !== "UploadYourDoc" ? (
+                  <div
+                    style={{
+                      // pointerEvents: isApproveEnabled ? 'auto' : 'none', 
+                      opacity: isApproveEnabled ? 1 : 0.5,
+                      cursor: isApproveEnabled ? 'pointer' : 'default'
+                    }}
+                    onClick={isApproveEnabled ? () => onClickDocumentClarificationRequestFunction() : undefined}
+                  // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
+                  // onClick={() => getIsOpen(false)}
+                  >
+                    <Tooltip title={isApproveEnabled ? "Click to Resolve Clarification Now" : ""} arrow>
+                      <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>RESOLVE CLARIFICATION NOW</div></Tooltip>
+                  </div>
+                ) : (
+                  <div></div>
+                )}
                 <div className={style.flex}>
                   {/* <div
                     className={`${style.reviewButtonStyle}`}
@@ -321,7 +332,9 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                       cursor: isApproveEnabled ? 'pointer' : 'default'
                     }}
                   >
+                    <Tooltip title={isApproveEnabled ? "Click to Save and Send by Email" : ""} arrow>
                     <div className={style.reviewButton}>SAVE & SEND BY EMAIL</div>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

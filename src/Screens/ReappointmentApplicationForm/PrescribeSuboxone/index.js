@@ -16,6 +16,7 @@ import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
 import ReappointmentJourneyDialog from '../../../Components/reappointmentJourneyDialog';
+import { Tooltip } from '@mui/material';
 
 const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
     const [formSchema, setFormSchema] = useState();
@@ -179,18 +180,22 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                             <div
                                 className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                             >
+                                <Tooltip title={"Click to mark as Yes"} arrow>
                                 <div
                                     className={`${style.reappointmentButtonOutlined}`}
                                     onClick={() => { setYesOrNo('Yes'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     Yes
                                 </div>
+                                </Tooltip>
+                                <Tooltip title={"Click to mark as No"} arrow>
                                 <div
                                     className={`${style.reappointmentButton} ${style.marginLeft}`}
                                     onClick={() => { setYesOrNo('No'); setUpdatedDate(format(new Date(), 'yyyy-MM-dd')) }}
                                 >
                                     NO
                                 </div>
+                                </Tooltip>
                             </div>
                         ) : (
                             <>
@@ -198,12 +203,14 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                                 <div
                                     className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop}`}
                                 >
+                                    <Tooltip title={"Click to Edit"} arrow>
                                     <div
                                         className={`${style.reappointmentButtonEdit}`}
                                         onClick={() => setYesOrNo('')}
                                     >
                                         Edit
                                     </div>
+                                    </Tooltip>
                                 </div>
                             </>
                         )}
@@ -212,11 +219,14 @@ const PrescribeSuboxone = ({ basicForm, setBasicForm, getPreApplication }) => {
                 <div>
                     <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div></Tooltip>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>
                     <div className={style.marginTop}>

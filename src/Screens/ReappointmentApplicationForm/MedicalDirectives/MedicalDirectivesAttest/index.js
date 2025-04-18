@@ -175,10 +175,10 @@ const MedicalDirectivesAttest = () => {
                 <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
             </div>
             <div className={style.headerData}>
-                  <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
-                  <span className={style.verticalAlignCenter}>
-                        <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
-                  </span>
+                <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
+                <span className={style.verticalAlignCenter}>
+                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                </span>
             </div>
             <div className={style.screenPadding}>
                 <div>
@@ -232,7 +232,8 @@ const MedicalDirectivesAttest = () => {
                                         {(!isScrolledToBottom) && (
                                             <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
                                         )}
-                                        <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div>
+                                        <Tooltip arrow title={"Click to Submit"}>
+                                        <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div></Tooltip>
                                     </div>
                                 </Tooltip>
                             ) : (

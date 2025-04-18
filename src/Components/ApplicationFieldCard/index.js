@@ -2681,12 +2681,14 @@ const ApplicationFieldCard = ({
                           {fieldValue?.fileName}
                         </span>
                       </Tooltip>
+                      <Tooltip title="Click to Delete File" arrow>
                       <img
                         src={DeleteIcon}
                         alt="Delete"
                         className={`${style.imgIcon} ${style.cursorPointer}`}
                         onClick={() => handleChange(fieldKey, null, baseKey)}
                       />
+                      </Tooltip>
                     </div>
                   </div>
                 )}
@@ -2789,7 +2791,7 @@ const ApplicationFieldCard = ({
                   getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName && (
                     <div className={style.uploadButton2}>
                       <div className={style.uploadGrid2}>
-                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow>
+                        <Tooltip title="Click to View File" placement="bottom-start" followCursor arrow   >
                           <span
                             className={`${style.uploadText2} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                             onClick={() => {
@@ -2811,12 +2813,14 @@ const ApplicationFieldCard = ({
                            {getValueByPath(basicForm, `${basicpath}.${baseKey}.${fieldKey}`)?.fileName}
                           </span>
                         </Tooltip>
+                        <Tooltip title="Click to Delete File" arrow>
                         <img
                           src={DeleteIcon}
                           alt="Delete"
                           className={`${style.imgIcon} ${style.cursorPointer}`}
                           onClick={() => handleChange(fieldKey, null, baseKey)}
                         />
+                        </Tooltip>
                       </div>
                     </div>
                   )}
@@ -3385,6 +3389,7 @@ const ApplicationFieldCard = ({
                       className={`${style.displayInRowRev} ${style.marginTop}`}
                     >
                       <div className={style.marginLeft}>
+                      <Tooltip title={"Click to Save & Close"} arrow>
                         <div
                           className={`${style.addMoreButton}`}
                           onClick={() => {
@@ -3393,8 +3398,10 @@ const ApplicationFieldCard = ({
                         >
                           SAVE & CLOSE
                         </div>
+                        </Tooltip>
                       </div>
                       <div>
+                      <Tooltip title={"Click to Save & Addmore"} arrow>
                         <div
                           className={`${style.addMoreButtonOutlined}`}
                           onClick={() => {
@@ -3403,6 +3410,7 @@ const ApplicationFieldCard = ({
                         >
                           SAVE & ADD MORE
                         </div>
+                        </Tooltip>
                       </div>
                     </div>
                   </div>
@@ -3414,12 +3422,14 @@ const ApplicationFieldCard = ({
                       className={style.addMoreText}
                       dangerouslySetInnerHTML={{ __html: object?.items?.label }}
                     />
+                    <Tooltip title={"Click to Add"} arrow>
                     <div
                       className={`${style.addMoreButton} ${style.marginLeft}`}
                       onClick={() => setIsAddMore(true)}
                     >
                       ADD
                     </div>
+                    </Tooltip>
                   </div>
                 )}
               </div>
@@ -3520,6 +3530,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div className={style.marginLeft}>
+                        <Tooltip title={isEdited ? "Click to Update" : ""} arrow>
                           <button
                             className={`${style.reappointmentButton} ${isEdited ? "" : style.disabledButtonLook
                               }`}
@@ -3534,6 +3545,7 @@ const ApplicationFieldCard = ({
                           >
                             UPDATE
                           </button>
+                          </Tooltip>
                         </div>
                         {/* <div>
                           <div
@@ -3551,6 +3563,7 @@ const ApplicationFieldCard = ({
                         className={`${style.displayInRowRev} ${style.marginTop}`}
                       >
                         <div>
+                        <Tooltip title={"Click to Close"} arrow>
                           <div
                             className={`${style.reappointmentButton}`}
                             onClick={() => {
@@ -3560,6 +3573,7 @@ const ApplicationFieldCard = ({
                           >
                             CLOSE
                           </div>
+                          </Tooltip>
                         </div>
                       </div>
                     )}
@@ -3578,6 +3592,7 @@ const ApplicationFieldCard = ({
                     <div
                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
+                      <Tooltip title={"Click to Yes"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "Yes"
                           ? style.reappointmentButton
@@ -3590,6 +3605,8 @@ const ApplicationFieldCard = ({
                       >
                         YES
                       </div>
+                      </Tooltip>
+                      <Tooltip title={"Click to No"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "No"
                           ? style.reappointmentButton
@@ -3602,6 +3619,7 @@ const ApplicationFieldCard = ({
                       >
                         NO
                       </div>
+                      </Tooltip>
                     </div>
                   </>
                 )}

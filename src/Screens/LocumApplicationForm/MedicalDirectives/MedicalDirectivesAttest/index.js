@@ -261,7 +261,9 @@ const MedicalDirectivesAttest = () => {
                                     {(!isScrolledToBottom) && (
                                         <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
                                     )}
-                                    <div className={`${style.continue} ${style.marginTop10} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                    <Tooltip arrow title={"Click to Submit"}>
+                                        <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                    </Tooltip>
                                 </>
                             )}
                         </div>
