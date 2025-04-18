@@ -24,9 +24,9 @@ const AlertDialog = ({ isOpen, getIsOpen, title, description }) => {
                     </div>
                     <p className={`${style.description} ${style.marginTop}`}>{description}</p>
                     <div className={`${style.justifyCenter} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Cancel and Close"} arrow>
+                    <Tooltip title={"Click to Cancel"} arrow>
                         <div className={`${style.saveInProgress}`} onClick={() => { getIsOpen(false, 'CANCEL'); }}>CANCEL</div> </Tooltip>
-                        <Tooltip title={"Click to Confirm and Proceed"} arrow>
+                        <Tooltip title={"Click to Confirm"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { getIsOpen(false, 'OKAY'); }}>CONFIRM</div></Tooltip>
                     </div>
                 </div>

@@ -202,15 +202,15 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   Clarification Required for {data?.title} from {formDetails?.basicDetails?.applicant?.name?.firstName}{" "}{formDetails?.basicDetails?.applicant?.name?.lastName.toLowerCase()}
                 </div>
                 <div className={style.displayInRow}>
-                <Tooltip title="Click to Save" arrow>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                  <Tooltip title="Click to Save" arrow>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -306,8 +306,8 @@ const ClarificationDialog = ({ getIsOpen, data, type, getDocumentClarificationDi
                   // onClick={() => getIsShowDocumentClarificationDialog(true,data)}
                   // onClick={() => getIsOpen(false)}
                   >
-                    <Tooltip title={isApproveEnabled ? "Click to Request Document Clarification Now" : ""} arrow>
-                    <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>DOCUMENT CLARIFICATION NOW</div></Tooltip>
+                    <Tooltip title={isApproveEnabled ? "Click to Resolve Clarification Now" : ""} arrow>
+                      <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>RESOLVE CLARIFICATION NOW</div></Tooltip>
                   </div>
                 ) : (
                   <div></div>

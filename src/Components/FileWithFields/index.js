@@ -225,7 +225,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                                 onClick={toggleExpand}
                                 sx={{ color: '#06617A' }} 
                             /> */}
-                            <Tooltip title={"Click to Close Dialog"} arrow>
+                            <Tooltip title={"Click to Close"} arrow>
                             <img
                                 src={CrossPink}
                                 alt="cross"
@@ -310,7 +310,7 @@ const FileWithFields = ({ fields, metadata, file, getIsOpen, schemaId, applicati
                         ))}
                     </div> */}
                     <div className={`${style.justifyRight} ${style.displayInRow} ${style.marginTop}`}>
-                    <Tooltip title={"Click to Save and Continue"} arrow>
+                    <Tooltip title={"Click to Continue"} arrow>
                         <div className={`${style.continue} ${style.marginLeft}`} onClick={() => { handleContinue(); }}>CONTINUE</div>
                         </Tooltip>
                     </div>

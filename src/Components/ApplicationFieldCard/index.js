@@ -3389,7 +3389,7 @@ const ApplicationFieldCard = ({
                       className={`${style.displayInRowRev} ${style.marginTop}`}
                     >
                       <div className={style.marginLeft}>
-                      <Tooltip title={"Click to Save and Close"} arrow>
+                      <Tooltip title={"Click to Save & Close"} arrow>
                         <div
                           className={`${style.addMoreButton}`}
                           onClick={() => {
@@ -3401,7 +3401,7 @@ const ApplicationFieldCard = ({
                         </Tooltip>
                       </div>
                       <div>
-                      <Tooltip title={"Click to Save and Addmore"} arrow>
+                      <Tooltip title={"Click to Save & Addmore"} arrow>
                         <div
                           className={`${style.addMoreButtonOutlined}`}
                           onClick={() => {
@@ -3592,7 +3592,7 @@ const ApplicationFieldCard = ({
                     <div
                       className={`${style.displayInRow} ${style.verticalAlignCenter}`}
                     >
-                      <Tooltip title={"Click to Select Yes"} arrow>
+                      <Tooltip title={"Click to Yes"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "Yes"
                           ? style.reappointmentButton
@@ -3606,7 +3606,7 @@ const ApplicationFieldCard = ({
                         YES
                       </div>
                       </Tooltip>
-                      <Tooltip title={"Click to Select No"} arrow>
+                      <Tooltip title={"Click to No"} arrow>
                       <div
                         className={`${yesOrNoDemographic === "No"
                           ? style.reappointmentButton
