@@ -8,11 +8,13 @@ import CryptoJS from 'crypto-js';
 import CommonCheckBox from '../../Components/CommonFields/CommonCheckBox';
 import { Tooltip } from '@mui/material';
 import ESignature from '../../Components/ESignature';
-import { format } from 'date-fns';
+import { differenceInDays, format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
 import PdfViewer from '../ReappointmentApplicationForm/pdfViewer';
+import UserLogo from "./../../images/defaultUserLogo.jpg";
+import { formatFirstNameLastName } from '../../utils/formatting';
 
 const MedicalDirectivesAttestDisplay = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
@@ -34,15 +36,31 @@ const MedicalDirectivesAttestDisplay = () => {
     const [medicalDirectivesAttestation, setMedicalDirectivesAttestation] = useState(false);
     const [formIndex, setFormIndex] = useState();
     const [userData, setUserData] = useState();
+    const [logDetails, setLogDetails] = useState([]);
+    const lastSubmittedLog = logDetails?.logs?.find((log) => log.workflowStatus === "SUBMITTED");
+    const lastSubmittedDate = lastSubmittedLog ? lastSubmittedLog.lastModifiedDate : null;
+    const formattedSubmissionDate = lastSubmittedDate ? format(new Date(lastSubmittedDate), "MM/dd/yyyy") : "-";
+    const reappointmentDate = basicForm?.createdDate;
+    const reappointmentStartDate = reappointmentDate ? format(new Date(reappointmentDate), "MM/dd/yyyy") : "-";
     let cookie = new Cookie();
     let userDetails = cookie.get('user');
     const users = jwt(userDetails);
+    const submissionDate = lastSubmittedDate ? new Date(lastSubmittedDate) : null;
+    let daysDifference;
+    if (submissionDate) {
+        // Calculate the difference in days
+        daysDifference = differenceInDays(new Date(), submissionDate) + 1;
+
+    } else {
+        daysDifference = "-";
+    }
     useEffect(() => {
         getMedicalDirectives()
     }, [medicalDirectivesId])
 
     useEffect(() => {
         getApplication()
+        getLog()
     }, [applicationId])
 
     useEffect(() => {
@@ -116,6 +134,17 @@ const MedicalDirectivesAttestDisplay = () => {
         }
     }
 
+    const getLog = async () => {
+        const { data: basicLog } = await GET(`application-management-service/application/${applicationId}/logs`);
+        setLogDetails(basicLog);
+    };
+
+    const sendEmail = (email) => {
+        if (email) {
+            window.location.href = `mailto:${email}`;
+        }
+    };
+
     const getAttestationLog = async () => {
         if (medicalDirectivesId !== undefined && applicationId !== undefined) {
             const { data: medicalDirectivesAttestationLog } = await GET(
@@ -177,7 +206,8 @@ const MedicalDirectivesAttestDisplay = () => {
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
                 <span className={style.verticalAlignCenter}>
-                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                <Tooltip title="Click to Close and Return to Applications" arrow>
+                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} /> </Tooltip>
                 </span>
             </div>
             <div className={style.screenPadding}>
@@ -186,7 +216,66 @@ const MedicalDirectivesAttestDisplay = () => {
                 </div> */}
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
-                        <div className={style.medicalDirectivesCard}>
+                        <div className={`${style.cardLeftStyle}`}>
+                            <div className={style.flex}>
+                                <div className={`${style.photoBorderStyle}`}>
+
+                                    <img
+                                        src={basicForm?.basicDetails?.applicant?.profilePicture?.fileURL || UserLogo}
+                                        alt="Profile Picture"
+                                        className={style.profileImage}
+                                    />
+
+                                </div>
+                                <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
+                                    <div className={style.marginTop10}>
+                                        <span className={`${style.cardTextBoldStyle}`}>
+                                            {
+                                                basicForm?.basicDetails?.applicant?.name?.firstName !== undefined &&
+                                                    basicForm?.basicDetails?.applicant?.name?.lastName !== undefined
+                                                    ? formatFirstNameLastName(
+                                                        basicForm?.basicDetails?.applicant?.name?.firstName,
+                                                        basicForm?.basicDetails?.applicant?.name?.lastName
+                                                    )
+                                                    : "{First Name} {Last Name}"
+                                            },{" "}
+                                        </span>
+                                        <span className={`${style.cardTextNormalStyle}`}>
+                                            {basicForm?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                        </span>
+                                    </div>
+                                    <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
+                                        <span className={style.rightAlignTextStyle}>
+                                            Reappointment Date:
+                                        </span>
+                                        <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                            {reappointmentStartDate}
+                                        </span>
+                                    </div>
+                                    <div className={`${style.cardTextNormalStyle}`}>
+                                        {basicForm?.basicDetailReferences?.department?.name ? `${basicForm?.basicDetailReferences.department.name}` : ""}
+                                        {basicForm?.basicDetailReferences?.specialty?.name
+                                            ? `${basicForm?.basicDetailReferences?.department?.name ? ", " : ""}${basicForm?.basicDetailReferences.specialty.name}`
+                                            : ""}
+                                    </div>
+                                    <div className={`${style.twoColumnGridInner2}`}>
+                                        <span className={style.rightAlignTextStyle}>
+                                            Application Submitted:
+                                        </span>
+                                        <span className={`${style.leftAlignTextStyle} ${style.marginLeft10}`}>
+                                            {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
+                                        </span>
+                                    </div>
+                                    <div className={`${style.emailTextBoldStyle}`}>
+                                        {basicForm?.basicDetails?.applicant?.cellPhone ? `+1 ${basicForm?.basicDetails?.applicant?.cellPhone}` : ""}
+                                    </div>
+                                    <div className={`${style.emailTextBoldStyle}`}>
+                                        <span className={style.cursorPointer} onClick={() => sendEmail(basicForm?.basicDetails?.applicant?.email?.officialEmail || "")}>{basicForm?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}>{`${medicalDirectives?.title}`} <span className={style.mdIDStyle}>{medicalDirectives?.mdID}</span></div>
                             {/* <div className={`${style.marginTop10} ${style.description}`}>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd.</div> */}
                         </div>
@@ -202,7 +291,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                 <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
                             </div>
                         )}
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
+                        <div className={`${style.medicalDirectivesCard}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
                             <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
                             {(!isScrolledToBottom) ? (
@@ -268,7 +357,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                 </>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
                             <div className={style.title}><strong>{`Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
                                 <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>

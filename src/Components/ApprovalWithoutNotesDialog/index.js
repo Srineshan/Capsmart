@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { GET, PUT ,POST, TenantID} from "../../Screens/dataSaver";
+import { GET, PUT, POST, TenantID } from "../../Screens/dataSaver";
 import { Dialog, Classes } from "@blueprintjs/core";
 import CrossPink from "../../images/crossPink.png";
 import Cookie from 'universal-cookie';
@@ -14,12 +14,13 @@ import { format } from 'date-fns';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import Dropzone from "react-dropzone";
-import { SuccessToaster,ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import { fileLoadingURL, FormatPhoneNumber, FormatPostalCode } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
+import { Tooltip } from "@mui/material";
 
-const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab,dateStorage }) => {
+const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab, dateStorage }) => {
   let cookie = new Cookie();
   let userDetails = cookie.get('user');
   const users = jwt(userDetails);
@@ -45,7 +46,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   const [entity, setEntity] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [files, setFiles] = useState([]);
-  const [uploadFileData, setUploadFileData]= useState('');
+  const [uploadFileData, setUploadFileData] = useState('');
   const [documentDesc, setDocumentDesc] = useState("");
   const [documentTitle, setDocumentTitle] = useState("");
   const dropzoneStyle = {
@@ -65,65 +66,65 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   //   }
   // }, [dateFormat]);
 
-  console.log("dateStorage",dateStorage)
+  console.log("dateStorage", dateStorage)
 
   useEffect(() => {
-      getApplicationEntity();
-      getLog();;
-    }, [applicationType]);
+    getApplicationEntity();
+    getLog();;
+  }, [applicationType]);
 
   const onClicksignFunction = () => {
     setTodayDate();
     handleSignatureClick();
   };
 
-    const changeHandler = async (event) => {
-                console.log("Event received:", event);
-                const filesArray = Array.from(event);
-                console.log("Converted files array:", filesArray);
-                setFiles(filesArray);
-              
-                const formData = new FormData();
-                let fileNameArray = [];
-              
-                filesArray.forEach(file => {
-                  const fileInfo = {
-                    "filePath": file.path || '', 
-                    "fileName": file.name,
-                    "fileURL": "",  
-                    "fileType": file.type,
-                    "classification": "",  
-                    "verified": true,     
-                    "valid": true ,     
-                  };
-                  fileNameArray.push(fileInfo);
-                  formData.append('documents', file);
-                });
-              
-                const blob = new Blob([JSON.stringify(fileNameArray)], {
-                  type: "application/json"
-                });
-                formData.append('files', blob);
-              
-                try {
-                  setIsLoadingImageDocs(true);
-                  const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
-                  console.log("API Response:", response);
-                  SuccessToaster('File Uploaded Successfully');
-                  console.log("Response data:", response?.data);
-                  setUploadFileData(prevData => {
-                    // Merge previous data with new data
-                    return [...(prevData || []), ...(response?.data || [])];
-                  });
-                  setIsLoadingImageDocs(false);
-                  return response?.data;
-                } catch (error) {
-                  ErrorToaster('File Upload Failed');
-                  console.error("Error:", error);
-                  setIsLoading(false);
-                  return null;
-                }
-              };  
+  const changeHandler = async (event) => {
+    console.log("Event received:", event);
+    const filesArray = Array.from(event);
+    console.log("Converted files array:", filesArray);
+    setFiles(filesArray);
+
+    const formData = new FormData();
+    let fileNameArray = [];
+
+    filesArray.forEach(file => {
+      const fileInfo = {
+        "filePath": file.path || '',
+        "fileName": file.name,
+        "fileURL": "",
+        "fileType": file.type,
+        "classification": "",
+        "verified": true,
+        "valid": true,
+      };
+      fileNameArray.push(fileInfo);
+      formData.append('documents', file);
+    });
+
+    const blob = new Blob([JSON.stringify(fileNameArray)], {
+      type: "application/json"
+    });
+    formData.append('files', blob);
+
+    try {
+      setIsLoadingImageDocs(true);
+      const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+      console.log("API Response:", response);
+      SuccessToaster('File Uploaded Successfully');
+      console.log("Response data:", response?.data);
+      setUploadFileData(prevData => {
+        // Merge previous data with new data
+        return [...(prevData || []), ...(response?.data || [])];
+      });
+      setIsLoadingImageDocs(false);
+      return response?.data;
+    } catch (error) {
+      ErrorToaster('File Upload Failed');
+      console.error("Error:", error);
+      setIsLoading(false);
+      return null;
+    }
+  };
 
   const setTodayDate = () => {
     const today = new Date();
@@ -156,7 +157,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
 
   useEffect(() => {
     checkApproveEnabled();
-  }, [ documentTitle, uploadFileData]);
+  }, [documentTitle, uploadFileData]);
 
   useEffect(() => {
     setUserDetails();
@@ -210,16 +211,16 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   // };
 
   const checkApproveEnabled = () => {
-    
+
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
       // For files, check if all documents have titles
-      const allFilesHaveTitles = uploadFileData.every((_, index) => 
+      const allFilesHaveTitles = uploadFileData.every((_, index) =>
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
-      
+
       setIsApproveEnabled(allFilesHaveTitles);
-    } else{
+    } else {
       setIsApproveEnabled(true);
     }
   };
@@ -268,12 +269,12 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     }
   };
 
-   const getLog = async () => {
-      const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
-      setLogDetails(basicLog);
-      console.log("basicLog" +JSON.stringify(basicLog));
-      
-    };
+  const getLog = async () => {
+    const { data: basicLog } = await GET(`application-management-service/application/${id}/logs`);
+    setLogDetails(basicLog);
+    console.log("basicLog" + JSON.stringify(basicLog));
+
+  };
 
   const handleApplicationApprove = async () => {
     // let role;
@@ -324,9 +325,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     let title;
     let approvedDate;
     const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,              
+      ...item.file,
       description: documentDesc[index] || "",
-      title: documentTitle[index] || "", 
+      title: documentTitle[index] || "",
     }));
     let notesComments = userRoleComments || "";
     let isDelegate = true;
@@ -334,14 +335,14 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
-          role = "Department Head";
-          isDelegate = false;
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
       } else {
-          role = "Department Head";
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
       }
-     }else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -445,9 +446,9 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     let title;
     let approvedDate;
     const files = (uploadFileData || []).map((item, index) => ({
-      ...item.file,              
+      ...item.file,
       description: documentDesc[index] || "",
-      title: documentTitle[index] || "", 
+      title: documentTitle[index] || "",
     }));
     let notesComments = userRoleComments || "";
     let isDelegate = true;
@@ -455,14 +456,14 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     // Determine role based on selectedTab and applicationType
     if (selectedTab === 'level-2') {
       if (workModeType === "Department Head") {
-          role = "Department Head";
-          isDelegate = false;
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        isDelegate = false;
+        title = "Dept. Head / Chief Review"
       } else {
-          role = "Department Head";
-          title = "Dept. Head / Chief Review"
+        role = "Department Head";
+        title = "Dept. Head / Chief Review"
       }
-     }else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -514,7 +515,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         console.log(error);
       });
   };
-  
+
 
   const handleCheckboxChange = (checkboxName) => (event) => {
     const newIsChecked = {
@@ -570,49 +571,51 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
   // }
 
   return (
-<>
-{isLoadingImageDocs && (
-      <div
-        className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
-      >
-        <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
-      </div>
-    )}
- {isLoadingImage && (
-      <div  className={style.loadingOverlay}>
-        <LoadingScreen/>
-      </div>
-    )}
+    <>
+      {isLoadingImageDocs && (
+        <div
+          className={`${style.verticalAlignCenter} ${style.justifyCenter} ${style.loadingOverlay}`}
+        >
+          <img src={fileLoadingURL} alt="" className={style.fileLoadingStyle} />
+        </div>
+      )}
+      {isLoadingImage && (
+        <div className={style.loadingOverlay}>
+          <LoadingScreen />
+        </div>
+      )}
 
- {!isLoadingImage && (
+      {!isLoadingImage && (
 
-    <Dialog
-      isOpen={getIsOpen}
-      onClose={() => getIsOpen(false)}
-      className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
-      canOutsideClickClose={false}
-      canEscapeKeyClose={false}
-    >
-      <div>
-        <div className={Classes.DIALOG_BODY}>
-          <div className={style.spaceBetween}>
-            <div className={`${style.heading}`}>
-              {/* {userRoleTab} Review & Approval */}
-              Staff Recommended for Reappointment
-            </div>
-            <div className={style.displayInRow}>
-              <img
-                src={CrossPink}
-                alt="cross"
-                className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                onClick={() => {
-                  getIsOpen(false);
-                }}
-              />
-            </div>
-          </div>
-          <div ref={componentRef} className={`${style.pagebreak}`}>
-            {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
+        <Dialog
+          isOpen={getIsOpen}
+          onClose={() => getIsOpen(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={`${style.heading}`}>
+                  {/* {userRoleTab} Review & Approval */}
+                  Staff Recommended for Reappointment
+                </div>
+                <div className={style.displayInRow}>
+                <Tooltip title="Click to Close" arrow>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                    onClick={() => {
+                      getIsOpen(false);
+                    }}
+                  />
+                  </Tooltip>
+                </div>
+              </div>
+              <div ref={componentRef} className={`${style.pagebreak}`}>
+                {/* <div className={`${style.cardStyle} ${style.marginTop10}`}>
               <div className={`${style.displayInRow}`}>
                 <div className={`${style.namefontstyle} ${style.marginTop10}`}>
                   {formDetails?.basicDetails?.applicant?.name?.firstName
@@ -633,143 +636,133 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                   <div className={`${style.marginBothText} ${style.marginBottom}`}>Privilege Category:<span className={`${style.rightSideFontStyle}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span></div>
               
             </div> */}
-            <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-              <div className={style.marginTop10}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                  <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                    <span className={style.rejectionHeadingTextStyle}>
-                    {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
-                    {formDetails?.basicDetails?.applicant?.name?.firstName
-                    ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
-                      formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                    : ""}{", "}
-                  </span>
-                  <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                </div>
-                <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
-                  <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                  <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId|| "-"}</span>
-                  </div>
-                {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
-                  </div>
-                  {/* <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>Only If Multisite</span>
-                  </div> */}
-                  {
-                    entity?.multiSiteEntity && (
-                        <div className={`${style.twoColumnGridInner}`}>
-                        <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                        <span className={`${style.rejectionTextStyle1}`}>
-                            {entity?.multiSiteEntity?.[0]?.name || "-"}
+                <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
+                  <div className={`${style.marginTop10} ${style.displayInRowCenter}`}>
+                    <div className={`${style.gridContainer2} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                      <div className={`${style.gridRow}`}>
+                        <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                          {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                            formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                          {formDetails?.basicDetails?.applicant?.name?.firstName
+                            ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
+                            formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
+                            : ""}
                         </span>
+                          <span className={`${style.rejectionTextStyle}`}>
+                            {", "}{formDetails?.providerType?.serviceProviderType}
+                          </span>
                         </div>
-                    )
-                    }
-                {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                  </div>
-                  <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>
-                      {formDetails?.basicDetails?.applicant?.name?.firstName
-                      ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                      formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                      : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                    </span>
+                        <div className={`${style.gridItem2}`}>
+                          <span className={`${style.rejectionHeadingTextStyle}`}>
+                            {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                            {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                              ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                              : ""}
+                          </span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner2} `}>
+                          <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                        </div>
+                      </div>
+                      <div className={style.gridRow}>
+                        {
+                          entity?.multiSiteEntity && (
+                            <div className={`${style.twoColumnGridInner}`}>
+                              <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                              <span className={`${style.rejectionTextStyle1}`}>
+                                {entity?.multiSiteEntity?.[0]?.name || "-"}
+                              </span>
+                            </div>
+                          )
+                        }
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                          <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                        </div>
+                        <div className={`${style.twoColumnGridInner2}`}>
+                          <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                          <span className={`${style.rejectionTextStyle1}`}>
+                            {formDetails?.basicDetails?.applicant?.name?.firstName
+                              ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                              formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                              : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-            Enter your Notes / Comments (Optional)
-            </div>
-            {/* <div className={`${style.notesBorderStyle}`}>
+                <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
+                  Enter your Notes / Comments (Optional)
+                </div>
+                {/* <div className={`${style.notesBorderStyle}`}>
               <div className={`${style.commentsNotesFontStyle}`}>
                 Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam minima facere vitae fugiat aspernatur amet ab sequi nam doloribus quaerat exercitationem ducimus nostrum illo consectetur vel possimus molestias explicabo iusto iste officia est repudiandae, eum autem aut! Odio quia accusantium eum dignissimos, molestias delectus consequatur voluptatibus cum, quod animi voluptatum vero nemo blanditiis consequuntur tempora. Ipsa nihil hic earum voluptates nostrum. Facilis aspernatur rerum at voluptatum deleniti nam culpa praesentium sunt architecto, ducimus debitis impedit neque ad sapiente fugiat veniam molestiae doloremque quae natus, sequi soluta! Porro sapiente ex inventore voluptatem ea recusandae rerum doloribus qui id possimus, iure odit?
               </div>
             </div> */}
-            {/* <div className={`${style.notesBorderStyle}`}> */}
-            <div className={`${style.marginTop10}`}>
-              <CKEditor
-                editor={ClassicEditor}
-                data={userRoleComments}
-                onChange={(event, editor) => {
-                  const data = editor.getData();
-                  setUserRoleComments(data);
-                }}
-                config={{
-                  placeholder: "Enter comments / notes ",
-                  toolbar: {
-                    shouldNotGroupWhenFull: true,
-                    sticky: true,
-                    items: [
-                      'undo', 'redo',
-                      '|',
-                      'heading',
-                      '|',
-                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                      '|',
-                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                      '|',
-                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                  ],
-                  },
-                  autoGrow: false,
-                }}
-                onReady={(editor) => {
-                  editor.editing.view.change((writer) => {
-                    writer.setStyle(
-                      "height",
-                      "150px",
-                      editor.editing.view.document.getRoot()
-                    );
-                  });
-                }}
-              />
-            </div>
-            <div className={`${style.marginTop} ${style.cursorPointer}`}>
+                {/* <div className={`${style.notesBorderStyle}`}> */}
+                <div className={`${style.marginTop10}`}>
+                  <CKEditor
+                    editor={ClassicEditor}
+                    data={userRoleComments}
+                    onChange={(event, editor) => {
+                      const data = editor.getData();
+                      setUserRoleComments(data);
+                    }}
+                    config={{
+                      placeholder: "Enter comments / notes ",
+                      toolbar: {
+                        shouldNotGroupWhenFull: true,
+                        sticky: true,
+                        items: [
+                          'undo', 'redo',
+                          '|',
+                          'heading',
+                          '|',
+                          'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                          '|',
+                          'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                          '|',
+                          'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                        ],
+                      },
+                      autoGrow: false,
+                    }}
+                    onReady={(editor) => {
+                      editor.editing.view.change((writer) => {
+                        writer.setStyle(
+                          "height",
+                          "150px",
+                          editor.editing.view.document.getRoot()
+                        );
+                      });
+                    }}
+                  />
+                </div>
+                <div className={`${style.marginTop} ${style.cursorPointer}`}>
 
-                    <>
+                  <>
 
-                      <Dropzone
-                        style={dropzoneStyle}
-                        onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                        accept={{
-                          'image/jpeg': [],
-                          'image/png': [],
-                          'image/jpg': [],
-                          'application/pdf': []
-                        }}
-                      >
-                        {({ getRootProps, getInputProps }) => (
-                          <section>
-                            <div {...getRootProps()}>
-                              <input {...getInputProps()} />
-                              <div className={style.uploadBorderStyle}>
+                    <Dropzone
+                      style={dropzoneStyle}
+                      onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                      accept={{
+                        'image/jpeg': [],
+                        'image/png': [],
+                        'image/jpg': [],
+                        'application/pdf': []
+                      }}
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <section>
+                          <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <div className={style.uploadBorderStyle}>
                               <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
                                 <div className={style.uploadTextStyle}>
                                   Upload any supporting documents
@@ -777,57 +770,57 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                                 <div className={`${style.marginLeftRight20}`}>
                                   Click To Upload
                                 </div>
-                                </div>
                               </div>
                             </div>
-                          </section>
-                        )}
-                      </Dropzone>
-                    </>
+                          </div>
+                        </section>
+                      )}
+                    </Dropzone>
+                  </>
 
-                  </div>
-                  {uploadFileData.length > 0 && (
-                <div>
-                  {uploadFileData.map((file, index) => (
-                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
-                      <div className={`${style.threeColumnGrid}`}>
-                      <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
-                        <DescriptionIcon className={style.docsIcon} />
-                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
-                      </div>
-                      <div>
-                      <CommonInputField
-                        value={documentTitle[index] || ""}
-                        onChange={(e) => {
-                          const newDocumentTitle = [...documentTitle];
-                          newDocumentTitle[index] = e.target.value;
-                          setDocumentTitle(newDocumentTitle);
-                        }}
-                        type="text"
-                        placeholder="Title*"
-                        className={style.referenceCardStyleDescription}
-                      />
-                      </div>
-                      <div>
-                      <CommonInputField
-                        value={documentDesc[index] || ""}
-                        onChange={(e) => {
-                          const newDocumentDesc = [...documentDesc];
-                          newDocumentDesc[index] = e.target.value;
-                          setDocumentDesc(newDocumentDesc);
-                        }}
-                        type="text"
-                        placeholder="Description (Optional)"
-                        className={style.referenceCardStyleDescription}
-                      />
-                      </div>
-                    </div>
-                    </div>
-                  ))}
                 </div>
-              )}
-            {/* </div> */}
-            {/* {userRole.includes('Chief Of Staff') && (
+                {uploadFileData.length > 0 && (
+                  <div>
+                    {uploadFileData.map((file, index) => (
+                      <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                        <div className={`${style.threeColumnGrid}`}>
+                          <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                            <DescriptionIcon className={style.docsIcon} />
+                            <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                          </div>
+                          <div>
+                            <CommonInputField
+                              value={documentTitle[index] || ""}
+                              onChange={(e) => {
+                                const newDocumentTitle = [...documentTitle];
+                                newDocumentTitle[index] = e.target.value;
+                                setDocumentTitle(newDocumentTitle);
+                              }}
+                              type="text"
+                              placeholder="Title*"
+                              className={style.referenceCardStyleDescription}
+                            />
+                          </div>
+                          <div>
+                            <CommonInputField
+                              value={documentDesc[index] || ""}
+                              onChange={(e) => {
+                                const newDocumentDesc = [...documentDesc];
+                                newDocumentDesc[index] = e.target.value;
+                                setDocumentDesc(newDocumentDesc);
+                              }}
+                              type="text"
+                              placeholder="Description (Optional)"
+                              className={style.referenceCardStyleDescription}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* </div> */}
+                {/* {userRole.includes('Chief Of Staff') && (
               <CommonCheckBox
                 className={`${style.marginTop}`}
                 label={formatLabel("I as the chief of staff approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
@@ -835,26 +828,26 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                 onChange={handleCheckboxChange('isChecked1')}
               />
             )} */}
-            {/* {userRole.includes('Credentialing Committee') && ( */}
-              <>
-                {/* <CommonCheckBox
+                {/* {userRole.includes('Credentialing Committee') && ( */}
+                <>
+                  {/* <CommonCheckBox
                   className={`${style.marginTop}`}
                   label={formatLabel("The undersigned medical staff committee hereby approves the appointment of {ApplicantName} as per the criteria and standards established by {EntityName}’s bylaws and policies. This approval is contingent upon the fulfillment of all required qualifications and obligations as outlined in the medical staff bylaws.", dynamicValues)}
                   checked={isChecked.isChecked2}
                   onChange={handleCheckboxChange('isChecked2')}
                 /> */}
-                {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
-                {/* <CommonCheckBox
+                  {/* <div className={`${style.marginTop10} ${style.disclaimer}`}>{applicationType === "NEW" ? "Committee Disclaimer for Applicant Appointments" : "Committee Disclaimer for Staff Reappointments" }</div> */}
+                  {/* <CommonCheckBox
                 className={`${style.marginTop10}`}
                 label="The medical staff committee and the institution do not assume liability for the individual actions or clinical decisions made by the approved appointed staff member. The staff member will retain full responsibility for their professional conduct and patient care activities."
                 checked={isChecked.isChecked3}
                 onChange={handleCheckboxChange('isChecked3')}
                 /> */}
-              </>
-            {/* )} */}
-            {/* <ESignature/> */}
-            {/* {formDetails?.esignatureRequired && ( */}
-            {/* <div className={style.twoCol}>
+                </>
+                {/* )} */}
+                {/* <ESignature/> */}
+                {/* {formDetails?.esignatureRequired && ( */}
+                {/* <div className={style.twoCol}>
               <div
                 onClick={!checkRequirements() ? () => { } : onClicksignFunction}
                 className={!checkRequirements() ? style.disabled : style.signatureContainer}
@@ -877,36 +870,38 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                 </div>
               </div>
             </div> */}
-            {/* )}  */}
-            {/* <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}> */}
-            <div className={`${style.marginTop} ${style.alignCenter}  ${isApproveEnabled ? style.cursorPointer : '' }`}>
-              {/* <div onClick={() => getIsOpen(false)}>
+                {/* )}  */}
+                {/* <div className={`${style.marginTop} ${style.reviewButtonContainer} ${style.cursorPointer}`}> */}
+                <div className={`${style.marginTop} ${style.alignCenter}  ${isApproveEnabled ? style.cursorPointer : ''}`}>
+                  {/* <div onClick={() => getIsOpen(false)}>
                 <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
               </div> */}
-              <div 
-                className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}`} 
-                onClick= {onClickApproveMoveFunction}
-                style={{ 
-                  pointerEvents: isApproveEnabled ? 'auto' : 'none', 
-                  opacity: isApproveEnabled ? 1 : 0.5 
-                }}
-              >
-                <div className={style.reviewButton}>RECOMMEND STAFF</div>
-              </div>
-              {/* <div
+                  <div
+                    className={`${style.reviewButtonStyle} ${style.reviewButtonStyle}`}
+                    onClick={onClickApproveMoveFunction}
+                    style={{
+                      pointerEvents: isApproveEnabled ? 'auto' : 'none',
+                      opacity: isApproveEnabled ? 1 : 0.5
+                    }}
+                  >
+                    <Tooltip title={isApproveEnabled ? "Click to Recommend Staff for Approval" : ""} arrow>
+                    <div className={style.reviewButton}>RECOMMEND STAFF</div>
+                    </Tooltip>
+                  </div>
+                  {/* <div
                 className={`${style.reviewButtonStyle} ${style.cursorPointer}`}
                 onClick={isApproveEnabled ? () => onClickApproveMoveFunction() : () => { }}
                 style={{ pointerEvents: isApproveEnabled ? 'auto' : 'none', opacity: isApproveEnabled ? 1 : 0.5 }}
               >
                 <div className={style.reviewButton}>SUBMIT</div>
               </div> */}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </Dialog>
-)}
-</>
+        </Dialog>
+      )}
+    </>
   );
 };
 

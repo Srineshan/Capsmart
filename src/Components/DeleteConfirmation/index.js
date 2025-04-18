@@ -2,6 +2,7 @@ import React from 'react';
 import { Icon, Intent, Dialog, Classes } from '@blueprintjs/core';
 
 import style from './index.module.scss';
+import { Tooltip } from '@mui/material';
 
 const DeleteConfirmation = ({getShowDeleteConfirmation, getDeleteConfirmation, confirmationText}) => {
     return(
@@ -16,8 +17,10 @@ const DeleteConfirmation = ({getShowDeleteConfirmation, getDeleteConfirmation, c
                 {confirmationText}
                 </p>
                 <div className={`${style.positionCenter} ${style.marginTop20}`}>
-                    <button className={`${style.cloneOutlinedButton} ${style.cursorPointer}`} onClick={()=>getShowDeleteConfirmation(false)}>NO</button>
-                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {getDeleteConfirmation(true);getShowDeleteConfirmation(false)}}>YES</button>
+                <Tooltip title={"Click to Select No"} arrow>
+                    <button className={`${style.cloneOutlinedButton} ${style.cursorPointer}`} onClick={()=>getShowDeleteConfirmation(false)}>NO</button></Tooltip>
+                    <Tooltip title={"Click to Select Yes"} arrow>
+                    <button className={`${style.cloneButtonStyle} ${style.marginLeft20} ${style.cursorPointer}`} onClick={() => {getDeleteConfirmation(true);getShowDeleteConfirmation(false)}}>YES</button></Tooltip>
                 </div>
             </div>
         </Dialog>

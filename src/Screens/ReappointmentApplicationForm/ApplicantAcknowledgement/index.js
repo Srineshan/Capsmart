@@ -22,6 +22,7 @@ import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import { dataLoadingGIF } from '../../../utils/formatting';
 import MenuIcon from "@mui/icons-material/Menu";
 import Close from './../../../images/close.png';
+import { Tooltip } from '@mui/material';
 
 const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApplication }) => {
     const [isChecked, setIsChecked] = useState(false);
@@ -276,9 +277,12 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     </div>
                     <div className={style.threeColForButton}>
                         <div></div>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div>
+                        <Tooltip title={"Click to Save your progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
                 <div>
@@ -294,7 +298,8 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                     )}
                     <div>
                         <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
-                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                        <Tooltip title={"Click to Close"} arrow>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} /></Tooltip>
                             <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
                             <div className={style.marginTop}>
                                 <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
@@ -305,10 +310,13 @@ const ApplicantAcknowledgement = ({ acknowledgementForm, dateFormat, name, basic
                         </div>
                     </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                    <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div>
+                        <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
+                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => { handleSubmitApplicationReq(); setShowJourneyDialog(true) }} >CONTINUE</div></Tooltip>
                         </div>
                     </div>
 

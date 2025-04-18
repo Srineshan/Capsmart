@@ -16,6 +16,7 @@ import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonSwitch from "../CommonFields/CommonSwitch";
 import axios from "axios";
+import { Tooltip } from "@mui/material";
 // import { WProofreader } from '@webspellchecker/wproofreader-ckeditor5';
 
 const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selectedTab }) => {
@@ -272,221 +273,209 @@ const NotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationView, selected
                 </div>
               </div>
               <div className={`${style.rejectionBorderStyle} ${style.declineBorderStyle} ${style.marginTop10}`}>
-                <div className={style.marginTop10}>
-                  <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}>
-                    <div className={`${style.displayInRow} ${style.displayInRowCenter}`}>
-                      <span className={style.rejectionHeadingTextStyle}>
-                        {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() + formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
+                <div className={`${style.marginTop10} ${style.displayInRowCenter}`}>
+                  <div className={`${style.gridContainer} ${style.marginLeftRight20} ${style.marginBottom10}`}>
+                    <div className={`${style.gridRow}`}>
+                      <div className={style.gridItem1}><span className={style.rejectionHeadingTextStyle}>
+                        {formDetails?.basicDetails?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
+                          formDetails?.basicDetails?.applicant?.name?.lastName?.slice(1).toLowerCase()}{", "}
                         {formDetails?.basicDetails?.applicant?.name?.firstName
                           ? formDetails.basicDetails.applicant.name.firstName.charAt(0).toUpperCase() +
                           formDetails.basicDetails.applicant.name.firstName.slice(1).toLowerCase()
-                          : ""}{", "}
-                        {/* {`${formatFirstNameLastName(formDetails?.basicDetail?.applicant?.name?.firstName, formDetails?.basicDetail?.applicant?.name?.lastName)}`} */}
-                        {/* {formDetails?.basicDetails?.applicant?.name?.middleName?.toUpperCase()}{","} */}
+                          : ""}
                       </span>
-                      <div className={`${style.rejectionTextStyle} ${style.marginLeft2}`}>{formDetails?.providerType?.serviceProviderType}</div>
-                      {/* <span className={`${style.rejectionSubHeadingTextStyle} ${style.marginLeft20} ${style.alignCenter}`}>{formDetails?.displayId}</span> */}
+                        <span className={`${style.rejectionTextStyle}`}>
+                          {", "}{formDetails?.providerType?.serviceProviderType}
+                        </span>
+                      </div>
+                      <div className={`${style.gridItem2}`}>
+                        <span className={`${style.rejectionHeadingTextStyle}`}>
+                          {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
+                          {formDetails?.basicDetails?.departmentSpecialty?.specialty
+                            ? ` - ${formDetails.basicDetails.departmentSpecialty.specialty}`
+                            : ""}
+                        </span>
+                      </div>
+                      <div className={`${style.twoColumnGridInner2} `}>
+                        <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
+                      </div>
                     </div>
-                    <div className={`${style.twoColumnGridInner} ${style.displayInRowCenter}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Privilege Category:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.credentialingPrivilegeCategory?.credentialingCategory || "-"}</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Department:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.department || "-"}</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Application ID:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.displayId}</span>
-                    </div>
-                    {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Division / Speciality:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetails?.departmentSpecialty?.specialty || "-"}</span>
-                    </div>
-                    {/* <div className={`${style.twoColumnGridInner}`}>
-                    <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                    <span className={`${style.rejectionTextStyle1}`}>{formDetails?.basicDetailReferences?.site || "-"}</span>
-                  </div> */}
-                    {
-                      entity?.multiSiteEntity && (
-                        <div className={`${style.twoColumnGridInner}`}>
-                          <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
-                          <span className={`${style.rejectionTextStyle1}`}>
-                            {entity?.multiSiteEntity?.[0]?.name || "-"}
-                          </span>
-                        </div>
-                      )
-                    }
-                    {/* </div>
-              </div>
-              <div className={style.marginTop5}>
-                <div className={`${style.twoColumnGrid} ${style.marginLeftRight20} ${style.marginBottom10}`}> */}
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
-                      {/* <span className={`${style.rejectionTextStyle1}`}>{format(new Date(formDetails?.lastModifiedDate), "MMM dd, yyyy")}</span> */}
-                      <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
-                    </div>
-                    <div className={`${style.twoColumnGridInner}`}>
-                      <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
-                      <span className={`${style.rejectionTextStyle1}`}>
-                        {formDetails?.basicDetails?.applicant?.name?.firstName
-                          ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
-                          formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
-                          : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
-                      </span>
+                    <div className={style.gridRow}>
+                      {
+                        entity?.multiSiteEntity && (
+                          <div className={`${style.twoColumnGridInner}`}>
+                            <span className={`${style.rejectionTextStyle}`}>Site Name:</span>
+                            <span className={`${style.rejectionTextStyle1}`}>
+                              {entity?.multiSiteEntity?.[0]?.name || "-"}
+                            </span>
+                          </div>
+                        )
+                      }
+                      <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Submission Date:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>{formattedSubmissionDate}</span>
+                      </div>
+                      <div className={`${style.twoColumnGridInner}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Last Updated :</span>
+                        <span className={`${style.rejectionTextStyle1}`}>{formattedDate}</span>
+                      </div>
+                      <div className={`${style.twoColumnGridInner2}`}>
+                        <span className={`${style.rejectionTextStyle}`}>Last Updated by:</span>
+                        <span className={`${style.rejectionTextStyle1}`}>
+                          {formDetails?.basicDetails?.applicant?.name?.firstName
+                            ? formDetails?.updatedBy?.name?.firstName.charAt(0).toUpperCase() +
+                            formDetails?.updatedBy?.name?.firstName.slice(1).toLowerCase()
+                            : ""}{formDetails?.updatedBy?.name?.lastName?.toUpperCase()}, {formDetails?.updatedBy?.title?.title}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className={`${style.marginTop10} ${style.flexCenter}`}>
-                <CommonSwitch label={notesVisible ? 'YES' : 'NO'} checked={notesVisible} onChange={(e) => setNotesVisible(e.target.checked)} labelName={'Make Notes Visible to Others'} />
-                <div className={`${style.notesVisibleText}`}>{notesVisible ? '' : 'NOTE will be visible ONLY to you'}</div>
-              </div>
-              <div className={`${style.marginTop10}`}>
-                <CKEditor
-                  editor={ClassicEditor}
-                  data={userNotes}
-                  onChange={(event, editor) => {
-                    const data = editor.getData();
-                    setUserNotes(data);
-                  }}
-                  // onChange={(event, editor) => handleTextChange(editor)}
-                  config={{
-                    placeholder: "Enter comments / notes",
-                    toolbar: {
-                      shouldNotGroupWhenFull: true,
-                      sticky: true,
-                      items: [
-                        'undo', 'redo',
-                        '|',
-                        'heading',
-                        '|',
-                        'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
-                        '|',
-                        'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
-                        '|',
-                        'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
-                      ],
-                    },
-                    autoGrow: false,
-                    // disableNativeSpellChecker: false,        
-                    // extraPlugins: [WProofreader],
-                    // wproofreader: {
-                    //   // serviceId: 'your-service-id', // Replace with your service ID
-                    //   srcUrl: 'https://svc.webspellchecker.net/spellcheck31/wscbundle/wscbundle.js',
-                    // },
-                  }}
-                  onReady={(editor) => {
-                    const editorElement = editor.editing.view.document.getRoot();
-                    editor.editing.view.change(writer => {
-                      writer.setStyle(
-                        'min-height',
-                        '150px',
-                        editorElement
-                      );
-                    });
-                  }}
+            </div>
+            <div className={`${style.marginTop10} ${style.flexCenter}`}>
+              <CommonSwitch label={notesVisible ? 'YES' : 'NO'} checked={notesVisible} onChange={(e) => setNotesVisible(e.target.checked)} labelName={'Make Notes Visible to Others'} />
+              <div className={`${style.notesVisibleText}`}>{notesVisible ? '' : 'NOTE will be visible ONLY to you'}</div>
+            </div>
+            <div className={`${style.marginTop10}`}>
+              <CKEditor
+                editor={ClassicEditor}
+                data={userNotes}
+                onChange={(event, editor) => {
+                  const data = editor.getData();
+                  setUserNotes(data);
+                }}
+                // onChange={(event, editor) => handleTextChange(editor)}
+                config={{
+                  placeholder: "Enter comments / notes",
+                  toolbar: {
+                    shouldNotGroupWhenFull: true,
+                    sticky: true,
+                    items: [
+                      'undo', 'redo',
+                      '|',
+                      'heading',
+                      '|',
+                      'fontfamily', 'fontsize', 'fontColor', 'fontBackgroundColor',
+                      '|',
+                      'bold', 'italic', 'strikethrough', 'subscript', 'superscript', 'code',
+                      '|',
+                      'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'
+                    ],
+                  },
+                  autoGrow: false,
+                  // disableNativeSpellChecker: false,        
+                  // extraPlugins: [WProofreader],
+                  // wproofreader: {
+                  //   // serviceId: 'your-service-id', // Replace with your service ID
+                  //   srcUrl: 'https://svc.webspellchecker.net/spellcheck31/wscbundle/wscbundle.js',
+                  // },
+                }}
+                onReady={(editor) => {
+                  const editorElement = editor.editing.view.document.getRoot();
+                  editor.editing.view.change(writer => {
+                    writer.setStyle(
+                      'min-height',
+                      '150px',
+                      editorElement
+                    );
+                  });
+                }}
 
-                />
-              </div>
-              <div className={`${style.marginTop} ${style.cursorPointer}`}>
+              />
+            </div>
+            <div className={`${style.marginTop} ${style.cursorPointer}`}>
 
-                <>
+              <>
 
-                  <Dropzone
-                    style={dropzoneStyle}
-                    onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
-                    accept={{
-                      'image/jpeg': [],
-                      'image/png': [],
-                      'image/jpg': [],
-                      'application/pdf': []
-                    }}
-                  >
-                    {({ getRootProps, getInputProps }) => (
-                      <section>
-                        <div {...getRootProps()}>
-                          <input {...getInputProps()} />
-                          <div className={style.uploadBorderStyle}>
-                            <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
-                              <div className={style.uploadTextStyle}>
-                                Upload any Supporting Documents
-                              </div>
-                              <div className={`${style.marginLeftRight20}`}>
-                                Click To Upload
-                              </div>
+                <Dropzone
+                  style={dropzoneStyle}
+                  onDrop={(acceptedFiles) => changeHandler(acceptedFiles)}
+                  accept={{
+                    'image/jpeg': [],
+                    'image/png': [],
+                    'image/jpg': [],
+                    'application/pdf': []
+                  }}
+                >
+                  {({ getRootProps, getInputProps }) => (
+                    <section>
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        <div className={style.uploadBorderStyle}>
+                          <div className={`${style.spaceBetween} ${style.displayInRowCenter}`}>
+                            <div className={style.uploadTextStyle}>
+                              Upload any Supporting Documents
+                            </div>
+                            <div className={`${style.marginLeftRight20}`}>
+                              Click To Upload
                             </div>
                           </div>
                         </div>
-                      </section>
-                    )}
-                  </Dropzone>
-                </>
+                      </div>
+                    </section>
+                  )}
+                </Dropzone>
+              </>
 
-              </div>
-              {uploadFileData.length > 0 && (
-                <div>
-                  {uploadFileData.map((file, index) => (
-                    <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
-                      <div className={`${style.threeColumnGrid}`}>
-                        <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
-                          <DescriptionIcon className={style.docsIcon} />
-                          <div className={style.marginLeft20}>{file?.file?.fileName}</div>
-                        </div>
-                        <div>
-                          <CommonInputField
-                            value={documentTitle[index] || ""}
-                            onChange={(e) => {
-                              const newDocumentTitle = [...documentTitle];
-                              newDocumentTitle[index] = e.target.value;
-                              setDocumentTitle(newDocumentTitle);
-                            }}
-                            type="text"
-                            placeholder="Title*"
-                            className={style.referenceCardStyleDescription}
-                          />
-                        </div>
-                        <div>
-                          <CommonInputField
-                            value={documentDesc[index] || ""}
-                            onChange={(e) => {
-                              const newDocumentDesc = [...documentDesc];
-                              newDocumentDesc[index] = e.target.value;
-                              setDocumentDesc(newDocumentDesc);
-                            }}
-                            type="text"
-                            placeholder="Description (Optional)"
-                            className={style.referenceCardStyleDescription}
-                          />
-                        </div>
+            </div>
+            {uploadFileData.length > 0 && (
+              <div>
+                {uploadFileData.map((file, index) => (
+                  <div key={index} className={`${style.alignItem} ${style.marginTop10}`}>
+                    <div className={`${style.threeColumnGrid}`}>
+                      <div className={`${style.displayInRow} ${style.referenceCardStyle}`}>
+                        <DescriptionIcon className={style.docsIcon} />
+                        <div className={style.marginLeft20}>{file?.file?.fileName}</div>
+                      </div>
+                      <div>
+                        <CommonInputField
+                          value={documentTitle[index] || ""}
+                          onChange={(e) => {
+                            const newDocumentTitle = [...documentTitle];
+                            newDocumentTitle[index] = e.target.value;
+                            setDocumentTitle(newDocumentTitle);
+                          }}
+                          type="text"
+                          placeholder="Title*"
+                          className={style.referenceCardStyleDescription}
+                        />
+                      </div>
+                      <div>
+                        <CommonInputField
+                          value={documentDesc[index] || ""}
+                          onChange={(e) => {
+                            const newDocumentDesc = [...documentDesc];
+                            newDocumentDesc[index] = e.target.value;
+                            setDocumentDesc(newDocumentDesc);
+                          }}
+                          type="text"
+                          placeholder="Description (Optional)"
+                          className={style.referenceCardStyleDescription}
+                        />
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer}`}>
+            <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
+              <Tooltip title={"Click to Cancel"} arrow>
+                <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div></Tooltip>
             </div>
-            <div className={`${style.marginTop} ${style.marginBottom} ${style.reviewButtonContainer}`}>
-              <div className={`${style.cursorPointer}`} onClick={() => getIsOpen(false)}>
-                <div className={`${style.cancelButton} ${style.cancelButtonTextStyle}`}>Cancel</div>
-              </div>
-              <div
-                className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
-                onClick={getApplicationNotes}
-                style={{
-                  pointerEvents: isApproveEnabled ? 'auto' : 'none',
-                  opacity: isApproveEnabled ? 1 : 0.5
-                }}
-              >
-                <div className={style.reviewButton}>SUBMIT</div>
-              </div>
+            <div
+              className={`${style.reviewButtonStyle} ${isApproveEnabled ? style.cursorPointer : undefined} ${style.marginLeft}`}
+              onClick={getApplicationNotes}
+              style={{
+                pointerEvents: isApproveEnabled ? 'auto' : 'none',
+                opacity: isApproveEnabled ? 1 : 0.5
+              }}
+            >
+              <Tooltip title={isApproveEnabled ? "Click to Submit Notes and Comments" : ""} arrow>
+                <div className={style.reviewButton}>SUBMIT</div></Tooltip>
             </div>
           </div>
         </Dialog>

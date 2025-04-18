@@ -12,7 +12,7 @@
 
 .eSignDialogBackground {
   background: #ffffff 0% 0% no-repeat padding-box;
-  padding: 20px 40px 0px 40px;
+  padding: 20px 40px 40px 40px;
   border-radius: 20px !important;
 }
 
@@ -128,7 +128,7 @@
 
 .byMedicalDirectiveGrid {
   display: grid;
-  grid-template-columns: 3% 3% 7% 31% 31% 6% 6% 5%;
+  grid-template-columns: 3% 3% 7% 29% 29% 8% 8% 5%;
   grid-gap: 1%;
 }
 
@@ -243,4 +243,13 @@
   box-shadow: 0px 3px 11px #52575D1A;
   border-radius: 4px 4px 0px 0px;
   color: #F5F9FD;
+}
+
+.backButton {
+  background: $primarycolor 0% 0% no-repeat padding-box;
+  color: #ffffff;
+  box-shadow: 0px 3px 11px #52575D1A;
+  border-radius: 4px;
+  padding: 10px 20px;
+  max-width: 280px;
 }

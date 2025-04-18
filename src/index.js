@@ -15,6 +15,8 @@ import UnexpectedError from './Components/ErrorPage/unexpectedError';
 import { TenantID, POST } from './Screens/dataSaver';
 import { currentUser } from './utils/auth';
 import { SuccessToaster, ErrorToaster } from './utils/toaster';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from "./theme";
 
 // const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
@@ -152,7 +154,9 @@ if (window.self === window.top) {
     // cookieSameSite="None"
     >
       <ErrorBoundary FallbackComponent={UnexpectedError} onError={logError}>
+      <ThemeProvider theme={theme}>
         <App />
+        </ThemeProvider>
       </ErrorBoundary>
     </AuthProvider >
   );

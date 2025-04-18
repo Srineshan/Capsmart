@@ -16,6 +16,10 @@
     margin-left: 20px;
 }
 
+.marginLeft10 {
+    margin-left: 10px !important;
+}
+
 .marginRight {
     margin-right: 10px;
 }
@@ -331,4 +335,100 @@
     display: flex;
     align-items: center;
     height: 100%;
+}
+
+.cardLeftStyle {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 5px 20px #52575D29;
+    border: 0.4000000059604645px solid #E0E1FB;
+    border-radius: 12px;
+    opacity: 1;
+    height: auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.photoBorderStyle {
+    width: 93px;
+    height: 89px;
+}
+
+.profileImage {
+    width: 93px;
+    height: 89px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.twoColumnGrid1 {
+    display: grid;
+    grid-template-columns: 58% 40%;
+    grid-gap: 10px;
+}
+
+.textAlignLeft {
+    text-align: left !important;
+}
+
+
+.cardTextBoldStyle {
+    text-align: left;
+    font: normal normal 600 $tabledatatext1 proxima-nova;
+    letter-spacing: 0px;
+    color: $textgrey;
+    text-transform: capitalize;
+    opacity: 1;
+}
+
+.cardTextNormalStyle {
+    text-align: left;
+    font: normal normal medium 16px/23px proxima-nova;
+    letter-spacing: 0px;
+    color: black;
+    text-transform: capitalize;
+    opacity: 0.6;
+}
+
+.twoColumnGridInner2 {
+    display: grid;
+    grid-template-columns: 65% 40%;
+    grid-gap: 10px;
+    justify-items: start;
+}
+
+.rightAlignTextStyle {
+    text-align: right;
+    font: normal normal medium 16px/23px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    text-transform: capitalize;
+    opacity: 0.8;
+}
+
+.leftAlignTextStyle {
+    text-align: left;
+    font: normal normal medium 16px/23px proxima-nova;
+    letter-spacing: 0px;
+    color: $textcolor;
+    text-transform: uppercase;
+    opacity: 1;
+}
+
+.rightAlignTextStyle1 {
+    text-align: right;
+    font: normal normal normal 14px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    text-transform: capitalize;
+    opacity: 0.8;
+}
+
+.emailTextBoldStyle {
+    text-align: start;
+    font: normal normal 400 16px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: #2C2C2C;
+    opacity: 1;
 }
