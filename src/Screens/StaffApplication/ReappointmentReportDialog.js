@@ -46,7 +46,10 @@ const ReappointmentReportDialog = ({
 
     tableData?.map((data) => {
       const now = new Date();
-if (
+if (new Date(data.onGoingApplication.expiryDate) < now) {
+        No.push("red");
+        dotTooltipValues.push("Past Due");
+      } else if (
   data.onGoingApplication.subStatus === "NOT_STARTED" &&
   data.onGoingApplication.completionPercentage === 0
 ) {
@@ -58,9 +61,6 @@ if (
 ) {
   No.push("yellow");
   dotTooltipValues.push("In-Progress");
-} else if (new Date(data.onGoingApplication.expiryDate) < now) {
-  No.push("red");
-  dotTooltipValues.push("Past Due");
 } else if (
   data.onGoingApplication.status === "CREATED" &&
   data.onGoingApplication.subStatus === "STARTED" &&
