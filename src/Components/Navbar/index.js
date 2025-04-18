@@ -59,8 +59,11 @@ const Navbar = () => {
   const popoverAnchorHelp = useRef(null);
   const [anchorElTools, setAnchorElTools] = useState(null);
   const [anchorElGuide, setAnchorElGuide] = useState(null);
+  const [openPrivileged, setOpenPrivileged] = useState(null);
   const openTools = Boolean(anchorElTools);
   const openGuide = Boolean(anchorElGuide);
+  const openStaff = Boolean(openPrivileged);
+  const popoverAnchorStaff = useRef(null);
   const popoverAnchorTools = useRef(null);
   const popoverAnchorGuide = useRef(null);
   const [hospitalLogo, setHospitalLogo] = useState(null);
@@ -206,12 +209,20 @@ const Navbar = () => {
     setAnchorElGuide(event.currentTarget);
   };
 
+  const handleClickStaff = (event) => {
+    setOpenPrivileged(event.currentTarget);
+  };
+
   const handleCloseTools = () => {
     setAnchorElTools(null);
   };
 
   const handleCloseGuide = () => {
     setAnchorElGuide(null);
+  };
+
+  const handleCloseStaff = () => {
+    setOpenPrivileged(null);
   };
 
   const sendEmail = (email) => {
@@ -288,6 +299,7 @@ const Navbar = () => {
     cookie.remove("user", { path: "/" });
     cookie.remove("entityId", { path: "/" });
     cookie.remove("authorization", { path: "/" });
+    sessionStorage.removeItem('applicationCreationType');
     logout()
     navigate('/')
   }
@@ -391,7 +403,7 @@ const Navbar = () => {
               </div>
             </Link>
           )}
-          <Link to={"/activeStaff"} className={style.noFontStyle}>
+          {/* <Link to={"/activeStaff"} className={style.noFontStyle}>
             <div
               onClick={handlePrivilegedStaffClick}
               className={`${style.menuStyle} ${window.location.pathname.includes("/activeStaff") &&
@@ -400,7 +412,59 @@ const Navbar = () => {
             >
               <p>PRIVILEGED STAFF</p>
             </div>
-          </Link>
+          </Link> */}
+          <div
+            ref={popoverAnchorStaff}
+            onMouseEnter={(e) => handleClickStaff(e)}
+            onMouseLeave={() => handleCloseStaff()}
+            aria-owns={openStaff ? "mouse-over-popover" : undefined}
+            aria-haspopup="true"
+          >
+            <div className={`${style.menuStyle} ${style?.cursorPointer}`}>PRIVILEGED STAFF</div>
+            <Popover
+              id={"mouse-over-popover"}
+              open={openStaff}
+              anchorEl={popoverAnchorStaff.current}
+              onClose={handleCloseGuide}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "center",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+              classes={{
+                paper: classes.popoverContent,
+              }}
+              PaperProps={{
+                style: { width: "200px" },
+                onMouseEnter: handleClickStaff,
+                onMouseLeave: handleCloseStaff,
+              }}
+            >
+              <div className={style.helpCardStyle}>
+                {/* {workModeType === "Department Head" || workModeType === "Credentialing Committee" ? ( */}
+                   <Link
+                   className={style.noFontStyle1}
+                   to={"/activeStaff"}
+                 >
+                   <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/activeStaff")
+                  }`} 
+                   >
+                     Permanent Staff</div>
+                 </Link>
+
+                {/* ) : ""} */}
+                <Link
+                  className={style.noFontStyle1}
+                  to={"/locumStaff"}
+                >
+                  <div className={`${style.options1} ${style.cursorPointer} ${window.location.pathname.includes("/locumStaff")}`}>Locum Staff</div>
+                </Link>
+              </div>
+            </Popover>
+          </div>
 
           <div
             className={`${style.menuStyle} ${window.location.pathname.includes("/inactiveStaff") &&

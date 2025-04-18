@@ -637,7 +637,7 @@ import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
 import LoadingScreen from "../../Components/LoadingScreen";
 
-const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask }) => {
+const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, getReFetchMetaData,approvalnotesCommentsBoxDept,showBulkApproveDialog,searchTermForTable,activeApplicationTask,totalCount }) => {
   const cookie = new Cookie();
   const userDetails = cookie.get('user');
   const [user, setUser] = useState();
@@ -658,9 +658,13 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   );
   const applicationId = "66dc44ec788741fedc982b01";
   const [isLoadingImage, setIsLoadingImage] = useState(false);
+  const [totalCountLocum, setTotalCountLocum] = useState(0);
   const workModeType = sessionStorage.getItem('workModeType')
 
-  console.log("searchTermForTable",searchTermForTable)
+
+  console.log("tileLocumCOunt", totalCount)
+
+  // console.log("searchTermForTable",searchTermForTable)
 
   // Listen for session storage changes
   useEffect(() => {
@@ -705,18 +709,41 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   }, [userDetails])
 
   const getTitleCounts = async () => {
-    if (applicationType === "LOCUM") {
-      return;
-    }
     try {
-      let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+      const role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+      const applicationCreationType = applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+      const positionTypeParam = applicationType === "LOCUM" ? `&positionType=${applicationType}` : "";
+  
       const response = await GET(
-        `application-management-service/application/workflowUser/meta?applicationCreationType=${applicationType}&role=${role}&searchText=${searchTermForTable}`
+        `application-management-service/application/workflowUser/meta?role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationCreationType}${positionTypeParam}`
       );
+  
       setCounts(response?.data);
-      getReFetchMetaData(false);
+  
+      // Only trigger re-fetch when not LOCUM
+      if (applicationType !== "LOCUM") {
+        getReFetchMetaData(false);
+      }
     } catch (error) {
-      console.error('Error fetching title counts:', error);
+      console.error("Error fetching title counts:", error);
+    }
+  };
+  
+
+  //   useEffect(() => {
+  //   getActiveUserData();
+  // }, [totalCountLocum,applicationType]);
+
+  const getActiveUserData = async () => {
+    try {
+      const response = await GET(
+        `application-management-service/staff`
+      );
+      setTotalCountLocum(response?.data?.numberOfElements);
+      return response?.data?.staffs;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      return [];
     }
   };
 
@@ -733,19 +760,25 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   // };
 
   const getUserRoleType = async () => {
+    const applicationCreationType =
+      applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType;
+  
+    // Construct base URL
+    let url = `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationCreationType}`;
+  
+    // Append positionType only if LOCUM
     if (applicationType === "LOCUM") {
-      return;
+      url += `&positionType=${applicationType}`;
     }
-
+  
     try {
-      const response = await GET(
-        `application-management-service/applicantType/approvalFlow?applicantTypeId=${applicationId}&applicationCreationType=${applicationType}`
-      );
+      const response = await GET(url);
       setUserFlow(response?.data?.approvalFlowMap);
     } catch (error) {
-      console.error('Error fetching user role type:', error);
+      console.error("Error fetching user role type:", error);
     }
   };
+  
 
   // Initial data fetching
   useEffect(() => {
@@ -825,7 +858,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
   useEffect(() => {
     const UserFlowType = userFlow?.workflow || [];
   
-    const isManagerOrChief = workModeType === "Staff Manager";
+    const isManagerOrChief = workModeType === "Staff Manager" && (applicationType === "NEW" || applicationType === "REAPPOINTMENT" || applicationType === "LOCUM");
   
     const newCurrentRoleIndex = isManagerOrChief
       ? 0
@@ -838,28 +871,36 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     if (userRole.length > 0) {
       let initialTab;
   
-      if (applicationType === "LOCUM") {
-        initialTab = "LocumRenewals";
-      } else if (workModeType === "Department Head" || workModeType === "Chief Of Staff") {
+      if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
+        initialTab = "level-1";
+        // setInitialTabSet(false);
+      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT") {
         initialTab = "level-2";
+        // setInitialTabSet(false);
       }  else if (workModeType === "Credentialing Committee User") {
         initialTab = "level-3";
-      }else if (workModeType === "Credentialing Committee") {
+      } else if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
+        initialTab = "level-2";
+        // getSelectedTab(initialTab);
+        // setInitialTabSet(false);
+      } else if (workModeType === "Credentialing Committee") {
         initialTab = "level-3";
-      } else {
+        // getSelectedTab(initialTab);
+      }  else {
         initialTab = isManagerOrChief
           ? "level-1"
           : `level-${Object.keys(UserFlowType)[newCurrentRoleIndex]}`;
       }
-  
+      // console.log("Setting initial:", initialTabSet);
       if (initialTab && !initialTabSet) {
+        // console.log("Setting initial tab to:", initialTab);
         getSelectedTab(initialTab);
         setInitialTabSet(true);
       }
     }
   
     setCurrentRoleIndex(newCurrentRoleIndex);
-  }, [userFlow, userRole, getSelectedTab, initialTabSet, applicationType, workModeType, setCurrentRoleIndex]);
+  }, [userFlow, userRole, selectedTab, initialTabSet, applicationType, workModeType, setCurrentRoleIndex]);
   
 
   const getFilteredTiles = () => {
@@ -874,7 +915,9 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
           label = "Applicants To Verify";
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments To Process";
-        }else {
+        }  else if (applicationType === "LOCUM") {
+          label = "Renewals To Verify";
+        } else {
           label = value.tabDisplayName;
         }
       } else {
@@ -888,10 +931,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       };
     });
 
-    if (workModeType === "Department Head") {
+    if (workModeType === "Department Head" && applicationType === "REAPPOINTMENT") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2');
     }
-     else if (workModeType === "Chief Of Staff") {
+     else if (workModeType === "Chief Of Staff" && applicationType === "REAPPOINTMENT") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
         ...tile,
         label: "Reappointments To Process",
@@ -909,6 +952,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     // else if (workModeType === "Credentialing Committee") {
     //   filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3');
     // }  
+    else if (workModeType === "Credentialing Committee" && applicationType === "LOCUM") {
+      filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-2').map(tile => ({
+        ...tile,
+        label: "Privilege Extensions to Review",
+      }));
+    }
     else if (workModeType === "Credentialing Committee") {
       filteredArray = baseUserFlowArray.filter(tile => tile.level === 'level-3').map(tile => ({
         ...tile,
@@ -935,7 +984,7 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
       <LoadingScreen/>
     </div>
     )}
-      {applicationType !== "LOCUM" && (
+      {/* {applicationType !== "LOCUM" && ( */}
         <>
           {getFilteredTiles().map(tile => (
             <TileApplication
@@ -955,16 +1004,17 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
             currentTile="clarificationsRequired"
           />
         </>
-      )}
+      {/* )} */}
       
-      {workModeType === "Department Head" && applicationType === "LOCUM" && (
+      {/* {workModeType === "Department Head" && applicationType === "LOCUM" && (
         <TileApplication 
           selectedTab={selectedTab} 
           getSelectedTab={handleTabClick} 
           tileLabel="Renewals to Review" 
+          tileCount={totalCount}
           currentTile="LocumRenewals"
         />
-      )}
+      )} */}
     </div>
   );
 };
