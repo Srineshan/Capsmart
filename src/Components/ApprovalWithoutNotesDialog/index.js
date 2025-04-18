@@ -652,7 +652,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
                             {", "}{formDetails?.providerType?.serviceProviderType}
                           </span>
                         </div>
-                        <div>
+                        <div className={`${style.gridItem2}`}>
                           <span className={`${style.rejectionHeadingTextStyle}`}>
                             {formDetails?.basicDetails?.departmentSpecialty?.department || ""}
                             {formDetails?.basicDetails?.departmentSpecialty?.specialty

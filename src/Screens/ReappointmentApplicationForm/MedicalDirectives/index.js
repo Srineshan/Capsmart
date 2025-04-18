@@ -634,7 +634,7 @@ const MedicalDirectives = ({ basicForm, setBasicForm, applicationId, getPreAppli
                         <div className={style.twoColForButton}>
                             <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                                 <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <Tooltip title={showMedicalDirectives ? isSigned ? "Click to Proceed to the Next Step" : "" : ""} arrow>
                                 <div className={`${style.continue} ${style.marginTop10} ${showMedicalDirectives ? isSigned ? '' : style.disabledButton : ''}`} onClick={showMedicalDirectives ? isSigned ? () => { handleSubmitAttestBulk(); setShowMedicalDirectives(false); } : () => { } : () => handleContinue()}>CONTINUE</div></Tooltip>
                         </div>
                     </div>

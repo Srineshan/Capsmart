@@ -292,7 +292,7 @@ const ScheduleB = ({ acknowledgementForm, dateFormat, name, basicForm, getPreApp
                         <div className={style.twoColForButton}>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <Tooltip title={isSigned ? "Click to Proceed to the Next Step" : ""} arrow>
                             <div className={`${style.continue} ${style.marginTop10} ${!isSigned ? style.disabledButton : ''}`} onClick={!isSigned ? () => { } : () => { handleSubmitApplicationReq() }} >CONTINUE</div></Tooltip>
                         </div>
                     </div>

@@ -4409,7 +4409,7 @@ const PrivilegeSelection = ({ basicForm, setBasicForm, getPreApplication, dateFo
           <div className={style.threeColForButton}>
             <Tooltip title={"Click to Save your Progress and Continue later"} arrow>
               <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
-            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+            <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
               <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleContinue()}>CONTINUE</div></Tooltip>
           </div>
         </div>

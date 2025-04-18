@@ -975,7 +975,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div></Tooltip>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                         <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                        <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                        <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
                         <div className={`${style.continue} ${style.marginTop} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                     </div>
                 </div>
@@ -1010,7 +1010,7 @@ const CME = ({ basicForm, setBasicForm, applicationId, getPreApplication, dateFo
                         <div className={style.twoColForButton}>
                         <Tooltip title={"Click to Go Back to the Previous Step"} arrow>
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
-                            <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+                            <Tooltip title={isContinueEnabled ? "Click to Proceed to the Next Step" : ""} arrow>
                             <div className={`${style.continue} ${style.marginTop10} ${isContinueEnabled ? '' : style.disabledButton}`} onClick={isContinueEnabled ? () => handleContinue() : () => { }}>CONTINUE</div></Tooltip>
                         </div>
                     </div>

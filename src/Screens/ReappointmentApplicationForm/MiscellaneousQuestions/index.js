@@ -1153,7 +1153,9 @@ const MiscellaneousQuestions = ({ basicForm, setBasicForm, getPreApplication }) 
               <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div></Tooltip>
 
               {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
-              <Tooltip title={"Click to Proceed to the Next Step"} arrow>
+              <Tooltip title={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
+                && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
+                : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? "Click to Proceed to the Next Step" : ""} arrow>
               <div className={`${style.continue} ${style.marginTop10} ${((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
                 && basicForm?.basicDetails?.departmentSpecialty?.specialty === 'Pediatrics') ? (yesOrNoLMS !== '' && yesOrNoSuboxone !== '' && yesOrNoMRP !== '')
                 : (yesOrNoLMS !== '' && yesOrNoSuboxone !== '')) ? '' : style.disabledButton}`} onClick={((basicForm?.basicDetails?.departmentSpecialty?.department === 'Women & Children'
