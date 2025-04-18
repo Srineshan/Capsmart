@@ -247,7 +247,7 @@ const StaffApplicationList = ({
     "Task list",
     "Last Updated",
     "",
-  ] : [
+  ] : applicationType === "REAPPOINTMENT" ? [
     "",
     applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
@@ -261,6 +261,20 @@ const StaffApplicationList = ({
     // "Task list",
     "Submitted",
     // "Last Updated",
+    "",
+  ] : [
+    "",
+   "Locum Staff",
+    // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
+    applicationType === "NEW" ? "Applicant Type" : "Locum Type",
+    "Dept / Division & Specialty",
+    // "Department",
+    "Docs",
+    // "Data & Disclosures",
+    "CRs",
+    "Notes",
+    // "Task list",
+    "Submitted",
     "",
   ]
   const departmentHeadHeaderValues = [
@@ -351,9 +365,9 @@ const StaffApplicationList = ({
       onChange={handleSelectAllClick}
     />,
     // " ",
-    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant Name" : applicationType === "REAPPOINTMENT" ? "Staff for Reappointment" : "Locum Staff",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
-    applicationType === "NEW" ? "Applicant Type" : "Staff Type",
+    applicationType === "NEW" ? "Applicant Type" :  "Staff Type",
     "Dept / Division & Specialty",
     // "Ref",
     // "Docs",
@@ -1332,18 +1346,25 @@ const StaffApplicationList = ({
     try {
       let response;
       if (applicationType === "LOCUM") {
+        let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
+        const shouldIncludeAssignee = showAssignee &&
+          (workModeType === "Department Head" ||
+            workModeType === "Chief Of Staff" ||
+            workModeType === "Credentialing Committee");
+        const assignedUserIdsParam = shouldIncludeAssignee ? `&assignedUserIds=${users?.id}` : "";
+        const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
         setIsLoadingImage(true);
-        const specialtyParam = userSpecialty ? `%23${userSpecialty}` : "";
-        const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&departmentSpecialties=${userDepartmentList}&noOfDays=30`;
-        // const url = `application-management-service/staff?limit=30`;
-        response = await GET(url);
-        console.log("LOCUM data", response?.data.staffs);
-        setTableData(response?.data?.staffs);
+        response = await GET(
+          `application-management-service/application/workflowUser?tab=${selectedTab}&sortBy=${sortValue}&sortByField=${sortField}&positionType=${applicationType}&limit=${limit}&offset=${page - 1}&role=${role}&searchText=${searchTermForTable}&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&isPaginationRequired=${limit === 9999 ? false : true}${departmentParam}${assignedUserIdsParam}`
+        );
+        console.log("Application data", response?.data?.applications);
+        setTableData(response?.data?.applications);
         setTotalCount(response?.data?.numberOfElements);
-        setShowAssignee(false);
+        setSearchount(response?.data?.numberOfElements)
+        setReFetchMetaData(true);
         setIsLoadingImage(false);
-        console.log("LOCUM data length", response?.data?.numberOfElements);
-        return response?.data.staffs || [];
+        console.log("Application data length", response?.data?.numberOfElements);
+        return response?.data?.applications || [];
       } else {
         let role = workModeType === "Credentialing Committee User" ? "Staff Manager" : workModeType;
         const shouldIncludeAssignee = showAssignee &&
@@ -1365,7 +1386,8 @@ const StaffApplicationList = ({
         console.log("Application data length", response?.data?.numberOfElements);
         return response?.data?.applications || [];
       }
-    } catch (error) {
+    } 
+    catch (error) {
       console.error("Error fetching applications:", error);
       return [];
     }
@@ -4305,7 +4327,17 @@ const StaffApplicationList = ({
     // { data: applicationType === "NEW" ? "From Applicant" : "From Staff", requiredValue: "boolean", onClick: onClickClarificationRequrstFromApplicantDialog, isIndent: true },
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true },
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true },
-  ]
+  ];
+
+  const applicantLocumActionData = [
+    {
+      data: "View and Verify",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyLevel1Function,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+  ];
+
 
   const departmentHeadActionsData = [
     {
@@ -4471,6 +4503,16 @@ const StaffApplicationList = ({
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Staff Manager", hideForRoles2: "Department Head",hideForRoles3: "Chief Of Staff" },
   ]
 
+  const applicationLocumActionData = [
+    {
+      data: "Review and Approve",
+      requiredValue: "boolean",
+      onClick: "",
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+  ];
+
+
   const macActionsData = applicationType === "NEW" ? [
     // {
     //   data: "View & Verify",
@@ -4534,6 +4576,15 @@ const StaffApplicationList = ({
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head", },
   ]
 
+  const macLocumActionData = [
+    {
+      data: "MAC Approval",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromMACFunction,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+  ];
+
   const bodActionsData = applicationType === "NEW" ? [
     // {
     //   data: "View & Verify",
@@ -4594,6 +4645,15 @@ const StaffApplicationList = ({
     // { data: "From Internal Approver", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
     // { data: "From Institution", requiredValue: "boolean", onClick: "", isIndent: true, hideForRoles: "Credentialing Committee", hideForRoles2: "Department Head" },
   ]
+
+  const bodLocumActionData = [
+    {
+      data: "BOD Approval",
+      requiredValue: "boolean",
+      onClick: onClickViewAndVerifyApproveFromBODFunction,
+    },
+    { data: "Create Note", requiredValue: "boolean", onClick: onClickNotesDialog },
+  ];
 
   const clarificationActionsData = applicationType === "NEW" ? [
     {
@@ -4705,8 +4765,12 @@ const StaffApplicationList = ({
           ? applicationHeaderValues
           : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
             ? credUserHeaderValues
+            : selectedTab === "level-3" && applicationType === "LOCUM"
+            ? macHeaderValues
             : selectedTab === "level-4"
               ? macHeaderValues
+              : selectedTab === "level-4" && applicationType === "LOCUM"
+               ? bodHeaderValues
               : selectedTab === "level-5"
                 ? bodHeaderValues
                 : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
@@ -4728,6 +4792,10 @@ const StaffApplicationList = ({
           ? applicationColSortValues
           : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
             ? credUserColSortValues
+            : selectedTab === "level-3" && applicationType === "LOCUM"
+            ? macColSortValues
+            : selectedTab === "level-4" && applicationType === "LOCUM"
+            ? bodColSortValues
             : selectedTab === "level-4"
               ? macColSortValues
               : selectedTab === "level-5"
@@ -4751,7 +4819,11 @@ const StaffApplicationList = ({
           ? getApplicationValues()
           : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
             ? getCredUserValues()
-            : selectedTab === "level-4"
+            : selectedTab === "level-3" && applicationType === "LOCUM"
+            ? getMacValues()
+             : selectedTab === "level-4" && applicationType === "LOCUM"
+             ? getBodValues()
+            :selectedTab === "level-4"
               ? getMacValues()
               : selectedTab === "level-5"
                 ? getBodValues()
@@ -4766,14 +4838,22 @@ const StaffApplicationList = ({
                       // : getApprovedValues();
                       : getApplicantValues();
   let actions =
-    selectedTab === "level-1"
+    selectedTab === "level-1" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
       ? applicantActionsData
-      : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
+      : selectedTab === "level-1" && applicationType === "LOCUM"
+      ? applicantLocumActionData
+        :selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadActionsData
+        :selectedTab === "level-2" && applicationType === "LOCUM"
+        ? applicationLocumActionData
         : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
           ? applicationActionsData
           : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
             ? credUserActionsData
+            :selectedTab === "level-3" && applicationType === "LOCUM"
+            ? macLocumActionData
+             : selectedTab === "level-4" && applicationType === "LOCUM"
+             ? bodLocumActionData
             : selectedTab === "level-4"
               ? macActionsData
               : selectedTab === "level-5"
@@ -4801,10 +4881,14 @@ const StaffApplicationList = ({
               ? style.applicationStaffReappointGrid
               : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
                 ? style.credUserStaffReappointGrid
+                : selectedTab === "level-3" && applicationType === "LOCUM"
+                ? style.macStaffReappointGrid
                 : selectedTab === "level-4" && applicationType === "NEW"
                   ? style.macStaffGrid
                   : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
                     ? style.macStaffReappointGrid
+                    : selectedTab === "level-4" && applicationType === "LOCUM"
+                    ? style.bodStaffReappointGrid
                     : selectedTab === "level-5" && applicationType === "NEW"
                       ? style.bodStaffGrid
                       : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
@@ -5376,68 +5460,6 @@ const StaffApplicationList = ({
                 </div>
               )}
             </div>
-            {(applicationType === "LOCUM" & workModeType === "Department Head") ? (
-              <div className={`${style.marginTop20}`}>
-            <div
-              className={`${style.spaceBetween} ${style.marginTop10} ${style.marginLeft20}`}
-            >
-              <StaffApplicationLocumTiles
-                // getSelectedTab={getSelectedTab}
-                // selectedTab={selectedTab}
-                // reFetchMetaData={reFetchMetaData}
-                // getReFetchMetadata={getReFetchMetaData}
-                // approvalnotesCommentsBoxDept={approvalnotesCommentsBoxDept}
-                // showBulkApproveDialog={showBulkApproveDialog}
-                // searchTermForTable={searchTermForTable}
-                // activeApplicationTask={activeApplicationTask}
-              // applicationCreationType={applicationCreationType}
-              // getApplicationCreationType = {getApplicationCreationType}
-              totalCount = {totalCount}
-              />
-            </div>
-            <div className={`${style.bigCardStyle}`}>
-              {isLoading ? (
-                <div
-                  className={`${style.verticalAlignCenter} ${style.justifyCenter}`}
-                >
-                  <CircularProgress sx={{ color: "#06617A" }} />
-                </div>
-              ) : (
-                <div ref={componentRef} className={`${style.pagebreak}`}>
-                  <div
-                    className={`${style.reduceMarginTop10} ${style.marginLeftRight20} staffApplicationList`}
-                    ref={PDFRef}
-                  >
-                    <TableTwo
-                      tableHeaderValues={headerValuesLocum}
-                      tableDataValues={getLocumExpiredValues()}
-                      tableData={tableData}
-                      gridStyle={style.locumStaffGrid}
-                      actions={departmentHeadLocumActionsData}
-                      scrollStyle={style.contractScrollStyle}
-                      tableSortValues={colLocumSortValues}
-                      heading={selectedTab === "level-4" ? "At this time, there are no applications for MAC recommendation." : selectedTab === "level-5" ? "At this time, there are no applications for BOD Approval." : selectedTab === "clarificationsRequired" ? "At this time, there are no applications with clarification for you to work on." : "There are no Record for you to manage"}
-                      onClickFunction={() => { }}
-                      getHandleSort={getHandleSort}
-                      sortValue={{ sortBy: sortValue, sortByField: sortField }}
-                      getSelectedPage={getSelectedPage}
-                      totalCount={totalCount}
-                      page={page}
-                      checkedIds={checkedIds}
-                      filteredIds={filteredIds}
-                      // Optional: pass the checkbox click handler if TableTwo needs it
-                      handleCheckboxClick={handleCheckboxClick}
-                      searchTermForTable={searchTermForTable}
-                      searchCount={searchCount}
-                      setSearchTermForTable={setSearchTermForTable}
-                      onLimitChange={handleLimitChange}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-            </div>
-            ) : ("")}
           </div >
         </div >
         <div className={style.spaceBetween}>

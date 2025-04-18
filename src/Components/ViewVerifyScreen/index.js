@@ -10806,7 +10806,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
+                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM") ? (
                     <div className={`${style.fixedBottom} `}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11241,7 +11241,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "ReviewFromMAC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -11294,7 +11294,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "ReviewFromBOD")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11812,9 +11812,9 @@ const NewActiveApplication = ({
                         )}
                       </>
                     )}
-                    {applicationType === "REAPPOINTMENT" ? (
+                    {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM"  ? (
                       <>
-                        {selectedTab === "level-4" || selectedTab === "level-5" ? (
+                        {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
                           <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
                             <div className={`${style.displayInRow}${style.marginTop20}`}>
                               <div

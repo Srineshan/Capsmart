@@ -105,13 +105,13 @@ const [hospitalPrivilege, setHospitalPrivilege] = useState("");
  const [hospitalName, setHospitalName] = useState("");
 const [showAdditionalPrivilegesForSign, setShowAdditionalPrivilegesForSign] = useState(false);
 const [hospitalPrivilegeCategory, setHospitalPrivilegeCategory] = useState("");
-const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
-const [formSchema, setFormSchema] = useState();
-const [selectApplicant, setSelectApplicant] = useState([]);
-const [applicantOptions, setApplicantOptions] = useState([]);
-const [covererNameList, setCovererNameList] = useState([]);
-const [covererName, setCovererName] = useState("");
-const [covererId, setCovererId] = useState("");
+  const [formSchemaWholeObject, setFormSchemaWholeObject] = useState();
+    const [formSchema, setFormSchema] = useState();
+    const [selectApplicant, setSelectApplicant] = useState([]);
+    const [applicantOptions, setApplicantOptions] = useState([]);
+    const [covererNameList, setCovererNameList] = useState([]);
+    const [covererName, setCovererName] = useState("");
+    const [covererId, setCovererId] = useState("");
  const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
  const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
  const [currentDate, setCurrentDate] = useState(
@@ -124,7 +124,7 @@ const [covererId, setCovererId] = useState("");
  let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
 
 
- console.log("tableDataValue",selectApplicant,covererNameList,covererId)
+ console.log("tableDataValue",tableDataValue)
  useEffect(() => {
   sessionStorage.setItem("fromSummary", false);
   getApplication();
@@ -135,18 +135,6 @@ const [covererId, setCovererId] = useState("");
  useEffect(() => {
   getActiveUserData();
  }, []);
-
- useEffect(() => {
-   const coveredDetails = covererNameList?.map((data) => {
-    const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
-    const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
-    return {
-      id: data,
-      name: fullName,
-    };
-   })
-   console.log("fullName",coveredDetails)
- }, [covererNameList]);
 
  useEffect(() => {
   getPrivilegeCategory();
@@ -195,52 +183,51 @@ let userDepartmentList;
       console.log("userSpecialty",userDepartmentList,userSpecialty)
     }, [])
 
-     useEffect(() => {
-      const fetchDepartmentStaffs = async () => {
-        try {
-          const currentApplicantId = formDetails?.applicant?.id;
-          const departmentId = formDetails?.basicDetailReferences?.department?.id;
-          const applicantTypeId = formDetails?.basicDetailReferences?.applicantType?.id;
-          const response = await GET(
-            `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
-          );
-          console.log(response.data);
-  
-          const filteredStaffs = response.data.staffs.filter(
-            (staff) => staff.applicant.id !== currentApplicantId
-          );
-          setSelectApplicant(filteredStaffs)
-          console.log("appselect", selectApplicant)
-          const options = filteredStaffs.map((staff) => ({
-            id: `${staff.id}`,
-            value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
-            label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
-          }));
-          setApplicantOptions(options);
-          console.log(options)
-        } catch (error) {
-          console.error("Error fetching department staffs:", error);
-        }
-      };
-  
-      fetchDepartmentStaffs();
-    }, [formDetails]);
-
-    const getItemsSingle = (data) => {
-      let temp = [];
-      data?.map((data) => {
-        temp.push({ id: data?.id, label: data?.label, value: data?.value });
-      });
-      console.log("getItems", temp, data)
-      return temp;
-  
-    };
-
-    const handleRemoveChip = (index) => {
-      const updatedList = covererNameList.filter((_, i) => i !== index);
-      setCovererNameList(updatedList);
-    };
-
+      useEffect(() => {
+          const fetchDepartmentStaffs = async () => {
+            try {
+              const currentApplicantId = formDetails?.applicant?.id;
+              const departmentId = formDetails?.basicDetailReferences?.department?.id;
+              const applicantTypeId = formDetails?.basicDetailReferences?.applicantType?.id;
+              const response = await GET(
+                `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
+              );
+              console.log(response.data);
+      
+              const filteredStaffs = response.data.staffs.filter(
+                (staff) => staff.applicant.id !== currentApplicantId
+              );
+              setSelectApplicant(filteredStaffs)
+              console.log("appselect", selectApplicant)
+              const options = filteredStaffs.map((staff) => ({
+                id: `${staff.id}`,
+                value: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+                label: `${staff.applicant.name.firstName} ${staff.applicant.name.middleName} ${staff.applicant.name.lastName} ${staff?.basicDetailReferences?.specialty?.name !== undefined ? `- ${staff?.basicDetailReferences?.specialty?.name}` : ''}`,
+              }));
+              setApplicantOptions(options);
+              console.log(options)
+            } catch (error) {
+              console.error("Error fetching department staffs:", error);
+            }
+          };
+      
+          fetchDepartmentStaffs();
+        }, [formDetails]);
+    
+        const getItemsSingle = (data) => {
+          let temp = [];
+          data?.map((data) => {
+            temp.push({ id: data?.id, label: data?.label, value: data?.value });
+          });
+          console.log("getItems", temp, data)
+          return temp;
+      
+        };
+    
+        const handleRemoveChip = (index) => {
+          const updatedList = covererNameList.filter((_, i) => i !== index);
+          setCovererNameList(updatedList);
+        };
 
 const getActiveUserData = async () => {
     try {
@@ -260,36 +247,35 @@ const getActiveUserData = async () => {
   };
 
   const reappointmentApplication = async () => {
-    // Add 1 day to expiryDate and format it as 'yyyy-MM-dd' or as needed
-    const fromDate = format(addDays(new Date(formDetails?.expiryDate), 1), 'yyyy-MM-dd');
-    const toDate = format(new Date(selectedMonth), 'yyyy-MM-dd');
-    const coveredDetails = covererNameList?.map((data) => {
-      const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
-      const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
-  
-      return {
-        id: data,
-        name: fullName,
-      };
-    });
-  
-  
-    let temp = {
-      tenure:{
-      from: fromDate,
-      to: toDate,
-    },
-    coveredDetails: coveredDetails,
-    };
-  
-    await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM`, temp)
-      .then((response) => {
-        console.log(response?.data);
-      })
-      .catch((error) => {
-        console.log(error);
+      const fromDate = format(new Date(), 'yyyy-MM-dd');
+      const toDate = format(new Date(selectedMonth), 'yyyy-MM-dd');
+      const coveredDetails = covererNameList?.map((data) => {
+        const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
+        const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
+    
+        return {
+          id: data,
+          name: fullName,
+        };
       });
-  };
+    
+    
+      let temp = {
+        tenure:{
+        from: fromDate,
+        to: toDate,
+      },
+      coveredDetails: coveredDetails,
+      };
+    
+      await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM`, temp)
+        .then((response) => {
+          console.log(response?.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
   
 
 const getIsOpenAdditional = (value) => {
@@ -2494,7 +2480,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
      <div>
       <div className={Classes.DIALOG_BODY}>
        <div className={style.spaceBetween}>
-        <div className={`${style.heading}`}>Locum Period & Privileges Extension</div>
+        <div className={`${style.heading}`}>Reactivate Locum Staff</div>
         <div className={style.displayInRow}>
          <img
           src={CrossPink}
@@ -2592,10 +2578,11 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
        {showSelectedPrivilegeLocum === false && (
         <div className={`${style.marginTop10}`}>
          <div className={`${style.rejectionHeadingTextStyle}`}>
-          Locum Period Expiring On {formattedExpiringDate}, {daysRemaining} Days
+          {/* Locum Period Expiring On {formattedExpiringDate}, {daysRemaining} Days */}
+          New Locum Period
          </div>
          <div className={`${style.rejectionTextStyle}`}>
-         Extend the Period and Privileges for :{" "}
+         Indicate the Period and Privileges for  :{" "}
           <span className={style.rejectionHeadingTextStyle}>
           {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
              selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
@@ -2677,7 +2664,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
             Start Date <br />
             <span className={`${style.rejectionTextStyle}`}>
-              {ExpireDate ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy") : "N/A"}
+              {format((new Date()), "dd MMM yyyy")}
             </span>
            </div>
            <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
