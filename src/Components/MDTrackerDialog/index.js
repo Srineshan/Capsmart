@@ -233,7 +233,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     );
     setSearchData(applicantSummary?.applicants?.map(item => ({
       id: item.id,
-      name: `${formatFirstNameLastName(item?.basicDetails?.applicant?.name?.firstName, item?.basicDetails?.applicant?.name?.lastName)}` || " ",
+      name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
       desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
     })));
     // setApplicantSummary(applicantSummary?.applicants);
@@ -463,7 +463,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       dot.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'green' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'yellow' : "red");
       dotTooltipValues.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'All Attested' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'Not All Attested' : 'Attestation Pending')
       No.push(index + 1 + ".")
-      applicantName.push(`${formatFirstNameLastName(data?.basicDetails?.applicant?.name?.firstName, data?.basicDetails?.applicant?.name?.lastName)}`);
+      applicantName.push(`${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}`);
       applicantNameHoverText.push('Click to view the attestation log for this Applicant by each Medical Directive')
       applicantId.push(data?.displayId ?? '-');
       type.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
