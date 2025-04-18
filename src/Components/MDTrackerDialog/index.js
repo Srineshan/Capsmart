@@ -499,8 +499,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const action = [];
 
     medicalDirectiveSummary?.map((data, index) => {
-      dot.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'green' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'yellow' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'grey' : "red");
-      dotTooltipValues.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'All Attested' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'Not All Attested' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'No Attestations' : 'Attestation Pending')
+      dot.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'green' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'yellow' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'grey' : "red");
+      dotTooltipValues.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'All Attested' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'Not All Attested' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'No Attestations' : 'Attestation Pending')
       No.push(index + 1 + ".")
       mdName.push(data?.medicalDirectives?.title);
       mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
