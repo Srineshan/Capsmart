@@ -55,6 +55,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
   const [selectedServiceArea, setSelectedServiceArea] = useState("");
   const [applicantType, setApplicantType] = useState([]);
   const [medicalDirectiveSummary, setMedicalDirectiveSummary] = useState([]);
+  const [medicalDirectiveSummaryLevel2, setMedicalDirectiveSummaryLevel2] = useState([]);
   const [medicalDirectiveSummaryByApplicant, setMedicalDirectiveSummaryByApplicant] = useState([]);
   const [applicantSummary, setApplicantSummary] = useState([]);
   const [selectedApplicantType, setSelectedApplicantType] = useState('');
@@ -105,7 +106,11 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
         getMedicalDirectiveSummary()
       }
     } else {
-      setTotalCount(0)
+      if (currentTab === "ByApplicants") {
+        setTotalCount(0)
+      } else {
+        getMedicalDirectiveSummaryLevel2(selectedMedicalDirective?.id)
+      }
     }
   }, [sortField, sortValue, page, totalCount, selectedDepartment, selectedServiceArea, selectedApplicantType, limit, searchTermForTable, currentTab, displayInnerList]);
 
@@ -171,6 +176,17 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     setIsLoadingImage(false);
   }
 
+  const getMedicalDirectiveSummaryLevel2 = async (id) => {
+    setIsLoadingImage(true);
+    const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
+    const { data: medicalDirectiveSummaryLevel2 } = await GET(
+      `medical-directive-service/medicalDirectives/${id}/summary?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}&isNewAppointment=${applicationType === 'NEW' ? true : false}&isReAppointment=${applicationType === 'NEW' ? false : true}${departmentParam}`
+    );
+    setSelectedMedicalDirectiveList(medicalDirectiveSummaryLevel2);
+    setTotalCount(medicalDirectiveSummaryLevel2?.allApplicants?.length);
+    setIsLoadingImage(false);
+  }
+
   const getMedicalDirectiveSummaryForSearch = async (signal) => {
     setIsLoadingImage(true);
     const { data: medicalDirectiveSummary } = await GET(
@@ -217,7 +233,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     );
     setSearchData(applicantSummary?.applicants?.map(item => ({
       id: item.id,
-      name: `${formatFirstNameLastName(item?.basicDetails?.applicant?.name?.firstName, item?.basicDetails?.applicant?.name?.lastName)}` || " ",
+      name: `${formatFirstNameLastName(item?.applicant?.name?.firstName, item?.applicant?.name?.lastName)}` || " ",
       desc: `${item?.basicDetailReferences?.department?.name} | ${item?.basicDetailReferences?.applicantType?.serviceProviderType}`
     })));
     // setApplicantSummary(applicantSummary?.applicants);
@@ -260,7 +276,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "Applicant Type",
     "Applicant Name",
-    "Applicant Status",
+    "Attestation Status",
     "Attestation Date",
     ""
   ];
@@ -270,16 +286,15 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     "No.",
     "MD ID",
     "MD Title",
-    "Department / Division",
     "Last Attested",
     ""
   ];
 
   const headerValues = currentTab === "ByApplicants" ? headerValuesForByApplicants : headerValuesForByMedicalDirective
   const innerHeaderValues = currentTab === "ByApplicants" ? innerHeaderValuesForByApplicants : innerHeaderValuesForByMedicalDirective
-  const colSortValuesByMedicalDirective = [false, false, true, true, false, false];
+  const colSortValuesByMedicalDirective = [false, false, true, true, false, true, true];
   const colSortValuesByApplicants = [false, false, true, true, true, false];
-  const colSortValuesByInnerMedicalDirective = [false, false, false, false, false, false];
+  const colSortValuesByInnerMedicalDirective = [false, true, true, true, true, false];
   const colSortValuesByInnerApplicants = [false, false, false, false, false, false];
 
   const handleInnerSelectData = (data) => {
@@ -298,7 +313,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       conditionToShow: `data?.attestationLog`
     },
     {
-      data: "RTT",
+      data: "Request",
       requiredValue: "boolean",
       onClick: () => { },
       conditionToShow: `!data?.attestationLog`
@@ -313,7 +328,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       conditionToShow: `data?.status === "COMPLETED"`
     },
     {
-      data: "RTT",
+      data: "Request",
       requiredValue: "boolean",
       onClick: () => { },
       conditionToShow: `data?.status === "PENDING"`
@@ -329,7 +344,8 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     setDisplayInnerList(true);
     console.log()
     setSelectedMedicalDirective(data?.medicalDirectives)
-    setSelectedMedicalDirectiveList([...data?.pendingApplicants, ...data?.completedApplicants])
+    getMedicalDirectiveSummaryLevel2(data?.medicalDirectives?.id)
+    // setSelectedMedicalDirectiveList([...data?.pendingApplicants, ...data?.completedApplicants])
   }
 
   const handleSelectDataByApplicant = (data) => {
@@ -344,6 +360,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       data: "View",
       requiredValue: "boolean",
       onClick: handleSelectData,
+      conditionToShow: `(data?.attestedCount !== 0 || data?.notAttestedCount !== 0)`
     },
   ];
 
@@ -446,14 +463,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       dot.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'green' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'yellow' : "red");
       dotTooltipValues.push(data?.medicalDirectiveAttestation?.notAttestedCount === 0 ? 'All Attested' : (data?.medicalDirectiveAttestation?.notAttestedCount > 0 && data?.medicalDirectiveAttestation?.attestedCount !== 0) ? 'Not All Attested' : 'Attestation Pending')
       No.push(index + 1 + ".")
-      applicantName.push(`${formatFirstNameLastName(data?.basicDetails?.applicant?.name?.firstName, data?.basicDetails?.applicant?.name?.lastName)}`);
+      applicantName.push(`${formatFirstNameLastName(data?.applicant?.name?.firstName, data?.applicant?.name?.lastName)}`);
       applicantNameHoverText.push('Click to view the attestation log for this Applicant by each Medical Directive')
       applicantId.push(data?.displayId ?? '-');
       type.push(data?.basicDetailReferences?.applicantType?.serviceProviderType)
       departmentSpecific.push(`${data?.basicDetailReferences?.department?.name} ${data?.basicDetailReferences?.specialty?.name ? `/ ${data?.basicDetailReferences?.specialty?.name}` : ''}`);
-      attestedBy.push(data?.medicalDirectiveAttestation?.attestedCount > 0 ? data?.medicalDirectiveAttestation?.attestedCount : '-');
-      notAttested.push(data?.medicalDirectiveAttestation?.notAttestedCount > 0 ? data?.medicalDirectiveAttestation?.notAttestedCount : '-')
-      action.push(true);
+      attestedBy.push(data?.medicalDirectiveAttestation?.attestedCount > 0 ? data?.medicalDirectiveAttestation?.attestedCount : '0');
+      notAttested.push(data?.medicalDirectiveAttestation?.notAttestedCount > 0 ? data?.medicalDirectiveAttestation?.notAttestedCount : '0')
+      // action.push(true);
     });
 
     return [
@@ -465,7 +482,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: departmentSpecific },
       { type: "text", value: attestedBy },
       { type: "text", value: notAttested },
-      { type: "action", value: action },
+      // { type: "action", value: action },
     ];
   };
 
@@ -476,22 +493,24 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const mdName = [];
     const mdNameHoverText = [];
     const mdId = [];
+    const departmentSpecificHover = [];
     const departmentSpecific = [];
     const attestedBy = [];
     const notAttested = [];
     const action = [];
 
     medicalDirectiveSummary?.map((data, index) => {
-      dot.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'green' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'yellow' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'grey' : "red");
-      dotTooltipValues.push((data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length > 0) ? 'All Attested' : (data?.pendingApplicants?.length > 0 && data?.completedApplicants?.length !== 0) ? 'Not All Attested' : (data?.pendingApplicants?.length === 0 && data?.completedApplicants?.length === 0) ? 'No Attestations' : 'Attestation Pending')
+      dot.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'green' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'yellow' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'grey' : "red");
+      dotTooltipValues.push((data?.notAttestedCount === 0 && data?.attestedCount > 0) ? 'All Attested' : (data?.notAttestedCount > 0 && data?.attestedCount !== 0) ? 'Not All Attested' : (data?.notAttestedCount === 0 && data?.attestedCount === 0) ? 'No Attestations' : 'Attestation Pending')
       No.push(index + 1 + ".")
       mdName.push(data?.medicalDirectives?.title);
       mdNameHoverText.push('Click to view the attestation Log for this Medical Directive by each Applicant')
       mdId.push(data?.medicalDirectives?.mdID);
-      departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
-      attestedBy.push(data?.completedApplicants?.length > 0 ? data?.completedApplicants?.length : '-');
-      notAttested.push(data?.pendingApplicants?.length > 0 ? data?.pendingApplicants?.length : '-')
-      action.push(true);
+      departmentSpecific.push(data?.medicalDirectives?.departmentSpecific ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length > 3 ? `${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.length} Departments` : data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General')
+      departmentSpecificHover.push(data?.medicalDirectives?.departmentSpecific ? [`${data?.medicalDirectives?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)}` : data?.name)}`] : ['General']);
+      attestedBy.push(data?.attestedCount > 0 ? data?.attestedCount : '-');
+      notAttested.push(data?.notAttestedCount > 0 ? data?.notAttestedCount : '-')
+      // action.push((data?.attestedCount !== 0 || data?.notAttestedCount !== 0) ? true : false);
     });
 
     return [
@@ -499,10 +518,16 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: No },
       { type: "text", value: mdId },
       { type: "text", value: mdName, tooltipValueText: mdNameHoverText, onClickFunction: handleSelectData },
-      { type: "text", value: departmentSpecific },
+      // { type: "text", value: departmentSpecific },
+      {
+        type: "countWithHover",
+        value: departmentSpecific,
+        hoverText: departmentSpecificHover,
+        isShowHoverText: true,
+      },
       { type: "text", value: attestedBy },
       { type: "text", value: notAttested },
-      { type: "action", value: action },
+      // { type: "action", value: action },
     ];
   };
   const getInnerTableValuesByApplicants = () => {
@@ -513,7 +538,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const mdId = [];
     const departmentSpecific = [];
     const lastAttested = [];
-    const action = [];
+    const actionItem = [];
 
     medicalDirectiveSummaryByApplicant?.map((data, index) => {
       dot.push(data?.status === "COMPLETED" ? "green" : data?.status === "PENDING" ? "red" : 'yellow');
@@ -521,9 +546,12 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       No.push(index + 1 + ".")
       mdName.push(data?.medicalDirective?.title);
       mdId.push(data?.medicalDirective?.mdID);
-      departmentSpecific.push(data?.medicalDirective?.departmentSpecific ? `${data?.medicalDirective?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
+      // departmentSpecific.push(data?.medicalDirective?.departmentSpecific ? `${data?.medicalDirective?.departments?.map(data => data?.serviceAreaSpecific ? `${data?.serviceAreas?.map(specialty => `${data?.name} -  ${specialty?.name}`)?.join(', ')}` : data?.name)?.join(', ')}` : 'General');
       lastAttested.push(data?.status === "COMPLETED" ? data?.medicalDirective?.lastModifiedDate ? format(new Date(data?.medicalDirective?.lastModifiedDate), 'MMM dd, yyyy') : '-' : '-');
-      action.push(data?.status === "COMPLETED" ? true : false);
+      // action.push(data?.status === "COMPLETED" ? true : false);
+      actionItem.push(
+        <div className={style.viewOrRtt} onClick={data?.status === "COMPLETED" ? () => handleInnerSelectDataByApplicant(data) : () => { }}>{data?.status === "COMPLETED" ? 'View' : 'Request'}</div>
+      );
     });
 
     return [
@@ -531,9 +559,9 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: No },
       { type: "text", value: mdId },
       { type: "text", value: mdName },
-      { type: "text", value: departmentSpecific },
+      // { type: "text", value: departmentSpecific },
       { type: "text", value: lastAttested },
-      { type: "action", value: action },
+      { type: "icon", icon: actionItem, 'isShowHoverText': false },
     ];
   };
 
@@ -544,16 +572,19 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
     const applicantName = [];
     const type = [];
     const attestationDate = [];
-    const action = [];
+    const actionItem = [];
 
-    selectedMedicalDirectiveList?.map((data, index) => {
+    selectedMedicalDirectiveList?.allApplicants?.map((data, index) => {
       dot.push(data?.attestationLog ? "green" : 'red');
       dotTooltipValues.push(data?.attestationLog ? "Attested" : 'Not Attested')
       No.push(index + 1 + ".")
       applicantName.push(`${formatFirstNameLastName(data?.application?.applicant?.name?.firstName, data?.application?.applicant?.name?.lastName)}`);
       type.push(data?.application?.basicDetailReferences?.applicantType?.serviceProviderType)
       attestationDate.push(data?.attestationLog?.esign?.signedDate ? format(parse(data?.attestationLog?.esign?.signedDate, 'dd/MM/yyyy', new Date()), 'MMM dd, yyyy') : '-');
-      action.push(true);
+      actionItem.push(
+        <div className={style.viewOrRtt} onClick={data?.attestationLog ? () => handleInnerSelectData(data) : () => { }}>{data?.attestationLog ? 'View' : 'Request'}</div>
+      );
+      // action.push(true);
     });
 
     return [
@@ -562,7 +593,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
       { type: "text", value: applicantName },
       { type: "dot", value: dot, tooltipValue: dotTooltipValues },
       { type: "text", value: attestationDate },
-      { type: "action", value: action },
+      { type: "icon", icon: actionItem, 'isShowHoverText': false },
     ];
   };
 
@@ -646,14 +677,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </Tooltip>
                   </div>
                   <Tooltip arrow title={"Close"}>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -703,7 +734,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                         <div className={style.spaceBetween}>
                           <div className={`${style.displayInRow} ${style.marginLeft} ${style.marginTopAuto}`}>
                             <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
-                              <div>By Medical Directive</div>
+                              <div>By Medical Directives</div>
                               <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
                             </div>
                             <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
@@ -712,7 +743,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                             </div>
                           </div>
                           <div className={style.marginLeftAuto}>
-                            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} />
+                            <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />
                           </div>
                         </div>
                         <div className={` staffApplicationList`}>
@@ -749,7 +780,7 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                 <div>
                   <div className={`${style.heading}`}>
                     {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} ${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType} ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}`}
+                    {currentTab === "ByApplicants" ? `Medical Directive Attestation Log For ${selectedApplicant?.applicant?.name?.firstName} ${selectedApplicant?.applicant?.name?.lastName} (${selectedApplicant?.basicDetailReferences?.applicantType?.serviceProviderType}), ${selectedApplicant?.basicDetailReferences?.department?.name} ${selectedApplicant?.basicDetailReferences?.specialty?.name ? ` - ${selectedApplicant?.basicDetailReferences?.specialty?.name}` : ''}` : `Attestation Log For ${selectedMedicalDirective?.mdID} - ${selectedMedicalDirective?.title}`}
                   </div>
                   <div className={style.currentStatusText}>{`Current status as of ${format(new Date(), 'MMM dd, yyyy')}`}</div>
                   <div className={`${style.backButton} ${style.marginTop10} ${style.justifyCenter} ${style.cursorPointer}`} onClick={() => setDisplayInnerList(false)}>
@@ -811,14 +842,14 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                     </Tooltip>
                   </div> */}
                   <Tooltip arrow title={"Close"}>
-                  <img
-                    src={CrossPink}
-                    alt="cross"
-                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
-                    onClick={() => {
-                      getIsOpen(false);
-                    }}
-                  />
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft}`}
+                      onClick={() => {
+                        getIsOpen(false);
+                      }}
+                    />
                   </Tooltip>
                 </div>
               </div>
@@ -868,9 +899,10 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                           <TableTwo
                             tableHeaderValues={innerHeaderValues}
                             tableDataValues={innerTableValues}
-                            tableData={currentTab === "ByApplicants" ? medicalDirectiveSummaryByApplicant : selectedMedicalDirectiveList}
+                            tableData={currentTab === "ByApplicants" ? medicalDirectiveSummaryByApplicant : selectedMedicalDirectiveList?.allApplicants}
                             gridStyle={currentTab === "ByApplicants" ? style.byInnerApplicantGrid : style.byInnerMedicalDirectiveGrid}
-                            actions={currentTab === "ByApplicants" ? innerActionsDataByApplicant : innerActionsData}
+                            // actions={currentTab === "ByApplicants" ? innerActionsDataByApplicant : innerActionsData}
+                            actions={[]}
                             scrollStyle={style.contractScrollStyle}
                             tableSortValues={currentTab === "ByApplicants" ? colSortValuesByInnerApplicants : colSortValuesByInnerMedicalDirective}
                             heading={"There are no records to display"}

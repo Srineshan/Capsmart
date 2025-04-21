@@ -346,8 +346,10 @@
     height: auto;
 }
 
-.flex {
-    display: flex;
+.userCardGrid {
+    display: grid;
+    grid-template-columns: 10% 47% 40%;
+    grid-gap: 1%;
 }
 
 .photoBorderStyle {
@@ -393,8 +395,8 @@
 
 .twoColumnGridInner2 {
     display: grid;
-    grid-template-columns: 65% 40%;
-    grid-gap: 10px;
+    grid-template-columns: 59% 40%;
+    grid-gap: 1%;
     justify-items: start;
 }
 
@@ -431,4 +433,14 @@
     letter-spacing: 0px;
     color: #2C2C2C;
     opacity: 1;
+}
+
+.iconStyle {
+    height: 19px;
+    width: 16px;
+    object-fit: contain;
+
+    @media (max-width: 768px) {
+        background: #FFF;
+    }
 }

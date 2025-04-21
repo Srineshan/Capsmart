@@ -119,7 +119,11 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         REVIEWED_DATE: ['Reviewed On'],
         COMPLETION_PERCENTAGE: ['Completed %'],
         MDID: ['MD ID'],
-        TITLE: ['MD Title']
+        TITLE: ['MD Title'],
+        NOT_ATTESTED_COUNT: ['Not Attested'],
+        ATTESTED_COUNT: ['Attested'],
+        ATTESTATION_STATUS: ['Attestation Status'],
+        ATTESTATION_DATE: ['Attestation Date']
     }
 
     const availableSortValueEnum = {
@@ -143,6 +147,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         'Completed %': 'COMPLETION_PERCENTAGE',
         'MD ID': 'MDID',
         'MD Title': 'TITLE',
+        'Not Attested': 'NOT_ATTESTED_COUNT',
+        'Attested': 'ATTESTED_COUNT',
+        'Attestation Status': 'ATTESTATION_STATUS',
+        'Attestation Date': 'ATTESTATION_DATE'
     }
 
 

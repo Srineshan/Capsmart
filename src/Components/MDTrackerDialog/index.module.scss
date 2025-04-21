@@ -128,25 +128,25 @@
 
 .byMedicalDirectiveGrid {
   display: grid;
-  grid-template-columns: 3% 3% 7% 31% 31% 6% 6% 5%;
+  grid-template-columns: 3% 3% 7% 32% 32% 8% 8%;
   grid-gap: 1%;
 }
 
 .byApplicantGrid {
   display: grid;
-  grid-template-columns: 3% 3% 15% 10% 10% 33% 6% 6% 5%;
+  grid-template-columns: 3% 3% 18% 13% 10% 33% 6% 6%;
   grid-gap: 1%;
 }
 
 .byInnerMedicalDirectiveGrid {
   display: grid;
-  grid-template-columns: 5% 15% 39% 15% 15% 5%;
+  grid-template-columns: 5% 15% 35% 15% 15% 9%;
   grid-gap: 1%;
 }
 
 .byInnerApplicantGrid {
   display: grid;
-  grid-template-columns: 3% 3% 8% 35% 29% 10% 5%;
+  grid-template-columns: 3% 3% 8% 60% 10% 10%;
   grid-gap: 1%;
 }
 
@@ -235,7 +235,7 @@
   font: normal normal bold 16px/20px proxima-nova;
   letter-spacing: 0px;
   color: $textgrey;
-  padding: 10px 20px;
+  padding: 10px 30px;
 }
 
 .activeTab {
@@ -252,4 +252,12 @@
   border-radius: 4px;
   padding: 10px 20px;
   max-width: 280px;
+}
+
+.viewOrRtt {
+  color: $primarycolor;
+  border-radius: 24px;
+  padding: 5px 20px;
+  cursor: pointer;
+  border: 1px solid $primarycolor;
 }

@@ -127,130 +127,130 @@ const ReappointmentProgressCard = ({ dataType, title, timeNumber, timeText, prog
                 <div className={`${style.progressStyle} ${style.marginTop10}  ${style.spaceBetween}`}
                     style={{ background: `transparent linear-gradient(90deg, #06617A 0%, #06617A ${(formIndex / (basicForm?.forms?.length - 1)) * 100}%, #E9E9F0 ${((formIndex / (basicForm?.forms?.length)) * 100) + (100 / basicForm?.forms?.length)}%, #E9E9F0 100%) 0% 0% no-repeat padding-box` }}
                 >
-                 
-                {(basicForm?.forms ?? []).map((data, index) => {
-                    let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
-                    
-                    if (data?.acknowledged) {
-                        const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
-                        const demographicData = basicForm?.forms?.find(form => form?.schemaCategory === 'DemographicData');
-                        const professionalConductDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
-                        const criminalHistoryDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
-                        const medicalHistoryDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
-                        const privilegeAtOtherHosiptalDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL');
-                        const patientConcernDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE');
-                        const medicalDirectives = basicForm?.forms?.find(form => form?.schemaCategory === 'MEDICAL_DIRECTIVES');
-                        const CMETranscripts = basicForm?.forms?.find(form => form?.schemaCategory === 'CME');
-                        const MiscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
-                        const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
-                        const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
-                        const acknowledgment = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
 
-                        const unFilledFields = uploadDocForm?.unFilledFields ?? [];
-                        const documentsRequired = basicForm?.documentsRequired ?? [];
-                        const demographicDataUnfilledFields = demographicData?.unFilledFields ?? [];
-                        const professionalConductUnfilledFields = professionalConductDisclosure?.unFilledFields ?? [];
-                        const criminalHistoryUnfilledFields = criminalHistoryDisclosure?.unFilledFields ?? [];
-                        const medicalHistoryUnfilledFields = medicalHistoryDisclosure?.unFilledFields ?? [];
-                        const privilegeAtOtherHosiptalUnfilledFields = privilegeAtOtherHosiptalDisclosure?.unFilledFields ?? [];
-                        const patientConernUnfilledFields = patientConcernDisclosure?.unFilledFields ?? [];
-                        const medicalDirectivesUnfilledFields = medicalDirectives?.unFilledFields ?? [];
-                        const CMEUnfilledFields = CMETranscripts?.unFilledFields ?? [];
-                        const MiscellaneousQuestionUnfilledFields = MiscellaneousQuestion?.unFilledFields ?? [];
-                        const ScheduleAUpdate = ScheduleA?.unFilledFields ?? [];
-                        const ScheduleBUpdate = ScheduleB?.unFilledFields ?? [];
-                        const acknowledgmentUpdate = acknowledgment?.acknowledged ?? "";
+                    {(basicForm?.forms ?? []).map((data, index) => {
+                        let dotClass = `${style.disabledDotStyle} ${style.disabled}`;
 
-                        dotClass = style.dotStyle;
-
-                        if (data?.schemaCategory === 'UploadYourDoc') {
-                            // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
-                            const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
-                            const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
-                            const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
-                            
-                            // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
-                            
-                            dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'DemographicData') {
-                            let hasMandatoryTrue = demographicDataUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = demographicDataUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'ProfessionalConduct') {
-                            let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'CriminalHistory') {
-                            let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'MedicalHistory') {
-                            let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL') {
-                            let hasMandatoryTrue = privilegeAtOtherHosiptalUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = privilegeAtOtherHosiptalUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE') {
-                            let hasMandatoryTrue = patientConernUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = patientConernUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'MEDICAL_DIRECTIVES') {
-                            let hasMandatoryTrue = medicalDirectivesUnfilledFields?.includes("notYetStarted");
-                            let hasMandatoryFalse = medicalDirectivesUnfilledFields?.includes("inProgress");
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'CME') {
-                            let hasMandatoryTrue = CMEUnfilledFields?.includes("notYetStarted");
-                            let hasMandatoryFalse = CMEUnfilledFields?.includes("inProgress");
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
-                            let hasMandatoryTrue = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
-                            let hasMandatoryFalse = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'ScheduleA') {
-                            let hasMandatoryTrue = ScheduleAUpdate?.includes("skipped");
-                            
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'ScheduleB') {
-                            let hasMandatoryTrue = ScheduleBUpdate?.includes("skipped");
-
-                            dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
-                        } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
-                            dotClass = acknowledgmentUpdate === true ? style.dotStyle : style.reddotStyle;
-                        }
-                    }
-
-                    const handleClick = () => {
                         if (data?.acknowledged) {
-                            navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
-                        }
-                    };
+                            const uploadDocForm = basicForm?.forms?.find(form => form?.schemaCategory === 'UploadYourDoc');
+                            const demographicData = basicForm?.forms?.find(form => form?.schemaCategory === 'DemographicData');
+                            const professionalConductDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'ProfessionalConduct');
+                            const criminalHistoryDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'CriminalHistory');
+                            const medicalHistoryDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'MedicalHistory');
+                            const privilegeAtOtherHosiptalDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL');
+                            const patientConcernDisclosure = basicForm?.forms?.find(form => form?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE');
+                            const medicalDirectives = basicForm?.forms?.find(form => form?.schemaCategory === 'MEDICAL_DIRECTIVES');
+                            const CMETranscripts = basicForm?.forms?.find(form => form?.schemaCategory === 'CME');
+                            const MiscellaneousQuestion = basicForm?.forms?.find(form => form?.schemaCategory === 'MISCELLANEOUS_QUESTIONS');
+                            const ScheduleA = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleA');
+                            const ScheduleB = basicForm?.forms?.find(form => form?.schemaCategory === 'ScheduleB');
+                            const acknowledgment = basicForm?.forms?.find(form => form?.schemaCategory === 'ApplicantAcknowledgement');
 
-                    return (
-                        <Tooltip title={data?.title} arrow key={index}>
-                            <div
-                                className={dotClass}
-                                onClick={handleClick}
-                            ></div>
-                        </Tooltip>
-                    );
-                })}
-                {/* {basicForm?.forms?.map((data, index) => (
+                            const unFilledFields = uploadDocForm?.unFilledFields ?? [];
+                            const documentsRequired = basicForm?.documentsRequired ?? [];
+                            const demographicDataUnfilledFields = demographicData?.unFilledFields ?? [];
+                            const professionalConductUnfilledFields = professionalConductDisclosure?.unFilledFields ?? [];
+                            const criminalHistoryUnfilledFields = criminalHistoryDisclosure?.unFilledFields ?? [];
+                            const medicalHistoryUnfilledFields = medicalHistoryDisclosure?.unFilledFields ?? [];
+                            const privilegeAtOtherHosiptalUnfilledFields = privilegeAtOtherHosiptalDisclosure?.unFilledFields ?? [];
+                            const patientConernUnfilledFields = patientConcernDisclosure?.unFilledFields ?? [];
+                            const medicalDirectivesUnfilledFields = medicalDirectives?.unFilledFields ?? [];
+                            const CMEUnfilledFields = CMETranscripts?.unFilledFields ?? [];
+                            const MiscellaneousQuestionUnfilledFields = MiscellaneousQuestion?.unFilledFields ?? [];
+                            const ScheduleAUpdate = ScheduleA?.unFilledFields ?? [];
+                            const ScheduleBUpdate = ScheduleB?.unFilledFields ?? [];
+                            const acknowledgmentUpdate = acknowledgment?.acknowledged ?? "";
+
+                            dotClass = style.dotStyle;
+
+                            if (data?.schemaCategory === 'UploadYourDoc') {
+                                // const requiredDocNames = documentsRequired?.filter(doc => doc?.required).map(doc => doc?.document?.shortName);
+                                const requiredDocNames = documentsRequired?.filter(doc => getIsDocRequired(doc?.document?.shortName) === "Required")?.map(doc => doc?.document?.shortName);
+                                const missingRequiredDocs = requiredDocNames?.some(name => unFilledFields?.includes(name));
+                                const unfilledOptionalDocs = unFilledFields?.filter(name => documentsRequired?.some(doc => doc?.document?.shortName === name && !doc?.required));
+
+                                // const missingRequiredDocs = requiredDocNames?.filter(name => unFilledFields?.includes(name));
+
+                                dotClass = missingRequiredDocs ? style.reddotStyle : unfilledOptionalDocs?.length > 0 ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'DemographicData') {
+                                let hasMandatoryTrue = demographicDataUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = demographicDataUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'ProfessionalConduct') {
+                                let hasMandatoryTrue = professionalConductUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = professionalConductUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'CriminalHistory') {
+                                let hasMandatoryTrue = criminalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = criminalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'MedicalHistory') {
+                                let hasMandatoryTrue = medicalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = medicalHistoryUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'PRIVILEGE_STATUS_AT_HOSPITAL') {
+                                let hasMandatoryTrue = privilegeAtOtherHosiptalUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = privilegeAtOtherHosiptalUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'PATIENT_CONCERN_DISCLOSURE') {
+                                let hasMandatoryTrue = patientConernUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = patientConernUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'MEDICAL_DIRECTIVES') {
+                                let hasMandatoryTrue = medicalDirectivesUnfilledFields?.includes("notYetStarted");
+                                let hasMandatoryFalse = medicalDirectivesUnfilledFields?.includes("inProgress");
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'CME') {
+                                let hasMandatoryTrue = CMEUnfilledFields?.includes("notYetStarted");
+                                let hasMandatoryFalse = CMEUnfilledFields?.includes("inProgress");
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'MISCELLANEOUS_QUESTIONS') {
+                                let hasMandatoryTrue = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory === true);
+                                let hasMandatoryFalse = MiscellaneousQuestionUnfilledFields?.some(field => JSON.parse(field)?.label?.mandatory !== true);
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : hasMandatoryFalse ? style.yellowdotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'ScheduleA') {
+                                let hasMandatoryTrue = ScheduleAUpdate?.includes("skipped");
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'ScheduleB') {
+                                let hasMandatoryTrue = ScheduleBUpdate?.includes("skipped");
+
+                                dotClass = hasMandatoryTrue ? style.reddotStyle : style.dotStyle;
+                            } else if (data?.schemaCategory === 'ApplicantAcknowledgement') {
+                                dotClass = acknowledgmentUpdate === true ? style.dotStyle : style.reddotStyle;
+                            }
+                        }
+
+                        const handleClick = () => {
+                            if (data?.acknowledged) {
+                                navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`);
+                            }
+                        };
+
+                        return (
+                            <Tooltip title={data?.title} arrow key={index}>
+                                <div
+                                    className={dotClass}
+                                    onClick={handleClick}
+                                ></div>
+                            </Tooltip>
+                        );
+                    })}
+                    {/* {basicForm?.forms?.map((data, index) => (
                         <Tooltip title={data?.title} arrow>
                             <div className={data?.acknowledged ? style.dotStyle : (index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? `${style.disabledDotStyle} ${style.cursorPointer}` : `${style.disabledDotStyle} ${style.disabled}`} onClick={(data?.acknowledged || index < basicForm?.forms?.reduce((maxIndex, step, index) => (step?.acknowledged ? index : maxIndex), -1)) ? () => navigate(`/reappointmentApplicationForm/${applicationId}/${data?.formCategory}/${btoa(data?.schemaCategory)}`) : () => { }}></div>
                         </Tooltip>
                     ))} */}
-             
+
                 </div>
                 {/* <div className={style.sectionSplit}></div> */}
             </div>

@@ -49,6 +49,7 @@ const StaffManager = React.lazy(() => import("./Screens/StaffManager"));
 const Applicant = React.lazy(() => import("./Screens/Applicant"));
 const StaffApplication = React.lazy(() => import("./Screens/StaffApplication"));
 const ActiveStaff = React.lazy(() => import("./Screens/ActiveStaff"));
+const LocumStaff = React.lazy(() => import("./Screens/LocumStaff"));
 const DescopeLoginDialog = React.lazy(() => import("./Components/DescopeLogin"));
 const Welcome = React.lazy(() =>
   import("./Screens/SuperAdminDashboard/welcome")
@@ -771,7 +772,7 @@ const App = ({ props }) => {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${authorization}`,
-          "X-subdomain": 'master',
+          "X-subdomain": 'cmh-hospital',
         },
       };
     console.log(requestHeader, 'requestHeader')
@@ -811,7 +812,7 @@ const App = ({ props }) => {
         "Content-Type": "application/json",
         "X-tenantID": id,
         "Authorization": `Bearer ${authorization}`,
-        "X-subdomain": 'master',
+        "X-subdomain": 'cmh-hospital',
       },
     }
     fetch(`${baseUrl()}/user-management-service/auth/login`, requestOptions)
@@ -1027,6 +1028,7 @@ const App = ({ props }) => {
                 <Route path="/applications" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/applicationById/:applicationTypeFromUrl/:applicationId" element={<ProtectedRoute><StaffApplication /></ProtectedRoute>} />
                 <Route path="/activeStaff" element={<ProtectedRoute><ActiveStaff /></ProtectedRoute>} />
+                <Route path="/locumStaff" element={<ProtectedRoute><LocumStaff /></ProtectedRoute>} />
                 {/* <Route
                 path="/privilegeListManager"
                 element={<PrivilegeListMaster />}

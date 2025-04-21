@@ -3122,6 +3122,7 @@ const NewActiveApplication = ({
                         setSelectedFormId(form?.forms?.[4]?.id);
                       }}
                     >
+                    
                       {data?.file?.isVerified !== undefined &&
                         data?.file?.isVerified ? (
                         <>
@@ -10589,7 +10590,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")) ? (
+                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM")) ? (
                     // <div className={`${style.twoColumnGrid}`}>
                     //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                     //     <div
@@ -10664,7 +10665,7 @@ const NewActiveApplication = ({
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClose : undefined}
                             >
-                              Verified, send later to Department Head
+                              { applicationType === "REAPPOINTMENT" ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10680,7 +10681,7 @@ const NewActiveApplication = ({
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
-                              Verified, Send to Department Head
+                              { applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -11367,7 +11368,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromMAC") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "ReviewFromMAC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInRow}${style.marginTop20}`}>
@@ -11424,7 +11425,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromBOD") || (workModeType === 'Chief Of Staff' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "ReviewFromBOD")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11972,9 +11973,9 @@ const NewActiveApplication = ({
                         )}
                       </>
                     )}
-                    {applicationType === "REAPPOINTMENT" ? (
+                    {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM"  ? (
                       <>
-                        {selectedTab === "level-4" || selectedTab === "level-5" ? (
+                        {selectedTab === "level-4" || selectedTab === "level-5" || (selectedTab === "level-3" && applicationType === "LOCUM") ? (
                           <div className={`${style.cardLeftStyle} ${style.marginBottom20}`}>
                             <div className={`${style.displayInRow}${style.marginTop20}`}>
                               <div
