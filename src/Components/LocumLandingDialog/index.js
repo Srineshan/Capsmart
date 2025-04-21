@@ -304,16 +304,16 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                 <img src={ReappointmentLandingImage} alt="" className={style.reappointmentLandingImage} />
               </div>
               <div className={style.contentCard}>
-                <div className={style.welcomeText}>Your Locum Renewal Application</div>
+                <div className={style.welcomeText}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</div>
                 <div className={style.headerData}>
-                  <span style={{ marginLeft: '20px' }}>Your Locum Renewal Application</span>
+                  <span style={{ marginLeft: '20px' }}>Your Locum {basicForm?.reappointmentType === "EXTENSION" ? 'Extension' : 'Renewal'} Application</span>
                 </div>
                 <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
-                  {`Locum Term for your current Privileges is expiring on ${format(subDays(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 1), 'MMM dd, yyyy')}. Your department has indicated that your privileges be extended for a new term starting ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.from || null), 'MMM dd, yyyy')} and ending on ${format(new Date(basicForm?.basicDetails?.credentialingPrivilegeCategory?.to || null), 'MMM dd, yyyy')}.`}
+                  {`Locum Term for your current Privileges is expiring on ${format(new Date(basicForm?.expiryDate || null), 'MMM dd, yyyy')}. Your department would like to extend your privileges for a new term ${format(new Date(basicForm?.cyclePeriod?.from || null), 'MMM dd, yyyy')} to ${format(new Date(basicForm?.cyclePeriod?.to || null), 'MMM dd, yyyy')}.`}
                 </div>
-                <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
+                {/* <div className={`${style.descriptionStyle} ${style.marginTop10}`}>
                   Processing of your Reappointment Application will now be a less burdensome activity.
-                </div>
+                </div> */}
                 <div className={`${style.reappointmentCard} ${style.marginTop}`}>
                   <div className={`${style.descriptionStyle}`}>
                     Indicate your preference for continuing to serve as a Locum Staff at {title !== 'HapiCare' ? title : ''}.
@@ -345,7 +345,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                               size="large"
                             />
                           }
-                          label={'No, I do not want to Extend my Privileges'}
+                          label={`No, I do not want to ${basicForm?.reappointmentType === "EXTENSION" ? 'Extend' : 'Renew'} my Privileges`}
                           componentsProps={{ typography: { variant: "subtitle1" } }}
                         />
                         <FormControlLabel
@@ -359,7 +359,7 @@ const LocumLandingDialog = ({ getIsOpen, days }) => {
                               size="large"
                             />
                           }
-                          label={'Yes, I want to Extend my Privileges'}
+                          label={`Yes, I want to ${basicForm?.reappointmentType === "EXTENSION" ? 'Extend' : 'Renew'} my Privileges`}
                           componentsProps={{ typography: { variant: "subtitle1" } }}
                         />
                       </RadioGroup>
