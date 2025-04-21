@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, sub, add} from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears} from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -431,17 +431,17 @@ const getActiveUserData = async () => {
  };
 
 
-const getNext12MonthsFromCreatedDate = (createdDateStr) => {
+ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const months = [];
   const createdDate = new Date(createdDateStr);
 
-  // Start from the month after the createdDate
-  createdDate.setMonth(createdDate.getMonth() + 1);
+  for (let i = 1; i <= 12; i++) {
+    const futureDate = addMonths(createdDate, i);
+    const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(createdDate.getFullYear(), createdDate.getMonth() + i, 1);
-    const label = format(date, 'MMMM yyyy');
-    const value = format(date, 'yyyy-MM');
+    const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+    const value = format(futureDate, 'yyyy-MM-dd');
+
     months.push({ label, value });
   }
 
@@ -449,8 +449,9 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const now = new Date();
   months.push({
     label: 'Custom End Date',
-    value: format(now, 'yyyy-MM') // this is now a valid date value
+    value: format(now, 'yyyy-MM-dd')
   });
+
   return months;
 };
 
@@ -458,7 +459,11 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
 
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
- const ExpireDate = selectDataLocum?.tenure?.to;
+//  const ExpireDate = selectDataLocum?.tenure?.to;
+ const ExpireDate = selectDataLocum?.tenure?.to 
+  ? parseISO(selectDataLocum.tenure.to) 
+  : null;
+
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MM/dd/yyyy") : "-";
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
 
@@ -602,7 +607,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
           /> */}
           <div className={`${style.flexCenter}`}>
            {/* <div className={`${style.halfWidth}`}> */}
-           {selectedMonth !== format(new Date(), 'yyyy-MM') && (
+           {/* {selectedMonth !== format(new Date(), 'yyyy-MM') && ( */}
             <div className={`${style.halfWidth}`}>
             <CommonSelectField
              value={selectedMonth}
@@ -625,10 +630,25 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
              required={false}
             />
             </div>
-           )}
+           {/* )} */}
            {/* </div> */}
            {/* <div> */}
-           {selectedMonth === format(new Date(), 'yyyy-MM') && (
+            {/* </div> */}
+           <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
+            Start Date <br />
+            <span className={`${style.rejectionTextStyle}`}>
+              {ExpireDate ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy") : "N/A"}
+            </span>
+           </div>
+           <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
+           <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
+            End Date <br />
+            <span className={`${style.rejectionTextStyle}`}>
+             {" "}
+             {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
+            </span>
+           </div>
+           {selectedMonth === format(new Date(), 'yyyy-MM-dd') && (
             <div className={`${style.marginTopLess}`}>
              <CommonDateField
                 className={`${style.dateWidth} ${style.fullWidth}`}
@@ -637,10 +657,10 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                 onOpen={() => setCalendarStart(true)}
                 onClose={() => setCalendarStart(false)}
 
-                minDate={sub(new Date(), { years: 3 })}
-                maxDate={add(new Date(), { years: 3 })}
-                // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
-                // maxDate={getJune30thOfCurrentYear()}
+                // minDate={sub(new Date(), { years: 3 })}
+                // maxDate={add(new Date(), { years: 3 })}
+                minDate={ExpireDate}
+                maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
                 value={customDate ? format(customDate, 'yyyy-MM') : ''}
                 renderInput={(params) => (
                   <TextField
@@ -659,27 +679,12 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
               />
                </div>
             )}
-            {/* </div> */}
-           <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
-            Start Date <br />
-            <span className={`${style.rejectionTextStyle}`}>
-              {ExpireDate ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy") : "N/A"}
-            </span>
-           </div>
-           <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
-           <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
-            End Date <br />
-            <span className={`${style.rejectionTextStyle}`}>
-             {" "}
-             {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
-            </span>
-           </div>
           </div>
           <div className={`${style.flexCenter}`}>
           <div className={`${style.fullWidth}`}>
           <div className={`${style.fieldWrapper}`}>
             <div className={`${style.lableStyle}`}>
-              {'Coverage required for'}
+              {'Coverage required for - Optional'}
             </div>
             {/* <CommonSelectField
               value={covererName}
@@ -711,7 +716,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                   return [...filteredIds, item.id];
                 });
               }}
-              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+              className={`${style.fullWidth} ${style.marginTop10}`}
               maxLength={50}
               placeholder={'Select from privilege staff'}
               value={covererName}

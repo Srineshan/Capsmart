@@ -85,16 +85,16 @@ const LocumStaff = () => {
                 <NotesDialog isLoading={isLoading} getIsOpen={getNotesDialog} getActiveApplicationView={getActiveApplicationView} />
             )}
               {showLocumExtensiveDialog && (
-                <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} getActiveApplicationView={getActiveApplicationView} />
+                <LocumExtensionDialog isLoading={isLoading} getIsOpen={getLocumExtensiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveReactiveDialog && (
-                <LocumExtensionReactiveDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveDialog} getActiveApplicationView={getActiveApplicationView} />
+                <LocumExtensionReactiveDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveRequestDialog && (
-                <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} getActiveApplicationView={getActiveApplicationView} />
+                <LocumExtensionRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
             {showLocumExtensiveReactiveRequestDialog && (
-                <LocumExtensionReactiveRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveRequestDialog} getActiveApplicationView={getActiveApplicationView} />
+                <LocumExtensionReactiveRequestDialog isLoading={isLoading} getIsOpen={getLocumExtensiveReactiveRequestDialog} selectedTab={selectedTab} getActiveApplicationView={getActiveApplicationView} />
             )}
         </Fragment>
             )}

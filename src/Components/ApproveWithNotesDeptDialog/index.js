@@ -508,6 +508,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
     const hasValidComments = userRoleComments.trim() !== '';
     const hasValidMember = selectedRoleCred !== '';
     const hasValidMemberDept = selectedRoleDept !== '';
+    const isLocum = applicationType === "LOCUM";
 
     // Check if there are any uploaded files
     if (uploadFileData.length > 0) {
@@ -516,10 +517,18 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
         documentTitle[index] && documentTitle[index].trim() !== ''
       );
 
-      setIsApproveEnabled(hasValidMember && hasValidMemberDept && allFilesHaveTitles);
+      if (isLocum) {
+        setIsApproveEnabled(hasValidMember && allFilesHaveTitles);
+      } else {
+        setIsApproveEnabled(hasValidMember && hasValidMemberDept && allFilesHaveTitles);
+      }
     } else {
-      // If no files are uploaded, only check for valid comments
+     // If no files are uploaded
+    if (isLocum) {
+      setIsApproveEnabled(hasValidMember);
+    } else {
       setIsApproveEnabled(hasValidMember && hasValidMemberDept);
+    }
     }
   };
 
@@ -798,7 +807,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
               <span className={`${style.Subheading}`}>{isUser ? "Applicant is designated as Department Head" : ""}</span>
               <div className={style.spaceBetween}>
                 <div className={`${style.heading}`}>
-                  {isUser ? "SEND TO CHIEF / DEP COS FOR REVIEW" : "SEND TO DEPARTMENT HEAD FOR REVIEW"}
+                  {isUser && applicationType === "REAPPOINTMENT" ? "SEND TO CHIEF / DEP COS FOR REVIEW" : applicationType === "REAPPOINTMENT" ? "SEND TO DEPARTMENT HEAD FOR REVIEW" : "SEND TO CRED COMM FOR REVIEW"}
                 </div>
                 <div className={style.displayInRow}>
                 <Tooltip title="Click to Close" arrow>
@@ -879,7 +888,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
             Provide notes, if any, for the Department Head regarding this application(Optional)
             </div> */}
                 <div className={`${style.marginTop} ${style.commentsNotesHeadingFontStyle}`}>
-                  {isUser ? " Provide notes, if any, for the Chief / Deputy COS regarding this application(Optional)" : " Provide notes, if any, for the Department Head regarding this application(Optional)"}
+                  {isUser && applicationType === "REAPPOINTMENT" ? " Provide notes, if any, for the Chief / Deputy COS regarding this application (Optional)" : applicationType === "REAPPOINTMENT" ? " Provide notes, if any, for the Department Head regarding this application (Optional)" : "Provide notes, if any, for the Cred Comm regarding this application (Optional)"}
                 </div>
                 {/* <CommonTextField
                 className={`${style.commentsNotesFontStyle} ${style.notesBorderStyle}`}
@@ -1001,7 +1010,8 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                   </div>
                 )}
                 <div className={`${style.twoColumnGridDropDown} ${style.marginTop10}`}>
-                  <div>
+                  {applicationType !== "LOCUM" && (
+                    <div>
                     <CommonSelectField
                       value={selectedRoleDept}
                       onChange={(e) => setSelectedRoleDept(e.target.value)}
@@ -1036,6 +1046,7 @@ const ApprovalWithNotesDeptDialog = ({ getIsOpen, getActiveApplicationView, date
                       label={isUser ? "Assign a Chief / Dep COS to Review & Approve*" : "Assign a Department Head to Review & Approve*"}
                     />
                   </div>
+                  )}
                   {/* <div>
               <CommonDateField
                 className={style.fullWidth}

@@ -719,7 +719,7 @@ const onClickNotesDialog = (data) => {
                   >
                     <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        Rejected / Declined{" "}({applicationRejected?.totalRejections})
+                        Rejected / Declined / Expired{" "}({applicationRejected?.totalRejections})
                         {/*<span
       className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
     >
@@ -750,7 +750,7 @@ const onClickNotesDialog = (data) => {
                             // }}
                           >
                             {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                            Approved But Declined ({applicationRejected?.applicationsRejected})
+                            Requested But Declined ({applicationRejected?.applicationsRejected})
                           </div>
                           <div
                             className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
@@ -758,8 +758,17 @@ const onClickNotesDialog = (data) => {
                             //   setShowApplicationApprovedDeclineDialog(true);
                             // }}
                           >
-                            Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                            Locum Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
                             {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
+                          </div>
+                          <div
+                            className={`${style.borderStyle} ${style.marginTop} ${style.textStyle}`}
+                            // onClick={() => {
+                            //   handleClick();
+                            // }}
+                          >
+                            {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
+                            Locum Staff Expired ({applicationRejected?.applicationsRejected})
                           </div>
                         </>
                       )

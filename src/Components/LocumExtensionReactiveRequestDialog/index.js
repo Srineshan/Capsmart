@@ -115,7 +115,7 @@ let userDepartmentList;
 
 const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM`;
+      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=true`;
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
@@ -678,7 +678,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
           <div className={`${style.fullWidth}`}>
           <div className={`${style.fieldWrapper}`}>
             <div className={`${style.lableStyle}`}>
-              {'Coverage required for'}
+              {'Coverage required for - Optional'}
             </div>
             {/* <CommonSelectField
               value={covererName}
@@ -710,7 +710,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                   return [...filteredIds, item.id];
                 });
               }}
-              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+              className={`${style.fullWidth} ${style.marginTop10}`}
               maxLength={50}
               placeholder={'Select from privilege staff'}
               value={covererName}
