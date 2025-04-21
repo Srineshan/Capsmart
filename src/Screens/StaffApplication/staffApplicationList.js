@@ -4995,13 +4995,13 @@ const StaffApplicationList = ({
           <div>
             <SideBar isExpanded={isExpanded} getIsExpanded={getIsExpanded}>
               <>
-                {applicationType === "REAPPOINTMENT" && (
+                {applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && (
                   <div className={style.searchFieldAlignment}>
                     <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} isOnClickAvailable={true} onClickFunc={onClickViewAndVerifyLevel1Function} />
                   </div>
                 )}
-                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
-                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "View Eligible Staff for Reappointment" : "Create New Application"} arrow>
+                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) || !(applicationType === "LOCUM" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board")))) ? (
+                  <Tooltip title={applicationType === "REAPPOINTMENT" ? "View Eligible Staff for Reappointment" : applicationType === "LOCUM" ? "View Eligible Staff for Locum" : "Create New Application"} arrow>
                     <div
                       className={`${style.addStyle} ${style.displayInRow} ${style.applicationButton} ${style.marginTop10} ${style.alignCenter} ${style.cursorPointer} ${style.cardStyle}`}
                     >
@@ -5030,6 +5030,8 @@ const StaffApplicationList = ({
                         >
                           {applicationType === "REAPPOINTMENT"
                             ? `Staff for Reappointment (${reappointCount})`
+                            : applicationType === "LOCUM"
+                            ? `Staff for Locum Renewals`
                             : "Create New Application"}
                         </div>
 
@@ -5068,11 +5070,11 @@ const StaffApplicationList = ({
                   />
                 </div> */}
 
-                {((applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) || (applicationType === "LOCUM")) ? (
+                {((applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee")))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        Reappointments Sent ({reappointmentCount})
+                        { applicationType === "REAPPOINTMENT" ? `Reappointments Sent (${reappointmentCount})` : "Locum Reminder Sent"}
                       </div>
                       <div className={`${style.marginLeft10} `}>
                         {!showCardAppointment ? (
@@ -5132,11 +5134,11 @@ const StaffApplicationList = ({
                   </div>
                 ) : null}
 
-                {(applicationType === "REAPPOINTMENT" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
+                {(applicationType === "REAPPOINTMENT" || applicationType === "LOCUM" && ((workModeType === "Staff Manager") || (workModeType === "Department Head") || (workModeType === "Credentialing Committee"))) ? (
                   <div className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}>
                     <div className={`${style.spaceBetween} ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        Reappointments Status Tracker
+                        {applicationType === "REAPPOINTMENT" ? "Reappointments Status Tracker" : "Locum Staff Status Tracker"}
                         {/* (
                           {totalCountDept || 0}) */}
                         {/* <span
@@ -5207,7 +5209,7 @@ const StaffApplicationList = ({
                   </div>
                 ) : null}
 
-                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) && applicationType !== "LOCUM") ? (
+                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) || !(applicationType === "LOCUM" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board")))) ? (
                   <div
                     className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                   >
@@ -5308,13 +5310,13 @@ const StaffApplicationList = ({
                     )}
                   </div>
                 ) : null}
-                {!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) ? (
+                {(!(applicationType === "REAPPOINTMENT" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board"))) || !(applicationType === "LOCUM" && ((workModeType === "Department Head") || (workModeType === "Credentialing Committee") || (workModeType === "Advisory Committee") || (workModeType === "Board")))) ? (
                   <div
                     className={`${style.staffLeftCardStyle} ${style.bigCalendarLeftCardWidth} ${style.marginTop20}`}
                   >
                     <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        Rejected / Declined{" "}({applicationRejected?.totalRejections})
+                         {applicationType === "REAPPOINTMENT" ? `Rejected / Declined (${applicationRejected?.totalRejections})` : "Rejected / Declined / Expired"}
                         {/*<span
       className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
     >
@@ -5350,7 +5352,7 @@ const StaffApplicationList = ({
                               }}
                             >
                               {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                              Approved But Declined ({applicationRejected?.applicationsRejected})
+                             {applicationType === "REAPPOINTMENT" ? `Approved But Declined (${applicationRejected?.applicationsRejected})` : "Requested But Declined"}
                             </div>
                           </Tooltip>
                           <Tooltip arrow title={"Click to View Rejected Applications"}>
@@ -5360,7 +5362,7 @@ const StaffApplicationList = ({
                                 setShowApplicationApprovedDeclineDialog(true);
                               }}
                             >
-                              Staff Rejected ({applicationRejected?.appointmentRequestsDenied})
+                              {applicationType === "REAPPOINTMENT" ? `Staff Rejected (${applicationRejected?.appointmentRequestsDenied})` : "Locum Staff Rejected"}
                               {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                             </div>
                           </Tooltip>

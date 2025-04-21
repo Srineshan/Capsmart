@@ -912,11 +912,11 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
 
       if (currentRoleIndex === index) {
         if (applicationType === "NEW") {
-          label = "Applicants To Verify";
+          label = "Applicants To Process";
         } else if (applicationType === "REAPPOINTMENT") {
           label = "Reappointments To Process";
         }  else if (applicationType === "LOCUM") {
-          label = "Renewals To Verify";
+          label = "Renewals To Process";
         } else {
           label = value.tabDisplayName;
         }

@@ -33,7 +33,7 @@ import ESignature from "../../Components/ESignature";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AdditionalPrivilegesDialog from "../../Screens/ReappointmentApplicationForm/PrivilegeSelection/AdditionalPrivilegesDialog";
 
-const LocumExtensiveDialog = ({ getIsOpen,tableDataValue }) => {
+const LocumExtensiveDialog = ({ getIsOpen,selectedTab }) => {
  let cookie = new Cookie();
  let userDetails = cookie.get("user");
  const users = jwt(userDetails);
@@ -124,7 +124,7 @@ const [hospitalPrivilegeCategory, setHospitalPrivilegeCategory] = useState("");
  let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
 
 
- console.log("tableDataValue",tableDataValue)
+ console.log("tableDataValue",selectedTab)
  useEffect(() => {
   sessionStorage.setItem("fromSummary", false);
   getApplication();
@@ -268,7 +268,7 @@ const getActiveUserData = async () => {
       coveredDetails: coveredDetails,
       };
     
-      await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM`, temp)
+      await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}`, temp)
         .then((response) => {
           console.log(response?.data);
         })
@@ -2688,7 +2688,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
           <div className={`${style.fullWidth}`}>
           <div className={`${style.fieldWrapper}`}>
             <div className={`${style.lableStyle}`}>
-              {'Coverage required for'}
+              {'Coverage required for - Optional'}
             </div>
             {/* <CommonSelectField
               value={covererName}
@@ -2720,7 +2720,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                   return [...filteredIds, item.id];
                 });
               }}
-              className={`${style.fullWidth} ${style.marginTop10} ${style.leftAlign}`}
+              className={`${style.fullWidth} ${style.marginTop10}`}
               maxLength={50}
               placeholder={'Select from privilege staff'}
               value={covererName}
@@ -3289,7 +3289,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            //   </>
            // ) : (
            <>
-            <div className={`${style.cardTitle} ${style.marginTop}`}>Would you like to retain the same Privilege Set(s) currently assigned to the locum Staff?</div>
+            <div className={`${style.cardTitle} ${style.marginTop}`}>Would you like to have the same Privilege Set(s) currently assigned to this locum Staff?</div>
             {privilegeSetChangeYesOrNo === "" ? (
              <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>
               <div className={`${style.reappointmentButtonOutlined}`} onClick={() => handleSubmitPrivilegeSet()}>
@@ -3502,7 +3502,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            </>
           }
           <div className={`${style.cardTitle} ${style.marginTop}`}>
-           Would you like to request any Additional Privilege Set(s) for this Locum Staff?
+           Would you like to add any Additional Privilege Set(s) for this Locum Staff?
           </div>
           {additionalPrivilegeChangeYesOrNo === "" ? (
            <div className={`${style.displayInRow} ${style.verticalAlignCenter} ${style.marginTop10}`}>

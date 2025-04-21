@@ -3122,6 +3122,7 @@ const NewActiveApplication = ({
                         setSelectedFormId(form?.forms?.[4]?.id);
                       }}
                     >
+                    
                       {data?.file?.isVerified !== undefined &&
                         data?.file?.isVerified ? (
                         <>
@@ -10589,7 +10590,7 @@ const NewActiveApplication = ({
                     </div>
                   </div>
                 )} */}
-                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1")) ? (
+                  {((workModeType === 'Staff Manager' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Chief Of Staff' && applicationType === "REAPPOINTMENT" && selectedTab === "level-1") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM")) ? (
                     // <div className={`${style.twoColumnGrid}`}>
                     //   <div className={`${style.buttonCardStyle} ${style.cursorPointer}`}>
                     //     <div
@@ -10664,7 +10665,7 @@ const NewActiveApplication = ({
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClose : undefined}
                             >
-                              Verified, send later to Department Head
+                              { applicationType === "REAPPOINTMENT" ? "Verified, send later to Department Head" : "Verified, send later to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10680,7 +10681,7 @@ const NewActiveApplication = ({
                               // onClick={onClickApprovalDeptFunction}
                               onClick={isApproved ? onClickApprovalDeptFunction : undefined}
                             >
-                              Verified, Send to Department Head
+                              { applicationType === "REAPPOINTMENT" ? "Verified, Send to Department Head" : "Verified, Send to Cred Comm"}
                             </div>
                           </Tooltip>
                         </div>
@@ -10898,7 +10899,7 @@ const NewActiveApplication = ({
                     </div>
                   )} */}
 
-                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") || (workModeType === 'Staff Manager' && selectedTab === 'level-1' && applicationType === "LOCUM") ? (
+                  {(workModeType === 'Department Head' && selectedTab === 'level-2' && applicationType === "REAPPOINTMENT" && isApproverDept === "Approve") ? (
                     <div className={`${style.fixedBottom} `}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
