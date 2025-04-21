@@ -530,6 +530,7 @@
     color: $textgrey;
 }
 
-.textHoverColor :hover {
+.textHoverColor:hover {
+    font-weight: bold;
     color: $primarycolor !important;
 }

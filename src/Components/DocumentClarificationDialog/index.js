@@ -11,7 +11,7 @@ import LoadingScreen from "../LoadingScreen";
 import CommonInputField from "../CommonFields/CommonInputField";
 import CommonDivider from "../CommonFields/CommonDivider";
 import CommonSelectField from '../CommonFields/CommonSelectField';
-import { SuccessToaster, ErrorToaster } from "../../utils/toaster";
+import { SuccessToaster, ErrorToaster, ErrorToaster2 } from "../../utils/toaster";
 import DescriptionIcon from '@mui/icons-material/Description';
 import Dropzone from "react-dropzone";
 import { fileLoadingURL } from "../../utils/formatting";
@@ -77,8 +77,23 @@ const ClarificationDialog = ({ getIsOpen, data, form, dateFormat, getActiveAppli
   const changeHandler = async (event) => {
     console.log("Event received:", event);
     const filesArray = Array.from(event);
-    console.log("Converted files array:", filesArray);
-    setFiles(filesArray);
+
+
+    const existingFileNames = files.map(file => file.name);
+    const existingUploadedFileNames = uploadFileData.map(file => file?.file?.fileName);
+    console.log("UploadedFiles:",uploadFileData);
+    const duplicateFiles = filesArray.filter(file => 
+      existingFileNames.includes(file.name) || 
+      existingUploadedFileNames.includes(file.name)
+    );
+  
+      if (duplicateFiles.length > 0) {
+      ErrorToaster2(`File "${duplicateFiles[0].name}" already exists. Please upload a different file.`);
+      return;
+    }
+  
+    // If no duplicates, proceed with upload
+    setFiles(prevFiles => [...prevFiles, ...filesArray]);
 
     const formData = new FormData();
     let fileNameArray = [];

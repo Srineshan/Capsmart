@@ -2,7 +2,11 @@
 
 .welcomeDialog {
     height: 75%;
-    width: 80% !important;
+    width: 70% !important;
+
+    @media (max-width: 806px) {
+        width: 100% !important;
+    }
 }
 
 .loginDialog {
@@ -10,10 +14,26 @@
     width: 85% !important;
 }
 
+.padding {
+    padding: 20px;
+}
+
+.marginLeft {
+    margin-left: 20px;
+}
+
 .loginDialogBackground {
     background: $primarycolor 0% 0% no-repeat padding-box !important;
     padding: 20px 40px 0px 40px;
     border-radius: 20px !important;
+
+    @media (max-width: 806px) {
+        background: #fff 0% 0% no-repeat padding-box !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin-bottom: -50px !important;
+        margin-top: -2px !important;
+    }
 }
 
 .whiteBackground {
@@ -22,6 +42,11 @@
     border-radius: 12px;
     padding: 20px;
     margin: -20px -40px 0 -40px;
+
+    @media (max-width: 806px) {
+        border-radius: 0;
+        box-shadow: none;
+    }
 }
 
 .spaceBetween {
@@ -90,19 +115,59 @@
     margin: 0 20px;
 }
 
+.daysToComplete {
+    display: none;
+
+    @media (max-width: 806px) {
+        width: 98%;
+        background-color: #06617A;
+        color: white;
+        padding: 10px;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 8px;
+        margin-left: 1%;
+        box-shadow: 0px 5px 20px #040B204D;
+    }
+}
+
 .welcomeText {
     text-align: left;
-    font: normal normal bold 38px/45px proxima-nova;
+    font: normal normal bold 28px/35px proxima-nova;
     letter-spacing: 0px;
     color: $primarycolor;
+    display: block;
+
+    @media (max-width: 806px) {
+        display: none;
+    }
+}
+
+.headerData {
+    display: none;
+
+    @media (max-width: 806px) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: $primarycolor;
+        color: white;
+        padding: 15px;
+        z-index: 1000;
+        font: normal normal bold 18px proxima-nova;
+        border-radius: 0 0 12px 12px;
+        height: clamp(45px, 8vh, 100px);
+    }
 }
 
 .descriptionStyle {
     text-align: left;
-    font: normal normal normal 20px/26px proxima-nova;
+    font: normal normal normal 17px/26px proxima-nova;
     letter-spacing: 0px;
     color: #2C2C2C;
-    padding: 0 60px 0 0;
 }
 
 .loginDescription {
@@ -121,9 +186,15 @@
     margin-top: 10px;
 }
 
+.marginTop30 {
+    margin-top: 30px;
+}
+
 .alignCenter {
     display: flex;
     justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 .daysToCompleteCard {
@@ -142,6 +213,14 @@
     color: #FFFFFF;
     text-transform: uppercase;
     margin: 0 30px;
+
+    @media (max-width: 806px) {
+        font: normal normal normal 14px proxima-nova;
+        letter-spacing: 0px;
+        margin: 0 10px;
+        opacity: 1;
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+    }
 }
 
 .textStyle {
@@ -151,6 +230,13 @@
     color: #FFFFFF;
     text-transform: uppercase;
     opacity: 0.7;
+    z-index: 1;
+
+    @media (max-width: 806px) {
+        font: normal normal normal 14px proxima-nova;
+        opacity: 1;
+        text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+    }
 }
 
 .linkStyle {
@@ -165,14 +251,26 @@
     background: $primarycolor 0% 0% no-repeat padding-box;
     box-shadow: 0px 3px 6px #00000029;
     border-radius: 8px;
-    text-align: center;
+    text-align: center !important;
     font: normal normal bold 17px/30px proxima-nova;
     letter-spacing: 0px;
     color: #FFFFFF;
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
-    width: 240px;
+    width: 180px;
+    transition: background-color 0.3s ease;
+
+    @media (max-width: 806px) {
+        width: 100%;
+    }
+}
+
+.continue:hover {
+    background: #044D61 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .saveInProgress {
@@ -187,7 +285,40 @@
     text-transform: uppercase;
     padding: 5px;
     cursor: pointer;
-    width: 240px;
+    width: 200px;
+    transition: background-color 0.3s ease;
+}
+
+.saveInProgress:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
+}
+
+.userGuideButton {
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    border: 0.5px solid $primarycolor;
+    border-radius: 8px;
+    text-align: center;
+    font: normal normal bold 13px/20px proxima-nova;
+    letter-spacing: 0px;
+    color: $primarycolor;
+    text-transform: uppercase;
+    padding: 10px 5px;
+    cursor: pointer;
+    width: 200px;
+    transition: background-color 0.3s ease;
+}
+
+.userGuideButton:hover {
+    background: #F1F6F7 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 12px #00000052;
+    border: 0.5px solid #9AAFB5;
+    border-radius: 8px;
+    opacity: 1;
 }
 
 .displayInRow {
@@ -199,6 +330,16 @@
     display: flex;
     align-items: center;
     height: 100%;
+}
+
+.verticalAlignCenter1 {
+    display: flex;
+    align-items: center;
+    height: 100%;
+
+    @media (min-width: 806px) {
+        display: none;
+    }
 }
 
 .loginGrid {
@@ -311,6 +452,15 @@
     border-radius: 15px !important;
 }
 
+.customWidthUserGuide {
+    padding: 20px;
+    width: 60%;
+    max-width: 700px !important;
+    margin: 0 auto;
+    box-shadow: 0 20px 0px $primarycolor !important;
+    border-radius: 15px !important;
+}
+
 .heading span {
     display: inline-block;
     margin-top: -4px;
@@ -318,9 +468,7 @@
 
 .justifyCenter {
     display: flex;
-    flex-direction: column;
-    margin-left: 45px;
-    margin-top: 95px;
+    justify-content: center;
 }
 
 .marginTop30 {
@@ -336,7 +484,6 @@
     flex-direction: column;
     justify-content: center;
     margin-left: 45px;
-
 }
 
 .passCode {
@@ -347,24 +494,98 @@
     width: 450px;
 }
 
+.userGuideGrid {
+    display: grid;
+    grid-template-columns: 10% 88%;
+    gap: 2%;
+}
+
+.textDecorationNone {
+    text-decoration: none !important;
+}
+
+.iconStyleUserGuide {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 .reappointmentGrid {
     display: grid;
-    grid-template-columns: 40% 60%;
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 5px;
+    margin-top: 0 !important;
+
+    @media (max-width: 806px) {
+        margin-top: 10px !important;
+    }
+}
+
+.imageCard {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .reappointmentLandingImage {
+    width: 100%;
+    height: 400px;
+    max-width: none;
     object-fit: contain;
+}
+
+@media (max-width: 1050px) {
+    .imageCard {
+        width: 100%;
+        height: 100%;
+    }
+
+    .reappointmentLandingImage {
+        width: 100%;
+        height: 100%;
+        max-width: none;
+    }
+
+    .descriptionStyle {
+        font: normal normal normal 18px proxima-nova;
+    }
+}
+
+@media (max-width: 806px) {
+    .descriptionStyle {
+        font: normal normal normal 16px proxima-nova;
+    }
+
+    .logoStyle {
+        display: none;
+    }
 }
 
 .reappointmentCard {
     background: #14358F0A 0% 0% no-repeat padding-box;
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 20px 10px 20px;
     margin-right: 60px;
+
+    @media (max-width: 806px) {
+        margin-right: 0;
+    }
 }
 
 .disable {
-    cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.disabled:hover {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+.hoverText:hover {
+    color: $primarycolor !important;
 }

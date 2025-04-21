@@ -10,10 +10,12 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ErrorToaster, SuccessToaster } from '../../../utils/toaster';
 import SaveInProgressDialog from '../../../Components/SaveInProgressDialog';
 import ValidationDialog from '../../../Components/validationDialog';
-
+import MenuIcon from "@mui/icons-material/Menu";
+import Close from './../../../images/close.png';
 import style from './index.module.scss';
 import WelcomeCard from '../../../Components/WelcomeCard';
 import ReappointmentProgressCard from '../../../Components/ReappointmentProgressCard';
+import LocumProgressCard from '../../../Components/LocumProgressCard';
 
 
 const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication }) => {
@@ -29,13 +31,17 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
     const [formIndex, setFormIndex] = useState();
     const { applicationId, section, step } = useParams();
     const [navigateURL, setNavigateURL] = useState();
+    const [navigateBackURL, setNavigateBackURL] = useState();
     const [showJourneyDialog, setShowJourneyDialog] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
+    let allMissingFields = [];
     useEffect(() => {
         if (basicForm && !formSchema) {
             getFormSchema()
         }
         if (basicForm !== undefined && formIndex !== undefined) {
-            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`)
+            setNavigateURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+            setNavigateBackURL(`/locumApplicationForm/${applicationId}/${basicForm?.forms?.[formIndex - 1]?.formCategory}/${btoa(basicForm?.forms?.[formIndex - 1]?.schemaCategory)}`);
         }
     }, [basicForm, formIndex])
 
@@ -57,13 +63,23 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
         setMetadata(temp);
     }
 
+    // const getAllLabels = (data) => {
+    //     let tempLabels = labels;
+    //     if (!tempLabels?.includes(data)) {
+    //         console.log(tempLabels, data, 'Metadata')
+    //         tempLabels.push(data);
+    //     }
+    //     setLabels(tempLabels);
+    // }
+
     const getAllLabels = (data) => {
         let tempLabels = labels;
-        if (!tempLabels?.includes(data)) {
-            console.log(tempLabels, data, 'Metadata')
+        if (tempLabels?.filter(innerData => data?.path === innerData?.path)?.length === 0) {
+            console.log(tempLabels, data, 'Metadata9999')
             tempLabels.push(data);
         }
         setLabels(tempLabels);
+        console.log();
     }
 
     const getIsSaveInProgressOpen = (value) => {
@@ -75,9 +91,9 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
     }
 
     const getFormSchema = async () => {
-        if (basicForm?.formSchemas?.[formIndex]?.id !== undefined) {
+        if (basicForm?.forms?.[formIndex]?.schemaId !== undefined) {
             const { data: form } = await GET(
-                `application-management-service/formSchema/${basicForm?.formSchemas?.[formIndex]?.id}`
+                `application-management-service/formSchema/${basicForm?.forms?.[formIndex]?.schemaId}`
             );
             setFormSchema(form?.schema)
             setFormSchemaWholeObject(form)
@@ -86,13 +102,14 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
 
     const getSkipClicked = (value) => {
         if (value) {
-            handleSubmitApplicationReq("skipped")
+            getMissingFields("skipped");
         }
-    }
+    };
 
-    const getMissingFields = () => {
+    const getMissingFields = (data) => {
         let missingKeys = [];
         let keyValuePair = [];
+        let hasMandatoryMissingFields = [];
         metadata?.map((data, index) => {
             keyValuePair.push({ key: data, value: getValueByPath(basicForm, data), label: labels[index] })
         })
@@ -101,22 +118,52 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
                 missingKeys.push(data)
             }
         })
-
-        if (missingKeys?.length !== 0) {
-            setShowValidationDialog(true)
-        } else {
-            handleSubmitApplicationReq()
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedText`, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedFile`, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
         }
-        setWarningFields(missingKeys)
-        console.log(keyValuePair, 'Metadata', missingKeys)
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === 'No' || getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === undefined) {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesText`, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesFile`, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminated`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.hasOtherHospitalPrivilegeReducedTerminatedResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+        if (getValueByPath(basicForm, `forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivileges`) === 'Yes') {
+            let filterKeys = [`forms[${formIndex}].data.disclosures.privilegeStatusDisclosure.relinquishedOtherHospitalPrivilegesResponse`]
+            let temp = missingKeys?.filter(data => !filterKeys?.includes(data?.key));
+            missingKeys = temp;
+        }
+
+        setWarningFields(missingKeys);
+        allMissingFields = missingKeys;
+        hasMandatoryMissingFields = missingKeys?.find(field => field?.label?.mandatory === true);
+
+        if (data === "skipped") {
+            handleSubmitApplicationReq();
+        }
+
+        if (data !== "skipped") {
+            if (hasMandatoryMissingFields) {
+                setShowValidationDialog(true);
+            } else {
+                handleSubmitApplicationReq();
+            }
+        }
+        console.log(keyValuePair, 'privilegeAtOtherHospitalMetadata', missingKeys, hasMandatoryMissingFields, allMissingFields)
     }
 
     const handleSubmitApplicationReq = async (data) => {
         if (isEdited) {
+            console.log("missingprivilegeAtOtherHospital", allMissingFields)
             let temp = {
                 schemaId: basicForm?.forms?.[formIndex]?.schemaId,
                 data: basicForm?.forms?.[formIndex]?.data,
-                unFilledFields: warningFields?.map(data => data?.label),
+                unFilledFields: allMissingFields?.map(field => JSON.stringify(field)),
                 acknowledged: data === "skipped" ? false : true
             }
             await PUT(`application-management-service/application/${applicationId}/form/${basicForm?.forms?.[formIndex]?.id}`, temp)
@@ -154,44 +201,68 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
         return keys.reduce((acc, key) => acc && acc[isNaN(key) ? key : Number(key)], basicForm);
     };
 
+    const handleBackClick = async () => {
+        navigate(navigateBackURL)
+    }
+
     const getIsEdited = (value) => {
         setIsEdited(value)
     }
     return (
         <div>
-            <div className={style.applicationScreenGrid}>
-                <ReappointmentProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
-                <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
-            </div>
-            <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
+            {showInfo && <div className={style.bgdrop} onClick={() => setShowInfo(false)}></div>}
+            <div className={`${style.applicationScreenGrid} ${showInfo ? "blurredBackground" : ""}`}>
                 <div>
-                    <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
-                        description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
+                    <LocumProgressCard step={'STEP 11'} dataType={formSchema?.description} title={formSchema?.title} timeNumber={22} timeText={'Min'} progressStyle={`${style.progressStyle} ${style.progressStyleBackground}`} basicForm={basicForm} />
+                    <div className={style.marginTop}>
+                        <WelcomeCard title={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.label }} />}
+                            description={<div dangerouslySetInnerHTML={{ __html: formSchema?.properties?.instruction?.description }} />} />
+                    </div>
                     <div className={`${style.applicationCardStyle} ${style.marginTop}`}>
                         {formSchema !== undefined && 'disclosures' in formSchema?.properties && (
-                            <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.criminalHistoryGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
+                            <ApplicationFieldCard object={formSchema?.properties?.disclosures} gridStyle={style.conductGrid} baseKey={'disclosures'} basicForm={basicForm} setBasicForm={setBasicForm} getAllPath={getAllPath} getAllLabels={getAllLabels} collapsableQuestionCard={true} stepPath={`forms[${formIndex}].data`} applicationId={applicationId} setIsEdited={getIsEdited} warningFields={warningFields} formSchema={formSchemaWholeObject} />
                         )}
                     </div>
                     <div className={style.threeColForButton}>
-                        {/* <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>  */}
-                        {/* <div className={`${style.continue} ${style.marginTop}`} onClick={() => navigate(-1)}>BACK</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
                         <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
-                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div> */}
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => handleBackClick()}>BACK</div>
+                        <div className={`${style.continue} ${style.marginTop}`} onClick={() => getMissingFields()}>CONTINUE</div>
                     </div>
                 </div>
                 <div>
-                    <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                    {!showInfo && (
+                        <div>
+                            <div className={`${style.toggleButton} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`} onClick={() => setShowInfo(!showInfo)}>
+                                <MenuIcon className={style.toggleIcon} />
+                            </div>
+                            <div className={`${style.headerData} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hidden : ""}`}>
+                                <span style={{ marginLeft: '20px' }}>Confirm Your Privilege Status Disclosure</span>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <div className={`${style.infoContainer} ${showInfo ? style.show : ""}`}>
+                            <img src={Close} alt="Close" className={style.closeIcon} onClick={() => setShowInfo(false)} />
+                            <ApplicationUserCard user={'First Mi Last'} applyingFor={'{Doctor} Applying As {Associate}'} />
+                            <div className={style.marginTop}>
+                                <ApplicationAssistanceCard user={'Neena Greenly'} designation={'{Designation}'} contactNumber={'{Contact Number}'} email={'{Email}'} />
+                            </div>
+                            <div className={style.marginTop}>
+                                <ApplicationReferenceDocuments />
+                            </div>
+                        </div>
+                    </div>
                     <div className={`${style.stickyContainer} ${isSaveInProgressOpen || showValidationDialog || showJourneyDialog ? style.hiddenStickyContainer : ""}`}>
-                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop}`} onClick={() => getSkipClicked(true)}>SKIP FOR NOW</div>
+                        <div className={`${style.saveInProgress} ${style.marginTop10}`} onClick={() => getIsSaveInProgressOpen(true)}>SAVE IN PROGRESS</div>
                         <div className={style.twoColForButton}>
-                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => navigate(-1)}>BACK</div>
+                            <div className={`${style.continue} ${style.marginTop10}`} onClick={() => handleBackClick()}>BACK</div>
                             {/* <div className={`${style.continue} ${style.marginTop10}`} onClick={() => setShowJourneyDialog(true)}>CONTINUE</div> */}
                             <div className={`${style.continue} ${style.marginTop10}`} onClick={() => getMissingFields()}>CONTINUE</div>
                         </div>
                     </div>
-                    <div className={style.marginTop}>
-                        <ApplicationReferenceDocuments />
-                    </div>
+
                 </div>
             </div>
             {
@@ -200,7 +271,9 @@ const PrivilegeStatusHospital = ({ basicForm, setBasicForm, getPreApplication })
                 )
             }
             {showValidationDialog && (
-                <ValidationDialog getIsOpen={getIsValidationDialogOpen} labelList={warningFields} getSkipClicked={getSkipClicked} />
+                <ValidationDialog getIsOpen={getIsValidationDialogOpen}
+                    labelList={warningFields?.filter(field => field?.label?.mandatory !== false)}
+                    getSkipClicked={getSkipClicked} />
             )}
 
         </div>

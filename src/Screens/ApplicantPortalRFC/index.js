@@ -2046,17 +2046,17 @@ const ApplicantPortalRFC = () => {
                             </div>
                         </div>
                         <div className={`${style.stickyContainer}`}>
-                        <Tooltip title="Click to Save Progress" arrow>
+                        <Tooltip title="Save your Progress and Continue later" arrow>
                             <div className={`${style.saveInProgress} ${style.marginTop20}`}
                                 onClick={() => getClarificationResponse(true)}
                             >
                                 SAVE IN PROGRESS
                             </div>
                             </Tooltip>
-                            <Tooltip title="Click to proceed with the next step" arrow>
+                            <Tooltip title="Submit your Response and Logout" arrow>
                             <div className={`${style.continue} ${style.marginTop10}`}
                                 onClick={() => getClarificationResponse()}
-                            >CONTINUE</div>
+                            >SUBMIT & LOGOUT</div>
                             </Tooltip>
                         </div>
                     </div>

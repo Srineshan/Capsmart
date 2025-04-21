@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import style from './index.module.scss';
-import ApplicationHeader from '../../../../Components/ApplicationHeader';
+import ApplicationHeader from '../../../../Components/ApplicationHeaders';
 import { GET, POST } from '../../../dataSaver';
 import { useNavigate, useParams } from 'react-router-dom';
 import PdfViewer from '../../pdfViewer';
@@ -12,6 +12,7 @@ import ESignature from '../../../../Components/ESignature';
 import { format } from 'date-fns';
 import Cookie from 'universal-cookie';
 import jwt from 'jwt-decode';
+import CloseIcon from '@mui/icons-material/Close';
 
 const MedicalDirectivesAttest = () => {
     const { applicationId, section, step, medicalDirectivesId } = useParams();
@@ -149,7 +150,7 @@ const MedicalDirectivesAttest = () => {
         }
         await POST(`medical-directive-service/medicalDirectives/${medicalDirectivesId}/attest`, temp)
             .then(response => {
-                navigate(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${basicForm?.forms[formIndex]?.schemaCategory}`)
+                navigate(`/locumApplicationForm/${applicationId}/${basicForm?.forms[formIndex]?.formCategory}/${btoa(basicForm?.forms[formIndex]?.schemaCategory)}`)
                 getAttestationLog();
                 console.log(response, response?.response?.data)
             })
@@ -166,11 +167,19 @@ const MedicalDirectivesAttest = () => {
     }
 
     const handleClose = () => {
-        navigate(`/reappointmentApplicationForm/${applicationId}/${section}/${step}`);
+        navigate(`/locumApplicationForm/${applicationId}/${section}/${step}`);
     }
     return (
         <div className={style.screenBackground}>
-            <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+            <div className={style.welcomeText}>
+                <ApplicationHeader title={`${medicalDirectives?.title}`} close={true} closeClick={handleClose} />
+            </div>
+            <div className={style.headerData}>
+                <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
+                <span className={style.verticalAlignCenter}>
+                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} />
+                </span>
+            </div>
             <div className={style.screenPadding}>
                 <div>
                     <div className={style.breadcrumbStyle}>{`REAPPOINTMENT APPLICATION > MEDICAL DIRECTIVES STATUS >> ${medicalDirectives?.title}`}</div>
@@ -188,19 +197,18 @@ const MedicalDirectivesAttest = () => {
                         </div>
                     </div>
                     <div>
-                        <div className={style.medicalDirectivesCard}>
-                            <div className={style.title}>{`Attestation Required In 43 Days`} </div>
-                            {(!isScrolledToBottom) && (
-                                <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
-                            )}
-                        </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        {!isScrolledToBottom && (
+                            <div className={style.medicalDirectivesCard}>
+                                <div className={style.title}>{`Attestation Due In ${medicalDirectives?.noOfDaysToAttest} Days`} </div>
+                            </div>
+                        )}
+                        <div className={`${style.medicalDirectivesCard} ${style.marginTop10} ${style.stickyContainer}`}>
                             <div className={style.title}><strong>{`Medical Directive Attestation`} </strong></div>
                             <div className={`${style.marginTop10} ${style.description}`}>You have to review and attest to this Medical Directive that has been assigned to you.</div>
                             {(!isScrolledToBottom) ? (
                                 <Tooltip title="Scroll to the end of the document" arrow>
                                     <div>
-                                        <div className={` ${style.marginTop} ${style.leftAlign} ${style.disabled}`}>
+                                        <div className={` ${style.marginTop10} ${style.leftAlign} ${style.disabled}`}>
                                             <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} />
                                         </div>
                                         <div className={style.disabled}>
@@ -221,12 +229,15 @@ const MedicalDirectivesAttest = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {(!isScrolledToBottom) && (
+                                            <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                        )}
                                         <div className={`${style.continue} ${style.marginTop} ${style.disabled}`}>SUBMIT</div>
                                     </div>
                                 </Tooltip>
                             ) : (
                                 <>
-                                    <div className={` ${style.marginTop} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
+                                    <div className={` ${style.marginTop10} ${style.leftAlign} ${isScrolledToBottom ? '' : style.disabled}`}>
                                         <CommonCheckBox checked={medicalDirectivesAttestation} label={'I hereby confirm that by signing, I agree to the delegation and implementation of the Medical Directives and Delegated Acts used within the Cambridge Memorial Hospital.'} onChange={(e) => { setMedicalDirectivesAttestation(e.target.checked) }} />
                                     </div>
                                     <div>
@@ -247,13 +258,16 @@ const MedicalDirectivesAttest = () => {
                                             </div>
                                         </div>
                                     </div>
+                                    {(!isScrolledToBottom) && (
+                                        <div className={`${style.marginTop10} ${style.attestationRequiredText}`}>You need to scroll to the end of the document before you can certify the Directive</div>
+                                    )}
                                     <Tooltip arrow title={"Click to Submit"}>
-                                    <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
+                                        <div className={`${style.continue} ${style.marginTop} ${(isScrolledToBottom && isSigned) ? '' : style.disabled}`} onClick={(isScrolledToBottom && isSigned) ? () => { handleSubmitAttest() } : () => { }}>SUBMIT</div>
                                     </Tooltip>
                                 </>
                             )}
                         </div>
-                        <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
+                        <div className={`${style.medicalDirectivesCard} ${!isScrolledToBottom ? style.marginTop : ''}`}>
                             <div className={style.title}><strong>{`My Attestation Log`} </strong></div>
                             {medicalDirectivesAttestationLog?.map(data => (
                                 <div className={`${style.marginTop10} ${style.description}`}>{format(new Date(data?.createdDate), 'MMM dd, yyyy HH:mm')}</div>

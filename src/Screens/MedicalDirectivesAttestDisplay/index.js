@@ -14,6 +14,8 @@ import jwt from 'jwt-decode';
 import CloseIcon from '@mui/icons-material/Close';
 import PdfViewer from '../ReappointmentApplicationForm/pdfViewer';
 import UserLogo from "./../../images/defaultUserLogo.jpg";
+import PhoneIcon from "./../../images/phoneIcon.png";
+import MailIcon from "./../../images/mailIcon.png";
 import { formatFirstNameLastName } from '../../utils/formatting';
 
 const MedicalDirectivesAttestDisplay = () => {
@@ -206,8 +208,8 @@ const MedicalDirectivesAttestDisplay = () => {
             <div className={style.headerData}>
                 <span style={{ marginLeft: '20px' }}>Ordering Of Laboratory Investigations - IPAC</span>
                 <span className={style.verticalAlignCenter}>
-                <Tooltip title="Click to Close and Return to Applications" arrow>
-                    <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} /> </Tooltip>
+                    <Tooltip title="Click to Close and Return to Applications" arrow>
+                        <CloseIcon sx={{ fontSize: 30, color: '#FFFFFF', cursor: 'pointer', marginLeft: '270px' }} onClick={handleClose} /> </Tooltip>
                 </span>
             </div>
             <div className={style.screenPadding}>
@@ -217,7 +219,7 @@ const MedicalDirectivesAttestDisplay = () => {
                 <div className={`${style.applicationScreenGrid} ${style.marginTop}`}>
                     <div>
                         <div className={`${style.cardLeftStyle}`}>
-                            <div className={style.flex}>
+                            <div className={style.userCardGrid}>
                                 <div className={`${style.photoBorderStyle}`}>
 
                                     <img
@@ -227,9 +229,10 @@ const MedicalDirectivesAttestDisplay = () => {
                                     />
 
                                 </div>
-                                <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}>
+                                {/* <div className={`${style.twoColumnGrid1} ${style.textAlignLeft}`}> */}
+                                <div>
                                     <div className={style.marginTop10}>
-                                        <span className={`${style.cardTextBoldStyle}`}>
+                                        <div className={`${style.cardTextBoldStyle} ${style.leftAlign}`}>
                                             {
                                                 basicForm?.basicDetails?.applicant?.name?.firstName !== undefined &&
                                                     basicForm?.basicDetails?.applicant?.name?.lastName !== undefined
@@ -239,11 +242,27 @@ const MedicalDirectivesAttestDisplay = () => {
                                                     )
                                                     : "{First Name} {Last Name}"
                                             },{" "}
-                                        </span>
-                                        <span className={`${style.cardTextNormalStyle}`}>
                                             {basicForm?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
-                                        </span>
+                                        </div>
+                                        {/* <span className={`${style.cardTextNormalStyle}`}>
+                                            {basicForm?.basicDetailReferences?.applicantType?.serviceProviderType || ""}
+                                        </span> */}
                                     </div>
+                                    <div className={`${style.cardTextNormalStyle} ${style.marginTop10}`}>
+                                        {basicForm?.basicDetailReferences?.department?.name ? `${basicForm?.basicDetailReferences.department.name}` : ""}
+                                        {basicForm?.basicDetailReferences?.specialty?.name
+                                            ? ` ${basicForm?.basicDetailReferences?.department?.name ? "- " : ""}${basicForm?.basicDetailReferences.specialty.name}`
+                                            : ""}
+                                    </div>
+                                    <div className={`${style.emailTextBoldStyle} ${style.marginTop10} ${style.displayInRow}`}>
+                                        <img src={PhoneIcon} alt="" className={style.iconStyle} />
+                                        <div className={style.marginLeft10}>
+                                            {basicForm?.basicDetails?.applicant?.cellPhone ? `+1 ${basicForm?.basicDetails?.applicant?.cellPhone}` : ""}
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div>
                                     <div className={`${style.marginTop10} ${style.twoColumnGridInner2}`}>
                                         <span className={style.rightAlignTextStyle}>
                                             Reappointment Date:
@@ -252,13 +271,8 @@ const MedicalDirectivesAttestDisplay = () => {
                                             {reappointmentStartDate}
                                         </span>
                                     </div>
-                                    <div className={`${style.cardTextNormalStyle}`}>
-                                        {basicForm?.basicDetailReferences?.department?.name ? `${basicForm?.basicDetailReferences.department.name}` : ""}
-                                        {basicForm?.basicDetailReferences?.specialty?.name
-                                            ? `${basicForm?.basicDetailReferences?.department?.name ? ", " : ""}${basicForm?.basicDetailReferences.specialty.name}`
-                                            : ""}
-                                    </div>
-                                    <div className={`${style.twoColumnGridInner2}`}>
+
+                                    <div className={`${style.twoColumnGridInner2} ${style.marginTop10}`}>
                                         <span className={style.rightAlignTextStyle}>
                                             Application Submitted:
                                         </span>
@@ -266,13 +280,14 @@ const MedicalDirectivesAttestDisplay = () => {
                                             {formattedSubmissionDate} <span className={style.rightAlignTextStyle1}>({daysDifference} Days)</span>
                                         </span>
                                     </div>
-                                    <div className={`${style.emailTextBoldStyle}`}>
-                                        {basicForm?.basicDetails?.applicant?.cellPhone ? `+1 ${basicForm?.basicDetails?.applicant?.cellPhone}` : ""}
-                                    </div>
-                                    <div className={`${style.emailTextBoldStyle}`}>
-                                        <span className={style.cursorPointer} onClick={() => sendEmail(basicForm?.basicDetails?.applicant?.email?.officialEmail || "")}>{basicForm?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
+                                    <div className={`${style.emailTextBoldStyle} ${style.marginTop10} ${style.displayInRow}`}>
+                                        <img src={MailIcon} alt="" className={style.iconStyle} />
+                                        <div className={style.marginLeft10}>
+                                            <span className={style.cursorPointer} onClick={() => sendEmail(basicForm?.basicDetails?.applicant?.email?.officialEmail || "")}>{basicForm?.basicDetails?.applicant?.email?.officialEmail || ""}</span>
+                                        </div>
                                     </div>
                                 </div>
+                                {/* </div> */}
                             </div>
                         </div>
                         <div className={`${style.medicalDirectivesCard} ${style.marginTop}`}>
@@ -346,7 +361,7 @@ const MedicalDirectivesAttestDisplay = () => {
                                         <div className={style.verticalAlignCenter}>
                                             <div className={style.displayInRow}>
                                                 <div className={`${style.dateTitle}`}>Date: </div>
-                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== undefined) ? medicalDirectivesAttestationLog?.[0]?.esign?.signedDate : currentDate : ""}</div>
+                                                <div className={`${style.date} ${style.marginLeft}`}>{isSigned ? (medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== '' && medicalDirectivesAttestationLog?.[0]?.esign?.signedDate !== undefined) ? `${medicalDirectivesAttestationLog?.[0]?.esign?.signedDate} ${format(new Date(medicalDirectivesAttestationLog?.[medicalDirectivesAttestationLog?.length - 1]?.createdDate), 'HH:mm')}` : currentDate : ""}</div>
                                             </div>
                                         </div>
                                     </div>
