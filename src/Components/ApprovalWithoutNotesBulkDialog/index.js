@@ -32,6 +32,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
   const [calendarStartForApproval, setCalendarStartForApproval] = useState(false);
   const [selectedDateForApproval, setSelectedDateForApproval] = useState(null);
   const workModeType = sessionStorage.getItem('workModeType')
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const dropzoneStyle = {
     width: "100%",
     height: "auto",
@@ -188,7 +189,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
       : "";
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -197,15 +198,29 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
-        role = "Chief Of Staff";
-        isDelegate = false;
+        role = "Credentialing Committee";
         title = "Chief Of Staff Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager") {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee User Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -256,7 +271,7 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
     //   ? format(new Date(selectedDateForApproval), "yyyy-MM-dd")
     //   : new Date().toISOString();
 
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -265,14 +280,23 @@ const BulkApproveDialog = ({ checkedIds, getBulkApproveDialogOpen, onClose, sele
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review";
+        title = "Chief Of Staff Review";
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";

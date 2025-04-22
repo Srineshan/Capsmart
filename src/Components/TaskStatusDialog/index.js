@@ -28,6 +28,7 @@ const TaskStatusDialog = ({ getIsOpen,selectedTab }) => {
   const [fileName, setFileName] = useState("");
   const [file, setFile] = useState({});
   const workModeType = sessionStorage.getItem('workModeType')
+  const applicationType = sessionStorage.getItem('applicationCreationType') ?? 'REAPPOINTMENT';
   const base64String = pdfBase64?.split(',')[1]; // Remove prefix
 
   useEffect(() => {
@@ -102,9 +103,12 @@ const TaskStatusDialog = ({ getIsOpen,selectedTab }) => {
           isDelegate = true;
           title = "Credentialing Committee Review";
         }
-      } else if (selectedTab === 'level-4') {
+      } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
         role = "Advisory Committee";
         title = "MAC Review";
+      } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+        role = "Board";
+        title = "BOD Approval";
       } else if (selectedTab === 'level-5') {
         role = "Board";
         title = "BOD Approval";

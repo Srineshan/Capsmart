@@ -119,7 +119,7 @@ const getActiveUserData = async () => {
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
-      const filteredData = staffs.find(item => item?.currentApplication?.id === id);
+      const filteredData = staffs.find(item => item?.id === id);
       console.log("Filtered Application Data", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage",selectDataLocum)
@@ -160,7 +160,7 @@ const getActiveUserData = async () => {
     
       try {
         setIsLoadingImageDocs(true);
-        const response = await POST(`application-management-service/application/${id}/files/bulk?isLLMRequired=${false}`, formData);
+        const response = await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files/bulk?isLLMRequired=${false}`, formData);
         console.log("API Response:", response);
         SuccessToaster('File Uploaded Successfully');
         console.log("Response data:", response?.data);
@@ -352,7 +352,7 @@ const getActiveUserData = async () => {
  const getApplication = async () => {
   try {
    setIsLoadingImage(true);
-   const { data: formDetails } = await GET(`application-management-service/application/${id}`);
+   const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`);
    setFormDetails(formDetails);
    setIsLoadingImage(false);
   } catch (error) {

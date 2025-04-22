@@ -786,6 +786,12 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     getUserRoleType();
   }, [applicationType]);
 
+  useEffect(() => {
+    if (applicationType === "LOCUM" || applicationType === "REAPPOINTMENT") {
+      setInitialTabSet(false);
+    }
+  }, [applicationType]);
+
   // Handle refetch metadata changes
   useEffect(() => {
     // if (reFetchMetaData === true) {
@@ -871,10 +877,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
     if (userRole.length > 0) {
       let initialTab;
   
-      if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
+      if (workModeType === "Staff Manager") {
         initialTab = "level-1";
         // setInitialTabSet(false);
-      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT") {
+      } else if ((workModeType === "Department Head" || workModeType === "Chief Of Staff") && applicationType === "REAPPOINTMENT" || applicationType === "NEW" ) {
         initialTab = "level-2";
         // setInitialTabSet(false);
       }  else if (workModeType === "Credentialing Committee User") {
@@ -883,7 +889,10 @@ const StaffApplicationTiles = ({ getSelectedTab, selectedTab, reFetchMetaData, g
         initialTab = "level-2";
         // getSelectedTab(initialTab);
         // setInitialTabSet(false);
-      } else if (workModeType === "Credentialing Committee") {
+      } else if (workModeType === "Credentialing Committee" && applicationType === "REAPPOINTMENT") {
+        initialTab = "level-3";
+        // getSelectedTab(initialTab);
+      } else if (workModeType === "Credentialing Committee" && applicationType === "NEW") {
         initialTab = "level-3";
         // getSelectedTab(initialTab);
       }  else {

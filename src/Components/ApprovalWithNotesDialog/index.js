@@ -306,6 +306,62 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
   //     });
   // };
 
+  useEffect(() => {
+    let tempRole;
+    let tempTitle;
+    let tempIsDelegate = true;
+
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
+      if (workModeType === "Department Head") {
+        tempRole = "Department Head";
+        tempIsDelegate = false;
+        tempTitle = "Dept. Head / Chief Review";
+      } else {
+        tempRole = "Department Head";
+        tempTitle = "Dept. Head / Chief Review";
+      }
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        tempRole = "Credentialing Committee";
+        tempIsDelegate = false;
+        tempTitle = "Credentialing Committee Review";
+      } else {
+        tempRole = "Credentialing Committee";
+        tempTitle = "Credentialing Committee Review";
+      }
+    } else if (selectedTab === 'level-3') {
+      if (workModeType === "Credentialing Committee") {
+        tempRole = "Credentialing Committee";
+        tempTitle = "Credentialing Committee Review";
+        tempIsDelegate = false;
+      } else if (workModeType === "Chief Of Staff") {
+        tempRole = "Credentialing Committee";
+        tempTitle = "Chief Of Staff Review";
+      } else if (workModeType === "Credentialing Committee User") {
+        tempRole = "Credentialing Committee";
+        tempTitle = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager") {
+        tempRole = "Credentialing Committee";
+        tempTitle = "Credentialing Committee User Review";
+      }
+    } else if (selectedTab === 'level-4') {
+      tempRole = "Advisory Committee";
+      tempTitle = "MAC Review";
+    } else if (selectedTab === 'level-5') {
+      tempRole = "Board";
+      tempTitle = "BOD Approval";
+    } else if (selectedTab === 'level-1') {
+      tempRole = "Staff Manager";
+      tempTitle = "Staff Manager Verification";
+      tempIsDelegate = false;
+    }
+
+
+    console.log("Role , Title , Is Delegate:", tempRole,tempTitle,tempIsDelegate);
+    console.log("Title:", tempTitle);
+    console.log("Is Delegate:", tempIsDelegate);
+  }, []);
+
   const onClickApproveMoveFunction = () => {
     if (workModeType === "Credentialing Committee") {
       handleApplicationApprove(true)
@@ -341,7 +397,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -350,7 +406,16 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
@@ -465,7 +530,7 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
     let notesComments = userRoleComments;
     let isDelegate = true;
 
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -474,14 +539,23 @@ const ApprovalWithNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicationVi
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review";
+        title = "Chief Of Staff Review";
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";

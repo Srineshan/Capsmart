@@ -319,13 +319,22 @@ const NewActiveApplication = ({
     const BoardDate = form?.completedWorkflows?.find(
       (workflow) => workflow?.role === "Board"
     );
-    if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate) {
+    if (workModeType === "Staff Manager" && selectedTab === "level-3" && credentialingCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
       setSelectedDateForReappoint(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setSelectedDateForCC(new Date(`${credentialingCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
-    if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate) {
+    if (workModeType === "Staff Manager" && selectedTab === "level-3" && AdvisoryCommitteeDate?.meetingDate && applicationType === "LOCUM") {
       setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setSelectedDateForCC(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+    if (workModeType === "Staff Manager" && selectedTab === "level-4" && AdvisoryCommitteeDate?.meetingDate && applicationType === "REAPPOINTMENT") {
+      setSelectedDateForMac(new Date(`${AdvisoryCommitteeDate?.meetingDate}T00:00`), "MMM dd, yyyy");
+      setIsButtonDisabled(false);
+    }
+    if (workModeType === "Staff Manager" && selectedTab === "level-4" && BoardDate?.meetingDate && applicationType === "LOCUM") {
+      setSelectedDateForBod(new Date(`${BoardDate?.meetingDate}T00:00`), "MMM dd, yyyy");
       setIsButtonDisabled(false);
     }
     if (workModeType === "Staff Manager" && selectedTab === "level-5" && BoardDate?.meetingDate) {
@@ -1261,14 +1270,23 @@ const NewActiveApplication = ({
     let role;
     let meetingDate;
     let temp = [applicationId];
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType === "REAPPOINTMENT") {
       role = "Department Head";
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
       role = "Credentialing Committee";
       meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-3' && applicationType === "REAPPOINTMENT") {
+      role = "Credentialing Committee";
+      meetingDate = format(new Date(selectedDateForCC), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-3' && applicationType === "LOCUM") {
       role = "Advisory Committee";
       meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
+      role = "Advisory Committee";
+      meetingDate = format(new Date(selectedDateForMac), 'yyyy-MM-dd');
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      meetingDate = format(new Date(selectedDateForBod), 'yyyy-MM-dd');
     } else if (selectedTab === 'level-5') {
       role = "Board";
       meetingDate = format(new Date(selectedDateForBod), 'yyyy-MM-dd');
@@ -1313,9 +1331,12 @@ const NewActiveApplication = ({
         isDelegate = false;
         title = "Chief Of Staff Review";
       }
-    } else if (selectedTab === 'level-4') {
+    } else if (selectedTab === 'level-4' && applicationType === "REAPPOINTMENT") {
       role = "Advisory Committee";
       title = "MAC Review";
+    } else if (selectedTab === 'level-4' && applicationType === "LOCUM") {
+      role = "Board";
+      title = "BOD Approval";
     } else if (selectedTab === 'level-5') {
       role = "Board";
       title = "BOD Approval";
@@ -11027,7 +11048,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   ) : (" ")}
-                  {(workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") ? (
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "Approve") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "Approve")) ? (
                     <div className={`${style.fixedBottom} ${approvalwithoutnotesCommentsBox || approvalnotesCommentsBox || approvalnotesCommentsBoxDept || showApplicationDeclineDialog || notesCommentsBox || reappointmentChangesCommentsBox ? style.hiddenStickyContainer : " "}`}>
                       {/* <div className={`${style.twoColumnGrid}`}> */}
                       <div className={`${style.gridDot} ${style.buttonCardStyle} ${style.cursorPointer}`}>
@@ -11114,7 +11135,7 @@ const NewActiveApplication = ({
                   </div>
                 </>) : ("")} */}
 
-                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved")) ? (<>
+                  {((workModeType === 'Credentialing Committee' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && isApproverCred === "NotApproved") || (workModeType === 'Credentialing Committee' && selectedTab === 'level-2' && applicationType === "LOCUM" && isApproverCred === "NotApproved")) ? (<>
                     <div>
                       <div className={`${style.textCardStyle} ${style.pendingTextStyle} ${style.alignCenter} ${style.padding30} ${style.marginBottom20}`}>
                         Pending Cred. Comm. Recommendation
@@ -11145,7 +11166,7 @@ const NewActiveApplication = ({
                       </div>
                     </div>
                   </>) : (" ")}
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "ReviewFromCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "ReviewFromCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyle2}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11208,7 +11229,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForCC") || (workModeType === 'Staff Manager' && selectedTab === 'level-2' && applicationType === "LOCUM" && dataLevel === "DateSetForCC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11261,7 +11282,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForMAC")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForMAC") || (workModeType === 'Staff Manager' && selectedTab === 'level-3' && applicationType === "LOCUM" && dataLevel === "DateSetForMAC")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
@@ -11315,7 +11336,7 @@ const NewActiveApplication = ({
                     </div>
                   ) : (" ")
                   }
-                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForBOD")) ? (
+                  {((workModeType === 'Staff Manager' && selectedTab === 'level-5' && applicationType === "REAPPOINTMENT" && dataLevel === "DateSetForBOD") || (workModeType === 'Staff Manager' && selectedTab === 'level-4' && applicationType === "LOCUM" && dataLevel === "DateSetForBOD")) ? (
                     <div className={`${style.fixedBottom1} ${emailDialogBox ? style.hiddenStickyContainer : " "} ${style.marginBottom20}`}>
                       <div className={`${style.cardLeftStyleSaveButton}`}>
                         <div className={`${style.displayInCol}`}>
