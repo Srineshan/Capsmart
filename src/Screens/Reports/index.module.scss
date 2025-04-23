@@ -1369,7 +1369,7 @@
     opacity: 1;
 }
 
-.reportTypeParamsBackground{
+.reportTypeParamsBackground {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     border: 1px solid #9AAFB5;
     border-radius: 8px;
@@ -1521,7 +1521,7 @@
 //     size: auto;
 //     margin: 20px 0 20px 0; /* Top and bottom margin */
 //   }
-  
+
 
 //   .printContainer {
 //     padding-top: 50px !important;
@@ -1541,24 +1541,26 @@
 /* In your CSS file */
 @page {
     margin-top: 20px;
-  }
-  
-  @media print {
+}
+
+@media print {
+
     /* Ensure your header stays at top */
     .reportBackgroundCard {
-      break-inside: avoid;
+        break-inside: avoid;
     }
-    
+
     /* Optional: Adjust any other print-specific styles */
     body {
-      padding-top: 0;
+        padding-top: 0;
     }
-  }
+}
+
 // @media print {
 //     @page {
 //       margin-top: 50px; /* Adjust the top margin */
 //     }
-  
+
 //     .print-container {
 //       padding-top: 50px; /* Ensures space at the top of each page */
 //     }
@@ -1788,13 +1790,13 @@
     grid-template-columns: 15% 15% 13% 10% 13% 10% 13% 10%;
 }
 
-.reporttypeLeftBackGround{
-    background:transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
+.reporttypeLeftBackGround {
+    background: transparent radial-gradient(at 28% -9%, #0995BC 0%, #06617A 100%) 0% 0% no-repeat padding-box;
     border-radius: 8px;
     opacity: 1;
 }
 
-.reportLeftTextStyle{
+.reportLeftTextStyle {
     text-align: center;
     font: normal normal 600 16px/20px proxima-nova;
     letter-spacing: 0px;
@@ -1804,7 +1806,7 @@
     padding: 5px;
 }
 
-.headingtextStyle{
+.headingtextStyle {
     text-align: left;
     font: normal normal 600 20px/21px proxima-nova;
     letter-spacing: 0px;
@@ -1813,7 +1815,7 @@
     opacity: 0.7;
 }
 
-.IconHeaderBackgroundStyle{
+.IconHeaderBackgroundStyle {
     background: #FFFFFF 0% 0% no-repeat padding-box;
     box-shadow: 0px 8px 16px #17133814;
     border-radius: 8px;
@@ -1824,7 +1826,7 @@
     display: grid;
     grid-template-columns: 4% 14% 11% 19% 21% 13% 13%;
     grid-gap: 5px;
-  }
+}
 
 //   @media print {
 //     .reportBackgroundCard {
@@ -1836,28 +1838,31 @@
 //       }
 //   }
 
-  @media print {
+@media print {
     @page {
-        margin-top: 100px;
+        margin-top: 20px;
     }
 
     .printContainer {
         page-break-inside: avoid;
     }
 
-    .printContainer > * {
+    .printContainer>* {
         page-break-before: auto;
         page-break-inside: avoid;
     }
 
     .reportBackgroundCard {
         padding: 20px !important;
-      }
-
-      .tableRow { 
-        page-break-inside: avoid; /* Ensure table rows do not split across pages */
     }
-    .reportSection { 
-        page-break-before: always; /* Force sections to start on a new page if needed */
+
+    .tableRow {
+        page-break-inside: avoid;
+        /* Ensure table rows do not split across pages */
+    }
+
+    .reportSection {
+        page-break-before: always;
+        /* Force sections to start on a new page if needed */
     }
 }
