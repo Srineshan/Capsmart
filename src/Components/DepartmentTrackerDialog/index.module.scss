@@ -48,11 +48,11 @@
   margin-left: 10px;
 }
 
-.marginRight20{
+.marginRight20 {
   margin-right: 20px;
 }
 
-.marginRight10{
+.marginRight10 {
   margin-right: 10px;
 }
 
@@ -121,6 +121,13 @@
   display: grid;
   // grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
   grid-template-columns: 3% 9% 8% 11% 11% 4% 4% 3% 4% 4% 16% 9% 4%;
+  grid-gap: 10px;
+}
+
+.permanentLocumStaffGrid {
+  display: grid;
+  // grid-template-columns: 4% 18% 14% 11% 8% 9% 10% 14% 5%;
+  grid-template-columns: 3% 9% 8% 11% 4% 10% 8% 3% 4% 4% 6% 9% 6% 4%;
   grid-gap: 10px;
 }
 

@@ -496,22 +496,22 @@ const StaffApplicationTopTiles = (searchTermForTable) => {
   const workModeType = sessionStorage.getItem('workModeType')
   const userDetailsFetchOption = JSON.parse(sessionStorage.getItem('user'));
   const applicationType =
-      sessionStorage.getItem('applicationCreationType')
+    sessionStorage.getItem('applicationCreationType')
   let userDepartmentList;
   let userSpecialty;
 
   useEffect(() => {
-      userDepartmentList = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.id;
-      userSpecialty = userDetailsFetchOption?.sites?.sites[0]?.departmentList?.departments[0]?.serviceAreas[0]?.id;
-      console.log("userSpecialty",userDepartmentList,userSpecialty)
-    }, [applicationType,selectedTab])
+    userDepartmentList = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.id;
+    userSpecialty = userDetailsFetchOption?.sites?.sites?.[0]?.departmentList?.departments?.[0]?.serviceAreas?.[0]?.id;
+    console.log("userSpecialty", userDepartmentList, userSpecialty)
+  }, [applicationType, selectedTab])
 
   useEffect(() => {
     getTitleCounts(applicationCreationType);
     getUserRoleType(applicationCreationType)
-  }, [searchTermForTable,applicationCreationType]);
+  }, [searchTermForTable, applicationCreationType]);
 
-console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
+  console.log("searchTermForTable", searchTermForTable?.searchTermForTable)
 
   //  useEffect(() => {
   //   if(applicationType==="LOCUM"){
@@ -544,13 +544,13 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
       if (response?.data) {
         if (type === 'NEW') {
           setNewCounts(response.data);
-          console.log("setLocumCounts",response.data)
+          console.log("setLocumCounts", response.data)
         } else if (type === 'REAPPOINTMENT') {
           setReappointmentCounts(response.data);
-          console.log("setLocumCounts",response.data)
+          console.log("setLocumCounts", response.data)
         } else if (type === 'LOCUM') {
           setLocumCounts(response.data);
-          console.log("setLocumCounts1111",response.data)
+          console.log("setLocumCounts1111", response.data)
         }
       }
     } catch (error) {
@@ -585,7 +585,7 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
           : storedApplicationType === 'REAPPOINTMENT'
             ? 'StaffReappointments'
             : storedApplicationType === 'LOCUM'
-             ? 'LocumRenewalsApplicant' : ""
+              ? 'LocumRenewalsApplicant' : ""
       );
     } else {
       sessionStorage.setItem('applicationCreationType', 'NEW');
@@ -616,10 +616,10 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
 
   const calculateVisibleCounts = (countsObj) => {
     if (!countsObj) return 0;
-  
+
     // Add clarifications
     const clarifications = parseInt(countsObj.clarificationsRequired) || 0;
-    
+
     // For Department Head, show only level-2 count
     if (workModeType === "Department Head") {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
@@ -628,7 +628,7 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
     if (workModeType === "Chief Of Staff") {
       return (parseInt(countsObj['level-2']) || 0) + clarifications;
     }
-    
+
     // For Credentialing Committee, show only level-3 count
     if (workModeType === "Credentialing Committee") {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
@@ -641,12 +641,12 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
     if (workModeType === "Credentialing Committee User") {
       return (parseInt(countsObj['level-3']) || 0) + clarifications;
     }
-    
+
     // For all other roles, show total count
     const levelSum = Object.entries(countsObj)
       .filter(([key]) => key.startsWith('level-'))
       .reduce((sum, [_, value]) => sum + (parseInt(value) || 0), 0);
-    
+
     return levelSum + clarifications;
   };
 
@@ -698,15 +698,15 @@ console.log("searchTermForTable",searchTermForTable?.searchTermForTable)
         isLoading={isLoading}
       />
       {workModeType !== "Department Head" &&
-        <TopTileApplication 
-          selectedTab={selectedTab} 
-          getSelectedTab={getSelectedTab} 
-          tileLabel="Locum Renewals" 
+        <TopTileApplication
+          selectedTab={selectedTab}
+          getSelectedTab={getSelectedTab}
+          tileLabel="Locum Renewals"
           tileCount={calculateVisibleCounts(locumCounts)}
           currentTile="LocumRenewalsApplicant"
           isLoading={isLoading}
         />
-       } 
+      }
     </div>
   );
 };

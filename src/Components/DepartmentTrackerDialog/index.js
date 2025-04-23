@@ -193,6 +193,22 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     "Last Updated by",
     ""
   ];
+  const locumHeaderValues = [
+    "No.",
+    "Locum Staff",
+    "Staff Type",
+    "Expiration Date",
+    "Dept Head",
+    "Renewal Application",
+    "MSO Verification",
+    "COS",
+    "CC",
+    "MAC",
+    "BOD Approval",
+    "Status",
+    "Last Updated by",
+    ""
+  ];
   const colSortValues = [false, true, true, true, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
     {
@@ -290,7 +306,11 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
   };
 
   const handleNavigateStatus = () => {
-    navigate("/reportTypeOverview/staffReappointmentTracker", { state: { tableData } });
+    if (applicationType === "LOCUM") {
+      navigate("/reportTypeOverview/locumStaffRenewalStatusTracker", { state: { tableData } });
+    } else {
+      navigate("/reportTypeOverview/staffReappointmentTracker", { state: { tableData } });
+    }
   };
 
   const getTableValues = () => {
@@ -613,10 +633,10 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
                   ) : (
                     <div className={`${style.reduceMarginTop10} ${style.margin20} staffApplicationList`}>
                       <TableTwo
-                        tableHeaderValues={headerValues}
+                        tableHeaderValues={applicationType === "LOCUM" ? locumHeaderValues : headerValues}
                         tableDataValues={getTableValues()}
                         tableData={tableData}
-                        gridStyle={style.permanentStaffGrid}
+                        gridStyle={applicationType === "LOCUM" ? style.permanentLocumStaffGrid : style.permanentStaffGrid}
                         actions={departmentHeadActionsData}
                         scrollStyle={style.contractScrollStyle}
                         tableSortValues={colSortValues}
