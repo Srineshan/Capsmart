@@ -315,9 +315,9 @@ const StaffApplicationList = ({
     "",
   ] : [
     "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant Name" : applicationType === "REAPPOINTMENT" ? "Staff for Reappointment" : "Locum Staff",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
-    applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
+    applicationType === "NEW" ? "Applicant Type" : applicationType === "REAPPOINTMENT" ? "Staff Type" : "Locum Type",
     "Dept / Division & Specialty",
     // "Commitee",
     // "Board",
@@ -339,9 +339,9 @@ const StaffApplicationList = ({
       onChange={handleSelectAllClick}
     />,
     // "",
-    applicationType === "NEW" ? "Applicant Name" : "Staff for Reappointment",
+    applicationType === "NEW" ? "Applicant Name" : applicationType === "REAPPOINTMENT" ? "Staff for Reappointment" : "Locum Staff",
     // applicationType === "NEW" ? "Applicant ID" : "Staff ID",
-    applicationType === "NEW" ? "Applicant Type" : "Staff Type", ,
+    applicationType === "NEW" ? "Applicant Type" : applicationType === "REAPPOINTMENT" ? "Staff Type" : "Locum Type",
     "Dept / Division & Specialty",
     // "Commitee",
     // "Board",
@@ -4843,82 +4843,94 @@ const StaffApplicationList = ({
       ? applicantHeaderValues
       : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadHeaderValues
-        : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-          ? applicationHeaderValues
-          : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-            ? credUserHeaderValues
-            : selectedTab === "level-3" && applicationType === "LOCUM"
-              ? macHeaderValues
-              : selectedTab === "level-4"
-                ? macHeaderValues
-                : selectedTab === "level-4" && applicationType === "LOCUM"
-                  ? bodHeaderValues
-                  : selectedTab === "level-5"
-                    ? bodHeaderValues
-                    : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                      ? locumHeaderValues
-                      : selectedTab === "clarificationsRequired"
-                        ? clarificationHeaderValues
-                        : selectedTab === "rejected"
-                          ? rejectedHeaderValues
-                          // :[];
+        : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+          ? credUserHeaderValues
+          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? applicationHeaderValues
+            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              ? applicationHeaderValues
+              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                ? credUserHeaderValues
+                : selectedTab === "level-3" && applicationType === "LOCUM"
+                  ? macHeaderValues
+                  : selectedTab === "level-4"
+                    ? macHeaderValues
+                    : selectedTab === "level-4" && applicationType === "LOCUM"
+                      ? bodHeaderValues
+                      : selectedTab === "level-5"
+                        ? bodHeaderValues
+                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                          ? locumHeaderValues
+                          : selectedTab === "clarificationsRequired"
+                            ? clarificationHeaderValues
+                            : selectedTab === "rejected"
+                              ? rejectedHeaderValues
+                              // :[];
 
-                          // : approvedHeaderValues;
-                          : applicantHeaderValues;
+                              // : approvedHeaderValues;
+                              : applicantHeaderValues;
   let tableSortValues =
     selectedTab === "level-1"
       ? applicantColSortValues
       : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? departmentHeadColSortValues
-        : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-          ? applicationColSortValues
-          : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-            ? credUserColSortValues
-            : selectedTab === "level-3" && applicationType === "LOCUM"
-              ? macColSortValues
-              : selectedTab === "level-4" && applicationType === "LOCUM"
-                ? bodColSortValues
-                : selectedTab === "level-4"
+        : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+          ? credUserColSortValues
+          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? applicationColSortValues
+            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              ? applicationColSortValues
+              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                ? credUserColSortValues
+                : selectedTab === "level-3" && applicationType === "LOCUM"
                   ? macColSortValues
-                  : selectedTab === "level-5"
+                  : selectedTab === "level-4" && applicationType === "LOCUM"
                     ? bodColSortValues
-                    : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                      ? locumColSortValues
-                      : selectedTab === "clarificationsRequired"
-                        ? clarificationColSortValues
-                        : selectedTab === "rejected"
-                          ? rejectedColSortValues
-                          // :[];
+                    : selectedTab === "level-4"
+                      ? macColSortValues
+                      : selectedTab === "level-5"
+                        ? bodColSortValues
+                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                          ? locumColSortValues
+                          : selectedTab === "clarificationsRequired"
+                            ? clarificationColSortValues
+                            : selectedTab === "rejected"
+                              ? rejectedColSortValues
+                              // :[];
 
-                          // : approvedColSortValues;
-                          : applicantColSortValues;
+                              // : approvedColSortValues;
+                              : applicantColSortValues;
   let tableDataValues =
     selectedTab === "level-1"
       ? getApplicantValues()
       : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
         ? getDepartmentHeadValues()
-        : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
-          ? getApplicationValues()
-          : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-            ? getCredUserValues()
-            : selectedTab === "level-3" && applicationType === "LOCUM"
-              ? getMacValues()
-              : selectedTab === "level-4" && applicationType === "LOCUM"
-                ? getBodValues()
-                : selectedTab === "level-4"
+        : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+          ? getCredUserValues()
+          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
+            ? getApplicationValues()
+            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+              ? getApplicationValues()
+              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                ? getCredUserValues()
+                : selectedTab === "level-3" && applicationType === "LOCUM"
                   ? getMacValues()
-                  : selectedTab === "level-5"
+                  : selectedTab === "level-4" && applicationType === "LOCUM"
                     ? getBodValues()
-                    : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                      ? getLocumValues()
-                      : selectedTab === "clarificationsRequired"
-                        ? getClarificationValues()
-                        : selectedTab === "rejected"
-                          ? getRejectedValues()
-                          // :[];
+                    : selectedTab === "level-4"
+                      ? getMacValues()
+                      : selectedTab === "level-5"
+                        ? getBodValues()
+                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                          ? getLocumValues()
+                          : selectedTab === "clarificationsRequired"
+                            ? getClarificationValues()
+                            : selectedTab === "rejected"
+                              ? getRejectedValues()
+                              // :[];
 
-                          // : getApprovedValues();
-                          : getApplicantValues();
+                              // : getApprovedValues();
+                              : getApplicantValues();
   let actions =
     selectedTab === "level-1" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
       ? applicantActionsData
@@ -4926,29 +4938,31 @@ const StaffApplicationList = ({
         ? applicantLocumActionData
         : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
           ? departmentHeadActionsData
-          : selectedTab === "level-2" && applicationType === "LOCUM"
-            ? applicationLocumActionData
-            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+            ? credUserActionsData
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? applicationActionsData
-              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                ? credUserActionsData
-                : selectedTab === "level-3" && applicationType === "LOCUM"
-                  ? macLocumActionData
-                  : selectedTab === "level-4" && applicationType === "LOCUM"
-                    ? bodLocumActionData
-                    : selectedTab === "level-4"
+              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                ? applicationActionsData
+                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                  ? credUserActionsData
+                  : selectedTab === "level-3" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+                    ? macActionsData
+                    : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
                       ? macActionsData
-                      : selectedTab === "level-5"
+                      : selectedTab === "level-4" && applicationType === "LOCUM"
                         ? bodActionsData
-                        : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                          ? departmentHeadActionsData
-                          : selectedTab === "clarificationsRequired"
-                            ? clarificationActionsData
-                            : selectedTab === "rejected"
-                              ? rejectedActionsData
-                              // :[];
+                        : selectedTab === "level-5"
+                          ? bodActionsData
+                          : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                            ? departmentHeadActionsData
+                            : selectedTab === "clarificationsRequired"
+                              ? clarificationActionsData
+                              : selectedTab === "rejected"
+                                ? rejectedActionsData
+                                // :[];
 
-                              : applicantActionsData;
+                                : applicantActionsData;
   // : applicantActionsData;
   let gridStyle =
     selectedTab === "level-1" && applicationType === "NEW"
@@ -4957,36 +4971,40 @@ const StaffApplicationList = ({
         ? style.applicantStaffReappointGrid
         : selectedTab === "level-2" && (applicationType === "REAPPOINTMENT" || applicationType === "NEW")
           ? style.departmentHeadStaffGrid
-          : selectedTab === "level-3" && applicationType === "NEW"
-            ? style.applicationStaffGrid
-            : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+          : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Staff Manager"
+            ? style.credUserStaffReappointGrid
+            : selectedTab === "level-2" && applicationType === "LOCUM" && workModeType === "Credentialing Committee"
               ? style.applicationStaffReappointGrid
-              : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
-                ? style.credUserStaffReappointGrid
-                : selectedTab === "level-3" && applicationType === "LOCUM"
-                  ? style.macStaffReappointGrid
-                  : selectedTab === "level-4" && applicationType === "NEW"
-                    ? style.macStaffGrid
-                    : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+              : selectedTab === "level-3" && applicationType === "NEW"
+                ? style.applicationStaffGrid
+                : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Credentialing Committee"
+                  ? style.applicationStaffReappointGrid
+                  : selectedTab === "level-3" && applicationType === "REAPPOINTMENT" && workModeType === "Staff Manager"
+                    ? style.credUserStaffReappointGrid
+                    : selectedTab === "level-3" && applicationType === "LOCUM"
                       ? style.macStaffReappointGrid
-                      : selectedTab === "level-4" && applicationType === "LOCUM"
-                        ? style.bodStaffReappointGrid
-                        : selectedTab === "level-5" && applicationType === "NEW"
-                          ? style.bodStaffGrid
-                          : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
+                      : selectedTab === "level-4" && applicationType === "NEW"
+                        ? style.macStaffGrid
+                        : selectedTab === "level-4" && applicationType === "REAPPOINTMENT"
+                          ? style.macStaffReappointGrid
+                          : selectedTab === "level-4" && applicationType === "LOCUM"
                             ? style.bodStaffReappointGrid
-                            : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
-                              ? style.locumStaffGrid
-                              : selectedTab === "clarificationsRequired" && applicationType === "NEW"
-                                ? style.applicantStaffGrid
-                                : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
-                                  ? style.applicantStaffReappointGrid
-                                  : selectedTab === "rejected"
-                                    ? style.rejectedStaffGrid
-                                    // :[];
+                            : selectedTab === "level-5" && applicationType === "NEW"
+                              ? style.bodStaffGrid
+                              : selectedTab === "level-5" && applicationType === "REAPPOINTMENT"
+                                ? style.bodStaffReappointGrid
+                                : selectedTab === "LocumRenewals" && applicationType === "LOCUM"
+                                  ? style.locumStaffGrid
+                                  : selectedTab === "clarificationsRequired" && applicationType === "NEW"
+                                    ? style.applicantStaffGrid
+                                    : selectedTab === "clarificationsRequired" && applicationType === "REAPPOINTMENT"
+                                      ? style.applicantStaffReappointGrid
+                                      : selectedTab === "rejected"
+                                        ? style.rejectedStaffGrid
+                                        // :[];
 
-                                    // : style.approvedStaffGrid;
-                                    : style.applicantStaffReappointGrid;
+                                        // : style.approvedStaffGrid;
+                                        : style.applicantStaffReappointGrid;
 
   return (
     <>
@@ -5432,7 +5450,7 @@ const StaffApplicationList = ({
                     </Tooltip>
                   </div>
                 )}
-                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5")) && (
+                {((workModeType === "Staff Manager" && selectedTab === "level-3") || (workModeType === "Staff Manager" && selectedTab === "level-4") || (workModeType === "Staff Manager" && selectedTab === "level-5") || (workModeType === "Staff Manager" && selectedTab === "level-2" && applicationType === "LOCUM")) && (
                   <>
                     <div
                       className={`${style.alignCenter} ${style.cursorPointer} ${style.marginRight20}`}

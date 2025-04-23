@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, sub, add} from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears} from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -127,13 +127,23 @@ const [covererId, setCovererId] = useState("");
  console.log("tableDataValue",selectApplicant,covererNameList,covererId,selectedTab)
  useEffect(() => {
   sessionStorage.setItem("fromSummary", false);
-  getApplication();
+  // getApplication();
   getApplicationEntity();
   getActiveUserData();
  }, [applicationType, id]);
 
  useEffect(() => {
+  sessionStorage.setItem("fromSummary", false);
+  getApplication();
+ }, [selectDataLocum]);
+
+
+ useEffect(() => {
   getActiveUserData();
+  getStaffPrivilege();
+  setSelectedPrivilegesForDisplayMultiple(
+    formDetails?.privileges?.obligatedPrivileges
+  );
  }, []);
 
  useEffect(() => {
@@ -226,6 +236,32 @@ let userDepartmentList;
       fetchDepartmentStaffs();
     }, [formDetails]);
 
+    const getStaffPrivilege = async () => {
+        if (selectDataLocum && selectedDepartment !== undefined) {
+          if (selectedSpeciality !== undefined) {
+            const { data: privilege } = await GET(
+              `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
+                ? selectedDepartment
+                : selectDataLocum?.basicDetailReferences?.department?.id
+              }&serviceAreaId=${selectedSpeciality !== "" ? selectedSpeciality : selectDataLocum?.basicDetailReferences?.specialty?.id}`
+            );
+            setStaffPrivilege(privilege);
+          } else {
+            const { data: privilege } = await GET(
+              `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
+                ? selectedDepartment
+                : selectDataLocum?.basicDetailReferences?.department?.id
+              }`
+            );
+            setStaffPrivilege(privilege);
+          }
+          const { data: allPrivilege } = await GET(
+            `entity-service/staffPrivilege`
+          );
+          setAllStaffPrivilege(allPrivilege)
+        }
+      };
+
     const getItemsSingle = (data) => {
       let temp = [];
       data?.map((data) => {
@@ -248,7 +284,7 @@ const getActiveUserData = async () => {
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
-      const filteredData = staffs.find(item => item?.currentApplication?.id === id);
+      const filteredData = staffs.find(item => item?.id === id);
       console.log("Filtered Application Data", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage",selectDataLocum)
@@ -260,12 +296,11 @@ const getActiveUserData = async () => {
   };
 
   const reappointmentApplication = async () => {
-    // Add 1 day to expiryDate and format it as 'yyyy-MM-dd' or as needed
-    const fromDate = format(addDays(new Date(formDetails?.expiryDate), 1), 'yyyy-MM-dd');
+    const fromDate = format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd');
     const toDate = format(new Date(selectedMonth), 'yyyy-MM-dd');
     const coveredDetails = covererNameList?.map((data) => {
-      const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
-      const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
+    const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
+    const fullName = `${applicantData?.applicant?.name?.firstName || ''} ${applicantData?.applicant?.name?.middleName || ''} ${applicantData?.applicant?.name?.lastName || ''}`.trim();
   
       return {
         id: data,
@@ -966,7 +1001,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
 
     const handleDeleteFile = async (files) => {
       await DELETE(
-        `application-management-service/application/${id}/files`,
+        `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files`,
         files
       )
         .then((response) => {
@@ -995,7 +1030,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
           formData.append("documents", file);
           try {
             const response = await POST(
-              `application-management-service/application/${id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
+              `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
                 ? true
                 : false
               }&schemaId=${formSchemaWholeObject?.id}`,
@@ -1008,7 +1043,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
                 formSchemaWholeObject?.requiredDocuments?.length !== 0
               ) {
                 await PUT(
-                  `application-management-service/application/${id}/form/updateData`,
+                  `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/updateData`,
                   {
                     documentType:
                       response?.data?.classification !== null
@@ -1609,7 +1644,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        };
        console.log(data);
        await PUT(
-         `application-management-service/application/${id}`,
+         `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
          data
        )
          .then((response) => {
@@ -1642,7 +1677,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        };
        console.log(data);
        await PUT(
-         `application-management-service/application/${id}`,
+         `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
          data
        )
          .then((response) => {
@@ -1677,7 +1712,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        acknowledged: true,
      };
      await PUT(
-       `application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`,
+       `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`,
        temp
      )
        .then((response) => {
@@ -1740,7 +1775,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
  const getApplication = async () => {
   try {
    setIsLoadingImage(true);
-   const { data: formDetails } = await GET(`application-management-service/application/${id}`);
+   const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`);
    setFormDetails(formDetails);
    setIsLoadingImage(false);
   } catch (error) {
@@ -1794,55 +1829,63 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     setSelectedAdditionalPrivilegeForEdit({});
   };
 
-   useEffect(() => {
-      // if (formDetails !== undefined && formIndex !== undefined) {
-      //   // setIsLoadingPage(false)
-      //   // if (basicForm && !formSchema) {
-      //   //   getFormSchema();
-      //   //   getUploadFormSchema();
-      //   //   getPrivilegeCategory();
-      //   // }
-      //   // if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
-      //   //   setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
-      //   // }
-      //   // // if (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
-      //   // //   basicForm?.privileges?.obligatedPrivileges?.length === 0) {
-      //   // //   setIsPrivilegeSetChanging(true);
-      //   // //   setPrivilegeSetChangeYesOrNo('No');
-      //   // // }
-      //   // setSelectedAdditionalPrivilegeForDisplay(
-      //   //   basicForm?.privileges?.additionalPrivileges
-      //   // );
-      //   // setSelectedPrivilegesForDisplayMultiple(
-      //   //   basicForm?.privileges?.obligatedPrivileges
-      //   // );
-      //   // if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
-      //   //   setSelectedAdditionalPrivilegesForDisplayMultiple(
-      //   //     basicForm?.privileges?.additionalPrivileges
-      //   //   );
-      //   //   setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
-      //   // }
-      //   // setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-      //   // setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
-      //   // setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
-      //   // if ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
-      //   //   setDontUpdatePrivilegeState(true)
-      //   //   setIsShowESignDialog(true)
-      //   // }
-      //   if (formDetails?.forms[formIndex]?.data !== null) {
-      //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-      //     setDepartmentChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
-      //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
-      //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-      //     setPrivilegeAtOtherHospitalYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
-      //   }
-      // } else {
-      //   setIsLoadingPage(true);
-      // }
-      setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-      setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
-      setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-    }, [formDetails, formIndex]);
+  //  useEffect(() => {
+  //     // if (formDetails !== undefined && formIndex !== undefined) {
+  //     //   // setIsLoadingPage(false)
+  //     //   // if (basicForm && !formSchema) {
+  //     //   //   getFormSchema();
+  //     //   //   getUploadFormSchema();
+  //     //   //   getPrivilegeCategory();
+  //     //   // }
+  //     //   // if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
+  //     //   //   setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
+  //     //   // }
+  //     //   // // if (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
+  //     //   // //   basicForm?.privileges?.obligatedPrivileges?.length === 0) {
+  //     //   // //   setIsPrivilegeSetChanging(true);
+  //     //   // //   setPrivilegeSetChangeYesOrNo('No');
+  //     //   // // }
+  //     //   // setSelectedAdditionalPrivilegeForDisplay(
+  //     //   //   basicForm?.privileges?.additionalPrivileges
+  //     //   // );
+  //     //   // setSelectedPrivilegesForDisplayMultiple(
+  //     //   //   basicForm?.privileges?.obligatedPrivileges
+  //     //   // );
+  //     //   // if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
+  //     //   //   setSelectedAdditionalPrivilegesForDisplayMultiple(
+  //     //   //     basicForm?.privileges?.additionalPrivileges
+  //     //   //   );
+  //     //   //   setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
+  //     //   // }
+  //     //   // setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+  //     //   // setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
+  //     //   // setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+  //     //   // if ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
+  //     //   //   setDontUpdatePrivilegeState(true)
+  //     //   //   setIsShowESignDialog(true)
+  //     //   // }
+  //     //   if (formDetails?.forms[formIndex]?.data !== null) {
+  //     //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+  //     //     setDepartmentChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
+  //     //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+  //     //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+  //     //     setPrivilegeAtOtherHospitalYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+  //     //   }
+  //     // } else {
+  //     //   setIsLoadingPage(true);
+  //     // }
+  //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+  //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+  //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+  //   }, [formDetails, formIndex]);
+
+  useEffect(() => {
+    const data = formDetails?.forms?.[formIndex]?.data;
+  
+    setPrivilegeChangeYesOrNo(data ? data.privilegeChangeYesOrNo : "");
+    setPrivilegeSetChangeYesOrNo(data ? data.privilegeSetChangeYesOrNo : "");
+    setAdditionalPrivilegeChangeYesOrNo(data ? data.additionalPrivilegeChangeYesOrNo : "");
+  }, [formDetails, formIndex]);
 
  const handleSubmitPrivilegeSet = async (isUpdated, privileges, isDelete) => {
   if (isUpdated) {
@@ -1864,7 +1907,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      : formDetails?.privileges?.priorObligatedPrivileges,
    };
    console.log("data", temp);
-   await POST(`application-management-service/application/679725dc706ea227ec619936/privileges`, temp);
+   await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
   } else {
    if (!formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated) {
     let temp = {
@@ -1874,7 +1917,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    } else {
     let temp = {
      obligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
@@ -1883,7 +1926,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    }
   }
   let temp = {
@@ -1927,7 +1970,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
    (response) => {
     getApplication();
    },
@@ -1954,7 +1997,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
    };
    console.log("data", temp);
-   await POST(`application-management-service/application/${id}/privileges`, temp);
+   await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
   } else {
    if (!formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated) {
     let temp = {
@@ -1964,7 +2007,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    } else {
     let temp = {
      obligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
@@ -1973,7 +2016,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    }
   }
   let temp = {
@@ -2017,7 +2060,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
    (response) => {
     getApplication();
    },
@@ -2179,7 +2222,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    }
    data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
    console.log(data, "data");
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2201,7 +2244,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     data.basicDetails.regionalCallResponsibilities = {};
    }
    data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2251,7 +2294,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
    .then((response) => {
     console.log(response);
     getApplication();
@@ -2341,7 +2384,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory,
     )?.[0]?.privilegeCategory?.category;
    }
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2355,7 +2398,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorAdditionalPrivileges: formDetails?.privileges?.priorAdditionalPrivileges,
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
-    await POST(`application-management-service/application/${id}/privileges`, temp).then((response) => {
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp).then((response) => {
      getApplication();
     });
    }
@@ -2370,7 +2413,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = data?.basicDetails?.priorPrivilegeCategory?.name;
     }
    }
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2419,7 +2462,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
    .then((response) => {
     console.log(response);
     getApplication();
@@ -2449,13 +2492,13 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const months = [];
   const createdDate = new Date(createdDateStr);
 
-  // Start from the month after the createdDate
-  createdDate.setMonth(createdDate.getMonth() + 1);
+  for (let i = 1; i <= 12; i++) {
+    const futureDate = addMonths(createdDate, i);
+    const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(createdDate.getFullYear(), createdDate.getMonth() + i, 1);
-    const label = format(date, 'MMMM yyyy');
-    const value = format(date, 'yyyy-MM');
+    const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+    const value = format(futureDate, 'yyyy-MM-dd');
+
     months.push({ label, value });
   }
 
@@ -2463,8 +2506,9 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const now = new Date();
   months.push({
     label: 'Custom End Date',
-    value: format(now, 'yyyy-MM') // this is now a valid date value
+    value: format(now, 'yyyy-MM-dd')
   });
+
   return months;
 };
 
@@ -2472,7 +2516,9 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
 
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
- const ExpireDate = selectDataLocum?.tenure?.to;
+ const ExpireDate = selectDataLocum?.tenure?.to 
+   ? parseISO(selectDataLocum.tenure.to) 
+   : null;
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MM/dd/yyyy") : "-";
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
 
@@ -2642,37 +2688,6 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            )}
            {/* </div> */}
            {/* <div> */}
-           {selectedMonth === format(new Date(), 'yyyy-MM') && (
-            <div className={`${style.marginTopLess}`}>
-             <CommonDateField
-                className={`${style.dateWidth} ${style.fullWidth}`}
-                onChange={(date) => handleDateChange(date)}
-                open={calendarStart}
-                onOpen={() => setCalendarStart(true)}
-                onClose={() => setCalendarStart(false)}
-
-                minDate={sub(new Date(), { years: 3 })}
-                maxDate={add(new Date(), { years: 3 })}
-                // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
-                // maxDate={getJune30thOfCurrentYear()}
-                value={customDate ? format(customDate, 'yyyy-MM') : ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: 'Enter Extend Date',
-                      readOnly: true
-                    }}
-                    variant="outlined"
-                    margin="normal"
-                    
-                  />
-                 
-                )}
-              />
-               </div>
-            )}
             {/* </div> */}
            <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
             Start Date <br />
@@ -2688,6 +2703,37 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
              {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
             </span>
            </div>
+            {selectedMonth === format(new Date(), 'yyyy-MM-dd') && (
+              <div className={`${style.marginTopLess}`}>
+              <CommonDateField
+                  className={`${style.dateWidth} ${style.fullWidth}`}
+                  onChange={(date) => handleDateChange(date)}
+                  open={calendarStart}
+                  onOpen={() => setCalendarStart(true)}
+                  onClose={() => setCalendarStart(false)}
+  
+                  // minDate={sub(new Date(), { years: 3 })}
+                  // maxDate={add(new Date(), { years: 3 })}
+                  minDate={ExpireDate}
+                  maxDate={ExpireDate ? addYears(new Date(ExpireDate), 1) : null}
+                  value={customDate ? format(customDate, 'yyyy-MM') : ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: 'Enter Extend Date',
+                        readOnly: true
+                      }}
+                      variant="outlined"
+                      margin="normal"
+                      
+                    />
+                  
+                  )}
+                />
+                </div>
+              )}
           </div>
           {/* <CommonRadio
            className={style.leftAlign}
@@ -3901,10 +3947,10 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
         </div>
     </div>
     </Dialog>
-  <Dialog
+    <Dialog
           isOpen={showAdditionalPrivileges}
           onClose={() => setShowAdditionalPrivileges(false)}
-          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          className={`${style.eSignDialog1} ${style.eSignDialogBackground1}`}
           canOutsideClickClose={false}
           canEscapeKeyClose={false}
         >
@@ -3993,10 +4039,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                           selectedAdditionalPrivilegeForDisplay[0]
                         );
                       }
-                      : () => { setShowAdditionalPrivileges(false);
-                        handleSelectedAdditionalPrivilegesForDisplayMultiple(
-                          selectedAdditionalPrivilegeForDisplay[0]
-                        );}
+                      : () => {}
                   }
                   disabled={!((((selectedAdditionalPrivilegeForDisplay?.[0]?.privilegeDetails
                     ?.restrictedPrivileges?.esign !== null &&
@@ -4033,6 +4076,149 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             </div>
           </div>
         </Dialog>
+        <Dialog
+          isOpen={showPrivileges}
+          onClose={() => setShowPrivileges(false)}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+          canOutsideClickClose={false}
+          canEscapeKeyClose={false}
+        >
+          <div>
+            <div className={Classes.DIALOG_BODY}>
+              <div className={style.spaceBetween}>
+                <div className={style.heading}>Privilege Set To Request</div>
+                <div className={style.displayInRow}>
+                  <img
+                    src={CrossPink}
+                    alt="cross"
+                    className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                    onClick={() => {
+                      setShowPrivileges(false);
+                    }}
+                  />
+                </div>
+              </div>
+              <div>{getFields()}</div>
+              <div
+                className={`${style.displayInRowRev} ${style.verticalAlignCenter} ${style.marginTop10}`}
+              >
+                <Tooltip title={"Click to Continue"} arrow>
+                  <button
+                    className={`${style.reappointmentButton} ${style.marginLeft} ${(((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                      ?.restrictedPrivileges?.esign !== null &&
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== undefined) ||
+                      selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                      0 ||
+                      (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                        ?.privileges?.length === 0 &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length !== undefined)) &&
+                      ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.corePrivileges?.esign !== null &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== undefined) ||
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                          ?.length === 0 &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                              ?.privileges))
+                      ? ""
+                      : style.disabledButton
+                      }`}
+                    onClick={
+                      (((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                        ?.restrictedPrivileges?.esign !== null &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.esign !== undefined) ||
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.length ===
+                        0 ||
+                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges?.length === 0 &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                            ?.privileges?.length !== undefined)) &&
+                        ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.esign !== undefined) ||
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                            ?.corePrivileges?.privilegesByCategories?.[0]?.privileges
+                            ?.length === 0 &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                              ?.corePrivileges?.privilegesByCategories?.[0]
+                              ?.privileges?.length !== undefined)) && getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                                ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                                ?.privileges))
+                        ? () => {
+                          setShowPrivileges(false);
+                          handleSelectedPrivilegesForDisplayMultiple(
+                            selectedPrivilegeForDisplay[0]
+                          );
+                        }
+                        : () => { }
+                    }
+                    disabled={
+                      !((((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== null &&
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.esign !== undefined) ||
+                        selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.length === 0 ||
+                        (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.restrictedPrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined)) &&
+                        ((selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== null &&
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.esign !== undefined) ||
+                          selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.length === 0 ||
+                          (selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length === 0 &&
+                            selectedPrivilegeForDisplay?.[0]?.privilegeDetails?.corePrivileges?.privilegesByCategories?.[0]?.privileges?.length !== undefined))) &&
+                        getIsRestrictedValuesFilled(selectedPrivilegeForDisplay?.[0]?.privilegeDetails
+                          ?.restrictedPrivileges?.privilegesByCategories?.[0]
+                          ?.privileges))
+                    }
+                  >
+                    CONTINUE
+                  </button>
+                </Tooltip>
+              </div>
+            </div>
+          </div>
+        </Dialog>
+         <Dialog
+            isOpen={showCurrentPrivileges}
+            onClose={() => setShowCurrentPrivileges(false)}
+            className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
+            canOutsideClickClose={false}
+            canEscapeKeyClose={false}
+          >
+            <div>
+              <div className={Classes.DIALOG_BODY}>
+                <div className={style.spaceBetween}>
+                  <div className={style.heading}>Selected Privilege Set</div>
+                  <div className={style.displayInRow}>
+                    <img
+                      src={CrossPink}
+                      alt="cross"
+                      className={`${style.crossStyle} ${style.cursorPointer} ${style.marginLeft} `}
+                      onClick={() => {
+                        setShowCurrentPrivileges(false);
+                      }}
+                    />
+                  </div>
+                </div>
+                <div>{currentPrivilegesCategory === 'Basic' ? getFields() : getFieldsAdditional()}</div>
+              </div>
+            </div>
+          </Dialog>
     {/* {
     isOpenAdd && (
         <AdditionalPrivilegesDialog

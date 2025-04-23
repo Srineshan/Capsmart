@@ -13,7 +13,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Cookie from "universal-cookie";
 import jwt from "jwt-decode";
 import style from "./index.module.scss";
-import { format, differenceInDays ,addDays, sub, add} from "date-fns";
+import { format, differenceInDays ,addDays, addMonths, subDays, parseISO, addYears} from "date-fns";
 import { fileLoadingURL } from "../../utils/formatting";
 import LoadingScreen from "../LoadingScreen";
 import CommonCheckBox from "../CommonFields/CommonCheckBox";
@@ -134,6 +134,10 @@ const [hospitalPrivilegeCategory, setHospitalPrivilegeCategory] = useState("");
 
  useEffect(() => {
   getActiveUserData();
+  getStaffPrivilege();
+  setSelectedPrivilegesForDisplayMultiple(
+    formDetails?.privileges?.obligatedPrivileges
+  );
  }, []);
 
  useEffect(() => {
@@ -213,6 +217,33 @@ let userDepartmentList;
       
           fetchDepartmentStaffs();
         }, [formDetails]);
+
+        const getStaffPrivilege = async () => {
+                if (selectDataLocum && selectedDepartment !== undefined) {
+                  if (selectedSpeciality !== undefined) {
+                    const { data: privilege } = await GET(
+                      `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
+                        ? selectedDepartment
+                        : selectDataLocum?.basicDetailReferences?.department?.id
+                      }&serviceAreaId=${selectedSpeciality !== "" ? selectedSpeciality : selectDataLocum?.basicDetailReferences?.specialty?.id}`
+                    );
+                    setStaffPrivilege(privilege);
+                  } else {
+                    const { data: privilege } = await GET(
+                      `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
+                        ? selectedDepartment
+                        : selectDataLocum?.basicDetailReferences?.department?.id
+                      }`
+                    );
+                    setStaffPrivilege(privilege);
+                  }
+                  const { data: allPrivilege } = await GET(
+                    `entity-service/staffPrivilege`
+                  );
+                  setAllStaffPrivilege(allPrivilege)
+                }
+              };
+        
     
         const getItemsSingle = (data) => {
           let temp = [];
@@ -235,7 +266,7 @@ const getActiveUserData = async () => {
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
-      const filteredData = staffs.find(item => item?.currentApplication?.id === id);
+      const filteredData = staffs.find(item => item?.id === id);
       console.log("Filtered Application Data", filteredData);
       setSelectDataLocum(filteredData);
       console.log("applicationmanage",selectDataLocum)
@@ -952,7 +983,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
 
     const handleDeleteFile = async (files) => {
       await DELETE(
-        `application-management-service/application/${id}/files`,
+        `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files`,
         files
       )
         .then((response) => {
@@ -981,7 +1012,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
           formData.append("documents", file);
           try {
             const response = await POST(
-              `application-management-service/application/${id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
+              `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/files?isLLMRequired=${formSchemaWholeObject?.requiredDocuments?.length !== 0
                 ? true
                 : false
               }&schemaId=${formSchemaWholeObject?.id}`,
@@ -994,7 +1025,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
                 formSchemaWholeObject?.requiredDocuments?.length !== 0
               ) {
                 await PUT(
-                  `application-management-service/application/${id}/form/updateData`,
+                  `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/updateData`,
                   {
                     documentType:
                       response?.data?.classification !== null
@@ -1595,7 +1626,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        };
        console.log(data);
        await PUT(
-         `application-management-service/application/${id}`,
+         `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
          data
        )
          .then((response) => {
@@ -1628,7 +1659,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        };
        console.log(data);
        await PUT(
-         `application-management-service/application/${id}`,
+         `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`,
          data
        )
          .then((response) => {
@@ -1663,7 +1694,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
        acknowledged: true,
      };
      await PUT(
-       `application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`,
+       `application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`,
        temp
      )
        .then((response) => {
@@ -1726,7 +1757,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
  const getApplication = async () => {
   try {
    setIsLoadingImage(true);
-   const { data: formDetails } = await GET(`application-management-service/application/${id}`);
+   const { data: formDetails } = await GET(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`);
    setFormDetails(formDetails);
    setIsLoadingImage(false);
   } catch (error) {
@@ -1780,55 +1811,63 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     setSelectedAdditionalPrivilegeForEdit({});
   };
 
-   useEffect(() => {
-      // if (formDetails !== undefined && formIndex !== undefined) {
-      //   // setIsLoadingPage(false)
-      //   // if (basicForm && !formSchema) {
-      //   //   getFormSchema();
-      //   //   getUploadFormSchema();
-      //   //   getPrivilegeCategory();
-      //   // }
-      //   // if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
-      //   //   setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
-      //   // }
-      //   // // if (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
-      //   // //   basicForm?.privileges?.obligatedPrivileges?.length === 0) {
-      //   // //   setIsPrivilegeSetChanging(true);
-      //   // //   setPrivilegeSetChangeYesOrNo('No');
-      //   // // }
-      //   // setSelectedAdditionalPrivilegeForDisplay(
-      //   //   basicForm?.privileges?.additionalPrivileges
-      //   // );
-      //   // setSelectedPrivilegesForDisplayMultiple(
-      //   //   basicForm?.privileges?.obligatedPrivileges
-      //   // );
-      //   // if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
-      //   //   setSelectedAdditionalPrivilegesForDisplayMultiple(
-      //   //     basicForm?.privileges?.additionalPrivileges
-      //   //   );
-      //   //   setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
-      //   // }
-      //   // setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
-      //   // setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
-      //   // setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
-      //   // if ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
-      //   //   setDontUpdatePrivilegeState(true)
-      //   //   setIsShowESignDialog(true)
-      //   // }
-      //   if (formDetails?.forms[formIndex]?.data !== null) {
-      //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-      //     setDepartmentChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
-      //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
-      //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-      //     setPrivilegeAtOtherHospitalYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
-      //   }
-      // } else {
-      //   setIsLoadingPage(true);
-      // }
-      setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
-      setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
-      setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
-    }, [formDetails, formIndex]);
+  //  useEffect(() => {
+  //     // if (formDetails !== undefined && formIndex !== undefined) {
+  //     //   // setIsLoadingPage(false)
+  //     //   // if (basicForm && !formSchema) {
+  //     //   //   getFormSchema();
+  //     //   //   getUploadFormSchema();
+  //     //   //   getPrivilegeCategory();
+  //     //   // }
+  //     //   // if (basicForm?.privileges?.obligatedPrivileges?.[0]?.id) {
+  //     //   //   setSelectedPrivilege(basicForm?.privileges?.obligatedPrivileges?.[0]?.id);
+  //     //   // }
+  //     //   // // if (basicForm?.privileges?.priorObligatedPrivileges?.length === 0 &&
+  //     //   // //   basicForm?.privileges?.obligatedPrivileges?.length === 0) {
+  //     //   // //   setIsPrivilegeSetChanging(true);
+  //     //   // //   setPrivilegeSetChangeYesOrNo('No');
+  //     //   // // }
+  //     //   // setSelectedAdditionalPrivilegeForDisplay(
+  //     //   //   basicForm?.privileges?.additionalPrivileges
+  //     //   // );
+  //     //   // setSelectedPrivilegesForDisplayMultiple(
+  //     //   //   basicForm?.privileges?.obligatedPrivileges
+  //     //   // );
+  //     //   // if (!dontUpdatePrivilegeState && !isShowESignDialog && !isShowESignConfirmationDialog) {
+  //     //   //   setSelectedAdditionalPrivilegesForDisplayMultiple(
+  //     //   //     basicForm?.privileges?.additionalPrivileges
+  //     //   //   );
+  //     //   //   setSelectedPrivilegeForDisplay(basicForm?.privileges?.obligatedPrivileges);
+  //     //   // }
+  //     //   // setHospitalPrivilegeSet(basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges === null ? [] : basicForm?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges)
+  //     //   // setSelectedValue(basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities !== undefined ? basicForm?.basicDetails?.regionalCallResponsibilities?.regionalCallResponsibilities : 'NA')
+  //     //   // setNavigateURL(`/reappointmentApplicationForm/${applicationId}/${basicForm?.forms[formIndex + 1]?.formCategory}/${btoa(basicForm?.forms[formIndex + 1]?.schemaCategory)}`);
+  //     //   // if ((basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.file?.fileURL === undefined && basicForm?.forms?.[basicForm?.forms?.findIndex(data => data?.schemaCategory === 'UploadYourDoc')]?.data?.setUpYourSignature?.type?.text === undefined)) {
+  //     //   //   setDontUpdatePrivilegeState(true)
+  //     //   //   setIsShowESignDialog(true)
+  //     //   // }
+  //     //   if (formDetails?.forms[formIndex]?.data !== null) {
+  //     //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+  //     //     setDepartmentChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.departmentChangeYesOrNo);
+  //     //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+  //     //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+  //     //     setPrivilegeAtOtherHospitalYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo)
+  //     //   }
+  //     // } else {
+  //     //   setIsLoadingPage(true);
+  //     // }
+  //     setPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeChangeYesOrNo);
+  //     setPrivilegeSetChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeYesOrNo);
+  //     setAdditionalPrivilegeChangeYesOrNo(formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeYesOrNo)
+  //   }, [formDetails, formIndex]);
+
+useEffect(() => {
+  const data = formDetails?.forms?.[formIndex]?.data;
+
+  setPrivilegeChangeYesOrNo(data ? data.privilegeChangeYesOrNo : "");
+  setPrivilegeSetChangeYesOrNo(data ? data.privilegeSetChangeYesOrNo : "");
+  setAdditionalPrivilegeChangeYesOrNo(data ? data.additionalPrivilegeChangeYesOrNo : "");
+}, [formDetails, formIndex]);
 
  const handleSubmitPrivilegeSet = async (isUpdated, privileges, isDelete) => {
   if (isUpdated) {
@@ -1850,7 +1889,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      : formDetails?.privileges?.priorObligatedPrivileges,
    };
    console.log("data", temp);
-   await POST(`application-management-service/application/679725dc706ea227ec619936/privileges`, temp);
+   await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
   } else {
    if (!formDetails?.forms?.[formIndex]?.data?.privilegeSetChangeUpdated) {
     let temp = {
@@ -1860,7 +1899,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    } else {
     let temp = {
      obligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
@@ -1869,7 +1908,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    }
   }
   let temp = {
@@ -1913,7 +1952,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
    (response) => {
     getApplication();
    },
@@ -1940,7 +1979,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
    };
    console.log("data", temp);
-   await POST(`application-management-service/application/${id}/privileges`, temp);
+   await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
   } else {
    if (!formDetails?.forms?.[formIndex]?.data?.additionalPrivilegeChangeUpdated) {
     let temp = {
@@ -1950,7 +1989,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    } else {
     let temp = {
      obligatedPrivileges: formDetails?.privileges?.obligatedPrivileges,
@@ -1959,7 +1998,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      priorObligatedPrivileges: formDetails?.privileges?.priorObligatedPrivileges,
     };
     console.log("data", temp);
-    await POST(`application-management-service/application/${id}/privileges`, temp);
+    await POST(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/privileges`, temp);
    }
   }
   let temp = {
@@ -2003,7 +2042,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp).then(
    (response) => {
     getApplication();
    },
@@ -2165,7 +2204,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    }
    data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
    console.log(data, "data");
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2187,7 +2226,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
     data.basicDetails.regionalCallResponsibilities = {};
    }
    data.basicDetails.regionalCallResponsibilities.regionalCallResponsibilities = selectedValue || "NA";
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2237,7 +2276,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
    .then((response) => {
     console.log(response);
     getApplication();
@@ -2327,7 +2366,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      (data) => data?.privilegeCategory?.id === selectedPrivilegeCategory,
     )?.[0]?.privilegeCategory?.category;
    }
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2356,7 +2395,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
      data.basicDetails.credentialingPrivilegeCategory.credentialingCategory = data?.basicDetails?.priorPrivilegeCategory?.name;
     }
    }
-   await PUT(`application-management-service/application/${id}`, data)
+   await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}`, data)
     .then((response) => {
      console.log(response);
     })
@@ -2405,7 +2444,7 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
    unFilledFields: formDetails?.forms?.[formIndex]?.unFilledFields,
    acknowledged: true,
   };
-  await PUT(`application-management-service/application/${id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
+  await PUT(`application-management-service/application/${selectDataLocum?.onGoingApplication?.id}/form/${formDetails?.forms?.[formIndex]?.id}`, temp)
    .then((response) => {
     console.log(response);
     getApplication();
@@ -2435,13 +2474,13 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const months = [];
   const createdDate = new Date(createdDateStr);
 
-  // Start from the month after the createdDate
-  createdDate.setMonth(createdDate.getMonth() + 1);
+  for (let i = 1; i <= 12; i++) {
+    const futureDate = addMonths(createdDate, i);
+    const oneDayBefore = subDays(futureDate, 1); // Go one day before the future "same day"
 
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(createdDate.getFullYear(), createdDate.getMonth() + i, 1);
-    const label = format(date, 'MMMM yyyy');
-    const value = format(date, 'yyyy-MM');
+    const label = `${i} ${i === 1 ? 'month' : 'months'}`;
+    const value = format(futureDate, 'yyyy-MM-dd');
+
     months.push({ label, value });
   }
 
@@ -2449,18 +2488,19 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
   const now = new Date();
   months.push({
     label: 'Custom End Date',
-    value: format(now, 'yyyy-MM') // this is now a valid date value
+    value: format(now, 'yyyy-MM-dd')
   });
+
   return months;
 };
-
- const monthOptions = selectDataLocum?.tenure?.to ? getNext12MonthsFromCreatedDate(selectDataLocum?.tenure?.to) : [];
 
  const lastModifiedDate = formDetails?.lastModifiedDate;
  const formattedDate = lastModifiedDate ? format(new Date(lastModifiedDate), "MM/dd/yyyy") : "-";
  const ExpireDate = selectDataLocum?.tenure?.to;
+ const currentDateLive = format(new Date(), "MM/dd/yyyy");
  const formattedExpiringDate = ExpireDate ? format(new Date(ExpireDate), "MM/dd/yyyy") : "-";
  const daysRemaining = ExpireDate ? differenceInDays(new Date(ExpireDate), new Date()) : null;
+ const monthOptions = currentDateLive ? getNext12MonthsFromCreatedDate(currentDateLive) : [];
 
  return (
   <>
@@ -2629,37 +2669,6 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            )}
            {/* </div> */}
            {/* <div> */}
-           {selectedMonth === format(new Date(), 'yyyy-MM') && (
-            <div className={`${style.marginTopLess}`}>
-             <CommonDateField
-                className={`${style.dateWidth} ${style.fullWidth}`}
-                onChange={(date) => handleDateChange(date)}
-                open={calendarStart}
-                onOpen={() => setCalendarStart(true)}
-                onClose={() => setCalendarStart(false)}
-
-                minDate={sub(new Date(), { years: 3 })}
-                maxDate={add(new Date(), { years: 3 })}
-                // minDate={lastSubmittedDate ? new Date(lastSubmittedDate) : sub(new Date(), { years: 3 })}
-                // maxDate={getJune30thOfCurrentYear()}
-                value={customDate ? format(customDate, 'yyyy-MM') : ''}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    inputProps={{
-                      ...params.inputProps,
-                      placeholder: 'Enter Extend Date',
-                      readOnly: true
-                    }}
-                    variant="outlined"
-                    margin="normal"
-                    
-                  />
-                 
-                )}
-              />
-               </div>
-            )}
             {/* </div> */}
            <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
             Start Date <br />
@@ -2675,6 +2684,37 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
              {ExpireDate ? format(new Date(selectedMonth), "dd MMM yyyy") : "N/A"}{" "}
             </span>
            </div>
+           {selectedMonth === format(new Date(), 'yyyy-MM-dd') && (
+              <div className={`${style.marginTopLess}`}>
+              <CommonDateField
+                  className={`${style.dateWidth} ${style.fullWidth}`}
+                  onChange={(date) => handleDateChange(date)}
+                  open={calendarStart}
+                  onOpen={() => setCalendarStart(true)}
+                  onClose={() => setCalendarStart(false)}
+  
+                  // minDate={sub(new Date(), { years: 3 })}
+                  // maxDate={add(new Date(), { years: 3 })}
+                  minDate={currentDate}
+                  maxDate={currentDate ? addYears(new Date(currentDate), 1) : null}
+                  value={customDate ? format(customDate, 'yyyy-MM') : ''}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      inputProps={{
+                        ...params.inputProps,
+                        placeholder: 'Enter Extend Date',
+                        readOnly: true
+                      }}
+                      variant="outlined"
+                      margin="normal"
+                      
+                    />
+                  
+                  )}
+                />
+                </div>
+              )}
           </div>
           {/* <CommonRadio
            className={style.leftAlign}

@@ -291,7 +291,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
       }));
       let notesComments = notes;
       let isDelegate = true;
-      if (selectedTab === 'level-2') {
+      if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
         if (workModeType === "Department Head") {
           role = "Department Head";
           isDelegate = false;
@@ -300,7 +300,16 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Department Head";
           title = "Dept. Head / Chief Review"
         }
-      } else if (selectedTab === 'level-3') {
+      } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          isDelegate = false;
+          title = "Credentialing Committee Review"
+        } else {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review"
+        }
+      }  else if (selectedTab === 'level-3') {
         if (workModeType === "Credentialing Committee") {
           role = "Credentialing Committee";
           title = "Credentialing Committee Review";
@@ -326,6 +335,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
         title = "Staff Manager Verification";
         isDelegate = false;
       }
+  
       const payload = {
         role: isDelegate ? role : "",
         notes: {
@@ -359,7 +369,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
       }));
       let notesComments = notes;
       let isDelegate = true;
-      if (selectedTab === 'level-2') {
+      if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
         if (workModeType === "Department Head") {
           role = "Department Head";
           isDelegate = false;
@@ -368,7 +378,16 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
           role = "Department Head";
           title = "Dept. Head / Chief Review"
         }
-      } else if (selectedTab === 'level-3') {
+      } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+        if (workModeType === "Credentialing Committee") {
+          role = "Credentialing Committee";
+          isDelegate = false;
+          title = "Credentialing Committee Review"
+        } else {
+          role = "Credentialing Committee";
+          title = "Credentialing Committee Review"
+        }
+      }  else if (selectedTab === 'level-3') {
         if (workModeType === "Credentialing Committee") {
           role = "Credentialing Committee";
           title = "Credentialing Committee Review";
@@ -394,6 +413,7 @@ const ApplicationDecline = ({ getIsOpen, selectedTab, applicationType, getApplic
         title = "Staff Manager Verification";
         isDelegate = false;
       }
+  
       const payload = {
         role: isDelegate ? role : "",
         notes: {

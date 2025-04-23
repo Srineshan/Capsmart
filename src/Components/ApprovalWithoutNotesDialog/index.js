@@ -333,7 +333,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -342,20 +342,32 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review";
+        title = "Chief Of Staff Review";
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
-      } else if (workModeType === "Staff Manager") {
+      } else if (workModeType === "Staff Manager" && applicationType === "REAPPOINTMENT") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
+        role = "Advisory Committee";
+        title = "MAC Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -368,6 +380,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       title = "Staff Manager Verification";
       isDelegate = false;
     }
+
     if (workModeType === "Staff Manager" && dateStorage) {
       approvedDate = format(new Date(dateStorage), 'yyyy-MM-dd');
     } else {
@@ -454,7 +467,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
     let isDelegate = true;
 
     // Determine role based on selectedTab and applicationType
-    if (selectedTab === 'level-2') {
+    if (selectedTab === 'level-2' && applicationType !== "LOCUM") {
       if (workModeType === "Department Head") {
         role = "Department Head";
         isDelegate = false;
@@ -463,20 +476,32 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
         role = "Department Head";
         title = "Dept. Head / Chief Review"
       }
-    } else if (selectedTab === 'level-3') {
+    } else if (selectedTab === 'level-2' && applicationType === "LOCUM") {
+      if (workModeType === "Credentialing Committee") {
+        role = "Credentialing Committee";
+        isDelegate = false;
+        title = "Credentialing Committee Review"
+      } else {
+        role = "Credentialing Committee";
+        title = "Credentialing Committee Review"
+      }
+    }  else if (selectedTab === 'level-3') {
       if (workModeType === "Credentialing Committee") {
         role = "Credentialing Committee";
         title = "Credentialing Committee Review";
         isDelegate = false;
       } else if (workModeType === "Chief Of Staff") {
         role = "Credentialing Committee";
-        title = "Credentialing Committee Review";
+        title = "Chief Of Staff Review";
       } else if (workModeType === "Credentialing Committee User") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
-      } else if (workModeType === "Staff Manager") {
+      } else if (workModeType === "Staff Manager" && applicationType === "REAPPOINTMENT") {
         role = "Credentialing Committee";
         title = "Credentialing Committee User Review";
+      } else if (workModeType === "Staff Manager" && applicationType === "LOCUM") {
+        role = "Advisory Committee";
+        title = "MAC Review";
       }
     } else if (selectedTab === 'level-4') {
       role = "Advisory Committee";
@@ -489,6 +514,7 @@ const ApprovalWithoutNotesDialog = ({ getIsOpen, dateFormat, getActiveApplicatio
       title = "Staff Manager Verification";
       isDelegate = false;
     }
+
     if (workModeType === "Staff Manager" && dateStorage) {
       approvedDate = format(new Date(dateStorage), 'yyyy-MM-dd');
     } else {

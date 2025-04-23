@@ -161,27 +161,27 @@ const LocumStaffList = ({
 
 const onClickExtensiveLocumDialog = (data) => {
   getLocumExtensiveDialog(true);
-  sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+  sessionStorage.setItem("applicationId", data?.id);
 };
 
 const onClickExtensiveReactiveLocumDialog = (data) => {
   getLocumExtensiveReactiveDialog(true);
-  sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+  sessionStorage.setItem("applicationId", data?.id);
 };
 
 const onClickExtensiveReactiveRequestLocumDialog = (data) => {
   getLocumExtensiveReactiveRequestDialog(true);
-  sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+  sessionStorage.setItem("applicationId", data?.id);
 };
 
 const onClickExtensiveRequestLocumDialog = (data) => {
   getLocumExtensiveRequestDialog(true);
-  sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+  sessionStorage.setItem("applicationId", data?.id);
 };
 
 const onClickNotesDialog = (data) => {
   getNotesDialog(true);
-  sessionStorage.setItem("applicationId", data?.currentApplication?.id);
+  sessionStorage.setItem("applicationId", data?.onGoingApplication?.id);
 };
 
   const reappointmentApplication = async (id) => {
