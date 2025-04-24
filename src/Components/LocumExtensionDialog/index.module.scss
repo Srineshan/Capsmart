@@ -31,6 +31,14 @@
   position: relative;
 }
 
+.hidden {
+      display: none !important;
+  }
+
+.unhidden {
+    display:block ;
+}
+
 .spaceBetween {
   display: flex;
   justify-content: space-between;
@@ -700,4 +708,28 @@
 
 .dateWidth {
   padding: 0px 10px;
+}
+
+.disabledButton {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.disabledButton :hover {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+.dateTitle {
+  text-align: left;
+  font: normal normal bold 17px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
+}
+
+.date {
+  text-align: left;
+  font: normal normal normal 17px/26px proxima-nova;
+  letter-spacing: 0px;
+  color: #2C2C2C;
 }

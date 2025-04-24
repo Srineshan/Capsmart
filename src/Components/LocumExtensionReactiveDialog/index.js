@@ -3041,58 +3041,6 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             </div>
            </div>
           )}
-          {formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0 && (
-            <>
-             <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-              <strong>Privileges at Other Hospitals</strong>
-             </div>
-             <div className={style.twoCol}>
-              <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-               <div className={style.privilegeHeadingCurrent}>Current</div>
-               <div className={style.privilegeHeading}>
-                {formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-                formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null &&
-                formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.length !== 0
-                 ? formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map((data) => (
-                    <div>{data?.privileges}</div>
-                   ))
-                 : formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-                     formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null &&
-                     formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0
-                   ? formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map((data) => (
-                      <div>{data?.privileges}</div>
-                     ))
-                   : "None"}
-               </div>
-              </div>
-              {formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== "" &&
-               formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined && (
-                <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                 <div className={style.privilegeHeadingReappointment}>Change for Reappointment</div>
-                 <div className={style.privilegeHeading}>
-                  <div>
-                   {privilegeAtOtherHospitalYesOrNo === "No" ? (
-                    <div className={style.privilegeHeading}>None</div>
-                   ) : (
-                    <div>
-                     {hospitalPrivilegeSet?.map((data) => (
-                      <div
-                       className={style.privilegeHeading}
-                      >{`${formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map((priorData) => priorData?.privileges)?.includes(data?.privileges) ? "Existing: " : "New: "} ${data?.hospitalName} - ${data?.privileges}`}</div>
-                     ))}
-                    </div>
-                   )}
-                  </div>
-                 </div>
-                </div>
-               )}
-             </div>
-            </>
-           )}
          </div>
         </div>
         {/* <div className={`${style.cardTitle} ${style.marginTop10}`}>Do you want the locum Staff to keep their current Privilege Category?</div>

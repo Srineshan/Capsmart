@@ -115,12 +115,13 @@ const [covererId, setCovererId] = useState("");
  const prevDepartment = formDetails?.basicDetailReferences?.department?.id;
  const prevSpeciality = formDetails?.basicDetailReferences?.specialty?.id;
  const [currentDate, setCurrentDate] = useState(
-     format(new Date(),"MMMM yyyy")
+     format(new Date(), "dd-MM-yyyy")
    );
    const [isLoadingPage, setIsLoadingPage] = useState(false);
  const publicKey =
     "-----BEGIN PUBLIC KEY-----MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHA5SDu30/8uQAqqkQE0NuY4ePBptMGufG6AWnC/88YVLXi4thh7M8VU6kElVJkfXL5DwlfVnwPb08+PK1EcaOWWtp2gdQitkohjZLB9zVE+0OtRrzSc33wItf7Iwisi5dHPggHvfOp5fr+QYWFMa/kKYl3SgNo8fryeLbKKalmdAgMBAAE=-----END PUBLIC KEY-----";
  const workModeType = sessionStorage.getItem("workModeType");
+ let staffLocumId;
  let name = `${formDetails?.basicDetails?.applicant?.name?.firstName} ${formDetails?.basicDetails?.applicant?.name?.lastName} `;
 
 
@@ -140,11 +141,18 @@ const [covererId, setCovererId] = useState("");
 
  useEffect(() => {
   getActiveUserData();
-  getStaffPrivilege();
   setSelectedPrivilegesForDisplayMultiple(
     formDetails?.privileges?.obligatedPrivileges
   );
+  staffLocumId = selectDataLocum?.onGoingApplication?.id
+  console.log("staffLocumId",staffLocumId)
  }, []);
+
+ useEffect(() => {
+  getStaffPrivilege();
+  const staffLocumId = selectDataLocum?.onGoingApplication?.id
+  console.log("staffLocumIdssssss",staffLocumId)
+ }, [showSelectedPrivilegeLocum,privilegeSetChangeYesOrNo]);
 
  useEffect(() => {
    const coveredDetails = covererNameList?.map((data) => {
@@ -189,6 +197,7 @@ const [covererId, setCovererId] = useState("");
  useEffect(() => {
   setSelectedDepartment(formDetails?.basicDetailReferences?.department?.id);
   setSelectedSpeciality(formDetails?.basicDetailReferences?.specialty?.id);
+  console.log("setSelectedDepartment",selectedDepartment)
  }, [formDetails]);
 
 useEffect(() => {
@@ -237,7 +246,7 @@ let userDepartmentList;
     }, [formDetails]);
 
     const getStaffPrivilege = async () => {
-        if (selectDataLocum && selectedDepartment !== undefined) {
+        if (selectedDepartment !== undefined) {
           if (selectedSpeciality !== undefined) {
             const { data: privilege } = await GET(
               `entity-service/staffPrivilege/departmentAndServiceArea?departmentId=${selectedDepartment !== ""
@@ -277,10 +286,25 @@ let userDepartmentList;
       setCovererNameList(updatedList);
     };
 
+    const onClickExtensiveRequest = async () => {
+      try {
+        setIsLoadingImage(true); // Start loading
+    
+        await reappointmentApplication(); // Wait for the promise to complete
+    
+        setShowSelectedPrivilegeLocum(true); // After the promise
+      } catch (error) {
+        console.error("Error in reappointmentApplication:", error);
+      } finally {
+        setIsLoadingImage(false); // Stop loading in both success/failure
+      }
+    };
+    
+
 
 const getActiveUserData = async () => {
     try {
-      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM`;
+      const url = `application-management-service/staff?status=ACTIVE&type=LOCUM&isExpired=${selectedTab === "ACTIVELOCUM" ? "false" : "true"}&noOfDays=30`;
       const response = await GET(url);
       const staffs = response?.data?.staffs || [];
 
@@ -296,7 +320,9 @@ const getActiveUserData = async () => {
   };
 
   const reappointmentApplication = async () => {
-    const fromDate = format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd');
+    const fromDate = selectedTab === "ACTIVELOCUM"
+    ? format(addDays(new Date(selectDataLocum?.tenure?.to), 1), 'yyyy-MM-dd')
+    : format(new Date(), 'yyyy-MM-dd');
     const toDate = format(new Date(selectedMonth), 'yyyy-MM-dd');
     const coveredDetails = covererNameList?.map((data) => {
     const applicantData = selectApplicant?.find(optionData => optionData?.id === data);
@@ -320,6 +346,7 @@ const getActiveUserData = async () => {
     await POST(`application-management-service/staff/${selectDataLocum?.id}/reappoint?positionType=LOCUM&reappointmentType=${selectedTab === "ACTIVELOCUM" ? "EXTENSION" : "RENEWAL"}`, temp)
       .then((response) => {
         console.log(response?.data);
+        getActiveUserData();
       })
       .catch((error) => {
         console.log(error);
@@ -2067,11 +2094,18 @@ handleSubmitAdditionalPrivilegeSet(true, temp)
   );
  };
 
- const handleSelectedPrivilegesForDisplayMultiple = (data) => {
-    let temp = selectedPrivilegesForDisplayMultiple;
-    temp.push(data);
-    setSelectedPrivilegesForDisplayMultiple(temp);
-    handleSubmitPrivilegeSet(true, temp)
+//  const handleSelectedPrivilegesForDisplayMultiple = (data) => {
+//     let temp = selectedPrivilegesForDisplayMultiple;
+//     temp.push(data);
+//     setSelectedPrivilegesForDisplayMultiple(temp);
+//     handleSubmitPrivilegeSet(true, temp)
+// };
+
+const handleSelectedPrivilegesForDisplayMultiple = (data) => {
+  let temp = selectedPrivilegesForDisplayMultiple ? [...selectedPrivilegesForDisplayMultiple] : [];
+  temp.push(data);
+  setSelectedPrivilegesForDisplayMultiple(temp);
+  handleSubmitPrivilegeSet(true, temp);
 };
 
  const handleDeleteSelectedPrrivilege = (id) => {
@@ -2540,7 +2574,11 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
      <div>
       <div className={Classes.DIALOG_BODY}>
        <div className={style.spaceBetween}>
-        <div className={`${style.heading}`}>Locum Period & Privileges Extension</div>
+       <div className={`${style.heading}`}>
+          {selectedTab === "ACTIVELOCUM"
+            ? "Locum Period & Privileges Extension"
+            : "Reactivate Locum Staff"}
+        </div>
         <div className={style.displayInRow}>
          <img
           src={CrossPink}
@@ -2638,20 +2676,24 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
        {showSelectedPrivilegeLocum === false && (
         <div className={`${style.marginTop10}`}>
          <div className={`${style.rejectionHeadingTextStyle}`}>
-          Locum Period Expiring On {formattedExpiringDate}, {daysRemaining} Days
+          {selectedTab === "ACTIVELOCUM" ? `Locum Period Expiring On ${formattedExpiringDate}, ${daysRemaining} Days` : "New Locum Period"}
          </div>
          <div className={`${style.rejectionTextStyle}`}>
-         Extend the Period and Privileges for :{" "}
+          {selectedTab === "ACTIVELOCUM"
+            ? "Extend the Period and Privileges for : "
+            : "Indicate the Period and Privileges for : "}
           <span className={style.rejectionHeadingTextStyle}>
-          {selectDataLocum?.applicant?.name?.lastName?.charAt(0).toUpperCase() +
-             selectDataLocum?.applicant?.name?.lastName?.slice(1).toLowerCase()}
+            {selectDataLocum?.applicant?.name?.lastName
+              ? selectDataLocum.applicant.name.lastName.charAt(0).toUpperCase() +
+                selectDataLocum.applicant.name.lastName.slice(1).toLowerCase()
+              : ""}
             {", "}
             {selectDataLocum?.applicant?.name?.firstName
-             ? selectDataLocum?.applicant?.name?.firstName.charAt(0).toUpperCase() +
-             selectDataLocum?.applicant?.name?.firstName.slice(1).toLowerCase()
-             : ""}
+              ? selectDataLocum.applicant.name.firstName.charAt(0).toUpperCase() +
+                selectDataLocum.applicant.name.firstName.slice(1).toLowerCase()
+              : ""}
           </span>
-         </div>
+        </div>
          <div>
           {/* <CommonRadio
            className={style.leftAlign}
@@ -2692,7 +2734,11 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
            <div className={`${style.marginLeft} ${style.rejectionHeadingTextStyle}`}>
             Start Date <br />
             <span className={`${style.rejectionTextStyle}`}>
-              {ExpireDate ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy") : "N/A"}
+              {selectedTab === "ACTIVELOCUM"
+                ? (ExpireDate
+                    ? format(addDays(new Date(ExpireDate), 1), "dd MMM yyyy")
+                    : "N/A")
+                : format(new Date(), "dd MMM yyyy")}
             </span>
            </div>
            <div className={`${style.marginLeft} ${style.rejectionTextStyle}`}> To </div>
@@ -2900,7 +2946,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             <div className={style.twoCol}>
              <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
               <div className={`${style.privilegeHeadingCurrent}`}>Current</div>
-              {formDetails?.privileges?.priorObligatedPrivileges?.length === 0 ? (
+              {formDetails?.privileges?.obligatedPrivileges?.length === 0 ? (
                // formDetails?.privileges?.obligatedPrivileges?.length === 0 ?
                <div className={style.privilegeHeading}>Not Available</div>
               ) : (
@@ -2923,7 +2969,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
                //   </>
                // )
                <>
-                {formDetails?.privileges?.priorObligatedPrivileges?.map((data) => (
+                {formDetails?.privileges?.obligatedPrivileges?.map((data) => (
                  <div
                   className={style.privilegeHeading}
                   // className={`${style.privilegeHeadingWithHover} ${style.cursorPointer}`}
@@ -3060,58 +3106,6 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
             </div>
            </div>
           )}
-          {formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null &&
-           formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0 && (
-            <>
-             <div className={`${style.privilegeHeading} ${style.marginTop10}`}>
-              <strong>Privileges at Other Hospitals</strong>
-             </div>
-             <div className={style.twoCol}>
-              <div className={`${style.privilegeContentCard} ${style.marginTop10}`}>
-               <div className={style.privilegeHeadingCurrent}>Current</div>
-               <div className={style.privilegeHeading}>
-                {formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-                formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges !== null &&
-                formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.length !== 0
-                 ? formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map((data) => (
-                    <div>{data?.privileges}</div>
-                   ))
-                 : formDetails?.basicDetails?.existingCredentialingPrivilegeCategory !== null &&
-                     formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges !== null &&
-                     formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.length !== 0
-                   ? formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.hospitalPrivileges?.map((data) => (
-                      <div>{data?.privileges}</div>
-                     ))
-                   : "None"}
-               </div>
-              </div>
-              {formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== "" &&
-               formDetails?.forms?.[formIndex]?.data?.privilegeAtOtherHospitalYesOrNo !== undefined && (
-                <div className={`${style.privilegeContentChangeCard} ${style.marginTop10}`}>
-                 <div className={style.privilegeHeadingReappointment}>Change for Reappointment</div>
-                 <div className={style.privilegeHeading}>
-                  <div>
-                   {privilegeAtOtherHospitalYesOrNo === "No" ? (
-                    <div className={style.privilegeHeading}>None</div>
-                   ) : (
-                    <div>
-                     {hospitalPrivilegeSet?.map((data) => (
-                      <div
-                       className={style.privilegeHeading}
-                      >{`${formDetails?.basicDetails?.existingCredentialingPrivilegeCategory?.priorHospitalPrivileges?.map((priorData) => priorData?.privileges)?.includes(data?.privileges) ? "Existing: " : "New: "} ${data?.hospitalName} - ${data?.privileges}`}</div>
-                     ))}
-                    </div>
-                   )}
-                  </div>
-                 </div>
-                </div>
-               )}
-             </div>
-            </>
-           )}
          </div>
         </div>
         {/* <div className={`${style.cardTitle} ${style.marginTop10}`}>Do you want the locum Staff to keep their current Privilege Category?</div>
@@ -3803,8 +3797,7 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
         }}
         onClick={() => {
           if (!showSelectedPrivilegeLocum) {
-            setShowSelectedPrivilegeLocum(true);
-            reappointmentApplication();
+            onClickExtensiveRequest();
           } else {
             getIsOpen(false);
           }
@@ -3950,12 +3943,12 @@ const getNext12MonthsFromCreatedDate = (createdDateStr) => {
     <Dialog
           isOpen={showAdditionalPrivileges}
           onClose={() => setShowAdditionalPrivileges(false)}
-          className={`${style.eSignDialog1} ${style.eSignDialogBackground1}`}
+          className={`${style.eSignDialog} ${style.eSignDialogBackground}`}
           canOutsideClickClose={false}
           canEscapeKeyClose={false}
         >
           <div>
-            <div className={Classes.DIALOG_BODY}>
+            <div>
               <div className={style.spaceBetween}>
                 <div className={style.heading}>Privilege Set To Request</div>
                 <div className={style.displayInRow}>
