@@ -733,14 +733,18 @@ const MDTrackerDialog = ({ getIsOpen, isLoading }) => {
                       <>
                         <div className={style.spaceBetween}>
                           <div className={`${style.displayInRow} ${style.marginLeft} ${style.marginTopAuto}`}>
-                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}>
+                          <Tooltip title={currentTab === "ByMedicalDirective" ? "" :  "View attestation status organized by Medical Directives" } arrow>
+                            <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByMedicalDirective" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByMedicalDirective')}> 
                               <div>By Medical Directives</div>
                               <div className={style.marginLeft5}>{medicalDirectiveSummary?.length}</div>
                             </div>
+                            </Tooltip>
+                            <Tooltip title={currentTab === "ByApplicants" ? "" :  "View attestation status organized by Applicants" } arrow>
                             <div className={`${style.tabGrid} ${style.cursorPointer} ${currentTab === "ByApplicants" ? style.activeTab : ''}`} onClick={() => setCurrentTab('ByApplicants')}>
                               <div>By Applicants</div>
                               <div className={style.marginLeft5}>{applicantSummary?.length}</div>
                             </div>
+                            </Tooltip>
                           </div>
                           <div className={style.marginLeftAuto}>
                             <CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={currentTab === "ByApplicants" ? 'Search By Applicant Name' : 'Search By MD Name'} />

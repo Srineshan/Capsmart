@@ -89,6 +89,7 @@ const NewActiveApplication = ({
   getContractIdFromActive,
   method,
   isEditable,
+  getSelectedTab,
   selectedTab,
   getActiveApplicationView,
   getApprovalNotesCommentBox,
@@ -2036,6 +2037,12 @@ const NewActiveApplication = ({
     getActiveApplicationView(false);
     if (window.location.pathname?.includes('applicationById')) {
       window.location.pathname = "/applications";
+    }
+
+    const savedTab = sessionStorage.getItem('selectedTab');
+
+    if (savedTab && getSelectedTab) {
+      getSelectedTab(savedTab);
     }
   };
 

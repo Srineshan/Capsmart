@@ -14,6 +14,7 @@ import Cookie from "universal-cookie";
 import { useNavigate } from "react-router-dom";
 import { fileLoadingURL, getValueByPath } from "../../utils/formatting";
 import ValidationDialog from "../../Components/validationDialog";
+import { Tooltip } from "@mui/material";
 
 const CreateStaffMemberApplication = () => {
   let cookie = new Cookie();
@@ -471,12 +472,15 @@ const CreateStaffMemberApplication = () => {
                 <div></div>
                 <div className={style.displayInRow}>
                   <div className={style.displayInRow}>
+                  <Tooltip title="Discard changes and reload the page" arrow>
                     <div
                       className={`${style.saveInProgress} ${style.marginTop}`}
                       onClick={() => window.location.reload()}
                     >
                       DISCARD
                     </div>
+                    </Tooltip>
+                    <Tooltip title={isLoading ? "" : "Continue to the next step"} arrow>
                     <div
                       className={`${style.continue} ${style.marginTop} ${style.marginLeft}`}
                       onClick={() => getMissingFields()}
@@ -484,6 +488,7 @@ const CreateStaffMemberApplication = () => {
                     >
                       CONTINUE
                     </div>
+                    </Tooltip>
                   </div>
                 </div>
               </div>

@@ -522,7 +522,6 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
         await PUT(`application-management-service/application/${applicationId}/verifyForm?verificationStatus=${documentStatus !== "REJECT_DOCUMENT" ? verificationStatus : "UNVERIFIED"}&documentStatus=${documentStatus}`, temp)
             .then((response) => {
                 console.log("success");
-                SuccessToaster2(documentStatus === "REJECT_AND_REPLACE_DOCUMENT" ? `${file?.documentType} Document Rejected & Replaced Successfully` : documentStatus === "REJECT_DOCUMENT" ? `${file?.documentType} Document Rejected Successfully` : `${file?.documentType} Document Accepted Successfully`)
 
                 // Update the fileArray with the correct verified status
                 const updatedFileArray = fileArray.map((record, index) => {
@@ -546,6 +545,15 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                 }
 
                 setHasVerificationAttempted(true)
+                SuccessToaster2(
+                    documentStatus === "REJECT_AND_REPLACE_DOCUMENT"
+                      ? `${file?.documentType} Document Rejected & Replaced Successfully`
+                      : documentStatus === "REJECT_DOCUMENT"
+                      ? `${file?.documentType} Document Rejected Successfully`
+                      : documentStatus === "ACCEPT_DOCUMENT"
+                      ? `${file?.documentType} Document Accepted Successfully`
+                      : ""
+                  );
             })
             .catch((error) => {
                 console.log(error);
@@ -906,12 +914,13 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             <Tooltip arrow title={(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? "Please fill all clarification details to continue" : "Save & Proceed to Next Document"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${(rejectClarificationType === "" || rejectSubject === "" || rejectClarification === "") ? style.disabledButton : style.cursorPointer}`}
-                                                    onClick={() => {
-                                                        handleDocVerify();
+                                                    onClick={async () => {
+                                                        await handleDocVerify(); 
+                                                        
                                                         if (selectedFileIndex === fileArray?.length - 1) {
                                                             setTimeout(() => getIsOpen(false), 500);
                                                         } else {
-                                                            handleNext();
+                                                            setTimeout(() => handleNext(), 1000);
                                                         }
                                                     }}
                                                 >
@@ -970,7 +979,7 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                                         <Tooltip arrow title="Add the reason to enable document replace" followCursor
                                                             {...(reasonForReplacingDocument !== "" && { open: false })}>
                                                             <CommonDropZone
-                                                                title={"Replace This Document"}
+                                                                title={`Replace ${file?.documentType} Document`}
                                                                 description={
                                                                     "Upload your files or drag & drop from your document cabinet"
                                                                 }
@@ -984,16 +993,16 @@ const FileVerifyDialog = ({ getIsOpen, file, fileArray, setFileArray, selectedFi
                                             <Tooltip arrow title={replaceRowId === "" ? "Document replacement is pending. Please verify" : "Click to Verify document and continue"}>
                                                 <div
                                                     className={`${style.purpleButtonVerify} ${style.marginTop} ${replaceRowId === "" ? style.disabledButton : style.cursorPointer}`}
-                                                    onClick={() => {
+                                                    onClick={async () => {
                                                         if (replaceRowId !== "") {
-                                                            handleDocVerify();
+                                                           await handleDocVerify();
                                                             if (selectedFileIndex === fileArray?.length - 1) {
                                                                 setTimeout(() => getIsOpen(false), 500);
                                                             } else {
                                                                 if (documentStatus === "REJECT_AND_REPLACE_DOCUMENT") {
                                                                     setTimeout(() => getIsOpen(false), 500);
                                                                 } else {
-                                                                    handleNext();
+                                                                    setTimeout(() => handleNext(), 1000);
                                                                 }
                                                             }
                                                         }

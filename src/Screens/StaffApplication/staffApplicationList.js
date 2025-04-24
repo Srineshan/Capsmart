@@ -1855,7 +1855,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -2108,7 +2108,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -2363,7 +2363,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -2781,7 +2781,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -3054,7 +3054,7 @@ const StaffApplicationList = ({
       },
       { type: "dot", value: cc, tooltipValue: dotTooltipValues },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -3357,7 +3357,7 @@ const StaffApplicationList = ({
       //   isShowHoverText: true,
       // },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -3672,7 +3672,7 @@ const StaffApplicationList = ({
       //   isShowHoverText: true,
       // },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -3835,7 +3835,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -4089,7 +4089,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -4212,7 +4212,7 @@ const StaffApplicationList = ({
         isShowHoverText: true,
       },
       {
-        type: "iconWithCount",
+        type: "iconWithCountNotes",
         value: notes,
         hoverText: notesHoverText,
         isShowHoverText: true,
@@ -5363,7 +5363,7 @@ const StaffApplicationList = ({
                     {
                       showCardDetails && (
                         <>
-                          <Tooltip arrow title={"Click to View Declined Applications"}>
+                          <Tooltip arrow title={applicationType === "REAPPOINTMENT" ? "Click to View Approved But Declined Applications" : "Click to View Requested But Declined Applications" }>
                             <div
                               className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                               onClick={() => {
@@ -5374,7 +5374,7 @@ const StaffApplicationList = ({
                               {applicationType === "REAPPOINTMENT" ? `Approved But Declined (${applicationRejected?.applicationsRejected})` : `Requested But Declined (${applicationRejected?.applicationsRejected})`}
                             </div>
                           </Tooltip>
-                          <Tooltip arrow title={"Click to View Rejected Applications"}>
+                          <Tooltip arrow title={applicationType === "REAPPOINTMENT" ? "Click to View Staff Rejected Applications" : "Click to View Locum Staff Rejected Applications"}>
                             <div
                               className={`${style.borderStyle} ${style.marginTop} ${style.textStyle} ${style.cursorPointer}`}
                               onClick={() => {
