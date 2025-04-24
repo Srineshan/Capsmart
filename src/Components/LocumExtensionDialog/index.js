@@ -217,9 +217,9 @@ let userDepartmentList;
      useEffect(() => {
       const fetchDepartmentStaffs = async () => {
         try {
-          const currentApplicantId = formDetails?.applicant?.id;
-          const departmentId = formDetails?.basicDetailReferences?.department?.id;
-          const applicantTypeId = formDetails?.basicDetailReferences?.applicantType?.id;
+          const currentApplicantId = selectDataLocum?.applicant?.id;
+          const departmentId = selectDataLocum?.basicDetailReferences?.department?.id;
+          const applicantTypeId = selectDataLocum?.basicDetailReferences?.applicantType?.id;
           const response = await GET(
             `application-management-service/staff?status=ACTIVE&departmentId=${departmentId}&applicantTypeId=${applicantTypeId}&sortByField=STAFF_NAME`
           );
