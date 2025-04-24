@@ -148,6 +148,10 @@ const LocumStaffList = ({
   // }, []);
 
   useEffect(() => {
+    getRejectionCounts();
+  }, [applicationType]);
+
+  useEffect(() => {
     getActiveUserData(selectedTab);
   }, [selectedTab, sortField, sortValue, page, totalCount]);
 
@@ -322,7 +326,7 @@ const LocumStaffList = ({
   };
 
   const getRejectionCounts = async () => {
-    await GET("application-management-service/application/rejected/meta")
+    await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`)
       .then((response) => {
         setApplicationRejected(response?.data);
       })

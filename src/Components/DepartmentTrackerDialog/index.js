@@ -198,6 +198,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     "Locum Staff",
     "Staff Type",
     "Expiration Date",
+    "Department",
     "Dept Head",
     "Renewal Application",
     "MSO Verification",
@@ -207,7 +208,6 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     "BOD Approval",
     "Status",
     "Last Updated by",
-    ""
   ];
   const colSortValues = [false, true, true, true, false, false, false, false, false, false, false, false, false, false, false];
   const departmentHeadActionsData = [
@@ -240,7 +240,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     try {
       setIsLoadingImage(true);
       const departmentParam = selectedDepartment || selectedServiceArea ? `&departmentSpecialties=${selectedDepartment}%23${selectedServiceArea}` : "";
-      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
+      const url = `application-management-service/staff/reappointmentStatusDetails?sortBy=${sortValue}&sortByField=${sortField}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}&limit=${limit}&searchText=${searchTermForTable}&isPaginationRequired=${limit === 9999 ? false : true}&offset=${page - 1}${departmentParam}${selectedApplicantType ? `&applicantTypeId=${selectedApplicantType}` : ''}`;
 
       const response = await GET(url);
 
@@ -329,6 +329,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
     const status = [];
     const action = [];
     const lastUpdated = [];
+    const expirationDate = []
 
     tableData?.map((data, index) => {
       No.push(index + 1 + ".")
@@ -356,6 +357,8 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
         status: data?.status,
         assignedColor: color
       });
+
+      expirationDate.push(format(new Date(data?.expiryDate), 'MM/dd/yyyy'))
 
       if (workflowStaffManagerRole) {
         const color = workflowStaffManagerRole?.approvalType === "VERIFIED_AND_ACCEPTED" ? "darkgreen"
@@ -466,7 +469,25 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
       action.push(true);
     });
 
-    return [
+    return applicationType === "LOCUM" ? [
+      { type: "text", value: No },
+      { type: "text", value: staff },
+      { type: "text", value: staffType },
+      { type: "text", value: expirationDate },
+      { type: "text", value: department },
+      { type: "dot", value: reapointment },
+      { type: "dot", value: reapointment },
+      { type: "dot", value: staffManager },
+      { type: "dot", value: deptHead },
+      { type: "dot", value: cc },
+      { type: "dot", value: mac },
+      { type: "dot", value: bod },
+      { type: "text", value: status },
+      {
+        type: "text",
+        value: lastUpdated
+      },
+    ] : [
       { type: "text", value: No },
       { type: "text", value: staff },
       { type: "text", value: staffType },
@@ -508,7 +529,7 @@ const DepartmentTrackerDialog = ({ getIsOpen, isLoading, getActiveApplicationVie
             <div className={style.spaceBetween}>
               <div className={`${style.heading}`}>
                 {/* Staff Reappointment Status {" "}({" "}{totalCount|| 0 }{" "}) */}
-                Staff Reappointment Status
+                {applicationType === "LOCUM" ? 'Locum Renewal Status Tracker' : 'Staff Reappointment Status'}
               </div>
               <div className={style.displayInRow}>
                 {selectedDepartment && (

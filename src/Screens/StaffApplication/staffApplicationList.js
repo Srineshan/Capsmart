@@ -1284,7 +1284,7 @@ const StaffApplicationList = ({
 
   useEffect(() => {
     getActiveUserDataReappointment();
-  }, []);
+  }, [applicationType]);
 
   useEffect(() => {
     getStaffTotalCount();
@@ -1315,7 +1315,12 @@ const StaffApplicationList = ({
       });
 
       const types = ['PERMANENT', 'LOCUM'];
-      types.forEach(type => queryParams.append('type', type));
+      // types.forEach(type => queryParams.append('type', type));
+      if (applicationType === "LOCUM") {
+        queryParams.append('type', 'LOCUM')
+      } else {
+        queryParams.append('type', 'PERMANENT')
+      }
       // queryParams.append('applicantTypeId', "6398687f95164c0bb67ff4b2");
       queryParams.append('applicationStatus', "CREATED");
 
@@ -1459,12 +1464,9 @@ const StaffApplicationList = ({
   console.log("rejectionTab", rejectionTab);
 
   const getRejectionData = async () => {
-    if (applicationType === "LOCUM") {
-      return;
-    }
     try {
       const response = await GET(
-        `application-management-service/application?tenantId=${TenantID}&applicationStatus=REJECTED&applicationCreationType=${applicationType}`
+        `application-management-service/application?tenantId=${TenantID}&applicationStatus=REJECTED&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`
       );
       console.log("Rejection data", response?.data?.applications);
       setRejectionListData(response?.data?.applications);
@@ -1539,12 +1541,9 @@ const StaffApplicationList = ({
 
 
   const getDeclineData = async () => {
-    if (applicationType === "LOCUM") {
-      return;
-    }
     try {
       const response = await GET(
-        `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType}`
+        `application-management-service/application?tenantId=${TenantID}&applicationStatus=DECLINED&applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`
         // `application-management-service/application/workflowUser?tab=${rejectionTab}&applicationCreationType=${applicationType}`
       );
       console.log("Declined data", response?.data?.applications);
@@ -1567,11 +1566,8 @@ const StaffApplicationList = ({
   // }, [showApplicationRejectionDialog]);
 
   const getSentConfirmationCount = async () => {
-    if (applicationType === "LOCUM") {
-      return;
-    }
     await GET(
-      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType}`
+      `application-management-service/application/sentToApplicant/status?applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`
     )
       .then((response) => {
         setSentCompletion(response?.data || null);
@@ -1641,10 +1637,7 @@ const StaffApplicationList = ({
   };
 
   const getRejectionCounts = async () => {
-    if (applicationType === "LOCUM") {
-      return;
-    }
-    await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType}`)
+    await GET(`application-management-service/application/rejected/meta?applicationCreationType=${applicationType === "LOCUM" ? "REAPPOINTMENT" : applicationType}&positionType=${applicationType === "LOCUM" ? "LOCUM" : "PERMANENT"}`)
       .then((response) => {
         setApplicationRejected(response?.data);
         console.log("Datas", response?.data);
@@ -5057,7 +5050,7 @@ const StaffApplicationList = ({
                           {applicationType === "REAPPOINTMENT"
                             ? `Staff for Reappointment (${reappointCount})`
                             : applicationType === "LOCUM"
-                              ? `Locum Staff for Renewals`
+                              ? `Locum Staff for Renewals (${reappointCount})`
                               : "Create New Application"}
                         </div>
 
@@ -5342,7 +5335,7 @@ const StaffApplicationList = ({
                   >
                     <div className={`${style.spaceBetween}  ${style.marginLeftRight10}`}>
                       <div className={`${style.leftCardHeadingNameStyle} ${style.alignCenter}`}>
-                        {applicationType === "REAPPOINTMENT" ? `Rejected / Declined (${applicationRejected?.totalRejections})` : "Rejected / Declined / Expired"}
+                        {applicationType === "REAPPOINTMENT" ? `Rejected / Declined (${applicationRejected?.totalRejections})` : `Rejected / Declined / Expired  (${applicationRejected?.totalRejections})`}
                         {/*<span
       className={`${style.numberBackground} ${style.marginLeft} ${style.redSmallNumberSelected}`}
     >
@@ -5378,7 +5371,7 @@ const StaffApplicationList = ({
                               }}
                             >
                               {/* Staff Rejected ({applicationRejected?.appointmentRequestsDenied}) */}
-                              {applicationType === "REAPPOINTMENT" ? `Approved But Declined (${applicationRejected?.applicationsRejected})` : "Requested But Declined"}
+                              {applicationType === "REAPPOINTMENT" ? `Approved But Declined (${applicationRejected?.applicationsRejected})` : `Requested But Declined (${applicationRejected?.applicationsRejected})`}
                             </div>
                           </Tooltip>
                           <Tooltip arrow title={"Click to View Rejected Applications"}>
@@ -5388,7 +5381,7 @@ const StaffApplicationList = ({
                                 setShowApplicationApprovedDeclineDialog(true);
                               }}
                             >
-                              {applicationType === "REAPPOINTMENT" ? `Staff Rejected (${applicationRejected?.appointmentRequestsDenied})` : "Locum Staff Rejected"}
+                              {applicationType === "REAPPOINTMENT" ? `Staff Rejected (${applicationRejected?.appointmentRequestsDenied})` : `Locum Staff Rejected (${applicationRejected?.appointmentRequestsDenied})`}
                               {/* Approved But Declined ({applicationRejected?.applicationsRejected}) */}
                             </div>
                           </Tooltip>

@@ -46,6 +46,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   const [searchTermForTable, setSearchTermForTable] = useState('');
   const [searchCount, setSearchount] = useState(0);
   const [limit, setLimit] = useState(9999);
+  const [applicationCreationType, setApplicationCreationType] = useState(sessionStorage.getItem('applicationCreationType'))
   const selectedDepartmentName = departmentList?.find(data => data?.id === selectedDepartment)?.departmentName?.name;
   const selectedApplicantName = applicantType?.find(data => data?.id === selectedApplicantType)?.applicantType;
   let availableApplicationStatus = {
@@ -159,9 +160,9 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
       className={style.padding0}
     />,
     "No.",
-    "Staff Name",
+    `${applicationCreationType === "LOCUM" ? "Locum Staff Name" : "Staff Name"}`,
     "Email",
-    "Staff Type",
+    `${applicationCreationType === "LOCUM" ? "Locum Staff Type" : "Staff Type"}`,
     "Department",
     "Status",
     "Completed %",
@@ -183,8 +184,14 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
         status: 'ACTIVE'
       });
 
-      const types = ['PERMANENT', 'LOCUM'];
-      types.forEach(type => queryParams.append('type', type));
+      // const types = ['PERMANENT', 'LOCUM'];
+      // types.forEach(type => queryParams.append('type', type));
+
+      if (applicationCreationType === "LOCUM") {
+        queryParams.append('type', 'LOCUM')
+      } else {
+        queryParams.append('type', 'PERMANENT')
+      }
 
       // if (selectedDepartment) {
       //   queryParams.append('departmentId', selectedDepartment);
@@ -492,7 +499,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
 
       if (data?.onGoingApplication?.expiryDate && new Date(data?.onGoingApplication?.expiryDate) < new Date()) {
         Percentage.push('red');
-        dotTooltipValues.push("Past Due");
+        dotTooltipValues.push(`${data?.onGoingApplication?.completionPercentage}% Past Due`);
       } else {
         const completionPercentage = data?.onGoingApplication?.completionPercentage;
 
@@ -565,7 +572,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
   return (
     <div>
       <ApplicationHeader
-        title={`Eligible Staff for Reappointment applications (${tableData?.length})`}
+        title={applicationCreationType === "LOCUM" ? `Eligible Locum Staff for applications renewal / extension (${tableData?.length})` : `Eligible Staff for Reappointment applications (${tableData?.length})`}
         close={true}
         closeClick={handleCloseClick}
         handleNavigate={handleNavigate}
@@ -599,7 +606,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
             <div>
               <div className={`${style.spaceBetween} ${style.verticalAlignCenter}`}>
                 <div className={`${style.filterType}`}>
-                  Staff Type
+                  {applicationCreationType === "LOCUM" ? 'Locum Staff Type' : `Staff Type`}
                 </div>
               </div>
               <div className={style.marginTop10}>
@@ -878,7 +885,7 @@ const ReappointmentApplication = forwardRef(({ isLoading, basicForm }) => {
                 searchCount={searchCount}
                 setSearchTermForTable={setSearchTermForTable}
                 onLimitChange={handleLimitChange}
-                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder='Search By Staff Name' isOnClickAvailable={true} onClickFunc={onClickUserFunction} />}
+                searchField={<CommonSearchField searchTerm={searchTerm} setSearchTerm={setSearchTerm} onChange={handleSearch} searchData={searchData} handleShowForSearch={handleShowForSearch} placeholder={applicationCreationType === "LOCUM" ? "Search By Locum Staff" : 'Search By Staff Name'} isOnClickAvailable={true} onClickFunc={onClickUserFunction} />}
               />
             </div>
           )}

@@ -313,6 +313,7 @@ const ReportTypeOverview = () => {
         // staffReappointmentTracker: 'Submitted Timesheets Payment Status',
         staffReappointmentTracker: 'Staff Reappointment Status Tracker',
         locumStaffRenewalStatusTracker: 'Locum Staff Renewal Status Tracker',
+        staffbyTypes: 'Staff Reappointments Application Status',
         scheduledActivity: "Scheduled Activity/ Services - Forcasted To Actual",
         scheduledActivityByContract: "Scheduled Activity/ Services - Forcasted To Actual By Contract",
         complianceStatus: "Proof Of Documentation Status By Contractor",
@@ -327,13 +328,6 @@ const ReportTypeOverview = () => {
         multiProviderContractsList: 'Multi Provider Contracts List',
         contractsWithABusinessEntity: 'Contracts With A Business Entity',
         currentRemitToAddressForActiveContracts: 'Current Remit To Address For Active Contracts',
-        staffbyTypes: (
-            <>
-                <span>Staff Reappointments Application Status Of {tableData[0]?.basicDetailReferences?.applicantType?.serviceProviderType}</span>
-                <br />
-                <span className={style.reportRunByParamStyle1}>Reporting Period: Dec 2024</span>
-            </>
-        ),
         paymentProcessingStatusTracker: 'Payment Processing Status By Service Provider'
     }
 
