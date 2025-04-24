@@ -42,6 +42,10 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
     const [anchorElIconWithCount, setAnchorElIconWithCount] = useState(null);
     const [cursorPosition, setCursorPosition] = useState({ left: 0, top: 0 });
     const [isFlipped, setIsFlipped] = useState(false);
+    const [anchorElIconWithCountNotes, setAnchorElIconWithCountNotes] = useState(null);
+    const [cursorPositionNotes, setCursorPositionNotes] = useState({ left: 0, top: 0 });
+    const [isFlippedNotes, setIsFlippedNotes] = useState(false);
+    const openIconWithCountNotes = Boolean(anchorElIconWithCountNotes);
     const [cursorPositionCountWithHover, setCursorPositionCountWithHover] = useState({ left: 0, top: 0 });
     const [isFlippedCountWithHover, setIsFlippedCountWithHover] = useState(false);
     const [cursorPositionTextWithHover, setCursorPositionTextWithHover] = useState({ left: 0, top: 0 });
@@ -210,6 +214,37 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
         setAnchorElIconWithCount(null);
     };
 
+
+    const handleClickIconWithCountNotes = (event, index, tableDataIndex) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        // Check if there's enough space below; if not, flip the popover
+        const flip = rect.bottom + 150 > windowHeight; // Adjust 150px threshold as needed
+        setIsFlippedNotes(flip);
+
+        setAnchorElIconWithCountNotes(event.currentTarget);
+        setCursorPositionNotes({
+            left: event.clientX,
+            top: flip ? rect.top : rect.bottom,
+        });
+        setSelectedMenuIndex(index);
+        setSelectedMenuColIndex(tableDataIndex);
+    };
+
+    const handleMouseMoveNotes = (event) => {
+        if (openIconWithCountNotes) {
+            setCursorPositionNotes({
+                left: event.clientX,
+                top: event.clientY,
+            });
+        }
+    };
+
+
+    const handleCloseIconWithCountNotes = () => {
+        setAnchorElIconWithCountNotes(null);
+    };
 
     const handleClickCountWithHover = (event, index, tableDataIndex) => {
         const rect = event.currentTarget.getBoundingClientRect();
@@ -705,6 +740,104 @@ const TableTwo = ({ tableHeaderValues, tableDataValues, handleCheckboxClick, tab
                                                                         maxHeight:
                                                                             tableData?.hoverText?.[index]?.length > 3 ? "100px" : "auto",
                                                                         overflowY: tableData?.hoverText?.[index]?.length > 3 ? "scroll" : "auto",
+                                                                        position: "relative",
+                                                                        pointerEvents: 'auto',
+                                                                        '& > *': { pointerEvents: 'none' },
+                                                                        zIndex: 1,
+                                                                        width: "280px",
+                                                                        margin: "0 auto",
+                                                                        padding: "8px",
+                                                                        color: "white",
+                                                                        fontSize: "14px",
+                                                                        scrollbarWidth: 'thin',
+                                                                        '&::-webkit-scrollbar': {
+                                                                            width: "8px",
+                                                                        },
+                                                                        '&::-webkit-scrollbar-track': {
+                                                                            background: "rgba(0,0,0,0.2)",
+                                                                            borderRadius: "4px",
+                                                                        },
+                                                                        '&::-webkit-scrollbar-thumb': {
+                                                                            backgroundColor: "rgba(255,255,255,0.5)", // More visible
+                                                                            borderRadius: "4px",
+                                                                            border: "1px solid rgba(255,255,255,0.2)",
+                                                                            '&:hover': {
+                                                                                backgroundColor: "rgba(255,255,255,0.7)",
+                                                                            }
+                                                                        },
+                                                                    }}
+                                                                >
+                                                                    {tableData?.hoverText?.[index]?.map((data, innerIndex) => (
+                                                                        <div className={style.multipleOptionsCard}>
+                                                                            <div className={`${style.specificActionCard} ${style.cursorPointer}`}> {data}</div>
+                                                                        </div>
+                                                                    ))}
+
+                                                                </Box>
+                                                            </Popover>
+                                                        )}
+                                                    </Typography>
+                                                </div>
+                                            ) : tableData?.type === "iconWithCountNotes" ? (
+                                                <div
+                                                    onMouseEnter={(e) => handleClickIconWithCountNotes(e, index, tableDataIndex)}
+                                                    onMouseLeave={handleCloseIconWithCountNotes}
+                                                    onMouseMove={handleMouseMoveNotes}
+                                                    aria-owns={openIconWithCountNotes ? 'mouse-over-popover' : undefined}
+                                                    aria-haspopup="true"
+                                                    style={{ display: 'inline-block', position: 'relative' }}
+                                                >
+                                                    <Typography className={`${style.verticalAlignCenter} ${style.cursorArrow}`}  >
+                                                        {tableData?.icon?.[index]}
+                                                        <p className={`${style.tableDataFontStyle1} ${style.marginTop10} ${style.marginLeft5}`}>{tableData?.value?.[index]}</p>
+                                                        {tableData?.isShowHoverText && index === selectedMenuIndex && tableDataIndex === selectedMenuColIndex && tableData?.value?.[index] !== '-' && (
+                                                            <Popover
+                                                                id="mouse-over-popover"
+                                                                open={openIconWithCountNotes}
+                                                                anchorEl={anchorElIconWithCountNotes}
+                                                                anchorPosition={{ top: cursorPositionNotes.top, left: cursorPositionNotes.left }}
+                                                                onClose={handleCloseIconWithCountNotes}
+                                                                anchorOrigin={{
+                                                                    vertical: isFlippedNotes ? 'top' : 'bottom',
+                                                                    horizontal: 'center',
+                                                                }}
+                                                                transformOrigin={{
+                                                                    vertical: isFlippedNotes ? 'bottom' : 'top',
+                                                                    horizontal: 'center',
+                                                                }}
+                                                                sx={{
+                                                                    pointerEvents: 'none',
+                                                                    '& .MuiPopover-paper': {
+                                                                        backgroundColor: 'transparent',
+                                                                        boxShadow: 'none',
+                                                                        overflow: 'visible',
+                                                                    },
+                                                                }}
+                                                                disableRestoreFocus
+                                                            >
+                                                                <Box
+                                                                    sx={{
+                                                                        position: "absolute",
+                                                                        left: "50%",
+                                                                        transform: "translateX(-50%)",
+                                                                        width: 0,
+                                                                        height: 0,
+                                                                        borderLeft: "6px solid transparent",
+                                                                        borderRight: "6px solid transparent",
+                                                                        borderBottom: isFlippedNotes ? "none" : "6px solid #737575",
+                                                                        borderTop: isFlippedNotes ? "6px solid #737575" : "none",
+                                                                        top: isFlippedNotes ? "auto" : "-6px",
+                                                                        bottom: isFlippedNotes ? "-6px" : "auto",
+                                                                        zIndex: 1,
+                                                                    }}
+                                                                />
+                                                                <Box
+                                                                    sx={{
+                                                                        backgroundColor: "#737575",
+                                                                        borderRadius: "4px",
+                                                                        maxHeight:
+                                                                            tableData?.hoverText?.[index]?.length > 1 ? "100px" : "auto",
+                                                                        overflowY: tableData?.hoverText?.[index]?.length > 1 ? "scroll" : "auto",
                                                                         position: "relative",
                                                                         pointerEvents: 'auto',
                                                                         '& > *': { pointerEvents: 'none' },

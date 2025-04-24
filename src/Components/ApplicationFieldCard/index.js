@@ -2756,12 +2756,14 @@ const ApplicationFieldCard = ({
                         })`}
                     </div>
                     <div>
+                    <Tooltip title="Click to upload a file" arrow>
                       <label
                         for={`file-upload-dynamic-${fieldKey}`}
                         className={` ${style.uploadTextButton} ${style.cursorPointer} ${style.verticalAlignCenter}`}
                       >
                         Click to upload
                       </label>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
