@@ -606,7 +606,7 @@ const LocumStaffList = ({
     {
       data: "Reactivate Locum Staff",
       requiredValue: "boolean",
-      onClick: onClickExtensiveReactiveLocumDialog,
+      onClick: onClickExtensiveLocumDialog,
     },
     {
       data: "Create Note",
